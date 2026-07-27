@@ -26,7 +26,7 @@ export default function SleepCard() {
             }
 
             if (saved) setCurrentSleep(parseFloat(saved));
-            else setCurrentSleep(7.45); // Default mock value if nothing saved
+            else setCurrentSleep(0); // No data yet — user hasn't logged
         };
         
         loadSleep();

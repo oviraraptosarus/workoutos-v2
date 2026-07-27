@@ -74,6 +74,8 @@ export default function OnboardingTourModal() {
             const completed = localStorage.getItem(ONBOARDING_KEY);
             if (!completed) {
                 setIsWelcomeOpen(true);
+                // Mark as seen immediately so it never repeats on refresh
+                localStorage.setItem(ONBOARDING_KEY, 'true');
             }
         } catch (e) {
             console.error(e);

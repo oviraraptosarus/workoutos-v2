@@ -20,7 +20,7 @@ export default function NutritionCard() {
         const loadNutrition = () => {
             const saved = localStorage.getItem(`workout_os_nutrition_${selectedDate}`);
             if (saved) setCurrentCals(parseInt(saved, 10));
-            else setCurrentCals(isToday ? 450 : 0); // Mock default for today
+            else setCurrentCals(0); // No data yet — user hasn't logged
         };
         
         loadNutrition();
