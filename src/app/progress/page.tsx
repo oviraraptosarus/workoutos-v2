@@ -1,9 +1,11 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Camera, ImagePlus, CheckCircle2, ChevronRight, X, Trash2, Columns, Maximize2 } from 'lucide-react';
+import { ArrowLeft, Camera, Image, CheckCircle, ChevronRight, X, Trash2, LayoutGrid, Maximize2 } from 'lucide-react';
 import Link from 'next/link';
 import BottomNav from '@/components/BottomNav';
 
@@ -98,7 +100,7 @@ export default function ProgressPhotosPage() {
                             onClick={() => setIsComparing(!isComparing)}
                             className={`p-2 rounded-xl border transition-all ${isComparing ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-stone-200 text-stone-600 shadow-sm'}`}
                         >
-                            <Columns size={18} />
+                            <LayoutGrid size={18} />
                         </button>
                         <button 
                             onClick={handleUploadClick}
@@ -133,7 +135,7 @@ export default function ProgressPhotosPage() {
                                         <img src={compareLeft.url} alt="Before" className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-stone-400">
-                                            <ImagePlus size={24} className="mb-2" />
+                                            <Image size={24} className="mb-2" />
                                             <span className="text-xs font-bold">Select Before</span>
                                         </div>
                                     )}
@@ -157,7 +159,7 @@ export default function ProgressPhotosPage() {
                                         <img src={compareRight.url} alt="After" className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-stone-400">
-                                            <ImagePlus size={24} className="mb-2" />
+                                            <Image size={24} className="mb-2" />
                                             <span className="text-xs font-bold">Select After</span>
                                         </div>
                                     )}
