@@ -1,13 +1,15 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Camera, X, Trash2, Maximize2, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
 // Dynamically import BottomNav to prevent SSR/prerender crash
-const BottomNav = dynamic(() => import('@/components/BottomNav'), { ssr: false });
+const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
 
 interface ProgressPhoto {
     id: string;
