@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Camera, ImagePlus, CheckCircle2, ChevronRight, X, Trash2, Compare, Maximize2 } from 'lucide-react';
+import { ArrowLeft, Camera, ImagePlus, CheckCircle2, ChevronRight, X, Trash2, Columns, Maximize2 } from 'lucide-react';
 import Link from 'next/link';
 import BottomNav from '@/components/BottomNav';
 
@@ -98,7 +98,7 @@ export default function ProgressPhotosPage() {
                             onClick={() => setIsComparing(!isComparing)}
                             className={`p-2 rounded-xl border transition-all ${isComparing ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-stone-200 text-stone-600 shadow-sm'}`}
                         >
-                            <Compare size={18} />
+                            <Columns size={18} />
                         </button>
                         <button 
                             onClick={handleUploadClick}
