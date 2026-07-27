@@ -1,0 +1,252 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, X, Command, HelpCircle, Utensils, Dumbbell, Droplet, Sparkles, FileJson, BookOpen, Settings, Moon, DollarSign, ChevronRight, HelpCircle as HelpIcon } from 'lucide-react';
+
+interface CommandPaletteModalProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
+interface NavCommand {
+    id: string;
+    title: string;
+    description: string;
+    category: 'Navigation' | 'Actions' | 'Help';
+    icon: React.ReactNode;
+    href?: string;
+    action?: () => void;
+}
+
+const FAQ_ITEMS = [
+    {
+        q: 'What are Bites / Points?',
+        a: 'Bites (or points) is a simplified calorie-tracking unit where 1 Bite ≈ 50 kcal. For example, 1 slice of bread = 4 Bites, 1 egg = 2 Bites. It lets you estimate food portions without keeping track of 4-digit numbers.',
+    },
+    {
+        q: 'How does AI Voice & Natural Text Logging work?',
+        a: 'Open the AI Logger (via the Sparkles icon or Ctrl+K), and type or dictate plain English like "2 eggs, avocado toast, and 500ml water". AI automatically parses food, macros, water, and notes.',
+    },
+    {
+        q: 'How do I export or backup my account data?',
+        a: 'Go to Settings -> Import / Export tab -> click "Export Account Configuration (.json)". This downloads your complete profile, macros, diet meals, and logs as a JSON file.',
+    },
+    {
+        q: 'How do I set custom daily macro targets?',
+        a: 'On the Diet page, click the Settings (gear/slider) icon at the top right of the Macro Rings card to customize your target Calories, Protein, Carbs, Fat, and Sugar.',
+    },
+    {
+        q: 'How do I view the 5-Day Meal Plan recipes?',
+        a: 'Click "SEE DETAILS >" on the "YOUR MEAL PLAN" card on the Diet page to browse complete 5-day recipes, ingredient lists, and prep steps.',
+    },
+];
+
+export default function CommandPaletteModal() {
+    const router = useRouter();
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState<'commands' | 'help'>('commands');
+
+    // Global Ctrl+K / Cmd+K keyboard shortcut listener
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsOpen((prev) => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    const commands: NavCommand[] = [
+        {
+            id: 'nav-diet',
+            title: 'Diet & Nutrition Tracker',
+            description: 'Track meals, macros, calories, bites & hydration',
+            category: 'Navigation',
+            icon: <Utensils className="w-5 h-5 text-emerald-500" />,
+            href: '/diet',
+        },
+        {
+            id: 'nav-workout',
+            title: 'Workout Tracker & Today\'s Split',
+            description: 'Log workout sets, reps, active timers & splits',
+            category: 'Navigation',
+            icon: <Dumbbell className="w-5 h-5 text-blue-500" />,
+            href: '/workout',
+        },
+        {
+            id: 'nav-planner',
+            title: 'Weekly Workout Planner',
+            description: 'Customize weekly exercise schedules & routines',
+            category: 'Navigation',
+            icon: <BookOpen className="w-5 h-5 text-purple-500" />,
+            href: '/planner',
+        },
+        {
+            id: 'nav-budget',
+            title: 'Budget & Expense Tracker',
+            description: 'Track daily expenses and financial goals',
+            category: 'Navigation',
+            icon: <DollarSign className="w-5 h-5 text-amber-500" />,
+            href: '/budget-tracker',
+        },
+        {
+            id: 'nav-sleep',
+            title: 'Sleep Tracker',
+            description: 'Log sleep duration and quality scores',
+            category: 'Navigation',
+            icon: <Moon className="w-5 h-5 text-indigo-500" />,
+            href: '/sleep',
+        },
+    ];
+
+    const filteredCommands = commands.filter(
+        (c) =>
+            c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredFaqs = FAQ_ITEMS.filter(
+        (f) =>
+            f.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            f.a.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleSelectCommand = (cmd: NavCommand) => {
+        setIsOpen(false);
+        if (cmd.href) {
+            router.push(cmd.href);
+        } else if (cmd.action) {
+            cmd.action();
+        }
+    };
+
+    return (
+        <>
+            {/* Floating "?" Help Button (Bottom-Left) */}
+            <button
+                onClick={() => setIsOpen(true)}
+                className="fixed bottom-6 left-6 z-[80] p-3 rounded-full bg-stone-900 text-white shadow-xl hover:bg-emerald-600 transition-all btn-press flex items-center gap-2 text-xs font-bold border border-stone-700"
+                title="Open Command Palette & Help Center (Ctrl+K)"
+            >
+                <HelpCircle size={18} className="text-emerald-400" />
+                <span className="hidden sm:inline">Help & Navigator</span>
+                <kbd className="hidden sm:inline-block bg-stone-800 text-[10px] px-1.5 py-0.5 rounded font-mono text-stone-300 border border-stone-700">
+                    Ctrl+K
+                </kbd>
+            </button>
+
+            {/* Modal Overlay */}
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] border border-gray-200 overflow-hidden flex flex-col max-h-[85vh]">
+                        
+                        {/* Search Input Bar */}
+                        <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3 bg-stone-50/80">
+                            <Search size={20} className="text-gray-400 dark:text-gray-500" />
+                            <input
+                                type="text"
+                                autoFocus
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search sections, features, or help topics (Ctrl+K)..."
+                                className="w-full bg-transparent text-sm font-bold text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                            />
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="p-1.5 rounded-full hover:bg-gray-200/60 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {/* Tabs Bar */}
+                        <div className="px-5 py-2.5 bg-white border-b border-gray-100 flex items-center gap-2">
+                            <button
+                                onClick={() => setActiveTab('commands')}
+                                className={`py-1.5 px-3.5 rounded-xl text-xs font-black transition-all border ${
+                                    activeTab === 'commands'
+                                        ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                                        : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
+                                }`}
+                            >
+                                Quick Section Jumper
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('help')}
+                                className={`py-1.5 px-3.5 rounded-xl text-xs font-black transition-all border ${
+                                    activeTab === 'help'
+                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                                        : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
+                                }`}
+                            >
+                                Help & FAQ Guide
+                            </button>
+                        </div>
+
+                        {/* Content Body */}
+                        <div className="p-5 space-y-3 overflow-y-auto max-h-[60vh]">
+                            {activeTab === 'commands' ? (
+                                filteredCommands.length > 0 ? (
+                                    filteredCommands.map((cmd) => (
+                                        <div
+                                            key={cmd.id}
+                                            onClick={() => handleSelectCommand(cmd)}
+                                            className="group flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 hover:bg-emerald-50/60 border border-stone-200 hover:border-emerald-300 shadow-sm transition-all cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2.5 rounded-2xl bg-white border border-stone-200/80 shadow-sm group-hover:scale-105 transition-transform">
+                                                    {cmd.icon}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xs font-black text-gray-900 group-hover:text-emerald-800 transition-colors">
+                                                        {cmd.title}
+                                                    </h4>
+                                                    <p className="text-[11px] font-medium text-gray-500 mt-0.5">
+                                                        {cmd.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <ChevronRight size={16} className="text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-xs font-bold text-gray-400 dark:text-gray-500">
+                                        No matching sections found. Try searching for "Diet", "Workout", or "Budget".
+                                    </div>
+                                )
+                            ) : (
+                                /* FAQ Accordion */
+                                filteredFaqs.length > 0 ? (
+                                    filteredFaqs.map((faq, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5 shadow-sm"
+                                        >
+                                            <h4 className="text-xs font-black text-gray-900 flex items-center gap-1.5">
+                                                <HelpIcon size={14} className="text-emerald-600 flex-shrink-0" />
+                                                <span>{faq.q}</span>
+                                            </h4>
+                                            <p className="text-[11px] font-medium text-gray-600 leading-relaxed pl-5">
+                                                {faq.a}
+                                            </p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-xs font-bold text-gray-400 dark:text-gray-500">
+                                        No matching help guides found.
+                                    </div>
+                                )
+                            )}
+                        </div>
+
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
