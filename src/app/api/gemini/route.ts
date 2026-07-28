@@ -84,7 +84,7 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                 }
 
                 // Call Google Gemini API
-                const modelVersion = process.env.GEMINI_MODEL_VERSION || 'gemini-1.5-flash-latest';
+                const modelVersion = process.env.GEMINI_MODEL_VERSION || 'gemini-3.6-flash';
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelVersion}:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
