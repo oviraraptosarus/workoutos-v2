@@ -3,17 +3,20 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import nextDynamic from 'next/dynamic';
 import DashboardHeader from '@/app/components/DashboardHeader';
 import GeminiFoodAssistant from '@/app/components/GeminiFoodAssistant';
 import BentoGrid from '@/app/components/BentoGrid';
 import TouchGrassNudge from '@/app/components/TouchGrassNudge';
 import RecentActivity from '@/app/components/RecentActivity';
-import BottomNav from '@/components/BottomNav';
-import FloatingActionMenu from '@/app/components/FloatingActionMenu';
 import WeightLogCard from '@/app/components/cards/WeightLogCard';
 import DashboardTasks from '@/app/components/DashboardTasks';
 import QuickNotes from '@/app/components/QuickNotes';
+
+// Dynamic ssr:false imports to prevent server prerender crashes
+const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
+const FloatingActionMenu = nextDynamic(() => import('@/app/components/FloatingActionMenu'), { ssr: false });
+const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
@@ -31,13 +34,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#f7f6f0] text-stone-900 pb-32 font-sans selection:bg-emerald-100">
       <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
         <DashboardHeader />
-        
-        {/* iOS Gemini 2.5 Flash Food Assistant */}
+
+        {/* Nova AI Copilot */}
         <GeminiFoodAssistant />
 
         <BentoGrid />
-        
-        {/* Floating Nudge Banner */}
+
         <div className="pt-2">
           <TouchGrassNudge />
         </div>
@@ -53,9 +55,8 @@ export default function Dashboard() {
       </main>
 
       <FloatingActionMenu />
-
-      {/* Bottom Navigation Bar */}
       <BottomNav />
+      <OnboardingTourModal />
     </div>
   );
 }

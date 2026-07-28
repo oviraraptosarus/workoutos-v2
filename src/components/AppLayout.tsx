@@ -1,9 +1,12 @@
 'use client';
 
 import React from 'react';
-import BottomNav from '@/components/BottomNav';
-import OnboardingTourModal from '@/app/components/OnboardingTourModal';
-import CommandPaletteModal from '@/app/components/CommandPaletteModal';
+import nextDynamic from 'next/dynamic';
+
+// Dynamic imports with ssr:false to prevent prerender crashes
+const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
+const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
+const CommandPaletteModal = nextDynamic(() => import('@/app/components/CommandPaletteModal'), { ssr: false });
 
 interface AppLayoutProps {
     children: React.ReactNode;

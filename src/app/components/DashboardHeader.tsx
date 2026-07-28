@@ -31,11 +31,11 @@ export default function DashboardHeader() {
     // Mock notifications state
     const [notifications, setNotifications] = useState<any[]>([]);
     
-    const [sessionSeconds, setSessionSeconds] = useState(0);
+
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const notifRef = useRef<HTMLDivElement>(null);
-    const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : 'Alex';
+    const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'Friend');
     const initial = displayName.charAt(0).toUpperCase();
 
     useEffect(() => {
@@ -51,19 +51,11 @@ export default function DashboardHeader() {
         const h = now.getHours();
         setGreeting(GREETING_BY_HOUR(h));
 
-        const timerInterval = setInterval(() => {
-            setSessionSeconds(s => s + 1);
-        }, 1000);
-
         // Check if report is ready
         const savedReport = localStorage.getItem('workout_os_biweekly_report');
         if (savedReport) {
             setReportReady(true);
         }
-
-        return () => {
-            clearInterval(timerInterval);
-        };
     }, []);
 
     // Re-check when modal closes in case they deleted it or generated it
@@ -74,11 +66,7 @@ export default function DashboardHeader() {
         }
     }, [isReportOpen]);
 
-    const formatSessionTime = (totalSeconds: number) => {
-        const m = Math.floor(totalSeconds / 60);
-        const s = totalSeconds % 60;
-        return `${m}:${s.toString().padStart(2, '0')}`;
-    };
+
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -101,15 +89,6 @@ export default function DashboardHeader() {
 
     return (
         <div className="space-y-4">
-            {/* Top session time & cache indicator */}
-            <div className="flex items-center justify-between text-xs font-semibold text-[#1f4e38] dark:text-[#a7f3d0]">
-                <div className="flex items-center gap-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <span className="text-sm">⏱️</span>
-                    <span className="font-mono">{formatSessionTime(sessionSeconds)} in app</span>
-                    <span className="text-stone-400 dark:text-stone-600 font-normal">·</span>
-                    <span className="text-[#2d6a4f] dark:text-[#34d399]">healthy session</span>
-                </div>
-            </div>
 
             {/* Header Main Row */}
             <div className="flex items-center justify-between">
