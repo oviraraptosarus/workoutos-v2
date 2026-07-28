@@ -196,6 +196,21 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         </div>
                                     </div>
 
+                                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-3 shadow-sm">
+                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">Categorize Meal As</p>
+                                        <div className="flex bg-gray-50 dark:bg-slate-800 p-1 rounded-xl">
+                                            {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(cat => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={() => setParsedMeal({...parsedMeal, category: cat as any})}
+                                                    className={`flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-colors ${parsedMeal.category === cat ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm ring-1 ring-gray-200 dark:ring-slate-600' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={() => fileInputRef.current?.click()}
