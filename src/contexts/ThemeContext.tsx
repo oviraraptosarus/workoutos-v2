@@ -20,8 +20,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const stored = localStorage.getItem('workout_os_theme');
         if (stored === 'dark' || stored === 'light') {
             setTheme(stored);
-        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark');
+        } else {
+            setTheme('light');
         }
     }, []);
 
