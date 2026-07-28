@@ -104,7 +104,7 @@ export default function IncomeTable() {
                 <div className="flex items-center gap-2">
                     <span>Show</span>
                     <select className="bg-[#f4f3f0] dark:bg-slate-800 border-none rounded-full px-3 py-1.5 focus:outline-none dark:text-gray-300">
-                        <option>10 per page</option>
+                        <option>All</option>
                     </select>
                     <span>of {income.length} entries</span>
                 </div>

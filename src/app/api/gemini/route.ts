@@ -81,13 +81,12 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                 }
 
                 // Call Google Gemini API
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': apiKey
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         systemInstruction: {

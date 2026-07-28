@@ -1,31 +1,62 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scale, CheckCircle2, Camera, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface WeightEntry {
+    date: string;
+    weight: number;
+}
+
+const WEIGHT_KEY = 'workout_os_weight_log';
 
 export default function WeightLogCard() {
     const { userProfile } = useAuth();
     const [weight, setWeight] = useState<number | string>(userProfile?.targetWeight || 75);
     const [isLogged, setIsLogged] = useState(false);
     
-    const [chartData, setChartData] = useState([
-        { date: 'Jul 21', weight: 76.5 },
-        { date: 'Jul 22', weight: 76.2 },
-        { date: 'Jul 23', weight: 75.8 },
-        { date: 'Jul 24', weight: 75.9 },
-        { date: 'Jul 25', weight: 75.5 },
-        { date: 'Jul 26', weight: 75.1 },
-    ]);
+    const [chartData, setChartData] = useState<WeightEntry[]>([]);
+
+    useEffect(() => {
+        const load = () => {
+            const saved = localStorage.getItem(WEIGHT_KEY);
+            if (saved) {
+                setChartData(JSON.parse(saved));
+            } else {
+                // Initial empty state or maybe a flat line of their target weight if no data exists
+                const d = new Date();
+                setChartData([{ date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), weight: userProfile?.targetWeight || 75 }]);
+            }
+        };
+        load();
+        window.addEventListener('storage', load);
+        return () => window.removeEventListener('storage', load);
+    }, [userProfile?.targetWeight]);
 
     const handleLog = (e: React.FormEvent) => {
         e.preventDefault();
         
         const newWeight = Number(weight);
         if (!isNaN(newWeight)) {
-            setChartData([...chartData, { date: 'Today', weight: newWeight }]);
+            const d = new Date();
+            const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            let updated = [...chartData];
+            // If they already logged today, update it instead of adding duplicate
+            if (updated.length > 0 && updated[updated.length - 1].date === dateStr) {
+                updated[updated.length - 1].weight = newWeight;
+            } else {
+                updated.push({ date: dateStr, weight: newWeight });
+            }
+            
+            // Keep last 7 logs to prevent chart from getting too dense
+            if (updated.length > 7) updated = updated.slice(updated.length - 7);
+            
+            setChartData(updated);
+            localStorage.setItem(WEIGHT_KEY, JSON.stringify(updated));
         }
 
         setIsLogged(true);

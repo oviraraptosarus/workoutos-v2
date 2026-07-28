@@ -5,6 +5,7 @@ import { Sparkles, Send, Key, CheckCircle2, ChevronRight, X, Flame, Utensils, Za
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
+import { getExpenses, saveExpenses, getIncome, saveIncome } from '@/app/budget-tracker/services/budgetStorage';
 
 interface Message {
     id: string;
@@ -164,12 +165,28 @@ export default function GeminiFoodAssistant() {
                         // Backend API hook goes here
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'add_expense') {
-                        // Backend API hook goes here
-                        window.dispatchEvent(new Event('workout_os_budget_updated'));
+                        const newExpense = {
+                            id: Date.now().toString(),
+                            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                            description: args.category || 'Expense',
+                            category: args.category || 'Other',
+                            amount: Number(args.amount) || 0,
+                            protein: null,
+                            costPerG: null,
+                            type: 'essential'
+                        };
+                        saveExpenses([...getExpenses(), newExpense]);
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'budget_expense' } }));
                     } else if (fn === 'add_income') {
-                        // Backend API hook goes here
-                        window.dispatchEvent(new Event('workout_os_budget_updated'));
+                        const newIncome = {
+                            id: Date.now().toString(),
+                            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                            description: args.source || 'Income',
+                            source: args.source || 'Other',
+                            amount: Number(args.amount) || 0,
+                            type: 'one-time'
+                        };
+                        saveIncome([...getIncome(), newIncome]);
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'budget_income' } }));
                     }
                 }
@@ -198,14 +215,7 @@ export default function GeminiFoodAssistant() {
         }
     };
 
-    const QUICK_PROMPTS = [
-        { label: '🍕 Can I eat pizza post-workout?', text: 'Can I eat 2 slices of pepperoni pizza after a heavy leg workout?' },
-        { label: '🧋 Is boba tea okay on a cut?', text: 'Is boba milk tea okay to drink while cut/weight loss phase?' },
-        { label: '🥑 Late night healthy snack?', text: 'What is a good late night high-protein snack under 200 calories?' },
-        { label: '🥩 Protein in 200g chicken?', text: 'How much protein and calories in 200g grilled chicken breast?' }
-    ];
 
-    return (
         <>
             {/* Google-Style Nova AI Search Bar */}
             <div className="relative group max-w-2xl mx-auto mb-6">
@@ -246,7 +256,7 @@ export default function GeminiFoodAssistant() {
             {/* iOS Apple Sheet Popup Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/20 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white border border-gray-100 border-gray-200 w-full max-w-2xl sm:rounded-3xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[85vh] sm:h-[700px]">
+                    <div className="bg-white border border-gray-100 border-gray-200 w-full max-w-2xl sm:rounded-3xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[75vh] sm:h-[550px]">
                         
                         {/* iOS Sheet Handlebar & Top Bar */}
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white dark:bg-slate-900/20 backdrop-blur-md">

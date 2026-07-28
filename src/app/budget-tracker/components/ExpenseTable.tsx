@@ -41,7 +41,7 @@ export default function ExpenseTable() {
         <div className={`bg-white dark:bg-slate-900 border ${highlight ? 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)]' : 'border-gray-100 dark:border-slate-800'} p-6 rounded-3xl shadow-sm transition-all duration-500`}>
             <div className="mb-6">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight mb-1">Expense log</h3>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">14 entries • Total: <span className="font-bold text-gray-900 dark:text-gray-200">₹560.28</span></p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">{expenses.length} entries • Total: <span className="font-bold text-gray-900 dark:text-gray-200">₹{totalExpenses.toFixed(2)}</span></p>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -110,9 +110,9 @@ export default function ExpenseTable() {
                 <div className="flex items-center gap-2">
                     <span>Show</span>
                     <select className="bg-[#f4f3f0] dark:bg-slate-800 border-none rounded-full px-3 py-1.5 focus:outline-none dark:text-gray-300">
-                        <option>10 per page</option>
+                        <option>All</option>
                     </select>
-                    <span>of 14 entries</span>
+                    <span>of {expenses.length} entries</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <button className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 transition-colors">
