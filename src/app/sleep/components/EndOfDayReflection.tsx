@@ -132,7 +132,7 @@ export default function EndOfDayReflection() {
             <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                 <label className="text-sm font-bold text-gray-700 uppercase">Overall Day Rating</label>
                 <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
+                    {[1, 2, 3, 4, 5].map((star) => (
                         <button
                             key={star}
                             onClick={() => updateField('rating', star)}

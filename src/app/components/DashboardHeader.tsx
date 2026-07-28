@@ -93,7 +93,7 @@ export default function DashboardHeader() {
             {/* Header Main Row */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <AppLogo size={38} className="hidden sm:block shrink-0" />
+                    <AppLogo size={38} className="shrink-0" />
                     <div className="flex flex-col items-start">
                         <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-none drop-shadow-sm">
                             {greeting}, {displayName}

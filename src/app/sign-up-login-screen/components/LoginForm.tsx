@@ -66,6 +66,18 @@ export default function LoginForm() {
             >
                 Sign In
             </button>
+            <button
+                type="button"
+                onClick={() => {
+                    setEmail('demo@workoutos.com');
+                    setPassword('demo1234');
+                    signIn('demo@workoutos.com', 'demo1234').catch(err => setError(err.message || 'Demo login failed'));
+                }}
+                className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
+            >
+                <Sparkles size={16} className="text-blue-500" />
+                Quick Login (Demo)
+            </button>
         </form>
     );
 }

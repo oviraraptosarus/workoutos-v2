@@ -16,8 +16,9 @@ const WEIGHT_KEY = 'workout_os_weight_log';
 
 export default function WeightLogCard() {
     const { userProfile } = useAuth();
-    const [weight, setWeight] = useState<number | string>(userProfile?.targetWeight || 75);
+    const [weight, setWeight] = useState<number | string>(userProfile?.currentWeight || 75);
     const [isLogged, setIsLogged] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
     
     const [chartData, setChartData] = useState<WeightEntry[]>([]);
 
@@ -76,10 +77,11 @@ export default function WeightLogCard() {
         load();
         window.addEventListener('storage', load);
         return () => window.removeEventListener('storage', load);
-    }, [userProfile?.targetWeight]);
+    }, [userProfile?.currentWeight, userProfile?.targetWeight]);
 
     const handleLog = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrorMsg('');
         
         const newWeight = Number(weight);
         if (!isNaN(newWeight)) {
@@ -90,38 +92,46 @@ export default function WeightLogCard() {
             const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             
-            // Upsert daily_logs
-            const { data: existing } = await supabase
-                .from('daily_logs')
-                .select('id')
-                .eq('user_id', user.id)
-                .eq('date', todayKey)
-                .single();
+            try {
+                // Upsert daily_logs
+                const { data: existing, error: fetchError } = await supabase
+                    .from('daily_logs')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .eq('date', todayKey)
+                    .single();
 
-            if (existing) {
-                await supabase.from('daily_logs').update({ weight_kg: newWeight }).eq('id', existing.id);
-            } else {
-                await supabase.from('daily_logs').insert({ user_id: user.id, date: todayKey, weight_kg: newWeight });
+                if (existing) {
+                    const { error } = await supabase.from('daily_logs').update({ weight_kg: newWeight }).eq('id', existing.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase.from('daily_logs').insert({ user_id: user.id, date: todayKey, weight_kg: newWeight });
+                    if (error) throw error;
+                }
+
+                // Update profiles current_weight
+                const { error: profileError } = await supabase.from('profiles').upsert({ id: user.id, current_weight: newWeight }, { onConflict: 'id' });
+                if (profileError) throw profileError;
+
+                let updated = [...chartData];
+                // If they already logged today, update it instead of adding duplicate
+                const idx = updated.findIndex(log => log.date === dateStr);
+                if (idx !== -1) {
+                    updated[idx].weight = newWeight;
+                } else {
+                    updated.push({ date: dateStr, weight: newWeight });
+                    if (updated.length > 7) updated = updated.slice(updated.length - 7);
+                }
+                setChartData(updated);
+
+                setIsLogged(true);
+                setTimeout(() => setIsLogged(false), 3000);
+                window.dispatchEvent(new Event('storage'));
+            } catch (err: any) {
+                console.error('Error logging weight:', err);
+                setErrorMsg(err.message || 'Failed to log weight');
             }
-
-            // Update profiles current_weight
-            await supabase.from('profiles').upsert({ id: user.id, current_weight: newWeight }, { onConflict: 'id' });
-
-            let updated = [...chartData];
-            // If they already logged today, update it instead of adding duplicate
-            const idx = updated.findIndex(log => log.date === dateStr);
-            if (idx !== -1) {
-                updated[idx].weight = newWeight;
-            } else {
-                updated.push({ date: dateStr, weight: newWeight });
-                if (updated.length > 7) updated = updated.slice(updated.length - 7);
-            }
-            setChartData(updated);
         }
-
-        setIsLogged(true);
-        setTimeout(() => setIsLogged(false), 3000);
-        window.dispatchEvent(new Event('storage'));
     };
 
     return (
@@ -198,6 +208,11 @@ export default function WeightLogCard() {
                 {isLogged && (
                     <p className="text-[11px] font-bold text-emerald-600 text-center animate-in fade-in slide-in-from-top-1">
                         Weight successfully logged!
+                    </p>
+                )}
+                {errorMsg && (
+                    <p className="text-[11px] font-bold text-rose-600 text-center animate-in fade-in slide-in-from-top-1">
+                        {errorMsg}
                     </p>
                 )}
             </form>

@@ -20,8 +20,8 @@ interface Message {
 }
 
 const QUICK_PROMPTS = [
-    { label: 'Log Water', text: 'Log 500ml of water' },
-    { label: 'Log Sleep', text: 'I slept for 8 hours' },
+    { label: 'Sleep Impact', text: 'How does my recent sleep quality affect my workout performance?' },
+    { label: 'Diet Review', text: 'Are there any habits in my current diet that are killing my progress?' },
     { label: 'Log Meal', text: 'I had 600 calories for lunch' },
     { label: 'Add Expense', text: 'I spent ₹1500 on groceries' }
 ];
