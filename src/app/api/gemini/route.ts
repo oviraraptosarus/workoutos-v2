@@ -10,6 +10,9 @@ export async function POST(req: Request) {
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
+        }
 
         const systemInstruction = `You are "Nova", an elite iOS Apple-style AI Assistant for "Workout OS".
 Your main job is to help the user with fitness, nutrition, app usage, or anything else they need.
@@ -81,13 +84,12 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                 }
 
                 // Call Google Gemini API
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': apiKey
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         systemInstruction: {

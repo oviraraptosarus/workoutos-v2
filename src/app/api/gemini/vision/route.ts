@@ -10,6 +10,9 @@ export async function POST(req: Request) {
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
+        }
 
         const systemInstruction = `You are a strict JSON-only API that extracts nutritional information from food labels and barcodes.
 Given an image of a food item, nutrition label, or barcode, extract the following:
@@ -42,13 +45,12 @@ Example response:
                 // Remove the data:image/jpeg;base64, prefix if present
                 const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
                 
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': apiKey
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         systemInstruction: {
