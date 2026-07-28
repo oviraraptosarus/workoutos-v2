@@ -30,7 +30,7 @@ import {
 const INITIAL_MEALS: MealItem[] = [];
 
 export default function DietPage() {
-    const [currentDateKey, setCurrentDateKey] = useState<string>(formatDateKey(new Date()));
+    const [currentDateKey, setCurrentDateKey] = useState<string>('');
     const [meals, setMeals] = useState<MealItem[]>([]);
     const [macroGoals, setMacroGoals] = useState<MacroGoals>({
         calories: 2200,
@@ -55,8 +55,8 @@ export default function DietPage() {
 
     // Initial load of macro goals and listen for global settings changes
     useEffect(() => {
-        const loadGoals = () => {
-            const localGoals = getMacroGoals();
+        const loadGoals = async () => {
+            const localGoals = await getMacroGoals();
             if (userProfile?.calorieGoal) {
                 localGoals.calories = userProfile.calorieGoal;
             }
@@ -68,8 +68,14 @@ export default function DietPage() {
         return () => window.removeEventListener('storage', loadGoals);
     }, [userProfile?.calorieGoal]);
 
+    // Initialize date to prevent hydration error
+    useEffect(() => {
+        setCurrentDateKey(formatDateKey(new Date()));
+    }, []);
+
     // Synchronize meals whenever currentDateKey changes
     useEffect(() => {
+        if (!currentDateKey) return;
         setIsLoaded(false);
         const load = async () => {
             const dbMeals = await getMealsForDate(currentDateKey);
@@ -77,18 +83,25 @@ export default function DietPage() {
             setIsLoaded(true);
         };
         load();
+
+        window.addEventListener('storage', load);
+        window.addEventListener('workout_os_diet_updated', load);
+        return () => {
+            window.removeEventListener('storage', load);
+            window.removeEventListener('workout_os_diet_updated', load);
+        };
     }, [currentDateKey]);
 
     // Save meals for selected currentDateKey whenever state updates
     useEffect(() => {
-        if (isLoaded) {
+        if (isLoaded && currentDateKey) {
             saveMealsForDate(currentDateKey, meals);
         }
     }, [meals, currentDateKey, isLoaded]);
 
-    const handleUpdateGoals = (newGoals: MacroGoals) => {
+    const handleUpdateGoals = async (newGoals: MacroGoals) => {
         setMacroGoals(newGoals);
-        saveMacroGoals(newGoals);
+        await saveMacroGoals(newGoals);
     };
 
     const handleOpenAddModal = (category: MealCategory) => {
@@ -125,8 +138,8 @@ export default function DietPage() {
         setMeals((prev) => [...prev, ...newItems]);
     };
 
-    const handleApplyWaterIntake = (amountMl: number) => {
-        const currentWater = getWaterForDate(currentDateKey);
+    const handleApplyWaterIntake = async (amountMl: number) => {
+        const currentWater = await getWaterForDate(currentDateKey);
         saveWaterForDate(currentDateKey, currentWater + amountMl);
     };
 
@@ -148,8 +161,8 @@ export default function DietPage() {
         setMeals((prev) => [...prev, ...copied]);
     };
 
-    const handleExportSummaryText = () => {
-        const waterMl = getWaterForDate(currentDateKey);
+    const handleExportSummaryText = async () => {
+        const waterMl = await getWaterForDate(currentDateKey);
         const summaryText = exportDailySummaryText(currentDateKey, meals, waterMl);
         navigator.clipboard.writeText(summaryText);
     };
@@ -197,6 +210,8 @@ export default function DietPage() {
     };
 
     const dynamicTDEE = calculateTDEE();
+
+    if (!currentDateKey) return null; // Avoid render until hydration
 
     return (
         <AppLayout>
@@ -254,6 +269,7 @@ export default function DietPage() {
                     onCopyYesterdayMeals={handleCopyYesterdayMeals}
                     onExportSummaryText={handleExportSummaryText}
                     onOpenRecipeModal={() => setIsRecipeModalOpen(true)}
+                    onOpenAIMealModal={handleOpenAIModal}
                 />
 
                 {/* Hydration / Water Tracker */}

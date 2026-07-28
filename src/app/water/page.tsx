@@ -6,6 +6,7 @@ import { Droplet, ArrowLeft, Plus, History, Trash2, CheckCircle2 } from 'lucide-
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { supabase } from '@/lib/supabaseClient';
 
 interface WaterLog {
     id: number;
@@ -27,20 +28,32 @@ export default function WaterPage() {
     const [customAmount, setCustomAmount] = useState('300');
     const [isClient, setIsClient] = useState(false);
 
-    // Load from localStorage whenever date changes
+    // Load from Supabase whenever date changes
     useEffect(() => {
         setIsClient(true);
         if (!selectedDate) return;
 
-        const savedMl = localStorage.getItem(`${WATER_ML_PREFIX}${selectedDate}`);
-        setCurrentMl(savedMl ? parseInt(savedMl, 10) : 0);
+        const loadLogs = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-        const savedLogs = localStorage.getItem(`${WATER_LOGS_PREFIX}${selectedDate}`);
-        if (savedLogs) {
-            try { setLogs(JSON.parse(savedLogs)); } catch { setLogs([]); }
-        } else {
-            setLogs([]);
-        }
+            const { data } = await supabase
+                .from('daily_logs')
+                .select('water_ml_total, water_logs')
+                .eq('user_id', user.id)
+                .eq('date', selectedDate)
+                .maybeSingle();
+
+            setCurrentMl(data?.water_ml_total || 0);
+            
+            if (data?.water_logs) {
+                setLogs(data.water_logs as WaterLog[]);
+            } else {
+                setLogs([]);
+            }
+        };
+
+        loadLogs();
     }, [selectedDate]);
 
     const percentage = Math.min((currentMl / goalMl) * 100, 100);
@@ -48,34 +61,45 @@ export default function WaterPage() {
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-    const handleAdd = (amount: number, type: string) => {
+    const syncToSupabase = async (newMl: number, newLogs: WaterLog[]) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !selectedDate) return;
+
+        await supabase.from('daily_logs').upsert(
+            { 
+                user_id: user.id, 
+                date: selectedDate, 
+                water_ml_total: newMl,
+                water_logs: newLogs
+            }, 
+            { onConflict: 'user_id,date' }
+        );
+        window.dispatchEvent(new Event('storage'));
+    };
+
+    const handleAdd = async (amount: number, type: string) => {
         if (!selectedDate) return;
         const newMl = currentMl + amount;
         setCurrentMl(newMl);
-        localStorage.setItem(`${WATER_ML_PREFIX}${selectedDate}`, newMl.toString());
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const newLog: WaterLog = { id: Date.now(), amount, time: timeStr, type };
         const newLogs = [newLog, ...logs];
         setLogs(newLogs);
-        localStorage.setItem(`${WATER_LOGS_PREFIX}${selectedDate}`, JSON.stringify(newLogs));
 
-        // Sync dashboard WaterCard
-        window.dispatchEvent(new Event('storage'));
+        await syncToSupabase(newMl, newLogs);
     };
 
-    const handleDelete = (id: number, amount: number) => {
+    const handleDelete = async (id: number, amount: number) => {
         if (!selectedDate) return;
         const newLogs = logs.filter(log => log.id !== id);
         setLogs(newLogs);
-        localStorage.setItem(`${WATER_LOGS_PREFIX}${selectedDate}`, JSON.stringify(newLogs));
 
         const newMl = Math.max(0, currentMl - amount);
         setCurrentMl(newMl);
-        localStorage.setItem(`${WATER_ML_PREFIX}${selectedDate}`, newMl.toString());
 
-        window.dispatchEvent(new Event('storage'));
+        await syncToSupabase(newMl, newLogs);
     };
 
     if (!isClient) return null;

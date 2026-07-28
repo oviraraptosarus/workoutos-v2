@@ -13,13 +13,19 @@ User Profile Context:
 - Full Name: ${userProfile?.fullName || 'User'}
 - Fitness Goal: ${userProfile?.fitnessGoal || 'General Health'}
 
-Analyze the trends in their water intake, sleep, nutrition (calories), tasks completed, and budget (income vs expenses).
+Analyze the trends in their water intake, sleep, nutrition (calories and macros), tasks completed, and budget (income vs expenses).
+Pay special attention to the new granular data provided:
+- \`water_logs\`: detailed logs with timestamps
+- \`sleep_logs\`: segment data (e.g., Core Sleep, Naps)
+- \`transaction_type\`: differentiates between 'income' and 'expense' in the transactions array
+- \`tasks\`: planner tasks completed vs pending
+- \`target_config\`: user's macro nutrient targets
 
 Output the report in crisp, beautiful Markdown with the following sections:
 1. **Executive Summary**: A quick, punchy 2-sentence summary of how they did over the last 14 days. Use an encouraging tone.
-2. **📈 Fitness & Health Trends**: Analyze their sleep, hydration, and nutrition. Call out if they are consistently hitting targets or missing them. (e.g., "Your sleep averaged 6 hours, which is too low for optimal recovery").
-3. **💰 Financial Overview**: Analyze their spending vs income. Are they saving? Did they spend too much on a specific category?
-4. **🎯 Nova's Recommendations**: 3 actionable, highly specific tips to improve over the next 14 days based on the data.
+2. **📈 Fitness & Health Trends**: Analyze their sleep patterns (core vs naps), hydration timings, and nutrition (macros). Call out if they are consistently hitting targets or missing them.
+3. **💰 Financial Overview**: Analyze their spending vs income using the transaction types. Are they saving? Did they spend too much on a specific category?
+4. **🎯 Nova's Recommendations**: 3 actionable, highly specific tips to improve over the next 14 days based on the granular data.
 
 Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your report"). Just output the raw Markdown starting with a nice Title (e.g., "# 📊 Bi-Weekly Progress Report").`;
 

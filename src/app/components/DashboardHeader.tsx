@@ -23,7 +23,7 @@ export default function DashboardHeader() {
     const [dateStr, setDateStr] = useState('');
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
-    const [profileTab, setProfileTab] = useState<'profile' | 'preferences' | 'cache'>('profile');
+    const [profileTab, setProfileTab] = useState<'profile' | 'preferences' | 'config'>('profile');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [reportReady, setReportReady] = useState(false);

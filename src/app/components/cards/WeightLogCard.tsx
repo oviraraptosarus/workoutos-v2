@@ -74,6 +74,8 @@ export default function WeightLogCard() {
             setChartData(currentWeekLogs);
         };
         load();
+        window.addEventListener('storage', load);
+        return () => window.removeEventListener('storage', load);
     }, [userProfile?.targetWeight]);
 
     const handleLog = async (e: React.FormEvent) => {
@@ -103,7 +105,7 @@ export default function WeightLogCard() {
             }
 
             // Update profiles current_weight
-            await supabase.from('profiles').update({ current_weight: newWeight }).eq('id', user.id);
+            await supabase.from('profiles').upsert({ id: user.id, current_weight: newWeight }, { onConflict: 'id' });
 
             let updated = [...chartData];
             // If they already logged today, update it instead of adding duplicate

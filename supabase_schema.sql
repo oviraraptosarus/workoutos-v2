@@ -12,10 +12,12 @@ CREATE TABLE public.profiles (
   current_weight numeric,
   target_weight numeric,
   gender text CHECK (gender IN ('male', 'female', 'other')),
-  goals text[],
+  fitness_goal text,
   water_goal_ml integer,
   calorie_goal integer,
+  sleep_goal numeric,
   monthly_budget numeric,
+  monthly_income numeric,
   enable_financial_reminders boolean DEFAULT true,
   currency text DEFAULT 'INR',
   notification_prefs jsonb DEFAULT '{}'::jsonb,
@@ -43,7 +45,9 @@ CREATE TABLE public.daily_logs (
   sleep_bedtime time,
   sleep_waketime time,
   sleep_hours numeric,
+  sleep_logs jsonb DEFAULT '[]'::jsonb,
   water_ml_total integer DEFAULT 0,
+  water_logs jsonb DEFAULT '[]'::jsonb,
   steps integer DEFAULT 0,
   energy_rating integer CHECK (energy_rating BETWEEN 1 AND 10),
   mood_rating integer CHECK (mood_rating BETWEEN 1 AND 10),
@@ -98,6 +102,7 @@ CREATE TABLE public.expenses (
   amount numeric NOT NULL,
   quantity integer DEFAULT 1,
   protein_g numeric,
+  transaction_type text CHECK (transaction_type IN ('income', 'expense')) DEFAULT 'expense',
   created_at timestamp with time zone DEFAULT now()
 );
 
@@ -211,3 +216,22 @@ CREATE POLICY "Users can view own app_state" ON public.app_state FOR SELECT USIN
 CREATE POLICY "Users can insert own app_state" ON public.app_state FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own app_state" ON public.app_state FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own app_state" ON public.app_state FOR DELETE USING (auth.uid() = user_id);
+
+-- 11. Tasks (Planner)
+CREATE TABLE public.tasks (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  date date NOT NULL,
+  title text NOT NULL,
+  description text,
+  due_date text,
+  subtasks jsonb DEFAULT '[]'::jsonb,
+  completed boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now()
+);
+
+ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own tasks" ON public.tasks FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own tasks" ON public.tasks FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own tasks" ON public.tasks FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own tasks" ON public.tasks FOR DELETE USING (auth.uid() = user_id);

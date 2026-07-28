@@ -20,7 +20,7 @@ export default function FloatingActionMenu() {
     };
 
     return (
-        <div className="fixed bottom-28 right-5 sm:right-8 z-50 flex flex-col items-end">
+        <div className="fixed bottom-28 right-5 sm:bottom-6 sm:right-8 z-50 flex flex-col items-end">
             {/* The expanded menu */}
             <div 
                 className={`flex flex-col items-end gap-3 mb-4 transition-all duration-300 origin-bottom ${

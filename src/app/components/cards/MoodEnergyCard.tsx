@@ -24,21 +24,28 @@ export default function MoodEnergyCard() {
     // Load from localStorage when date changes
     useEffect(() => {
         if (!selectedDate) return;
-        try {
-            const raw = localStorage.getItem(`${MOOD_PREFIX}${selectedDate}`);
-            if (raw) {
-                const data: MoodState = JSON.parse(raw);
-                setMood(data.mood ?? 7);
-                setEnergy(data.energy ?? 5);
-                setHunger(data.hunger ?? 0);
-                setCaffeine(data.caffeine ?? 2);
-            } else {
-                // Reset to defaults for new day
+        const load = () => {
+            try {
+                const raw = localStorage.getItem(`${MOOD_PREFIX}${selectedDate}`);
+                if (raw) {
+                    const data: MoodState = JSON.parse(raw);
+                    setMood(data.mood ?? 7);
+                    setEnergy(data.energy ?? 5);
+                    setHunger(data.hunger ?? 0);
+                    setCaffeine(data.caffeine ?? 2);
+                } else {
+                    // Reset to defaults for new day
+                    setMood(7); setEnergy(5); setHunger(0); setCaffeine(2);
+                }
+            } catch {
                 setMood(7); setEnergy(5); setHunger(0); setCaffeine(2);
             }
-        } catch {
-            setMood(7); setEnergy(5); setHunger(0); setCaffeine(2);
-        }
+        };
+
+        load();
+
+        window.addEventListener('storage', load);
+        return () => window.removeEventListener('storage', load);
     }, [selectedDate]);
 
     const handleSave = () => {

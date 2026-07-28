@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Plus, ChevronDown, Download } from 'lucide-react';
 import TransactionModal from './TransactionModal';
-import { getIncome, saveIncome, getExpenses, saveExpenses } from '../services/budgetStorage';
+import { addTransaction, IncomeItem, ExpenseItem } from '../services/budgetStorage';
 
 export default function BudgetHeader() {
     const [modalType, setModalType] = useState<'income' | 'expense' | null>(null);
@@ -13,16 +13,12 @@ export default function BudgetHeader() {
     const currentDay = today.getDate();
     const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
-    const handleAddIncome = async (item: any) => {
-        const income = await getIncome();
-        const newItem = { ...item, id: Date.now().toString() };
-        await saveIncome([...income, newItem]);
+    const handleAddIncome = async (item: Omit<IncomeItem, 'id'>) => {
+        await addTransaction(item, 'income');
     };
 
-    const handleAddExpense = async (item: any) => {
-        const expenses = await getExpenses();
-        const newItem = { ...item, id: Date.now().toString() };
-        await saveExpenses([...expenses, newItem]);
+    const handleAddExpense = async (item: Omit<ExpenseItem, 'id'>) => {
+        await addTransaction(item, 'expense');
     };
 
     return (

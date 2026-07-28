@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, CalendarDays, Sparkles, TrendingUp, AlertCircle, Download, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { supabase } from '@/lib/supabaseClient';
 
 interface BiWeeklyReportModalProps {
     isOpen: boolean;
@@ -72,9 +73,25 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
         setReport(null);
 
         try {
-            // Mock backend API historical fetch (we are no longer checking localStorage for daily data)
-            const historicalData: any = {
-                note: "Mock data sent to backend since local cache was stripped. Waiting for Supabase integration."
+            const dEnd = new Date();
+            const dStart = new Date();
+            dStart.setDate(dStart.getDate() - 14);
+            const startStr = dStart.toISOString().split('T')[0];
+            const endStr = dEnd.toISOString().split('T')[0];
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("User not found");
+
+            const [logsRes, expensesRes, tasksRes] = await Promise.all([
+                supabase.from('daily_logs').select('*').eq('user_id', user.id).gte('date', startStr).lte('date', endStr),
+                supabase.from('expenses').select('*').eq('user_id', user.id).gte('date', startStr).lte('date', endStr),
+                supabase.from('tasks').select('*').eq('user_id', user.id).gte('date', startStr).lte('date', endStr)
+            ]);
+
+            const historicalData = {
+                dailyLogs: logsRes.data || [],
+                transactions: expensesRes.data || [],
+                tasks: tasksRes.data || []
             };
 
             const res = await fetch('/api/gemini/report', {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat } from 'lucide-react';
+import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat, Sparkles } from 'lucide-react';
 import { MealItem, MealCategory } from '../types';
 
 interface MealLoggerProps {
@@ -12,6 +12,7 @@ interface MealLoggerProps {
     onCopyYesterdayMeals?: () => void;
     onExportSummaryText?: () => void;
     onOpenRecipeModal?: () => void;
+    onOpenAIMealModal?: () => void;
 }
 
 interface CategoryConfig {
@@ -35,6 +36,7 @@ export default function MealLogger({
     onCopyYesterdayMeals,
     onExportSummaryText,
     onOpenRecipeModal,
+    onOpenAIMealModal,
 }: MealLoggerProps) {
     const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
     const [copiedNotice, setCopiedNotice] = useState(false);
@@ -177,6 +179,16 @@ export default function MealLogger({
                                     <span className="text-xs font-black text-cyan-900 tracking-wider">
                                         {totalCategoryBites} BITES
                                     </span>
+                                )}
+
+                                {name === 'Snacks' && onOpenAIMealModal && (
+                                    <button
+                                        onClick={onOpenAIMealModal}
+                                        className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap"
+                                        title="AI Voice & Natural Language Meal Logger"
+                                    >
+                                        <Sparkles size={14} className="shrink-0" /> <span className="hidden sm:inline">AI Log</span>
+                                    </button>
                                 )}
 
                                 <button

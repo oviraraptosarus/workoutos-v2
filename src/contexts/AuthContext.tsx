@@ -25,6 +25,7 @@ export interface UserProfile {
     dob?: string;
     heightCm: number;
     gender: 'male' | 'female' | 'other';
+    sleepGoal?: number;
     createdAt?: string;
     updatedAt: string;
 }
@@ -39,6 +40,8 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
     waterGoalMl: 3000,
     calorieGoal: 2600,
     monthlyBudget: 1200,
+    monthlyIncome: 2000,
+    sleepGoal: 8,
     enableFinancialReminders: true,
     heightCm: 170,
     gender: 'male',
@@ -119,12 +122,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         fullName: data.full_name || '',
                         username: data.username || '',
                         email: data.email || user.email || '',
-                        fitnessGoal: data.goals?.[0] || DEFAULT_USER_PROFILE.fitnessGoal,
+                        fitnessGoal: data.fitness_goal || DEFAULT_USER_PROFILE.fitnessGoal,
                         currentWeight: Number(data.current_weight) || DEFAULT_USER_PROFILE.currentWeight,
                         targetWeight: Number(data.target_weight) || DEFAULT_USER_PROFILE.targetWeight,
                         waterGoalMl: data.water_goal_ml || localWaterGoalMl,
                         calorieGoal: data.calorie_goal || localCalorieGoal,
+                        sleepGoal: data.sleep_goal || DEFAULT_USER_PROFILE.sleepGoal,
                         monthlyBudget: data.monthly_budget || localMonthlyBudget,
+                        monthlyIncome: data.monthly_income || DEFAULT_USER_PROFILE.monthlyIncome,
                         enableFinancialReminders: data.enable_financial_reminders !== false, // default true
                         dob: data.dob,
                         heightCm: Number(data.height_cm) || DEFAULT_USER_PROFILE.heightCm,
@@ -154,20 +159,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserProfile(next);
         
         if (user) {
-            const { error } = await supabase.from('profiles').update({
+            const { error } = await supabase.from('profiles').upsert({
+                id: user.id,
+                email: next.email || user.email || '',
                 full_name: next.fullName,
                 username: next.username,
                 current_weight: next.currentWeight,
                 target_weight: next.targetWeight,
+                fitness_goal: next.fitnessGoal,
                 enable_financial_reminders: next.enableFinancialReminders,
                 dob: next.dob,
                 height_cm: next.heightCm,
                 gender: next.gender,
                 calorie_goal: next.calorieGoal,
+                sleep_goal: next.sleepGoal,
                 monthly_budget: next.monthlyBudget,
+                monthly_income: next.monthlyIncome,
                 water_goal_ml: next.waterGoalMl,
                 updated_at: next.updatedAt
-            }).eq('id', user.id);
+            }, { onConflict: 'id' });
             
             if (error) {
                 console.error("Failed to update profile in Supabase:", error);

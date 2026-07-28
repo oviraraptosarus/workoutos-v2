@@ -50,6 +50,9 @@ export default function CommandPaletteModal() {
 
     // Global Ctrl+K / Cmd+K keyboard shortcut listener
     useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-command-palette', handleOpen);
+
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
@@ -58,7 +61,10 @@ export default function CommandPaletteModal() {
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('open-command-palette', handleOpen);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
 
     const commands: NavCommand[] = [
@@ -127,19 +133,6 @@ export default function CommandPaletteModal() {
 
     return (
         <>
-            {/* Floating "?" Help Button (Bottom-Left) */}
-            <button
-                onClick={() => setIsOpen(true)}
-                className="fixed bottom-28 left-5 sm:bottom-6 sm:left-6 z-[80] p-3 rounded-full bg-stone-900 text-white shadow-xl hover:bg-emerald-600 transition-all btn-press flex items-center gap-2 text-xs font-bold border border-stone-700"
-                title="Open Command Palette & Help Center (Ctrl+K)"
-            >
-                <HelpCircle size={18} className="text-emerald-400" />
-                <span className="hidden sm:inline">Help & Navigator</span>
-                <kbd className="hidden sm:inline-block bg-stone-800 text-[10px] px-1.5 py-0.5 rounded font-mono text-stone-300 border border-stone-700">
-                    Ctrl+K
-                </kbd>
-            </button>
-
             {/* Modal Overlay */}
             {isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">

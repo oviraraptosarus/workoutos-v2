@@ -5,8 +5,7 @@ import { Target, CheckCircle2, Circle, Calendar, ChevronRight } from 'lucide-rea
 import Link from 'next/link';
 import { Task } from '@/app/planner/page';
 import { useDate } from '@/contexts/DateContext';
-
-const TASKS_KEY = 'workout_os_tasks';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function DashboardTasks() {
     const { selectedDate } = useDate();
@@ -14,12 +13,22 @@ export default function DashboardTasks() {
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
 
-    const loadTasks = () => {
+    const loadTasks = async () => {
         if (typeof window === 'undefined') return;
-        try {
-            const saved = localStorage.getItem(TASKS_KEY);
-            setTasks(saved ? JSON.parse(saved) : []);
-        } catch {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { data } = await supabase.from('tasks').select('*').eq('user_id', user.id).eq('date', selectedDate || new Date().toISOString().split('T')[0]);
+        if (data) {
+            setTasks(data.map(d => ({
+                id: d.id,
+                title: d.title,
+                description: d.description || '',
+                dueDate: d.due_date || '',
+                subTasks: d.subtasks || [],
+                completed: d.completed || false
+            })));
+        } else {
             setTasks([]);
         }
     };
@@ -32,13 +41,6 @@ export default function DashboardTasks() {
         const handleUpdate = () => loadTasks();
         window.addEventListener('workout_os_tasks_updated', handleUpdate);
         
-        // Listen for storage events (if changed from another tab)
-        const handleStorage = (e: StorageEvent | Event) => {
-            const key = (e as StorageEvent).key;
-            if (!key || key === TASKS_KEY) loadTasks();
-        };
-        window.addEventListener('storage', handleStorage);
-        
         const handleHighlight = (e: Event) => {
             const customEvent = e as CustomEvent;
             if (customEvent.detail?.target === 'tasks') {
@@ -50,15 +52,16 @@ export default function DashboardTasks() {
 
         return () => {
             window.removeEventListener('workout_os_tasks_updated', handleUpdate);
-            window.removeEventListener('storage', handleStorage);
             window.removeEventListener('workout_os_highlight', handleHighlight);
         };
     }, [selectedDate]);
 
-    const toggleTask = (taskId: string) => {
+    const toggleTask = async (taskId: string) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
         const updated = tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t);
         setTasks(updated);
-        localStorage.setItem(TASKS_KEY, JSON.stringify(updated));
+        await supabase.from('tasks').update({ completed: !task.completed }).eq('id', taskId);
         window.dispatchEvent(new Event('workout_os_tasks_updated'));
     };
 

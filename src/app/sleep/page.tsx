@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/lib/supabaseClient';
+import EnhancedSleepLogger from './components/EnhancedSleepLogger';
+import EndOfDayReflection from './components/EndOfDayReflection';
 
 export default function SleepPage() {
     const { userProfile } = useAuth();
@@ -30,18 +32,6 @@ export default function SleepPage() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // Load today's logs from local (fine-grained)
-            const savedLogs = localStorage.getItem(`workout_os_sleep_logs_${selectedDate}`);
-            if (savedLogs) {
-                try {
-                    setLogs(JSON.parse(savedLogs));
-                } catch (e) {
-                    setLogs([]);
-                }
-            } else {
-                setLogs([]);
-            }
-
             // Fetch last 7 days of sleep from Supabase
             const dEnd = new Date();
             const dStart = new Date();
@@ -52,14 +42,21 @@ export default function SleepPage() {
 
             const { data: dbLogs } = await supabase
                 .from('daily_logs')
-                .select('date, sleep_hours')
+                .select('date, sleep_hours, sleep_logs')
                 .eq('user_id', user.id)
                 .gte('date', startStr)
                 .lte('date', endStr);
 
             const dbMap = new Map();
             if (dbLogs) {
-                dbLogs.forEach(l => dbMap.set(l.date, l.sleep_hours));
+                dbLogs.forEach(l => {
+                    dbMap.set(l.date, l.sleep_hours);
+                    if (l.date === selectedDate && l.sleep_logs) {
+                        setLogs(l.sleep_logs as any[]);
+                    } else if (l.date === selectedDate) {
+                        setLogs([]);
+                    }
+                });
             }
 
             const data = [];
@@ -84,37 +81,32 @@ export default function SleepPage() {
         loadSleepData();
     }, [selectedDate]);
 
-    const saveToSupabase = async (newTotal: number) => {
+    const saveToSupabase = async (newTotal: number, newLogs: any[]) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user || !selectedDate) return;
         
-        // check if row exists
-        const { data: existing } = await supabase
-            .from('daily_logs')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('date', selectedDate)
-            .single();
-            
-        if (existing) {
-            await supabase.from('daily_logs').update({ sleep_hours: newTotal }).eq('id', existing.id);
-        } else {
-            await supabase.from('daily_logs').insert({ user_id: user.id, date: selectedDate, sleep_hours: newTotal });
-        }
+        await supabase.from('daily_logs').upsert(
+            { 
+                user_id: user.id, 
+                date: selectedDate, 
+                sleep_hours: newTotal,
+                sleep_logs: newLogs
+            },
+            { onConflict: 'user_id,date' }
+        );
     };
 
-    const handleAdd = async (amount: number, type: string) => {
+    const handleAdd = async (amount: number, type: string, details?: any) => {
         if (!selectedDate) return;
         const newTotal = currentSleep + amount;
         setCurrentSleep(newTotal);
         
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const newLogs = [{ id: Date.now(), amount, time: timeStr, type }, ...logs];
+        const newLogs = [{ id: Date.now(), amount, time: timeStr, type, details }, ...logs];
         setLogs(newLogs);
-        localStorage.setItem(`workout_os_sleep_logs_${selectedDate}`, JSON.stringify(newLogs));
         
-        await saveToSupabase(newTotal);
+        await saveToSupabase(newTotal, newLogs);
         window.dispatchEvent(new Event('storage')); // Sync to dashboard
         
         // Update chart data for today
@@ -132,12 +124,11 @@ export default function SleepPage() {
         if (!selectedDate) return;
         const newLogs = logs.filter(log => log.id !== id);
         setLogs(newLogs);
-        localStorage.setItem(`workout_os_sleep_logs_${selectedDate}`, JSON.stringify(newLogs));
         
         const newTotal = Math.max(0, currentSleep - amount);
         setCurrentSleep(newTotal);
         
-        await saveToSupabase(newTotal);
+        await saveToSupabase(newTotal, newLogs);
         window.dispatchEvent(new Event('storage'));
         
         setChartData(prev => {
@@ -254,46 +245,8 @@ export default function SleepPage() {
                     {/* Quick Add & History */}
                     <div className="space-y-6">
                         
-                        <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm">
-                            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-4 flex items-center gap-2">
-                                <Plus size={18} className="text-indigo-500" /> Log Sleep
-                            </h2>
-                            <div className="space-y-3">
-                                <button 
-                                    onClick={() => handleAdd(8, 'Night Sleep')}
-                                    className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 rounded-2xl p-3 flex items-center justify-between transition-colors font-bold btn-press"
-                                >
-                                    <span className="flex items-center gap-2"><Moon size={16} /> Night Sleep (8h)</span>
-                                    <span>+ 8h</span>
-                                </button>
-                                <button 
-                                    onClick={() => handleAdd(0.5, 'Power Nap')}
-                                    className="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-100 rounded-2xl p-3 flex items-center justify-between transition-colors font-bold btn-press"
-                                >
-                                    <span className="flex items-center gap-2"><Moon size={16} /> Power Nap (30m)</span>
-                                    <span>+ 0.5h</span>
-                                </button>
-                                
-                                <div className="pt-3 border-t border-gray-100 flex items-center gap-2">
-                                    <div className="flex-1 relative">
-                                        <input 
-                                            type="number" 
-                                            value={customSleep} 
-                                            onChange={(e) => setCustomSleep(e.target.value)}
-                                            step="0.5"
-                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 font-bold text-gray-900 focus:outline-none focus:border-indigo-400"
-                                        />
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">hrs</span>
-                                    </div>
-                                    <button 
-                                        onClick={() => handleAdd(parseFloat(customSleep) || 0, 'Custom Sleep')}
-                                        className="bg-gray-900 hover:bg-black text-white font-bold p-3 rounded-xl flex items-center justify-center transition-colors btn-press shrink-0"
-                                    >
-                                        <Plus size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <EnhancedSleepLogger onLogSaved={(data) => handleAdd(data.amount, data.type, data.details)} />
+
 
                         <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-4 flex items-center gap-2">
@@ -324,6 +277,8 @@ export default function SleepPage() {
 
                     </div>
                 </div>
+
+                <EndOfDayReflection />
 
             </div>
         </AppLayout>

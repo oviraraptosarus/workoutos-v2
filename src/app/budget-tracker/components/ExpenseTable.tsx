@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import { getExpenses, saveExpenses, ExpenseItem } from '../services/budgetStorage';
+import { getExpenses, deleteTransaction, ExpenseItem } from '../services/budgetStorage';
 
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
@@ -31,10 +31,10 @@ export default function ExpenseTable() {
 
     const totalExpenses = expenses.reduce((acc, curr) => acc + curr.amount, 0);
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
+        await deleteTransaction(id);
         const newExpenses = expenses.filter(i => i.id !== id);
         setExpenses(newExpenses);
-        saveExpenses(newExpenses);
     };
 
     return (

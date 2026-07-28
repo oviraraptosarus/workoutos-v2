@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { getExpenses, saveExpenses } from '../../budget-tracker/services/budgetStorage';
+import { addTransaction } from '../../budget-tracker/services/budgetStorage';
 
 interface LogExpenseModalProps {
     isOpen: boolean;
@@ -17,26 +17,20 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
 
     if (!isOpen) return null;
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!amount || !description || !category) return;
 
-        const expenses = getExpenses();
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
-        saveExpenses([
-            ...expenses, 
-            {
-                id: Date.now().toString(),
-                date,
-                description,
-                category,
-                amount: parseFloat(amount),
-                protein: null,
-                costPerG: null,
-                type: 'planned'
-            }
-        ]);
+        await addTransaction({
+            date,
+            description,
+            category,
+            amount: parseFloat(amount),
+            protein: null,
+            costPerG: null,
+            type: 'planned'
+        }, 'expense');
 
         setAmount('');
         setDescription('');

@@ -13,13 +13,20 @@ export default function NutritionCard() {
     const [mealName, setMealName] = useState('');
     const [mealCals, setMealCals] = useState('');
     const [goalCals, setGoalCals] = useState(2600);
+    const [macros, setMacros] = useState({ protein: 0, carbs: 0, fat: 0 });
 
     React.useEffect(() => {
         if (!selectedDate) return;
-        const loadNutrition = () => {
-            const saved = localStorage.getItem(`workout_os_nutrition_${selectedDate}`);
-            if (saved) setCurrentCals(parseInt(saved, 10));
-            else setCurrentCals(0); // No data yet — user hasn't logged
+        const loadNutrition = async () => {
+            import('@/app/diet/services/dietStorage').then(async ({ getMealsForDate }) => {
+                const meals = await getMealsForDate(selectedDate);
+                const totalCals = meals.reduce((acc, m) => acc + (m.calories || 0), 0);
+                const totalP = meals.reduce((acc, m) => acc + (m.protein || 0), 0);
+                const totalC = meals.reduce((acc, m) => acc + (m.carbs || 0), 0);
+                const totalF = meals.reduce((acc, m) => acc + (m.fat || 0), 0);
+                setCurrentCals(totalCals);
+                setMacros({ protein: totalP, carbs: totalC, fat: totalF });
+            });
         };
 
         const loadGoal = () => {
@@ -32,9 +39,11 @@ export default function NutritionCard() {
         loadGoal();
         
         window.addEventListener('storage', loadNutrition);
+        window.addEventListener('workout_os_diet_updated', loadNutrition);
         window.addEventListener('storage', loadGoal);
         return () => {
             window.removeEventListener('storage', loadNutrition);
+            window.removeEventListener('workout_os_diet_updated', loadNutrition);
             window.removeEventListener('storage', loadGoal);
         };
     }, [selectedDate, isToday, userProfile]);
@@ -55,8 +64,8 @@ export default function NutritionCard() {
         e.preventDefault();
         const cals = Number(mealCals);
         if (!isNaN(cals) && cals > 0 && selectedDate) {
-            import('@/app/diet/services/dietStorage').then(({ getMealsForDate, saveMealsForDate }) => {
-                const meals = getMealsForDate(selectedDate, []);
+            import('@/app/diet/services/dietStorage').then(async ({ getMealsForDate, saveMealsForDate }) => {
+                const meals = await getMealsForDate(selectedDate);
                 meals.push({
                     id: Date.now().toString(),
                     name: mealName.trim() || 'Quick Log',
@@ -69,12 +78,15 @@ export default function NutritionCard() {
                     sugar: 0,
                     icon: '⚡'
                 });
-                saveMealsForDate(selectedDate, meals);
+                await saveMealsForDate(selectedDate, meals);
+                // Trigger reload
+                window.dispatchEvent(new Event('storage'));
+                window.dispatchEvent(new Event('workout_os_diet_updated'));
+                setIsLogging(false);
+                setMealName('');
+                setMealCals('');
             });
         }
-        setIsLogging(false);
-        setMealName('');
-        setMealCals('');
     };
 
     return (
@@ -116,18 +128,18 @@ export default function NutritionCard() {
 
             {/* Blurred Macros & Floating Button */}
             <div className="mt-auto relative pt-6">
-                <div className="grid grid-cols-3 gap-2 text-center pb-2 opacity-30 blur-[2px] select-none">
+                <div className="grid grid-cols-3 gap-2 text-center pb-2">
                     <div>
                         <span className="text-gray-400 block text-[11px] font-medium">Protein</span>
-                        <span className="font-bold text-[#f97316]">105g</span>
+                        <span className="font-bold text-[#f97316]">{macros.protein}g</span>
                     </div>
                     <div>
                         <span className="text-gray-400 block text-[11px] font-medium">Carbs</span>
-                        <span className="font-bold text-gray-800 dark:text-gray-200">120g</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">{macros.carbs}g</span>
                     </div>
                     <div>
                         <span className="text-gray-400 block text-[11px] font-medium">Fats</span>
-                        <span className="font-bold text-gray-800 dark:text-gray-200">35g</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">{macros.fat}g</span>
                     </div>
                 </div>
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { X, User, Save, Trash2, Database, Settings, LogOut, CheckCircle2, Ruler, Download, Upload, FileJson } from 'lucide-react';
+import { X, User, Save, Trash2, Database, Settings, LogOut, CheckCircle2, Ruler, Download, Upload, FileJson, HelpCircle, Sparkles } from 'lucide-react';
 import clsx from 'clsx';
 
 interface UserProfileModalProps {
@@ -177,6 +177,16 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                     >
                         <FileJson size={14} /> Import / Export
                     </button>
+                    <button 
+                        type="button"
+                        onClick={() => {
+                            onClose();
+                            window.dispatchEvent(new Event('open-command-palette'));
+                        }}
+                        className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors text-gray-600 hover:bg-gray-50 dark:bg-slate-800 md:mt-auto border border-gray-100"
+                    >
+                        <HelpCircle size={14} /> Help & Navigation
+                    </button>
                 </div>
 
                 {/* Main Content */}
@@ -296,6 +306,16 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                             type="number"
                                             value={formData.calorieGoal === 0 ? '' : formData.calorieGoal !== undefined ? formData.calorieGoal : 2200}
                                             onChange={(e) => setFormData({ ...formData, calorieGoal: e.target.value === '' ? 0 : Number(e.target.value) })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        />
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Water Goal (ml)</label>
+                                        <input
+                                            type="number"
+                                            value={formData.waterGoalMl === 0 ? '' : formData.waterGoalMl !== undefined ? formData.waterGoalMl : 3000}
+                                            onChange={(e) => setFormData({ ...formData, waterGoalMl: e.target.value === '' ? 0 : Number(e.target.value) })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
                                         />
                                     </div>

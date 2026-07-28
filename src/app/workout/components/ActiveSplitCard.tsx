@@ -21,9 +21,51 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     const [newExSets, setNewExSets] = useState('');
     const [newExReps, setNewExReps] = useState('');
 
-    const [exercises, setExercises] = useState(
+    const [exercises, setExercises] = useState<any[]>(
         preset ? preset.exercises.map((e: any) => ({ ...e, completed: false })) : []
     );
+
+    // Sync state to LocalStorage when timer runs (for seconds)
+    useEffect(() => {
+        if (isTimerRunning && !isFinished) {
+            syncStateToStorage(exercises, isTimerRunning, elapsedSeconds, customTitle);
+        }
+    }, [isTimerRunning, elapsedSeconds, customTitle, isFinished]);
+
+    const syncStateToStorage = (exs: any[], running: boolean, secs: number, title: string) => {
+        localStorage.setItem('workout_os_active_session_state', JSON.stringify({
+            exercises: exs,
+            isTimerRunning: running,
+            elapsedSeconds: secs,
+            customTitle: title
+        }));
+        
+        // Sync to WorkoutCard.tsx format
+        const d = new Date();
+        const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        const syncFormat = exs.map((ex, i) => ({ id: i, name: ex.name, done: ex.completed }));
+        localStorage.setItem(`workout_os_workout_exercises_${todayKey}`, JSON.stringify(syncFormat));
+        window.dispatchEvent(new Event('storage'));
+    };
+
+    // Load state on mount if no preset
+    useEffect(() => {
+        if (!preset) {
+            const saved = localStorage.getItem('workout_os_active_session_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.isTimerRunning) {
+                        setExercises(parsed.exercises);
+                        setIsTimerRunning(parsed.isTimerRunning);
+                        setElapsedSeconds(parsed.elapsedSeconds);
+                        setCustomTitle(parsed.customTitle);
+                        if (onExitBuilder) onExitBuilder();
+                    }
+                } catch (e) {}
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (preset) {
@@ -57,6 +99,13 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         setNewExName('');
         setNewExSets('');
         setNewExReps('');
+    };
+
+    const toggleExercise = (idx: number) => {
+        const newEx = [...exercises];
+        newEx[idx].completed = !newEx[idx].completed;
+        setExercises(newEx);
+        syncStateToStorage(newEx, isTimerRunning, elapsedSeconds, customTitle);
     };
 
     const handleStartCustom = () => {
@@ -96,6 +145,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
             });
         }
         
+        localStorage.removeItem('workout_os_active_session_state');
         window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
     };
 
@@ -212,7 +262,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                     <div key={idx} className="flex flex-col p-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs transition-colors shadow-sm hover:bg-gray-100 group">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <button className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${ex.completed ? 'bg-emerald-500 border-emerald-600 text-white shadow-sm' : 'bg-gray-50 border-gray-300 text-transparent hover:border-gray-400'}`}>
+                                <button onClick={() => toggleExercise(idx)} className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${ex.completed ? 'bg-emerald-500 border-emerald-600 text-white shadow-sm' : 'bg-gray-50 border-gray-300 text-transparent hover:border-gray-400'}`}>
                                     <CheckCircle2 size={12} strokeWidth={3} className={ex.completed ? 'opacity-100' : 'opacity-0'} />
                                 </button>
                                 <span className={`font-bold text-gray-900 drop-shadow-sm ${ex.completed ? 'line-through text-gray-400' : ''}`}>{ex.name}</span>

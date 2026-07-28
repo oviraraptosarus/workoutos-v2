@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import nextDynamic from 'next/dynamic';
 import DashboardHeader from '@/app/components/DashboardHeader';
-import GeminiFoodAssistant from '@/app/components/GeminiFoodAssistant';
 import BentoGrid from '@/app/components/BentoGrid';
 import TouchGrassNudge from '@/app/components/TouchGrassNudge';
 import WeightLogCard from '@/app/components/cards/WeightLogCard';
@@ -17,6 +16,8 @@ import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
 const FloatingActionMenu = nextDynamic(() => import('@/app/components/FloatingActionMenu'), { ssr: false });
 const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
+const GlobalAICopilot = nextDynamic(() => import('@/components/GlobalAICopilot'), { ssr: false });
+const CommandPaletteModal = nextDynamic(() => import('@/app/components/CommandPaletteModal'), { ssr: false });
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
@@ -35,8 +36,6 @@ export default function Dashboard() {
       <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
         <DashboardHeader />
 
-        {/* Nova AI Copilot */}
-        <GeminiFoodAssistant />
 
         <BentoGrid />
 
@@ -60,6 +59,8 @@ export default function Dashboard() {
       <FloatingActionMenu />
       <BottomNav />
       <OnboardingTourModal />
+      <CommandPaletteModal />
+      <GlobalAICopilot />
     </div>
   );
 }

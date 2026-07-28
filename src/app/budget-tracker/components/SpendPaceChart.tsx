@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { getExpenses } from '../services/budgetStorage';
 
@@ -84,7 +84,7 @@ export default function SpendPaceChart() {
 
             <div className="w-full h-[200px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
+                    <ComposedChart data={chartData} margin={{ top: 5, right: 0, bottom: 0, left: -20 }}>
                         <defs>
                             <linearGradient id="purpleGradient" x1="0" x2="0" y1="0" y2="1">
                                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -134,7 +134,7 @@ export default function SpendPaceChart() {
                             activeDot={false}
                             name="budgetPace"
                         />
-                    </AreaChart>
+                    </ComposedChart>
                 </ResponsiveContainer>
             </div>
         </div>

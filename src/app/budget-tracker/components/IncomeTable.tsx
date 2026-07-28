@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import { getIncome, saveIncome, IncomeItem } from '../services/budgetStorage';
+import { getIncome, deleteTransaction, IncomeItem } from '../services/budgetStorage';
 
 export default function IncomeTable() {
     const [income, setIncome] = useState<IncomeItem[]>([]);
     const [highlight, setHighlight] = useState(false);
     
     useEffect(() => {
-        const load = () => setIncome(getIncome());
+        const load = async () => setIncome(await getIncome());
         load();
         
         window.addEventListener('workout_os_budget_updated', load);
@@ -31,10 +31,10 @@ export default function IncomeTable() {
 
     const totalIncome = income.reduce((acc, curr) => acc + curr.amount, 0);
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
+        await deleteTransaction(id);
         const newIncome = income.filter(i => i.id !== id);
         setIncome(newIncome);
-        saveIncome(newIncome);
     };
 
     return (

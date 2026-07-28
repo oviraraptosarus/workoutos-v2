@@ -42,24 +42,6 @@ export default function DietGaugeSummary({
                 </div>
 
                 <div className="flex items-center justify-center w-full sm:w-auto gap-2 text-gray-500 dark:text-gray-400 shrink-0">
-                    {onOpenAIMealModal && (
-                        <button
-                            id="tour-ai-log"
-                            onClick={onOpenAIMealModal}
-                            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white px-3 sm:px-4 py-2 rounded-full text-xs font-bold shadow-[0_4px_12px_rgba(16,185,129,0.3)] transition-all active:scale-95 whitespace-nowrap relative z-10 shrink-0"
-                            title="AI Voice & Natural Language Meal Logger"
-                        >
-                            <Sparkles size={14} className="shrink-0" /> <span className="hidden sm:inline">AI Voice & Text Log</span><span className="sm:hidden">AI Log</span>
-                        </button>
-                    )}
-
-                    <button
-                        onClick={onOpenAIMealModal}
-                        className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-slate-800/80 transition-colors text-gray-600 btn-press"
-                        title="Voice Search"
-                    >
-                        <Mic size={18} />
-                    </button>
                     <button
                         onClick={onOpenBarcodeScanner}
                         className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-slate-800/80 transition-colors text-gray-600 btn-press"

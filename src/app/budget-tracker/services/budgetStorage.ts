@@ -20,37 +20,36 @@ export interface ExpenseItem {
     type: string;
 }
 
-const INCOME_KEY = 'workout_os_budget_income';
-const EXPENSES_KEY = 'workout_os_budget_expenses';
-
 export const getIncome = async (): Promise<IncomeItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
     
-    // Fallback if we don't have an income table, use expenses with a specific category for now
-    // Actually, in CLAUDE.md schema, there is NO income table, just 'expenses'.
-    // We can assume income is just saved in expenses with amount as negative or a specific category.
-    // But since the previous schema used a local array for income, let's keep it local for now, or just return empty.
-    // Wait, let's just use localStorage for income since it's not in the Supabase schema provided!
-    if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem(INCOME_KEY);
-        if (saved) return JSON.parse(saved);
-    }
-    return [];
-};
-
-export const saveIncome = (items: IncomeItem[]) => {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(INCOME_KEY, JSON.stringify(items));
-        window.dispatchEvent(new Event('workout_os_budget_updated'));
-    }
+    const { data } = await supabase.from('expenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('transaction_type', 'income')
+        .order('created_at', { ascending: false });
+        
+    return data?.map(d => ({
+        id: d.id,
+        date: d.date,
+        description: d.description,
+        source: d.category,
+        amount: Number(d.amount),
+        type: 'one-off'
+    })) || [];
 };
 
 export const getExpenses = async (): Promise<ExpenseItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 
-    const { data } = await supabase.from('expenses').select('*').eq('user_id', user.id);
+    const { data } = await supabase.from('expenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('transaction_type', 'expense')
+        .order('created_at', { ascending: false });
+        
     return data?.map(d => ({
         id: d.id,
         date: d.date,
@@ -63,28 +62,52 @@ export const getExpenses = async (): Promise<ExpenseItem[]> => {
     })) || [];
 };
 
-export const saveExpenses = async (items: ExpenseItem[]): Promise<void> => {
+export const addTransaction = async (
+    item: Omit<IncomeItem, 'id'> | Omit<ExpenseItem, 'id'>, 
+    type: 'income' | 'expense'
+): Promise<void> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Supabase replace all expenses strategy
-    await supabase.from('expenses').delete().eq('user_id', user.id);
-    if (items.length > 0) {
-        const payload = items.map(m => ({
-            id: m.id.length > 20 ? m.id : undefined,
-            user_id: user.id,
-            date: m.date,
-            description: m.description,
-            category: m.category,
-            amount: m.amount,
-            protein_g: m.protein
-        }));
-        await supabase.from('expenses').insert(payload);
+    // Convert date string "MMM D" or whatever to YYYY-MM-DD
+    let dateStr = item.date;
+    try {
+        const d = new Date(item.date);
+        if (!isNaN(d.getTime())) {
+            dateStr = d.toISOString().split('T')[0];
+        } else {
+            const today = new Date();
+            dateStr = today.toISOString().split('T')[0];
+        }
+    } catch {
+        const today = new Date();
+        dateStr = today.toISOString().split('T')[0];
     }
 
+    const payload = {
+        user_id: user.id,
+        date: dateStr,
+        description: item.description,
+        category: type === 'income' ? (item as Omit<IncomeItem, 'id'>).source : (item as Omit<ExpenseItem, 'id'>).category,
+        amount: item.amount,
+        protein_g: type === 'expense' ? ((item as Omit<ExpenseItem, 'id'>).protein || null) : null,
+        transaction_type: type
+    };
+
+    await supabase.from('expenses').insert(payload);
+
     if (typeof window !== 'undefined') {
-        const totalSpent = items.reduce((sum, item) => sum + item.amount, 0);
-        localStorage.setItem('workout_os_budget_spent', totalSpent.toString());
+        window.dispatchEvent(new Event('workout_os_budget_updated'));
+    }
+};
+
+export const deleteTransaction = async (id: string): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('expenses').delete().eq('id', id).eq('user_id', user.id);
+
+    if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('workout_os_budget_updated'));
     }
 };

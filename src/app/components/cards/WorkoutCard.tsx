@@ -21,12 +21,17 @@ export default function WorkoutCard() {
     // Load from localStorage on mount/date change
     useEffect(() => {
         if (!selectedDate) return;
-        const saved = localStorage.getItem(`${STORAGE_KEY}_${selectedDate}`);
-        if (saved) {
-            try { setExercises(JSON.parse(saved)); } catch { setExercises([]); }
-        } else {
-            setExercises([]); // Fresh day = no exercises pre-loaded
-        }
+        const load = () => {
+            const saved = localStorage.getItem(`${STORAGE_KEY}_${selectedDate}`);
+            if (saved) {
+                try { setExercises(JSON.parse(saved)); } catch { setExercises([]); }
+            } else {
+                setExercises([]); // Fresh day = no exercises pre-loaded
+            }
+        };
+        load();
+        window.addEventListener('storage', load);
+        return () => window.removeEventListener('storage', load);
     }, [selectedDate]);
 
     const save = (updated: Exercise[]) => {

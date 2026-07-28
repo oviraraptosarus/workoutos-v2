@@ -163,7 +163,8 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                                             type: "OBJECT",
                                             properties: {
                                                 calories: { type: "INTEGER", description: "The amount of calories." },
-                                                mealName: { type: "STRING", description: "The name of the meal." }
+                                                mealName: { type: "STRING", description: "The name of the meal." },
+                                                category: { type: "STRING", description: "The category of the meal. Valid options: 'Breakfast', 'Lunch', 'Snacks', 'Dinner'. Defaults to 'Snacks'." }
                                             },
                                             required: ["calories", "mealName"]
                                         }

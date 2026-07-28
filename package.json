@@ -61,6 +61,7 @@
         "react": "19.0.3",
         "react-dom": "19.0.3",
         "react-hook-form": "^7.83.0",
+        "react-markdown": "^10.1.0",
         "recharts": "^2.15.2",
         "sonner": "^1.7.4"
     },

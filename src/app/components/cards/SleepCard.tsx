@@ -5,6 +5,7 @@ import { Moon, ChevronRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SleepCard() {
     const { userProfile } = useAuth();
@@ -14,10 +15,18 @@ export default function SleepCard() {
 
     React.useEffect(() => {
         if (!selectedDate) return;
-        const loadSleep = () => {
-            const saved = localStorage.getItem(`workout_os_sleep_${selectedDate}`);
-            if (saved) {
-                setCurrentSleep(parseFloat(saved));
+        const loadSleep = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            const { data } = await supabase
+                .from('daily_logs')
+                .select('sleep_hours')
+                .eq('user_id', user.id)
+                .eq('date', selectedDate)
+                .single();
+            
+            if (data && data.sleep_hours > 0) {
+                setCurrentSleep(data.sleep_hours);
                 setHasData(true);
             } else {
                 setCurrentSleep(0);

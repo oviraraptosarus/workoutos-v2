@@ -45,14 +45,13 @@ export const getMealsForDate = async (dateKey: string): Promise<MealItem[]> => {
         id: row.id,
         category: row.meal_slot as MealCategory,
         name: row.name,
+        portion: '1 serving',
         calories: row.calories,
         protein: Number(row.protein),
         carbs: Number(row.carbs),
         fat: Number(row.fat),
         sugar: Number(row.sugar),
-        fiber: Number(row.fiber_g_estimate),
-        isOffPlan: row.is_off_plan,
-        offPlanReason: row.off_plan_reason || undefined
+        icon: '🍽️'
     }));
 };
 
@@ -73,9 +72,6 @@ export const saveMealsForDate = async (dateKey: string, meals: MealItem[]): Prom
             carbs: m.carbs,
             fat: m.fat,
             sugar: m.sugar,
-            fiber_g_estimate: m.fiber,
-            is_off_plan: m.isOffPlan || false,
-            off_plan_reason: m.offPlanReason || null
         }));
         await supabase.from('meal_entries').insert(payload);
     }
@@ -94,31 +90,37 @@ export const saveWaterForDate = async (dateKey: string, amount: number): Promise
     await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, water_ml_total: amount }, { onConflict: 'user_id,date' });
 };
 
-export const getMacroGoals = (): MacroGoals => {
-    if (typeof window !== 'undefined') {
-        const savedCals = localStorage.getItem('workout_os_calorie_goal');
-        const savedMacrosStr = localStorage.getItem('workout_os_macro_goals_v1');
-        
-        let cals = savedCals ? parseInt(savedCals, 10) : 2200;
-        let macros = { protein: 140, carbs: 220, fat: 65, sugar: 35 };
-        
-        if (savedMacrosStr) {
-            try {
-                const parsed = JSON.parse(savedMacrosStr);
-                macros = { ...macros, ...parsed };
-            } catch (e) {}
-        }
-        
-        return { calories: cals, ...macros };
+export const getMacroGoals = async (): Promise<MacroGoals> => {
+    const defaultGoals = { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35 };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return defaultGoals;
+
+    const { data } = await supabase.from('profiles').select('target_config, calorie_goal').eq('id', user.id).single();
+    if (data) {
+        const config = data.target_config || {};
+        return {
+            calories: data.calorie_goal || 2200,
+            protein: config.protein || 140,
+            carbs: config.carbs || 220,
+            fat: config.fat || 65,
+            sugar: config.sugar || 35
+        };
     }
-    return { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35 };
+    return defaultGoals;
 };
 
-export const saveMacroGoals = (goals: MacroGoals): void => {
+export const saveMacroGoals = async (goals: MacroGoals): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { calories, ...macrosOnly } = goals;
+    await supabase.from('profiles').upsert({
+        id: user.id,
+        calorie_goal: calories,
+        target_config: macrosOnly
+    }, { onConflict: 'id' });
+
     if (typeof window !== 'undefined') {
-        localStorage.setItem('workout_os_calorie_goal', goals.calories.toString());
-        const { calories, ...macrosOnly } = goals;
-        localStorage.setItem('workout_os_macro_goals_v1', JSON.stringify(macrosOnly));
         window.dispatchEvent(new Event('storage'));
     }
 };

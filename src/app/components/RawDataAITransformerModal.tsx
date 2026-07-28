@@ -66,7 +66,7 @@ export default function RawDataAITransformerModal({
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.lang = 'en-US';
+        recognition.lang = 'en-IN';
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
