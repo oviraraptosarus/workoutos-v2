@@ -215,7 +215,7 @@ export default function GeminiFoodAssistant() {
         }
     };
 
-
+    return (
         <>
             {/* Google-Style Nova AI Search Bar */}
             <div className="relative group max-w-2xl mx-auto mb-6">
