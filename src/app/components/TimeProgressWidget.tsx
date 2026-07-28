@@ -58,7 +58,7 @@ export default function TimeProgressWidget() {
         <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm transition-colors h-full">
             <h3 className="text-sm font-black text-gray-900 dark:text-white tracking-tight mb-5 flex items-center gap-2">
                 <Hourglass size={16} className="text-indigo-500" />
-                Time Progression
+                Year Progression
             </h3>
             
             <div className="space-y-4">
