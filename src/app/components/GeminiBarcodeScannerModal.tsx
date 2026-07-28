@@ -59,8 +59,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     imageBase64: base64,
-                    mimeType: mimeType,
-                    apiKey: localStorage.getItem('workout_os_gemini_api_key') || undefined
+                    mimeType: mimeType
                 })
             });
 

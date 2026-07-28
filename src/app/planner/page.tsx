@@ -23,6 +23,11 @@ export interface Task {
 
 export default function PlannerPage() {
     // --- TASK MANAGER STATE (Synced with Dashboard) ---
+    const TASKS_KEY = 'workout_os_tasks';
+    const PRIORITIES_KEY = 'workout_os_planner_priorities';
+    const FOCUS_KEY = 'workout_os_planner_focus';
+    const HABITS_KEY = 'workout_os_planner_habits';
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isClient, setIsClient] = useState(false);
 
@@ -40,10 +45,29 @@ export default function PlannerPage() {
 
     useEffect(() => {
         setIsClient(true);
+        // Load tasks
+        try {
+            const saved = localStorage.getItem('workout_os_tasks');
+            if (saved) setTasks(JSON.parse(saved));
+        } catch {}
+        // Load local widgets
+        try {
+            const sp = localStorage.getItem(PRIORITIES_KEY);
+            if (sp) setPriorities(JSON.parse(sp));
+        } catch {}
+        try {
+            const sf = localStorage.getItem(FOCUS_KEY);
+            if (sf) setFocusSessions(JSON.parse(sf));
+        } catch {}
+        try {
+            const sh = localStorage.getItem(HABITS_KEY);
+            if (sh) setHabitsState(JSON.parse(sh));
+        } catch {}
     }, []);
 
     const saveTasks = (newTasks: Task[]) => {
         setTasks(newTasks);
+        localStorage.setItem('workout_os_tasks', JSON.stringify(newTasks));
         window.dispatchEvent(new Event('workout_os_tasks_updated'));
     };
 
@@ -209,6 +233,7 @@ export default function PlannerPage() {
                                             const p = [...priorities];
                                             p[i] = e.target.value;
                                             setPriorities(p);
+                                            localStorage.setItem(PRIORITIES_KEY, JSON.stringify(p));
                                         }}
                                         placeholder={`Priority ${num}`}
                                         className="flex-1 bg-transparent border-none text-sm text-gray-900 font-medium focus:outline-none"
@@ -232,6 +257,7 @@ export default function PlannerPage() {
                                         const n = [...focusSessions];
                                         n[i] = !n[i];
                                         setFocusSessions(n);
+                                        localStorage.setItem(FOCUS_KEY, JSON.stringify(n));
                                     }}
                                 >
                                     <div>
@@ -272,6 +298,7 @@ export default function PlannerPage() {
                                                     onChange={(e) => {
                                                         const newState = { ...habitsState, [key]: e.target.checked };
                                                         setHabitsState(newState);
+                                                        localStorage.setItem(HABITS_KEY, JSON.stringify(newState));
                                                     }}
                                                     className="accent-emerald-500 w-3 h-3 cursor-pointer opacity-40 hover:opacity-100 checked:opacity-100" 
                                                 />

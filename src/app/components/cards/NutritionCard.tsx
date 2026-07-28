@@ -12,8 +12,7 @@ export default function NutritionCard() {
     const [isLogging, setIsLogging] = useState(false);
     const [mealName, setMealName] = useState('');
     const [mealCals, setMealCals] = useState('');
-
-    const goalCals = userProfile?.calorieGoal || 2600;
+    const [goalCals, setGoalCals] = useState(2600);
 
     React.useEffect(() => {
         if (!selectedDate) return;
@@ -22,11 +21,33 @@ export default function NutritionCard() {
             if (saved) setCurrentCals(parseInt(saved, 10));
             else setCurrentCals(0); // No data yet — user hasn't logged
         };
+
+        const loadGoal = () => {
+            const savedGoal = localStorage.getItem('workout_os_calorie_goal');
+            if (savedGoal) setGoalCals(parseInt(savedGoal, 10));
+            else if (userProfile?.calorieGoal) setGoalCals(userProfile.calorieGoal);
+        };
         
         loadNutrition();
+        loadGoal();
+        
         window.addEventListener('storage', loadNutrition);
-        return () => window.removeEventListener('storage', loadNutrition);
-    }, [selectedDate, isToday]);
+        window.addEventListener('storage', loadGoal);
+        return () => {
+            window.removeEventListener('storage', loadNutrition);
+            window.removeEventListener('storage', loadGoal);
+        };
+    }, [selectedDate, isToday, userProfile]);
+
+    const handleEditGoal = () => {
+        const newGoal = window.prompt("Enter your daily calorie goal:", goalCals.toString());
+        if (newGoal !== null && !isNaN(parseInt(newGoal, 10)) && parseInt(newGoal, 10) > 0) {
+            const val = parseInt(newGoal, 10);
+            setGoalCals(val);
+            localStorage.setItem('workout_os_calorie_goal', val.toString());
+            window.dispatchEvent(new Event('storage'));
+        }
+    };
 
     const percentage = Math.min((currentCals / goalCals) * 100, 100);
 
@@ -34,10 +55,22 @@ export default function NutritionCard() {
         e.preventDefault();
         const cals = Number(mealCals);
         if (!isNaN(cals) && cals > 0 && selectedDate) {
-            const newCals = currentCals + cals;
-            setCurrentCals(newCals);
-            localStorage.setItem(`workout_os_nutrition_${selectedDate}`, newCals.toString());
-            window.dispatchEvent(new Event('storage'));
+            import('@/app/diet/services/dietStorage').then(({ getMealsForDate, saveMealsForDate }) => {
+                const meals = getMealsForDate(selectedDate, []);
+                meals.push({
+                    id: Date.now().toString(),
+                    name: mealName.trim() || 'Quick Log',
+                    category: 'Snacks',
+                    portion: '1 serving',
+                    calories: cals,
+                    protein: 0,
+                    carbs: 0,
+                    fat: 0,
+                    sugar: 0,
+                    icon: '⚡'
+                });
+                saveMealsForDate(selectedDate, meals);
+            });
         }
         setIsLogging(false);
         setMealName('');
@@ -53,7 +86,11 @@ export default function NutritionCard() {
                     </div>
                     <span className="text-sm font-bold tracking-wide text-gray-800 dark:text-gray-200">NUTRITION</span>
                 </div>
-                <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700 px-3 py-1 rounded-full">
+                <span 
+                    onClick={handleEditGoal}
+                    className="text-[13px] font-medium text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                    title="Click to edit calorie target"
+                >
                     Target: {(goalCals / 1000).toFixed(1)}k kcal
                 </span>
             </div>
@@ -61,7 +98,13 @@ export default function NutritionCard() {
             <div className="mb-2">
                 <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-[42px] font-black text-[#0f172a] dark:text-white tracking-tight leading-none">{currentCals.toLocaleString()}</span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">/ {goalCals.toLocaleString()} kcal</span>
+                    <span 
+                        onClick={handleEditGoal}
+                        className="text-sm text-gray-500 dark:text-gray-400 font-medium cursor-pointer hover:text-[#f97316] transition-colors hover:underline"
+                        title="Click to edit calorie target"
+                    >
+                        / {goalCals.toLocaleString()} kcal
+                    </span>
                 </div>
                 <div className="w-full bg-[#f1f1f1] h-2.5 rounded-full overflow-hidden">
                     <div 

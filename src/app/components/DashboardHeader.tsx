@@ -186,7 +186,7 @@ export default function DashboardHeader() {
                                 {initial}
                             </div>
                             <span className="text-xs font-bold text-gray-800 dark:text-gray-200 hidden sm:block">
-                                {userProfile?.username || 'alex_m'}
+                                {userProfile?.username || userProfile?.fullName?.split(' ')[0] || 'User'}
                             </span>
                             <ChevronDown size={14} className="text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                         </button>

@@ -14,6 +14,7 @@ import MealPlanDetailsModal from './components/MealPlanDetailsModal';
 import RecipeGroupBuilderModal from './components/RecipeGroupBuilderModal';
 import RawDataAITransformerModal from '@/app/components/RawDataAITransformerModal';
 import GeminiBarcodeScannerModal from '@/app/components/GeminiBarcodeScannerModal';
+import { useAuth } from '@/contexts/AuthContext';
 import { MealItem, MealCategory, MacroGoals } from './types';
 import {
     formatDateKey,
@@ -50,10 +51,22 @@ export default function DietPage() {
     const [modalDefaultCategory, setModalDefaultCategory] = useState<MealCategory>('Breakfast');
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Initial load of macro goals
+    const { userProfile } = useAuth();
+
+    // Initial load of macro goals and listen for global settings changes
     useEffect(() => {
-        setMacroGoals(getMacroGoals());
-    }, []);
+        const loadGoals = () => {
+            const localGoals = getMacroGoals();
+            if (userProfile?.calorieGoal) {
+                localGoals.calories = userProfile.calorieGoal;
+            }
+            setMacroGoals(localGoals);
+        };
+        loadGoals();
+        
+        window.addEventListener('storage', loadGoals);
+        return () => window.removeEventListener('storage', loadGoals);
+    }, [userProfile?.calorieGoal]);
 
     // Synchronize meals whenever currentDateKey changes
     useEffect(() => {

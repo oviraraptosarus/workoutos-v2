@@ -44,7 +44,7 @@ export default function DietGaugeSummary({
                         <button
                             id="tour-ai-log"
                             onClick={onOpenAIMealModal}
-                            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-sm transition-all btn-press relative z-[110]"
+                            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-sm transition-all btn-press relative z-10"
                             title="AI Voice & Natural Language Meal Logger"
                         >
                             <Sparkles size={14} /> AI Voice & Text Log

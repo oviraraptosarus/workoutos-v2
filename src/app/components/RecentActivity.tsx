@@ -4,19 +4,65 @@ import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
 export default function RecentActivity() {
-    const [activities, setActivities] = useState([
-        { id: 1, title: 'Completed Push Workout', time: '2 hours ago', icon: '🏋️‍♂️' },
-        { id: 2, title: 'Logged 500ml Water', time: '3 hours ago', icon: '💧' },
-        { id: 3, title: 'Spent ₹1250 at Grocery', time: '5 hours ago', icon: '🛒' },
-    ]);
+    const [activities, setActivities] = useState<any[]>([]);
     const [isClearing, setIsClearing] = useState(false);
+
+    React.useEffect(() => {
+        const loadActivities = () => {
+            const allActs: any[] = [];
+            const now = Date.now();
+
+            // Load Workouts
+            try {
+                const logs = JSON.parse(localStorage.getItem('workout_os_workout_logs') || '[]');
+                logs.forEach((w: any) => allActs.push({ id: w.id, title: `Completed ${w.presetName || 'Workout'}`, time: w.id, icon: '🏋️‍♂️' }));
+            } catch (e) {}
+
+            // Load Diet (today only for simplicity)
+            try {
+                const dateKey = new Date().toISOString().split('T')[0];
+                const meals = JSON.parse(localStorage.getItem(`workout_os_diet_meals_${dateKey}`) || '[]');
+                meals.forEach((m: any) => allActs.push({ id: m.id, title: `Logged ${m.name}`, time: m.id, icon: m.icon || '🍽️' }));
+            } catch (e) {}
+
+            // Load Expenses
+            try {
+                const expenses = JSON.parse(localStorage.getItem('workout_os_budget_expenses') || '[]');
+                expenses.forEach((e: any) => allActs.push({ id: e.id, title: `Spent $${e.amount} on ${e.description}`, time: e.id, icon: '🛒' }));
+            } catch (e) {}
+
+            allActs.sort((a, b) => Number(b.id) - Number(a.id));
+            
+            // Format times
+            const formatted = allActs.slice(0, 3).map(act => {
+                const diffMs = now - Number(act.id);
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHrs = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHrs / 24);
+                
+                let timeStr = 'Just now';
+                if (diffDays > 0) timeStr = `${diffDays}d ago`;
+                else if (diffHrs > 0) timeStr = `${diffHrs}h ago`;
+                else if (diffMins > 0) timeStr = `${diffMins}m ago`;
+
+                return { ...act, time: timeStr };
+            });
+
+            setActivities(formatted);
+        };
+
+        loadActivities();
+        window.addEventListener('storage', loadActivities);
+        return () => window.removeEventListener('storage', loadActivities);
+    }, []);
 
     const handleClear = () => {
         setIsClearing(true);
+        // Note: this just hides them from the UI for now
         setTimeout(() => setActivities([]), 300);
     };
 
-    if (activities.length === 0) return null;
+    if (activities.length === 0 && !isClearing) return null;
 
     return (
         <div className={`bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm space-y-3 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${isClearing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>

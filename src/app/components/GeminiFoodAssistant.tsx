@@ -16,14 +16,19 @@ interface Message {
     imageUrl?: string;
 }
 
+const QUICK_PROMPTS = [
+    { label: 'Log Water', text: 'Log 500ml of water' },
+    { label: 'Log Sleep', text: 'I slept for 8 hours' },
+    { label: 'Log Meal', text: 'I had 600 calories for lunch' },
+    { label: 'Add Expense', text: 'I spent $15 on groceries' }
+];
+
 export default function GeminiFoodAssistant() {
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [prompt, setPrompt] = useState('');
-    const [apiKey, setApiKey] = useState('');
-    const [showKeyInput, setShowKeyInput] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -114,13 +119,13 @@ export default function GeminiFoodAssistant() {
             const dateKey = selectedDate || new Date().toISOString().split('T')[0];
             const currentAppState = {
                 date: dateKey,
-                waterMl: 0,
-                sleepHrs: 0,
-                nutritionKcal: 0,
-                tasks: [],
-                quickNotes: '',
-                budgetIncome: [],
-                budgetExpenses: []
+                waterMl: parseInt(localStorage.getItem(`workout_os_water_ml_${dateKey}`) || '0', 10),
+                sleepHrs: parseFloat(localStorage.getItem(`workout_os_sleep_${dateKey}`) || '0'),
+                nutritionKcal: parseInt(localStorage.getItem(`workout_os_nutrition_${dateKey}`) || '0', 10),
+                tasks: JSON.parse(localStorage.getItem('workout_os_tasks') || '[]'),
+                quickNotes: localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '',
+                budgetIncome: getIncome(),
+                budgetExpenses: getExpenses()
             };
 
             const res = await fetch('/api/gemini', {
@@ -129,7 +134,6 @@ export default function GeminiFoodAssistant() {
                 body: JSON.stringify({
                     prompt: q,
                     userProfile,
-                    apiKey: apiKey.trim() || undefined,
                     image: currentImage,
                     history: currentHistory,
                     appState: currentAppState
@@ -144,11 +148,19 @@ export default function GeminiFoodAssistant() {
                     const args = data.functionCall.args;
                     
                     if (fn === 'add_task') {
-                        // Backend API hook goes here
+                        const tasks = JSON.parse(localStorage.getItem('workout_os_tasks') || '[]');
+                        tasks.push({
+                            id: Date.now().toString(),
+                            title: args.title || 'New Task',
+                            completed: false,
+                            dueDate: dateKey
+                        });
+                        localStorage.setItem('workout_os_tasks', JSON.stringify(tasks));
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'tasks' } }));
                     } else if (fn === 'append_quick_note') {
-                        // Backend API hook goes here
+                        const currentNote = localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '';
+                        localStorage.setItem(`workout_os_quick_note_${dateKey}`, currentNote + '\n' + (args.text || ''));
                         window.dispatchEvent(new StorageEvent('storage', { key: `workout_os_quick_note_${dateKey}` }));
                     } else if (fn === 'navigate_to') {
                         if (args.path) {
@@ -156,13 +168,31 @@ export default function GeminiFoodAssistant() {
                             setIsOpen(false);
                         }
                     } else if (fn === 'log_water') {
-                        // Backend API hook goes here
+                        const currentWater = parseInt(localStorage.getItem(`workout_os_water_ml_${dateKey}`) || '0', 10);
+                        const added = Number(args.amount) || 0;
+                        localStorage.setItem(`workout_os_water_ml_${dateKey}`, (currentWater + added).toString());
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'log_sleep') {
-                        // Backend API hook goes here
+                        const hours = Number(args.hours) || 0;
+                        localStorage.setItem(`workout_os_sleep_${dateKey}`, hours.toString());
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'log_nutrition') {
-                        // Backend API hook goes here
+                        const meals = JSON.parse(localStorage.getItem(`workout_os_diet_meals_${dateKey}`) || '[]');
+                        meals.push({
+                            id: Date.now().toString(),
+                            name: args.food_name || 'AI Logged Meal',
+                            category: 'Snacks',
+                            portion: '1 serving',
+                            calories: Number(args.calories) || 0,
+                            protein: Number(args.protein) || 0,
+                            carbs: Number(args.carbs) || 0,
+                            fat: Number(args.fat) || 0,
+                            sugar: 0,
+                            icon: '🤖'
+                        });
+                        localStorage.setItem(`workout_os_diet_meals_${dateKey}`, JSON.stringify(meals));
+                        const totalCals = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
+                        localStorage.setItem(`workout_os_nutrition_${dateKey}`, totalCals.toString());
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'add_expense') {
                         const newExpense = {
@@ -274,13 +304,6 @@ export default function GeminiFoodAssistant() {
 
                             <div className="flex items-center gap-2">
                                 <button
-                                    onClick={() => setShowKeyInput(!showKeyInput)}
-                                    className="p-2 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors shadow-sm"
-                                    title="Custom API Key Settings"
-                                >
-                                    <Key size={16} />
-                                </button>
-                                <button
                                     onClick={() => setIsOpen(false)}
                                     className="p-2 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors shadow-sm"
                                 >
@@ -288,25 +311,6 @@ export default function GeminiFoodAssistant() {
                                 </button>
                             </div>
                         </div>
-
-                        {/* Optional Custom Key Accordion */}
-                        {showKeyInput && (
-                            <div className="p-3 bg-gray-50 border-b border-gray-100 text-xs space-y-2 animate-in slide-in-from-top-2 shadow-inner">
-                                <div className="flex items-center justify-between text-gray-700 font-bold">
-                                    <span className="flex items-center gap-1.5 text-blue-600 font-black drop-shadow-sm">
-                                        <Key size={14} /> Optional Custom Gemini API Key
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Leave blank to use default engine</span>
-                                </div>
-                                <input
-                                    type="password"
-                                    placeholder="Paste your AI Studio GEMINI_API_KEY here..."
-                                    value={apiKey}
-                                    onChange={(e) => setApiKey(e.target.value)}
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-500 font-mono shadow-inner"
-                                />
-                            </div>
-                        )}
 
                         {/* Quick Action Pills Bar */}
                         <div className="px-4 py-2.5 bg-white dark:bg-slate-900/30 border-b border-gray-100 overflow-x-auto scrollbar-hide flex gap-2">

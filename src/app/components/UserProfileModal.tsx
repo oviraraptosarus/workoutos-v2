@@ -32,6 +32,14 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
         updateUserProfile(formData);
+        
+        if (formData.calorieGoal !== undefined) {
+            localStorage.setItem('workout_os_calorie_goal', formData.calorieGoal.toString());
+        }
+        
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('workout_os_budget_updated'));
+
         setNoticeText('Settings saved successfully!');
         setSavedNotice(true);
         setTimeout(() => setSavedNotice(false), 3000);
@@ -51,20 +59,20 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
     const handleExportConfig = () => {
         try {
+            const workoutOsData: Record<string, string> = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('workout_os_')) {
+                    workoutOsData[key] = localStorage.getItem(key) || '';
+                }
+            }
+
             const configData = {
                 app: 'Workout OS',
-                version: '1.0',
+                version: '2.0',
                 exportedAt: new Date().toISOString(),
                 userProfile: formData,
-                dietMeals: (() => {
-                    try { return JSON.parse(localStorage.getItem('workout_os_diet_meals_v1') || '[]'); } catch { return []; }
-                })(),
-                waterLog: (() => {
-                    try { return JSON.parse(localStorage.getItem('workout_os_water_log') || '[]'); } catch { return []; }
-                })(),
-                weightLogs: (() => {
-                    try { return JSON.parse(localStorage.getItem('workout_os_weight_log') || '[]'); } catch { return []; }
-                })(),
+                localStorageData: workoutOsData
             };
 
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData, null, 2));
@@ -101,14 +109,22 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                     setFormData(parsed.userProfile);
                 }
 
+                // V2 Import: Dynamic keys
+                if (parsed.localStorageData) {
+                    Object.entries(parsed.localStorageData).forEach(([key, value]) => {
+                        if (key.startsWith('workout_os_') && typeof value === 'string') {
+                            localStorage.setItem(key, value);
+                        }
+                    });
+                }
+
+                // V1 Legacy Import fallback
                 if (parsed.dietMeals) {
                     localStorage.setItem('workout_os_diet_meals_v1', JSON.stringify(parsed.dietMeals));
                 }
-
                 if (parsed.waterLog) {
                     localStorage.setItem('workout_os_water_log', JSON.stringify(parsed.waterLog));
                 }
-
                 if (parsed.weightLogs) {
                     localStorage.setItem('workout_os_weight_log', JSON.stringify(parsed.weightLogs));
                 }
@@ -246,6 +262,20 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         />
                                     </div>
                                 </div>
+
+                                <div className="mt-6">
+                                    <h3 className="text-sm font-black text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Diet & Finance Targets</h3>
+                                    
+                                    <div className="mb-4">
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Daily Calorie Limit (kcal)</label>
+                                        <input
+                                            type="number"
+                                            value={formData.calorieGoal !== undefined ? formData.calorieGoal : 2200}
+                                            onChange={(e) => setFormData({ ...formData, calorieGoal: e.target.value === '' ? 0 : Number(e.target.value) })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
 
@@ -272,10 +302,38 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         </button>
                                     </div>
                                 </div>
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Account Created</label>
+                                        <input 
+                                            disabled 
+                                            type="text" 
+                                            value={userProfile?.createdAt ? new Date(userProfile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown'} 
+                                            className="w-full bg-gray-100 dark:bg-slate-800/50 border border-transparent rounded-xl px-3 py-2 text-sm text-gray-500 font-medium cursor-not-allowed" 
+                                        />
+                                        <p className="text-[10px] text-gray-400 mt-1">Graphs and historical data will track back up to this date.</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Theme (Coming Soon)</label>
+                                        <input disabled type="text" value="Auto (System Match)" className="w-full bg-gray-100 dark:bg-slate-800/50 border border-transparent rounded-xl px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
+                                    </div>
+                                </div>
                                 
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-700 mb-1">Theme (Coming Soon)</label>
-                                    <input disabled type="text" value="Auto (System Match)" className="w-full bg-gray-100 dark:bg-slate-800/50 border border-transparent rounded-xl px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
+                                <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800/50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">Financial Reminders</h4>
+                                            <p className="text-[11px] text-gray-500 font-medium">Show reminders for insurance, subscriptions, and passive income tracking on the dashboard.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, enableFinancialReminders: !formData.enableFinancialReminders })}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.enableFinancialReminders ? 'bg-blue-600' : 'bg-gray-200 dark:bg-slate-700'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.enableFinancialReminders ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}

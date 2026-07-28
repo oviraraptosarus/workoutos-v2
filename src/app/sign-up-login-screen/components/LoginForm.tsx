@@ -6,8 +6,8 @@ import { KeyRound, Mail, Sparkles } from 'lucide-react';
 
 export default function LoginForm() {
     const { signIn } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('user@workoutos.com');
+    const [password, setPassword] = useState('password123');
     const [error, setError] = useState('');
 
     const focusNext = (e: React.KeyboardEvent<HTMLInputElement>, nextId?: string) => {

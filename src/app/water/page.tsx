@@ -1,22 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Droplet, ArrowLeft, Plus, History, Trash2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDate } from '@/contexts/DateContext';
+
+interface WaterLog {
+    id: number;
+    amount: number;
+    time: string;
+    type: string;
+}
+
+const WATER_ML_PREFIX = 'workout_os_water_ml_';
+const WATER_LOGS_PREFIX = 'workout_os_water_logs_';
 
 export default function WaterPage() {
     const { userProfile } = useAuth();
+    const { selectedDate, isToday } = useDate();
     const goalMl = userProfile?.waterGoalMl || 3000;
-    const [currentMl, setCurrentMl] = useState(0);
-    const [customAmount, setCustomAmount] = useState('300');
 
-    const [logs, setLogs] = useState([
-        { id: 1, amount: 250, time: '08:30 AM', type: 'Glass' },
-        { id: 2, amount: 500, time: '11:15 AM', type: 'Bottle' },
-        { id: 3, amount: 450, time: '02:00 PM', type: 'Workout' },
-    ]);
+    const [currentMl, setCurrentMl] = useState(0);
+    const [logs, setLogs] = useState<WaterLog[]>([]);
+    const [customAmount, setCustomAmount] = useState('300');
+    const [isClient, setIsClient] = useState(false);
+
+    // Load from localStorage whenever date changes
+    useEffect(() => {
+        setIsClient(true);
+        if (!selectedDate) return;
+
+        const savedMl = localStorage.getItem(`${WATER_ML_PREFIX}${selectedDate}`);
+        setCurrentMl(savedMl ? parseInt(savedMl, 10) : 0);
+
+        const savedLogs = localStorage.getItem(`${WATER_LOGS_PREFIX}${selectedDate}`);
+        if (savedLogs) {
+            try { setLogs(JSON.parse(savedLogs)); } catch { setLogs([]); }
+        } else {
+            setLogs([]);
+        }
+    }, [selectedDate]);
 
     const percentage = Math.min((currentMl / goalMl) * 100, 100);
     const radius = 120;
@@ -24,16 +49,36 @@ export default function WaterPage() {
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     const handleAdd = (amount: number, type: string) => {
-        setCurrentMl(prev => prev + amount);
+        if (!selectedDate) return;
+        const newMl = currentMl + amount;
+        setCurrentMl(newMl);
+        localStorage.setItem(`${WATER_ML_PREFIX}${selectedDate}`, newMl.toString());
+
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        setLogs([{ id: Date.now(), amount, time: timeStr, type }, ...logs]);
+        const newLog: WaterLog = { id: Date.now(), amount, time: timeStr, type };
+        const newLogs = [newLog, ...logs];
+        setLogs(newLogs);
+        localStorage.setItem(`${WATER_LOGS_PREFIX}${selectedDate}`, JSON.stringify(newLogs));
+
+        // Sync dashboard WaterCard
+        window.dispatchEvent(new Event('storage'));
     };
 
     const handleDelete = (id: number, amount: number) => {
-        setLogs(logs.filter(log => log.id !== id));
-        setCurrentMl(prev => Math.max(0, prev - amount));
+        if (!selectedDate) return;
+        const newLogs = logs.filter(log => log.id !== id);
+        setLogs(newLogs);
+        localStorage.setItem(`${WATER_LOGS_PREFIX}${selectedDate}`, JSON.stringify(newLogs));
+
+        const newMl = Math.max(0, currentMl - amount);
+        setCurrentMl(newMl);
+        localStorage.setItem(`${WATER_ML_PREFIX}${selectedDate}`, newMl.toString());
+
+        window.dispatchEvent(new Event('storage'));
     };
+
+    if (!isClient) return null;
 
     return (
         <AppLayout>
@@ -70,7 +115,7 @@ export default function WaterPage() {
                                 <circle 
                                     cx="140" cy="140" r={radius} 
                                     fill="transparent" 
-                                    stroke="#eff6ff" // blue-50
+                                    stroke="#eff6ff"
                                     strokeWidth="24" 
                                 />
                                 {/* Progress Ring */}
@@ -86,8 +131,8 @@ export default function WaterPage() {
                                 />
                                 <defs>
                                     <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#60a5fa" /> {/* blue-400 */}
-                                        <stop offset="100%" stopColor="#2563eb" /> {/* blue-600 */}
+                                        <stop offset="0%" stopColor="#60a5fa" />
+                                        <stop offset="100%" stopColor="#2563eb" />
                                     </linearGradient>
                                 </defs>
                             </svg>
@@ -156,12 +201,12 @@ export default function WaterPage() {
 
                         <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm border-t border-gray-200 flex-1 flex flex-col">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-4 flex items-center gap-2">
-                                <History size={18} className="text-gray-400" /> Today's Log
+                                <History size={18} className="text-gray-400" /> {isToday ? "Today's" : selectedDate} Log
                             </h2>
                             
                             <div className="space-y-3 overflow-y-auto max-h-48 custom-scrollbar pr-2">
                                 {logs.length === 0 ? (
-                                    <div className="text-center text-gray-400 text-sm font-medium py-4">No water logged yet today.</div>
+                                    <div className="text-center text-gray-400 text-sm font-medium py-4">No water logged yet.</div>
                                 ) : (
                                     logs.map((log) => (
                                         <div key={log.id} className="bg-gray-100 border border-gray-100 rounded-2xl p-3 flex items-center justify-between shadow-sm">

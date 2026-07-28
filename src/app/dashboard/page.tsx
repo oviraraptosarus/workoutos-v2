@@ -8,10 +8,10 @@ import DashboardHeader from '@/app/components/DashboardHeader';
 import GeminiFoodAssistant from '@/app/components/GeminiFoodAssistant';
 import BentoGrid from '@/app/components/BentoGrid';
 import TouchGrassNudge from '@/app/components/TouchGrassNudge';
-import RecentActivity from '@/app/components/RecentActivity';
 import WeightLogCard from '@/app/components/cards/WeightLogCard';
 import DashboardTasks from '@/app/components/DashboardTasks';
 import QuickNotes from '@/app/components/QuickNotes';
+import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 
 // Dynamic ssr:false imports to prevent server prerender crashes
 const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
@@ -46,12 +46,15 @@ export default function Dashboard() {
 
         <WeightLogCard />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DashboardTasks />
-          <QuickNotes />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1 flex flex-col gap-6">
+             <TimeProgressWidget />
+             <QuickNotes />
+          </div>
+          <div className="md:col-span-2">
+             <DashboardTasks />
+          </div>
         </div>
-
-        <RecentActivity />
       </main>
 
       <FloatingActionMenu />

@@ -10,6 +10,7 @@ const BUDGET_KEY = 'workout_os_budget_spent';
 export default function BudgetSnapshotCard() {
     const { userProfile } = useAuth();
     const [spent, setSpent] = useState(0);
+    const [incomeTarget, setIncomeTarget] = useState(1200);
 
     useEffect(() => {
         const load = () => {
@@ -17,15 +18,45 @@ export default function BudgetSnapshotCard() {
             setSpent(saved ? parseFloat(saved) : 0);
         };
         load();
+        
+        const loadTarget = () => {
+            const savedTarget = localStorage.getItem('workout_os_budget_target');
+            if (savedTarget) {
+                setIncomeTarget(parseFloat(savedTarget));
+            } else {
+                // If no manual override, calculate from total logged incomes
+                try {
+                    const incomes = JSON.parse(localStorage.getItem('workout_os_budget_income') || '[]');
+                    const totalIncome = incomes.reduce((sum: number, item: any) => sum + item.amount, 0);
+                    setIncomeTarget(totalIncome);
+                } catch(e) {
+                    setIncomeTarget(0);
+                }
+            }
+        };
+        loadTarget();
+
         window.addEventListener('storage', load);
         window.addEventListener('workout_os_budget_updated', load);
+        window.addEventListener('workout_os_budget_updated', loadTarget);
         return () => {
             window.removeEventListener('storage', load);
             window.removeEventListener('workout_os_budget_updated', load);
+            window.removeEventListener('workout_os_budget_updated', loadTarget);
         };
-    }, []);
+    }, [userProfile]);
 
-    const budget = userProfile?.monthlyBudget || 1200;
+    const handleEditBudget = () => {
+        const newBudget = window.prompt("Enter your Monthly Income:", incomeTarget.toString());
+        if (newBudget !== null && !isNaN(parseFloat(newBudget)) && parseFloat(newBudget) > 0) {
+            const val = parseFloat(newBudget);
+            setIncomeTarget(val);
+            localStorage.setItem('workout_os_budget_target', val.toString());
+            window.dispatchEvent(new Event('workout_os_budget_updated'));
+        }
+    };
+
+    const budget = incomeTarget;
     const percentage = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
     const left = Math.max(budget - spent, 0);
 
@@ -42,7 +73,7 @@ export default function BudgetSnapshotCard() {
                     <div className="p-1.5 rounded-full bg-[#5e5ce6]/10 border border-gray-100">
                         <IndianRupee size={16} />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">BUDGET PACE</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700">INCOME TRACKER</span>
                 </div>
                 <Link
                     href="/budget-tracker"
@@ -57,7 +88,13 @@ export default function BudgetSnapshotCard() {
                     <div className="my-3">
                         <div className="flex items-baseline gap-1.5">
                             <span className="text-2xl font-black text-gray-900 tracking-tight">₹{spent.toLocaleString()}</span>
-                            <span className="text-xs text-gray-500 font-medium">/ ₹{budget.toLocaleString()}</span>
+                            <span 
+                                onClick={handleEditBudget}
+                                className="text-xs text-gray-500 font-medium cursor-pointer hover:text-[#5e5ce6] transition-colors hover:underline"
+                                title="Click to edit monthly income"
+                            >
+                                / ₹{budget.toLocaleString()}
+                            </span>
                         </div>
                         <div className="w-full bg-gray-100 h-2.5 rounded-full mt-2 overflow-hidden">
                             <div
@@ -66,9 +103,9 @@ export default function BudgetSnapshotCard() {
                             />
                         </div>
                     </div>
-                    <div className="pt-3 border-t border-gray-100 text-xs text-gray-600 flex justify-between font-medium">
-                        <span>{onTrack ? 'On track' : 'Pacing fast'}</span>
-                        <span className={`font-bold ${onTrack ? 'text-[#5e5ce6]' : 'text-red-500'}`}>₹{left.toLocaleString()} left</span>
+                    <div className="pt-3 border-t border-gray-100 text-xs flex justify-between font-medium">
+                        <span className="text-gray-500">Savings Potential:</span>
+                        <span className="font-bold text-[#5e5ce6]">₹{left.toLocaleString()} remaining</span>
                     </div>
                 </>
             ) : (

@@ -14,14 +14,22 @@ export default function WaterCard() {
     React.useEffect(() => {
         if (!selectedDate) return;
         const loadWater = () => {
-            let saved = localStorage.getItem(`workout_os_water_${selectedDate}`);
+            let saved = localStorage.getItem(`workout_os_water_ml_${selectedDate}`);
             
-            // Migration from old version for "today"
+            // Migration: check old key formats
+            if (!saved) {
+                saved = localStorage.getItem(`workout_os_water_${selectedDate}`);
+                if (saved) {
+                    // Migrate to new key
+                    localStorage.setItem(`workout_os_water_ml_${selectedDate}`, saved);
+                    localStorage.removeItem(`workout_os_water_${selectedDate}`);
+                }
+            }
             if (!saved && isToday) {
                 const legacy = localStorage.getItem('workout_os_water_current');
                 if (legacy) {
                     saved = legacy;
-                    localStorage.setItem(`workout_os_water_${selectedDate}`, legacy);
+                    localStorage.setItem(`workout_os_water_ml_${selectedDate}`, legacy);
                     localStorage.removeItem('workout_os_water_current');
                 }
             }

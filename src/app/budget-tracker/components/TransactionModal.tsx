@@ -23,6 +23,7 @@ export default function TransactionModal({
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [categorySource, setCategorySource] = useState('');
+    const [isOtherCategory, setIsOtherCategory] = useState(false);
     
     if (!isOpen) return null;
 
@@ -50,12 +51,16 @@ export default function TransactionModal({
                 costPerG: null,
                 type: 'planned'
             });
+            
+            // Remind the user to save!
+            window.alert("Expense logged! 💡 Friendly reminder: Don't forget to put some money aside for your savings goals!");
         }
         
         // Reset and close
         setAmount('');
         setDescription('');
         setCategorySource('');
+        setIsOtherCategory(false);
         onClose();
     };
 
@@ -101,14 +106,48 @@ export default function TransactionModal({
                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
                             {type === 'income' ? 'Source' : 'Category'}
                         </label>
-                        <input
-                            type="text"
-                            value={categorySource}
-                            onChange={(e) => setCategorySource(e.target.value)}
-                            placeholder={type === 'income' ? 'e.g. Salary, Side Hustle' : 'e.g. Groceries, Gym'}
-                            className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
-                            required
-                        />
+                        {type === 'income' ? (
+                            <input
+                                type="text"
+                                value={categorySource}
+                                onChange={(e) => setCategorySource(e.target.value)}
+                                placeholder="e.g. Salary, Side Hustle"
+                                className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                required
+                            />
+                        ) : (
+                            <>
+                                <select
+                                    value={isOtherCategory ? 'Other' : categorySource}
+                                    onChange={(e) => {
+                                        if (e.target.value === 'Other') {
+                                            setIsOtherCategory(true);
+                                            setCategorySource('');
+                                        } else {
+                                            setIsOtherCategory(false);
+                                            setCategorySource(e.target.value);
+                                        }
+                                    }}
+                                    className="w-full bg-gray-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                    required={!isOtherCategory}
+                                >
+                                    <option value="" disabled>Select a category</option>
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Food">Food & Dining</option>
+                                    <option value="Other">Other (Specify)</option>
+                                </select>
+                                {isOtherCategory && (
+                                    <input
+                                        type="text"
+                                        value={categorySource}
+                                        onChange={(e) => setCategorySource(e.target.value)}
+                                        placeholder="Please specify..."
+                                        className="w-full mt-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                        required
+                                    />
+                                )}
+                            </>
+                        )}
                     </div>
 
                     <button

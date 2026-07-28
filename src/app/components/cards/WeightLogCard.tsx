@@ -23,13 +23,54 @@ export default function WeightLogCard() {
     useEffect(() => {
         const load = () => {
             const saved = localStorage.getItem(WEIGHT_KEY);
-            if (saved) {
-                setChartData(JSON.parse(saved));
-            } else {
-                // Initial empty state or maybe a flat line of their target weight if no data exists
-                const d = new Date();
-                setChartData([{ date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), weight: userProfile?.targetWeight || 75 }]);
+            let logs: WeightEntry[] = [];
+            const target = userProfile?.targetWeight || 75;
+            const createdAt = userProfile?.createdAt ? new Date(userProfile.createdAt) : null;
+            
+            // Calculate max days to backfill (max 7, or days since creation)
+            let maxBackfillDays = 0;
+            if (createdAt) {
+                const today = new Date();
+                today.setHours(23, 59, 59, 999);
+                const diffTime = today.getTime() - createdAt.getTime();
+                const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+                maxBackfillDays = Math.min(6, diffDays);
             }
+            
+            if (saved) {
+                logs = JSON.parse(saved);
+                
+                // Filter out any stray logs that were recorded before the account was created
+                if (createdAt) {
+                    const startOfDay = new Date(createdAt);
+                    startOfDay.setHours(0, 0, 0, 0);
+                    logs = logs.filter(log => {
+                        const logDate = new Date(log.date + ' ' + new Date().getFullYear());
+                        return logDate >= startOfDay;
+                    });
+                }
+            }
+            
+            // Generate the current week (Monday to Sunday)
+            const currentWeekLogs: any[] = [];
+            const today = new Date();
+            const currentDay = today.getDay();
+            const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+            const logMap = new Map(logs.map(l => [l.date, l.weight]));
+
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - diffToMonday + i);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                currentWeekLogs.push({
+                    date: dateStr,
+                    weight: logMap.has(dateStr) ? logMap.get(dateStr) : null
+                });
+            }
+            
+            setChartData(currentWeekLogs);
         };
         load();
         window.addEventListener('storage', load);
@@ -106,6 +147,7 @@ export default function WeightLogCard() {
                             dot={{ r: 4, fill: '#4f46e5', strokeWidth: 2, stroke: '#fff' }} 
                             activeDot={{ r: 6, strokeWidth: 0 }}
                             animationDuration={1000}
+                            connectNulls={true}
                         />
                     </LineChart>
                 </ResponsiveContainer>

@@ -6,9 +6,7 @@ import Link from 'next/link';
 import { Task } from '@/app/planner/page';
 import { useDate } from '@/contexts/DateContext';
 
-const getTasks = (date: string | null) => {
-    return [];
-};
+const TASKS_KEY = 'workout_os_tasks';
 
 export default function DashboardTasks() {
     const { selectedDate } = useDate();
@@ -17,7 +15,13 @@ export default function DashboardTasks() {
     const [isClient, setIsClient] = useState(false);
 
     const loadTasks = () => {
-        setTasks(getTasks(selectedDate));
+        if (typeof window === 'undefined') return;
+        try {
+            const saved = localStorage.getItem(TASKS_KEY);
+            setTasks(saved ? JSON.parse(saved) : []);
+        } catch {
+            setTasks([]);
+        }
     };
 
     useEffect(() => {
@@ -29,8 +33,9 @@ export default function DashboardTasks() {
         window.addEventListener('workout_os_tasks_updated', handleUpdate);
         
         // Listen for storage events (if changed from another tab)
-        const handleStorage = (e: StorageEvent) => {
-            if (e.key === `workout_os_tasks_${selectedDate}`) loadTasks();
+        const handleStorage = (e: StorageEvent | Event) => {
+            const key = (e as StorageEvent).key;
+            if (!key || key === TASKS_KEY) loadTasks();
         };
         window.addEventListener('storage', handleStorage);
         
@@ -53,6 +58,8 @@ export default function DashboardTasks() {
     const toggleTask = (taskId: string) => {
         const updated = tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t);
         setTasks(updated);
+        localStorage.setItem(TASKS_KEY, JSON.stringify(updated));
+        window.dispatchEvent(new Event('workout_os_tasks_updated'));
     };
 
     if (!isClient) return null;

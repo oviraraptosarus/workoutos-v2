@@ -20,6 +20,9 @@ export interface UserProfile {
     waterGoalMl: number;
     calorieGoal: number;
     monthlyBudget: number;
+    monthlyIncome?: number;
+    enableFinancialReminders: boolean;
+    createdAt?: string;
     updatedAt: string;
 }
 
@@ -33,6 +36,7 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
     waterGoalMl: 3000,
     calorieGoal: 2600,
     monthlyBudget: 1200,
+    enableFinancialReminders: true,
     updatedAt: new Date().toISOString()
 };
 
@@ -46,7 +50,7 @@ interface AuthContextType {
     signIn: (email?: string, password?: string) => Promise<unknown>;
     login: (email?: string, password?: string) => Promise<unknown>;
     signOut: () => Promise<void>;
-    updateUserProfile: (updates: Partial<UserProfile>) => void;
+    updateUserProfile: (updates: Partial<UserProfile>) => Promise<void>;
     clearUserCache: () => void;
     getCurrentUser: () => Promise<User | null>;
     isEmailVerified: () => boolean;
@@ -102,6 +106,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     .single();
 
                 if (!error && data) {
+                    let localCalorieGoal = DEFAULT_USER_PROFILE.calorieGoal;
+                    let localWaterGoalMl = DEFAULT_USER_PROFILE.waterGoalMl;
+                    let localMonthlyBudget = DEFAULT_USER_PROFILE.monthlyBudget;
+                    
+                    if (typeof window !== 'undefined') {
+                        const savedCal = localStorage.getItem('workout_os_calorie_goal');
+                        if (savedCal) localCalorieGoal = parseInt(savedCal, 10);
+                        
+                        const savedBudget = localStorage.getItem('workout_os_budget_target');
+                        if (savedBudget) localMonthlyBudget = parseInt(savedBudget, 10);
+                    }
+
                     setUserProfile({
                         fullName: data.full_name || '',
                         username: data.username || '',
@@ -109,9 +125,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         fitnessGoal: data.goals?.[0] || DEFAULT_USER_PROFILE.fitnessGoal,
                         currentWeight: Number(data.current_weight) || DEFAULT_USER_PROFILE.currentWeight,
                         targetWeight: Number(data.target_weight) || DEFAULT_USER_PROFILE.targetWeight,
-                        waterGoalMl: DEFAULT_USER_PROFILE.waterGoalMl, // In a real app, pull these from DB too
-                        calorieGoal: DEFAULT_USER_PROFILE.calorieGoal,
-                        monthlyBudget: DEFAULT_USER_PROFILE.monthlyBudget,
+                        waterGoalMl: data.water_goal_ml || localWaterGoalMl,
+                        calorieGoal: data.calorie_goal || localCalorieGoal,
+                        monthlyBudget: data.monthly_budget || localMonthlyBudget,
+                        enableFinancialReminders: data.enable_financial_reminders !== false, // default true
+                        createdAt: user.created_at || data.created_at || new Date().toISOString(),
                         updatedAt: data.updated_at || new Date().toISOString()
                     });
                 } else {
@@ -119,7 +137,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     setUserProfile(prev => ({
                         ...prev,
                         email: user.email || '',
-                        fullName: user.user_metadata?.full_name || ''
+                        fullName: user.user_metadata?.full_name || '',
+                        createdAt: user.created_at || new Date().toISOString()
                     }));
                 }
             } else {
@@ -130,18 +149,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         fetchProfile();
     }, [user]);
 
-    const updateUserProfile = async (updates: Partial<UserProfile>) => {
+    const updateUserProfile = async (updates: Partial<UserProfile>): Promise<void> => {
         const next = { ...userProfile, ...updates, updatedAt: new Date().toISOString() };
         setUserProfile(next);
         
         if (user) {
-            await supabase.from('profiles').update({
+            const { error } = await supabase.from('profiles').update({
                 full_name: next.fullName,
                 username: next.username,
                 current_weight: next.currentWeight,
                 target_weight: next.targetWeight,
+                enable_financial_reminders: next.enableFinancialReminders,
                 updated_at: next.updatedAt
             }).eq('id', user.id);
+            
+            if (error) {
+                console.error("Failed to update profile in Supabase:", error);
+                throw error;
+            }
         }
     };
 

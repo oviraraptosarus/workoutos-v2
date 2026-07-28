@@ -76,6 +76,31 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
 
     const handleFinish = () => {
         setIsFinished(true);
+        
+        const weightKg = userProfile?.targetWeight || 75;
+        const durationHrs = Math.max(elapsedSeconds / 3600, 0.05);
+        const calsBurned = Math.round(6.0 * weightKg * durationHrs);
+        
+        const newWorkout = {
+            id: Date.now(),
+            name: preset ? preset.title : customTitle,
+            duration: formatTime(elapsedSeconds),
+            volume: `${calsBurned} kcal burned`,
+            date: 'Today',
+        };
+        
+        let recents: any[] = [];
+        try { recents = JSON.parse(localStorage.getItem('workout_os_recent_workouts') || '[]'); } catch(e) {}
+        recents = [newWorkout, ...recents];
+        localStorage.setItem('workout_os_recent_workouts', JSON.stringify(recents));
+        
+        // Populate dashboard checklist
+        const d = new Date();
+        const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        const checklist = exercises.map((ex: any, idx: number) => ({ id: idx + Date.now(), name: ex.name, done: true }));
+        localStorage.setItem(`workout_os_workout_exercises_${todayKey}`, JSON.stringify(checklist));
+        
+        window.dispatchEvent(new Event('storage'));
     };
 
     if (isFinished) {

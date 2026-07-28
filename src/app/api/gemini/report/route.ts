@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { historicalData, userProfile, apiKey: customApiKey } = body;
+        const { historicalData, userProfile } = body;
 
-        const apiKey = customApiKey || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+        const apiKey = process.env.GEMINI_API_KEY;
 
         const systemInstruction = `You are "Nova", an elite fitness and finance analyst AI for "Workout OS".
 Your task is to analyze the provided 14 days of historical data for the user and generate a comprehensive, highly insightful Bi-Weekly Report.
@@ -25,13 +25,12 @@ Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your r
 
         if (apiKey) {
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': apiKey
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         systemInstruction: {

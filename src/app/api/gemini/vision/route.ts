@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { imageBase64, mimeType, apiKey: customApiKey } = body;
+        const { imageBase64, mimeType } = body;
 
         if (!imageBase64) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
         }
 
-        const apiKey = customApiKey || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+        const apiKey = process.env.GEMINI_API_KEY;
 
         const systemInstruction = `You are a strict JSON-only API that extracts nutritional information from food labels and barcodes.
 Given an image of a food item, nutrition label, or barcode, extract the following:

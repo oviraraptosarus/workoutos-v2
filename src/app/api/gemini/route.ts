@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, userProfile, apiKey: customApiKey, image, history, appState } = body;
+        const { prompt, userProfile, image, history, appState } = body;
 
         if (!prompt && !image) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
         }
 
-        const apiKey = customApiKey || process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+        const apiKey = process.env.GEMINI_API_KEY;
 
         const systemInstruction = `You are "Nova", an elite iOS Apple-style AI Assistant for "Workout OS".
 Your main job is to help the user with fitness, nutrition, app usage, or anything else they need.
@@ -81,12 +81,13 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                 }
 
                 // Call Google Gemini API
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey
                     },
                     body: JSON.stringify({
                         systemInstruction: {
@@ -207,7 +208,7 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                     if (text || functionCall) {
                         return NextResponse.json({ 
                             result: text || "Sure, I'll take care of that for you.", 
-                            source: 'gemini-1.5-flash',
+                            source: 'gemini-flash-latest',
                             functionCall: functionCall
                         });
                     }

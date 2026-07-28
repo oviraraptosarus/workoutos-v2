@@ -29,27 +29,71 @@ const WATER_PREFIX = 'workout_os_water_ml_';
 const GOALS_KEY = 'workout_os_macro_goals_v1';
 
 export const getMealsForDate = (dateKey: string, initialFallback: MealItem[]): MealItem[] => {
+    if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(`${MEALS_PREFIX}${dateKey}`);
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {}
+        }
+    }
     return initialFallback || [];
 };
 
 export const saveMealsForDate = (dateKey: string, meals: MealItem[]): void => {
-    // Backend API hook goes here later
+    if (typeof window !== 'undefined') {
+        localStorage.setItem(`${MEALS_PREFIX}${dateKey}`, JSON.stringify(meals));
+        
+        // Always update the nutrition summary key so NutritionCard stays in sync
+        const totalCals = meals.reduce((acc, m) => acc + (m.calories || 0), 0);
+        localStorage.setItem(`workout_os_nutrition_${dateKey}`, totalCals.toString());
+        
+        window.dispatchEvent(new Event('storage'));
+    }
 };
 
 export const getWaterForDate = (dateKey: string): number => {
+    if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(`${WATER_PREFIX}${dateKey}`);
+        if (saved) return parseInt(saved, 10);
+    }
     return 0;
 };
 
 export const saveWaterForDate = (dateKey: string, amount: number): void => {
-    // Backend API hook goes here later
+    if (typeof window !== 'undefined') {
+        localStorage.setItem(`${WATER_PREFIX}${dateKey}`, amount.toString());
+        window.dispatchEvent(new Event('storage'));
+    }
 };
 
 export const getMacroGoals = (): MacroGoals => {
+    if (typeof window !== 'undefined') {
+        const savedCals = localStorage.getItem('workout_os_calorie_goal');
+        const savedMacrosStr = localStorage.getItem('workout_os_macro_goals_v1');
+        
+        let cals = savedCals ? parseInt(savedCals, 10) : 2200;
+        let macros = { protein: 140, carbs: 220, fat: 65, sugar: 35 };
+        
+        if (savedMacrosStr) {
+            try {
+                const parsed = JSON.parse(savedMacrosStr);
+                macros = { ...macros, ...parsed };
+            } catch (e) {}
+        }
+        
+        return { calories: cals, ...macros };
+    }
     return { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35 };
 };
 
 export const saveMacroGoals = (goals: MacroGoals): void => {
-    // Backend API hook goes here later
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('workout_os_calorie_goal', goals.calories.toString());
+        const { calories, ...macrosOnly } = goals;
+        localStorage.setItem('workout_os_macro_goals_v1', JSON.stringify(macrosOnly));
+        window.dispatchEvent(new Event('storage'));
+    }
 };
 
 export const exportDailySummaryText = (dateKey: string, meals: MealItem[], waterMl: number): string => {

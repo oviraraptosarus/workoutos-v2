@@ -28,9 +28,9 @@ export const PRESET_WORKOUTS = [
         color: 'bg-blue-50 text-blue-500',
         exercises: [
             { name: 'Barbell Bench Press', sets: '4 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=rxD321l2svE' },
-            { name: 'Incline Dumbbell Press', sets: '3 sets x 10-12 reps', youtubeUrl: '' },
-            { name: 'Overhead Press', sets: '3 sets x 8-10 reps', youtubeUrl: '' },
-            { name: 'Tricep Pushdowns', sets: '3 sets x 12-15 reps', youtubeUrl: '' },
+            { name: 'Incline Dumbbell Press', sets: '3 sets x 10-12 reps', youtubeUrl: 'https://youtube.com/watch?v=8iPEnn-ltC8' },
+            { name: 'Overhead Press', sets: '3 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=QAQ64hK4Xxs' },
+            { name: 'Tricep Pushdowns', sets: '3 sets x 12-15 reps', youtubeUrl: 'https://youtube.com/watch?v=2-LAMcpzODU' },
         ]
     },
     {
@@ -42,10 +42,10 @@ export const PRESET_WORKOUTS = [
         intensity: 'Medium',
         color: 'bg-indigo-50 text-indigo-500',
         exercises: [
-            { name: 'Deadlift', sets: '3 sets x 5 reps', youtubeUrl: '' },
-            { name: 'Pull-ups', sets: '3 sets x 8-12 reps', youtubeUrl: '' },
-            { name: 'Barbell Rows', sets: '3 sets x 8-10 reps', youtubeUrl: '' },
-            { name: 'Bicep Curls', sets: '3 sets x 12-15 reps', youtubeUrl: '' },
+            { name: 'Deadlift', sets: '3 sets x 5 reps', youtubeUrl: 'https://youtube.com/watch?v=op9kVnSso6Q' },
+            { name: 'Pull-ups', sets: '3 sets x 8-12 reps', youtubeUrl: 'https://youtube.com/watch?v=eGo4IYtlCvk' },
+            { name: 'Barbell Rows', sets: '3 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=G8l_8chR5BE' },
+            { name: 'Bicep Curls', sets: '3 sets x 12-15 reps', youtubeUrl: 'https://youtube.com/watch?v=ykJmrZ5v0Oo' },
         ]
     },
     {
@@ -57,10 +57,10 @@ export const PRESET_WORKOUTS = [
         intensity: 'High',
         color: 'bg-emerald-50 text-emerald-500',
         exercises: [
-            { name: 'Back Squats', sets: '4 sets x 6-8 reps', youtubeUrl: '' },
-            { name: 'Romanian Deadlifts', sets: '3 sets x 8-10 reps', youtubeUrl: '' },
-            { name: 'Leg Press', sets: '3 sets x 10-12 reps', youtubeUrl: '' },
-            { name: 'Calf Raises', sets: '4 sets x 15-20 reps', youtubeUrl: '' },
+            { name: 'Back Squats', sets: '4 sets x 6-8 reps', youtubeUrl: 'https://youtube.com/watch?v=SW_C1A-rejs' },
+            { name: 'Romanian Deadlifts', sets: '3 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=JCXUYuzwNrM' },
+            { name: 'Leg Press', sets: '3 sets x 10-12 reps', youtubeUrl: 'https://youtube.com/watch?v=IZxyjW7OSvc' },
+            { name: 'Calf Raises', sets: '4 sets x 15-20 reps', youtubeUrl: 'https://youtube.com/watch?v=-M4-G8p8fmc' },
         ]
     },
     {
@@ -127,14 +127,14 @@ export const PRESET_WORKOUTS = [
         title: 'Core Crusher',
         subtitle: 'Abs Focus',
         iconType: 'target',
-        duration: '15 min',
+        duration: '25 min',
         intensity: 'Medium',
         color: 'bg-teal-50 text-teal-500',
         exercises: [
-            { name: 'Crunches', sets: '3 sets x 20 reps', youtubeUrl: '' },
-            { name: 'Russian Twists', sets: '3 sets x 20 reps / side', youtubeUrl: '' },
-            { name: 'Leg Raises', sets: '3 sets x 15 reps', youtubeUrl: '' },
-            { name: 'Bicycle Crunches', sets: '3 sets x 20 reps / side', youtubeUrl: '' },
+            { name: 'Crunches', sets: '3 sets x 20 reps', youtubeUrl: 'https://youtube.com/watch?v=Xyd_fa5zoEU' },
+            { name: 'Russian Twists', sets: '3 sets x 20 reps / side', youtubeUrl: 'https://youtube.com/watch?v=wkD8rjkodUI' },
+            { name: 'Leg Raises', sets: '3 sets x 15 reps', youtubeUrl: 'https://youtube.com/watch?v=l4kQd9eWclE' },
+            { name: 'Bicycle Crunches', sets: '3 sets x 20 reps / side', youtubeUrl: 'https://youtube.com/watch?v=9FGilxCbdz8' },
         ]
     },
     {

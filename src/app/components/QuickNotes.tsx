@@ -12,7 +12,9 @@ export default function QuickNotes() {
     const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
     const loadNote = () => {
-        setNote('');
+        if (!selectedDate) return;
+        const saved = localStorage.getItem(`workout_os_quick_note_${selectedDate}`);
+        setNote(saved || '');
     };
 
     useEffect(() => {
@@ -26,10 +28,18 @@ export default function QuickNotes() {
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value;
         setNote(val);
+        if (selectedDate) {
+            localStorage.setItem(`workout_os_quick_note_${selectedDate}`, val);
+            window.dispatchEvent(new Event('storage'));
+        }
     };
 
     const clearNote = () => {
         setNote('');
+        if (selectedDate) {
+            localStorage.removeItem(`workout_os_quick_note_${selectedDate}`);
+            window.dispatchEvent(new Event('storage'));
+        }
     };
 
     if (!isClient) return null;

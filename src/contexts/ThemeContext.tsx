@@ -17,8 +17,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setIsMounted(true);
-        setTheme('light'); // Force light mode
-        localStorage.setItem('workout_os_theme', 'light');
+        const stored = localStorage.getItem('workout_os_theme');
+        if (stored === 'dark' || stored === 'light') {
+            setTheme(stored);
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        }
     }, []);
 
     useEffect(() => {
@@ -35,11 +39,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const toggleTheme = () => {
         setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
     };
-
-    // Avoid hydration mismatch by not rendering until mounted
-    if (!isMounted) {
-        return <div className="invisible">{children}</div>;
-    }
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
