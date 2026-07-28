@@ -31,7 +31,7 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#f7f6f0] text-stone-900 pb-32 font-sans selection:bg-emerald-100">
+    <div className="min-h-screen bg-[#f7f6f0] dark:bg-[#0f1115] text-stone-900 dark:text-gray-100 pb-32 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-900/50">
       <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
         <DashboardHeader />
 
