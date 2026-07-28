@@ -253,16 +253,16 @@ export default function GeminiFoodAssistant() {
                 
                 <div 
                     onClick={() => setIsOpen(true)}
-                    className="relative bg-white border border-gray-200 rounded-full h-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-text transition-all flex items-center px-4"
+                    className="relative bg-white border border-gray-200 rounded-full h-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-text transition-all flex items-center pl-4 pr-2"
                 >
-                    <div className="flex items-center gap-3 w-full">
+                    <div className="flex items-center gap-2 sm:gap-3 w-full">
                         <div className="flex-shrink-0 text-blue-500">
                             <Sparkles size={22} className="animate-pulse" />
                         </div>
                         
-                        <div className="flex-1 flex flex-col justify-center">
+                        <div className="flex-1 flex flex-col justify-center min-w-0">
                             <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                                <span className="text-[11px] font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 truncate">
                                     Nova AI Copilot
                                 </span>
                             </div>
@@ -271,11 +271,11 @@ export default function GeminiFoodAssistant() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
+                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
                                 <Mic size={18} />
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
                                 <Camera size={18} />
                             </div>
                         </div>
