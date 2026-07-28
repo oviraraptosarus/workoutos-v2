@@ -15,15 +15,28 @@ import { useDate } from '@/contexts/DateContext';
 export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
-    const [sleepHrs, setSleepHrs] = React.useState('');
+    const [bedtime, setBedtime] = React.useState('22:00');
+    const [waketime, setWaketime] = React.useState('06:00');
     const [mood, setMood] = React.useState('5');
     const [energy, setEnergy] = React.useState('5');
+
+    const calculateHours = (start: string, end: string) => {
+        if (!start || !end) return 0;
+        const [h1, m1] = start.split(':').map(Number);
+        const [h2, m2] = end.split(':').map(Number);
+        let startMins = h1 * 60 + m1;
+        let endMins = h2 * 60 + m2;
+        if (endMins < startMins) {
+            endMins += 24 * 60; // Crossed midnight
+        }
+        return (endMins - startMins) / 60;
+    };
 
     if (!isOpen) return null;
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        const hrs = parseFloat(sleepHrs);
+        const hrs = calculateHours(bedtime, waketime);
         const m = parseInt(mood);
         const en = parseInt(energy);
 
@@ -37,7 +50,9 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                 .single();
 
             const updates: any = {};
-            if (!isNaN(hrs)) updates.sleep_hours = hrs;
+            if (bedtime) updates.sleep_bedtime = `${bedtime}:00`;
+            if (waketime) updates.sleep_waketime = `${waketime}:00`;
+            updates.sleep_hours = hrs;
             if (!isNaN(m)) updates.mood_rating = m;
             if (!isNaN(en)) updates.energy_rating = en;
 
@@ -68,16 +83,31 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
 
                 {/* Body Form */}
                 <form className="p-5 space-y-4" onSubmit={handleSave}>
-                    <div>
-                        <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">Sleep duration (hrs)</label>
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={sleepHrs}
-                            onChange={(e) => setSleepHrs(e.target.value)}
-                            placeholder="e.g. 7.5"
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-gray-400 font-medium"
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">Bedtime</label>
+                            <input
+                                type="time"
+                                value={bedtime}
+                                onChange={(e) => setBedtime(e.target.value)}
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">Wake Time</label>
+                            <input
+                                type="time"
+                                value={waketime}
+                                onChange={(e) => setWaketime(e.target.value)}
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="text-center py-2">
+                        <span className="text-sm font-bold text-gray-500">
+                            Total Sleep: <span className="text-emerald-600">{calculateHours(bedtime, waketime).toFixed(1)} hrs</span>
+                        </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>

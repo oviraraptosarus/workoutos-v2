@@ -16,14 +16,14 @@ User Profile Context:
 Analyze the trends in their water intake, sleep, nutrition (calories and macros), tasks completed, and budget (income vs expenses).
 Pay special attention to the new granular data provided:
 - \`water_logs\`: detailed logs with timestamps
-- \`sleep_logs\`: segment data (e.g., Core Sleep, Naps)
+- \`sleep_bedtime\` and \`sleep_waketime\`: exact times the user went to sleep and woke up. Identify the user's most common sleep windows (e.g. 11:00 PM to 7:00 AM) and summarize their most slept times.
 - \`transaction_type\`: differentiates between 'income' and 'expense' in the transactions array
 - \`tasks\`: planner tasks completed vs pending
 - \`target_config\`: user's macro nutrient targets
 
 Output the report in crisp, beautiful Markdown with the following sections:
 1. **Executive Summary**: A quick, punchy 2-sentence summary of how they did over the last 14 days. Use an encouraging tone.
-2. **📈 Fitness & Health Trends**: Analyze their sleep patterns (core vs naps), hydration timings, and nutrition (macros). Call out if they are consistently hitting targets or missing them.
+2. **📈 Fitness & Health Trends**: Analyze their sleep patterns (specifically their most common sleep window based on bedtimes/waketimes), hydration timings, and nutrition (macros). Call out if they are consistently hitting targets or missing them.
 3. **💰 Financial Overview**: Analyze their spending vs income using the transaction types. Are they saving? Did they spend too much on a specific category?
 4. **🎯 Nova's Recommendations**: 3 actionable, highly specific tips to improve over the next 14 days based on the granular data.
 
