@@ -5,6 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { supabase } from '@/lib/supabaseClient';
+import { ArrowLeft, Target, BrainCircuit, Plus, Trash2, Play, Pause, GripVertical, CheckCircle2, AlignLeft, Calendar, Circle, Bookmark, Clock, Star } from 'lucide-react';
 
 export interface SubTask {
     id: string;
