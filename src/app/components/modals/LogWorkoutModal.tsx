@@ -13,7 +13,7 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
+            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-[2rem] w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800">

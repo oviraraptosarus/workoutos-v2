@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
 import { getExpenses, saveExpenses, getIncome, saveIncome } from '@/app/budget-tracker/services/budgetStorage';
+import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Message {
     id: string;
@@ -117,15 +119,27 @@ export default function GeminiFoodAssistant() {
             }));
 
             const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            let dbState: any = {};
+            if (user) {
+                const { data } = await supabase.from('daily_logs').select('water_ml, sleep_hours').eq('user_id', user.id).eq('date', dateKey).single();
+                if (data) {
+                    dbState = { waterMl: data.water_ml, sleepHrs: data.sleep_hours };
+                }
+                const meals = await getMealsForDate(dateKey);
+                dbState.nutritionKcal = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
+            }
+
             const currentAppState = {
                 date: dateKey,
-                waterMl: parseInt(localStorage.getItem(`workout_os_water_ml_${dateKey}`) || '0', 10),
-                sleepHrs: parseFloat(localStorage.getItem(`workout_os_sleep_${dateKey}`) || '0'),
-                nutritionKcal: parseInt(localStorage.getItem(`workout_os_nutrition_${dateKey}`) || '0', 10),
+                waterMl: dbState.waterMl || 0,
+                sleepHrs: dbState.sleepHrs || 0,
+                nutritionKcal: dbState.nutritionKcal || 0,
                 tasks: JSON.parse(localStorage.getItem('workout_os_tasks') || '[]'),
                 quickNotes: localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '',
-                budgetIncome: getIncome(),
-                budgetExpenses: getExpenses()
+                budgetIncome: await getIncome(),
+                budgetExpenses: await getExpenses()
             };
 
             const res = await fetch('/api/gemini', {
@@ -168,20 +182,34 @@ export default function GeminiFoodAssistant() {
                             setIsOpen(false);
                         }
                     } else if (fn === 'log_water') {
-                        const currentWater = parseInt(localStorage.getItem(`workout_os_water_ml_${dateKey}`) || '0', 10);
                         const added = Number(args.amount) || 0;
-                        localStorage.setItem(`workout_os_water_ml_${dateKey}`, (currentWater + added).toString());
+                        const newWater = currentAppState.waterMl + added;
+                        if (user) {
+                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
+                            if (existing) {
+                                await supabase.from('daily_logs').update({ water_ml: newWater }).eq('id', existing.id);
+                            } else {
+                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, water_ml: newWater });
+                            }
+                        }
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'log_sleep') {
                         const hours = Number(args.hours) || 0;
-                        localStorage.setItem(`workout_os_sleep_${dateKey}`, hours.toString());
+                        if (user) {
+                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
+                            if (existing) {
+                                await supabase.from('daily_logs').update({ sleep_hours: hours }).eq('id', existing.id);
+                            } else {
+                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, sleep_hours: hours });
+                            }
+                        }
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'log_nutrition') {
-                        const meals = JSON.parse(localStorage.getItem(`workout_os_diet_meals_${dateKey}`) || '[]');
+                        const meals = await getMealsForDate(dateKey);
                         meals.push({
                             id: Date.now().toString(),
                             name: args.food_name || 'AI Logged Meal',
-                            category: 'Snacks',
+                            category: 'Snacks' as any,
                             portion: '1 serving',
                             calories: Number(args.calories) || 0,
                             protein: Number(args.protein) || 0,
@@ -190,9 +218,7 @@ export default function GeminiFoodAssistant() {
                             sugar: 0,
                             icon: '🤖'
                         });
-                        localStorage.setItem(`workout_os_diet_meals_${dateKey}`, JSON.stringify(meals));
-                        const totalCals = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
-                        localStorage.setItem(`workout_os_nutrition_${dateKey}`, totalCals.toString());
+                        await saveMealsForDate(dateKey, meals);
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'add_expense') {
                         const newExpense = {
@@ -205,7 +231,7 @@ export default function GeminiFoodAssistant() {
                             costPerG: null,
                             type: 'essential'
                         };
-                        saveExpenses([...getExpenses(), newExpense]);
+                        await saveExpenses([...(await getExpenses()), newExpense]);
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'budget_expense' } }));
                     } else if (fn === 'add_income') {
                         const newIncome = {
@@ -216,7 +242,7 @@ export default function GeminiFoodAssistant() {
                             amount: Number(args.amount) || 0,
                             type: 'one-time'
                         };
-                        saveIncome([...getIncome(), newIncome]);
+                        await saveIncome([...(await getIncome()), newIncome]);
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'budget_income' } }));
                     }
                 }

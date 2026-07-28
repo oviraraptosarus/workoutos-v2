@@ -34,20 +34,22 @@ export default function DietGaugeSummary({
     const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all relative overflow-hidden bg-gradient-to-b from-white/80 to-white/50">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
             {/* Top Toolbar with Date Navigator */}
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-slate-800/60 mb-4">
-                <DateNavigator currentDateKey={currentDateKey} onDateChange={onDateChange} />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100 dark:border-slate-800/60 mb-4">
+                <div className="w-full flex justify-center sm:justify-start sm:w-auto">
+                    <DateNavigator currentDateKey={currentDateKey} onDateChange={onDateChange} />
+                </div>
 
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <div className="flex items-center justify-center w-full sm:w-auto gap-2 text-gray-500 dark:text-gray-400 shrink-0">
                     {onOpenAIMealModal && (
                         <button
                             id="tour-ai-log"
                             onClick={onOpenAIMealModal}
-                            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-3 py-1.5 rounded-full text-xs font-black shadow-sm transition-all btn-press relative z-10"
+                            className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white px-3 sm:px-4 py-2 rounded-full text-xs font-bold shadow-[0_4px_12px_rgba(16,185,129,0.3)] transition-all active:scale-95 whitespace-nowrap relative z-10 shrink-0"
                             title="AI Voice & Natural Language Meal Logger"
                         >
-                            <Sparkles size={14} /> AI Voice & Text Log
+                            <Sparkles size={14} className="shrink-0" /> <span className="hidden sm:inline">AI Voice & Text Log</span><span className="sm:hidden">AI Log</span>
                         </button>
                     )}
 

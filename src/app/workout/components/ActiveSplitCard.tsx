@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, CheckCircle2, Trophy, Flame, Video, Link as LinkIcon, Plus, Save } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void }) {
     const { userProfile } = useAuth();
@@ -74,33 +75,28 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         setLinkInput('');
     };
 
-    const handleFinish = () => {
+    const handleFinish = async () => {
         setIsFinished(true);
         
         const weightKg = userProfile?.targetWeight || 75;
         const durationHrs = Math.max(elapsedSeconds / 3600, 0.05);
         const calsBurned = Math.round(6.0 * weightKg * durationHrs);
         
-        const newWorkout = {
-            id: Date.now(),
-            name: preset ? preset.title : customTitle,
-            duration: formatTime(elapsedSeconds),
-            volume: `${calsBurned} kcal burned`,
-            date: 'Today',
-        };
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const d = new Date();
+            const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            
+            await supabase.from('workout_logs').insert({
+                user_id: user.id,
+                date: todayKey,
+                session_type: preset ? preset.title : customTitle,
+                exercises: [...exercises, { type: 'metadata', duration: formatTime(elapsedSeconds), volume: `${calsBurned} kcal burned` }],
+                completed: true
+            });
+        }
         
-        let recents: any[] = [];
-        try { recents = JSON.parse(localStorage.getItem('workout_os_recent_workouts') || '[]'); } catch(e) {}
-        recents = [newWorkout, ...recents];
-        localStorage.setItem('workout_os_recent_workouts', JSON.stringify(recents));
-        
-        // Populate dashboard checklist
-        const d = new Date();
-        const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        const checklist = exercises.map((ex: any, idx: number) => ({ id: idx + Date.now(), name: ex.name, done: true }));
-        localStorage.setItem(`workout_os_workout_exercises_${todayKey}`, JSON.stringify(checklist));
-        
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
     };
 
     if (isFinished) {
@@ -110,7 +106,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         const calsBurned = Math.round(6.0 * weightKg * durationHrs);
 
         return (
-            <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
                 <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-sm border border-emerald-200">
                     <Trophy size={32} />
                 </div>
@@ -136,7 +132,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
 
     if (isBuilderMode) {
         return (
-            <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="mb-4">
                     <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 mb-1">Plan Workout</h3>
                     <input 
@@ -199,7 +195,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     if (exercises.length === 0 && !isBuilderMode) return null;
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1">Today's Split</h3>

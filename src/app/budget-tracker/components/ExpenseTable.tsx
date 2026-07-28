@@ -9,7 +9,7 @@ export default function ExpenseTable() {
     const [highlight, setHighlight] = useState(false);
     
     useEffect(() => {
-        const load = () => setExpenses(getExpenses());
+        const load = async () => setExpenses(await getExpenses());
         load();
         
         window.addEventListener('workout_os_budget_updated', load);

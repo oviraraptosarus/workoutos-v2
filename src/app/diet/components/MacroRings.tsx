@@ -50,7 +50,7 @@ export default function MacroRings({
     };
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all flex flex-col md:flex-row items-center gap-8 relative">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all flex flex-col md:flex-row items-center gap-6 md:gap-8 relative hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             {/* Top Right Goal Customize Button */}
             {onUpdateGoals && (
@@ -89,9 +89,9 @@ export default function MacroRings({
                     const percent = Math.min(100, Math.round((m.eaten / m.goal) * 100));
                     return (
                         <div key={m.name} className="space-y-1.5">
-                            <div className="flex justify-between text-xs font-bold text-gray-600 dark:text-gray-300">
+                            <div className="flex justify-between text-[11px] sm:text-xs font-bold text-gray-600 dark:text-gray-300">
                                 <span>{m.name}</span>
-                                <span className="text-gray-900 drop-shadow-sm">{m.eaten}{m.unit} / {m.goal}{m.unit}</span>
+                                <span className="text-gray-900 drop-shadow-sm ml-2 shrink-0">{m.eaten}{m.unit} / {m.goal}{m.unit}</span>
                             </div>
                             <div className="w-full bg-gray-50 h-3 rounded-full overflow-hidden shadow-inner border border-gray-100 dark:border-slate-800">
                                 <div 

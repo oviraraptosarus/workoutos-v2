@@ -133,7 +133,18 @@ export default function TransactionModal({
                                 >
                                     <option value="" disabled>Select a category</option>
                                     <option value="Groceries">Groceries</option>
-                                    <option value="Food">Food & Dining</option>
+                                    <option value="Supplements">Supplements</option>
+                                    <option value="Gym & Equipment">Gym & Equipment</option>
+                                    <option value="Eating out">Eating out</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Rent">Rent</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Subscriptions">Subscriptions</option>
+                                    <option value="Health & Medical">Health & Medical</option>
+                                    <option value="Personal Care">Personal Care</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Education">Education</option>
                                     <option value="Other">Other (Specify)</option>
                                 </select>
                                 {isOtherCategory && (

@@ -130,7 +130,7 @@ export default function CommandPaletteModal() {
             {/* Floating "?" Help Button (Bottom-Left) */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 left-6 z-[80] p-3 rounded-full bg-stone-900 text-white shadow-xl hover:bg-emerald-600 transition-all btn-press flex items-center gap-2 text-xs font-bold border border-stone-700"
+                className="fixed bottom-28 left-5 sm:bottom-6 sm:left-6 z-[80] p-3 rounded-full bg-stone-900 text-white shadow-xl hover:bg-emerald-600 transition-all btn-press flex items-center gap-2 text-xs font-bold border border-stone-700"
                 title="Open Command Palette & Help Center (Ctrl+K)"
             >
                 <HelpCircle size={18} className="text-emerald-400" />

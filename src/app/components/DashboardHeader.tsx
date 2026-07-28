@@ -93,30 +93,30 @@ export default function DashboardHeader() {
             {/* Header Main Row */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <AppLogo size={38} />
-                    <div>
-                        <div className="flex items-center gap-2">
+                    <AppLogo size={38} className="hidden sm:block shrink-0" />
+                    <div className="flex flex-col items-start">
+                        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-none drop-shadow-sm">
+                            {greeting}, {displayName}
+                        </h1>
+                        <div className="flex items-center gap-2 mt-1.5 sm:mt-1">
                             <button 
                                 onClick={() => setOffsetDays(Math.max(offsetDays - 1, -14))}
                                 disabled={offsetDays <= -14}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors dark:text-gray-400 dark:text-gray-500"
+                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors text-gray-500 dark:text-gray-400"
                             >
                                 <ChevronLeft size={12} />
                             </button>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 font-bold w-32 text-center select-none">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 font-bold whitespace-nowrap select-none">
                                 {isToday ? 'Today, ' : ''}{dateStr || 'Loading...'}
                             </p>
                             <button 
                                 onClick={() => setOffsetDays(Math.min(offsetDays + 1, 0))}
                                 disabled={isToday}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors dark:text-gray-400 dark:text-gray-500"
+                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors text-gray-500 dark:text-gray-400"
                             >
                                 <ChevronRight size={12} />
                             </button>
                         </div>
-                        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-none mt-0.5 drop-shadow-sm">
-                            {greeting}, {displayName}
-                        </h1>
                     </div>
                 </div>
 

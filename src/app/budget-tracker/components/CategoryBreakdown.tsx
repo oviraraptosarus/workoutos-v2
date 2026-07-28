@@ -1,59 +1,122 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { getExpenses, ExpenseItem } from '../services/budgetStorage';
 
 export default function CategoryBreakdown() {
-    const categories = [
-        { name: 'Groceries', actual: 672, limit: 900, color: 'bg-[#2e8555]' },
-        { name: 'Supplements', actual: 186, limit: 400, color: 'bg-[#8b5cf6]' },
-        { name: 'Gym & Equipment', actual: 150, limit: 150, color: 'bg-[#6366f1]' },
-        { name: 'Eating out', actual: 348, limit: 300, color: 'bg-[#f59e0b]' },
-        { name: 'Transport', actual: 198, limit: 250, color: 'bg-[#fb923c]' },
+    const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
+    const [showAll, setShowAll] = useState(false);
+
+    useEffect(() => {
+        const loadExpenses = async () => {
+            setExpenses(await getExpenses());
+        };
+        loadExpenses();
+        window.addEventListener('workout_os_budget_updated', loadExpenses);
+        return () => window.removeEventListener('workout_os_budget_updated', loadExpenses);
+    }, []);
+
+    // Calculate aggregated data
+    const categoryLimits: Record<string, number> = {
+        'Groceries': 900,
+        'Supplements': 400,
+        'Gym & Equipment': 150,
+        'Eating out': 300,
+        'Transport': 250
+    };
+
+    const categoryColors = [
+        'bg-[#2e8555]', 'bg-[#8b5cf6]', 'bg-[#6366f1]', 'bg-[#f59e0b]', 'bg-[#fb923c]', 
+        'bg-[#ec4899]', 'bg-[#14b8a6]', 'bg-[#06b6d4]'
     ];
 
+    const aggregated = expenses.reduce((acc, curr) => {
+        if (!acc[curr.category]) {
+            acc[curr.category] = 0;
+        }
+        acc[curr.category] += curr.amount;
+        return acc;
+    }, {} as Record<string, number>);
+
+    const categories = Object.keys(aggregated).map((name, index) => ({
+        name,
+        actual: aggregated[name],
+        limit: categoryLimits[name] || Math.max(aggregated[name] * 1.5, 500),
+        color: categoryColors[index % categoryColors.length]
+    })).sort((a, b) => b.actual - a.actual); // Sort by highest spend
+
+    const totalSpend = categories.reduce((sum, c) => sum + c.actual, 0);
+    const top3 = categories.slice(0, 3);
+    let summaryString = '';
+    
+    if (totalSpend > 0) {
+        summaryString = top3.map(c => `${c.name} (${Math.round((c.actual / totalSpend) * 100)}%)`).join(' • ');
+        if (categories.length > 3) {
+            const otherActual = categories.slice(3).reduce((sum, c) => sum + c.actual, 0);
+            summaryString += ` • Other (${Math.round((otherActual / totalSpend) * 100)}%)`;
+        }
+    }
+
+    const displayedCategories = showAll ? categories : categories.slice(0, 5);
+
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 h-full flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 h-full flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight mb-1">By category</h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Budget vs. actual</p>
+                    <h3 className="text-lg font-black text-gray-900 dark:text-white tracking-tight mb-0.5 drop-shadow-sm">By category</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Budget vs. actual</p>
                 </div>
-                <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">8 categories</span>
+                <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded-full">
+                    {categories.length} categories
+                </span>
             </div>
 
-            <div className="space-y-5 flex-1">
-                {categories.map((cat) => {
+            <div className="space-y-6 flex-1">
+                {displayedCategories.length > 0 ? displayedCategories.map((cat) => {
                     const percentage = Math.min((cat.actual / cat.limit) * 100, 100);
                     return (
-                        <div key={cat.name} className="flex flex-col gap-1.5">
-                            <div className="flex justify-between items-center text-[11px] font-semibold">
-                                <div className="flex items-center gap-1.5">
-                                    <div className={`w-2 h-2 rounded-full ${cat.color}`} />
+                        <div key={cat.name} className="flex flex-col gap-2 group animate-in fade-in slide-in-from-bottom-2">
+                            <div className="flex justify-between items-center text-xs font-bold">
+                                <div className="flex items-center gap-2">
+                                    <div className={`w-2.5 h-2.5 rounded-full ${cat.color} shadow-sm group-hover:scale-125 transition-transform`} />
                                     <span className="text-gray-700 dark:text-gray-300">{cat.name}</span>
                                 </div>
-                                <div className="font-mono">
-                                    <span className="text-gray-900 dark:text-white">₹{cat.actual}</span>
+                                <div className="font-mono tracking-tight">
+                                    <span className="text-gray-900 dark:text-white">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
                                     <span className="text-gray-400 dark:text-gray-500"> / ₹{cat.limit}</span>
                                 </div>
                             </div>
-                            <div className="w-full bg-[#f1f1f1] dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                <div className={`${cat.color} h-full rounded-full`} style={{ width: `${percentage}%` }} />
+                            <div className="w-full bg-gray-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden shadow-inner">
+                                <div className={`${cat.color} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: `${percentage}%` }} />
                             </div>
                         </div>
                     );
-                })}
+                }) : (
+                    <div className="flex flex-col items-center justify-center h-full min-h-[150px] text-gray-400 dark:text-gray-500 gap-2">
+                        <span className="text-sm font-bold">No expenses yet</span>
+                        <span className="text-xs font-medium text-center max-w-[200px]">Log an expense using the + button to see your category breakdown.</span>
+                    </div>
+                )}
             </div>
 
-            <div className="mt-6 text-center">
-                <button className="flex items-center justify-center gap-1 text-[11px] font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 mx-auto transition-colors">
-                    <ChevronDown size={14} /> Show 3 more categories
-                </button>
-            </div>
+            {categories.length > 5 && (
+                <div className="mt-8 text-center">
+                    <button 
+                        onClick={() => setShowAll(!showAll)}
+                        className="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mx-auto transition-colors bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-full"
+                    >
+                        <ChevronDown size={14} strokeWidth={2.5} className={`transition-transform ${showAll ? 'rotate-180' : ''}`} /> 
+                        {showAll ? 'Show less' : `Show ${categories.length - 5} more categories`}
+                    </button>
+                </div>
+            )}
             
-            <div className="mt-5 text-[9px] text-gray-400 dark:text-gray-500 font-medium pt-4 border-t border-gray-100 dark:border-slate-800">
-                <span className="font-bold text-gray-600 dark:text-gray-300">Where it went this month:</span> Groceries (31%) • Eating out (16%) • Gym (7%) • Supplements (9%) • Other (37%)
-            </div>
+            {summaryString && (
+                <div className="mt-6 text-[10px] text-gray-400 dark:text-gray-500 font-medium pt-5 border-t border-gray-100 dark:border-slate-800/50 leading-relaxed">
+                    <span className="font-bold text-gray-600 dark:text-gray-300 tracking-wide uppercase mr-1">Where it went this month:</span> {summaryString}
+                </div>
+            )}
         </div>
     );
 }

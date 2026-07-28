@@ -247,7 +247,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <label className="block text-xs font-bold text-gray-700 mb-1">Current Weight</label>
                                         <input
                                             type="number"
-                                            value={formData.currentWeight}
+                                            value={formData.currentWeight === 0 ? '' : formData.currentWeight}
                                             onChange={(e) => setFormData({ ...formData, currentWeight: Number(e.target.value) })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
                                         />
@@ -256,10 +256,34 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <label className="block text-xs font-bold text-gray-700 mb-1">Target Weight</label>
                                         <input
                                             type="number"
-                                            value={formData.targetWeight}
+                                            value={formData.targetWeight === 0 ? '' : formData.targetWeight}
                                             onChange={(e) => setFormData({ ...formData, targetWeight: Number(e.target.value) })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
                                         />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Height (cm)</label>
+                                        <input
+                                            type="number"
+                                            value={formData.heightCm === 0 ? '' : formData.heightCm}
+                                            onChange={(e) => setFormData({ ...formData, heightCm: Number(e.target.value) })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-700 mb-1">Gender (for TDEE)</label>
+                                        <select
+                                            value={formData.gender || 'male'}
+                                            onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male'|'female'|'other' })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        >
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -270,7 +294,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <label className="block text-xs font-bold text-gray-700 mb-1">Daily Calorie Limit (kcal)</label>
                                         <input
                                             type="number"
-                                            value={formData.calorieGoal !== undefined ? formData.calorieGoal : 2200}
+                                            value={formData.calorieGoal === 0 ? '' : formData.calorieGoal !== undefined ? formData.calorieGoal : 2200}
                                             onChange={(e) => setFormData({ ...formData, calorieGoal: e.target.value === '' ? 0 : Number(e.target.value) })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
                                         />

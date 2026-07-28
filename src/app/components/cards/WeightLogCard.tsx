@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Scale, CheckCircle2, Camera, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface WeightEntry {
@@ -21,44 +21,44 @@ export default function WeightLogCard() {
     const [chartData, setChartData] = useState<WeightEntry[]>([]);
 
     useEffect(() => {
-        const load = () => {
-            const saved = localStorage.getItem(WEIGHT_KEY);
-            let logs: WeightEntry[] = [];
+        const load = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
             const target = userProfile?.targetWeight || 75;
             const createdAt = userProfile?.createdAt ? new Date(userProfile.createdAt) : null;
             
-            // Calculate max days to backfill (max 7, or days since creation)
-            let maxBackfillDays = 0;
-            if (createdAt) {
-                const today = new Date();
-                today.setHours(23, 59, 59, 999);
-                const diffTime = today.getTime() - createdAt.getTime();
-                const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-                maxBackfillDays = Math.min(6, diffDays);
-            }
-            
-            if (saved) {
-                logs = JSON.parse(saved);
-                
-                // Filter out any stray logs that were recorded before the account was created
-                if (createdAt) {
-                    const startOfDay = new Date(createdAt);
-                    startOfDay.setHours(0, 0, 0, 0);
-                    logs = logs.filter(log => {
-                        const logDate = new Date(log.date + ' ' + new Date().getFullYear());
-                        return logDate >= startOfDay;
-                    });
-                }
-            }
-            
             // Generate the current week (Monday to Sunday)
-            const currentWeekLogs: any[] = [];
             const today = new Date();
             const currentDay = today.getDay();
             const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+            
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - diffToMonday);
+            const startStr = startDate.getFullYear() + '-' + String(startDate.getMonth() + 1).padStart(2, '0') + '-' + String(startDate.getDate()).padStart(2, '0');
+            
+            const endDate = new Date(today);
+            endDate.setDate(today.getDate() - diffToMonday + 6);
+            const endStr = endDate.getFullYear() + '-' + String(endDate.getMonth() + 1).padStart(2, '0') + '-' + String(endDate.getDate()).padStart(2, '0');
 
-            const logMap = new Map(logs.map(l => [l.date, l.weight]));
+            const { data } = await supabase
+                .from('daily_logs')
+                .select('date, weight_kg')
+                .eq('user_id', user.id)
+                .gte('date', startStr)
+                .lte('date', endStr)
+                .not('weight_kg', 'is', null);
 
+            const logMap = new Map();
+            if (data) {
+                data.forEach(d => {
+                    const localDate = new Date(d.date);
+                    const formattedDate = localDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+                    logMap.set(formattedDate, d.weight_kg);
+                });
+            }
+
+            const currentWeekLogs: any[] = [];
             for (let i = 0; i < 7; i++) {
                 const d = new Date(today);
                 d.setDate(today.getDate() - diffToMonday + i);
@@ -73,35 +73,52 @@ export default function WeightLogCard() {
             setChartData(currentWeekLogs);
         };
         load();
-        window.addEventListener('storage', load);
-        return () => window.removeEventListener('storage', load);
     }, [userProfile?.targetWeight]);
 
-    const handleLog = (e: React.FormEvent) => {
+    const handleLog = async (e: React.FormEvent) => {
         e.preventDefault();
         
         const newWeight = Number(weight);
         if (!isNaN(newWeight)) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
             const d = new Date();
             const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             
+            // Upsert daily_logs
+            const { data: existing } = await supabase
+                .from('daily_logs')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('date', todayKey)
+                .single();
+
+            if (existing) {
+                await supabase.from('daily_logs').update({ weight_kg: newWeight }).eq('id', existing.id);
+            } else {
+                await supabase.from('daily_logs').insert({ user_id: user.id, date: todayKey, weight_kg: newWeight });
+            }
+
+            // Update profiles current_weight
+            await supabase.from('profiles').update({ current_weight: newWeight }).eq('id', user.id);
+
             let updated = [...chartData];
             // If they already logged today, update it instead of adding duplicate
-            if (updated.length > 0 && updated[updated.length - 1].date === dateStr) {
-                updated[updated.length - 1].weight = newWeight;
+            const idx = updated.findIndex(log => log.date === dateStr);
+            if (idx !== -1) {
+                updated[idx].weight = newWeight;
             } else {
                 updated.push({ date: dateStr, weight: newWeight });
+                if (updated.length > 7) updated = updated.slice(updated.length - 7);
             }
-            
-            // Keep last 7 logs to prevent chart from getting too dense
-            if (updated.length > 7) updated = updated.slice(updated.length - 7);
-            
             setChartData(updated);
-            localStorage.setItem(WEIGHT_KEY, JSON.stringify(updated));
         }
 
         setIsLogged(true);
         setTimeout(() => setIsLogged(false), 3000);
+        window.dispatchEvent(new Event('storage'));
     };
 
     return (

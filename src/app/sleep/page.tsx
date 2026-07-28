@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SleepPage() {
     const { userProfile } = useAuth();
@@ -20,55 +21,92 @@ export default function SleepPage() {
 
     const targetSleep = 7.5; // Could be from userProfile
 
-    // Load and sync with localStorage
+    // Load and sync with Supabase
     useEffect(() => {
         setIsClient(true);
         if (!selectedDate) return;
 
-        // Load today's sleep
-        const savedSleep = localStorage.getItem(`workout_os_sleep_${selectedDate}`);
-        setCurrentSleep(savedSleep ? parseFloat(savedSleep) : 0);
+        const loadSleepData = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-        // Load today's logs
-        const savedLogs = localStorage.getItem(`workout_os_sleep_logs_${selectedDate}`);
-        if (savedLogs) {
-            try {
-                setLogs(JSON.parse(savedLogs));
-            } catch (e) {
+            // Load today's logs from local (fine-grained)
+            const savedLogs = localStorage.getItem(`workout_os_sleep_logs_${selectedDate}`);
+            if (savedLogs) {
+                try {
+                    setLogs(JSON.parse(savedLogs));
+                } catch (e) {
+                    setLogs([]);
+                }
+            } else {
                 setLogs([]);
             }
-        } else {
-            setLogs([]);
-        }
-        
-        // Generate last 7 days chart data based on actual data
-        const data = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
+
+            // Fetch last 7 days of sleep from Supabase
+            const dEnd = new Date();
+            const dStart = new Date();
+            dStart.setDate(dStart.getDate() - 6);
             
-            const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-            const pastSleep = localStorage.getItem(`workout_os_sleep_${dateStr}`);
+            const startStr = dStart.getFullYear() + '-' + String(dStart.getMonth() + 1).padStart(2, '0') + '-' + String(dStart.getDate()).padStart(2, '0');
+            const endStr = dEnd.getFullYear() + '-' + String(dEnd.getMonth() + 1).padStart(2, '0') + '-' + String(dEnd.getDate()).padStart(2, '0');
+
+            const { data: dbLogs } = await supabase
+                .from('daily_logs')
+                .select('date, sleep_hours')
+                .eq('user_id', user.id)
+                .gte('date', startStr)
+                .lte('date', endStr);
+
+            const dbMap = new Map();
+            if (dbLogs) {
+                dbLogs.forEach(l => dbMap.set(l.date, l.sleep_hours));
+            }
+
+            const data = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                
+                data.push({
+                    name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                    hours: dbMap.get(dateStr) || 0,
+                    rawDate: dateStr
+                });
+            }
+
+            setChartData(data);
             
-            data.push({
-                name: d.toLocaleDateString('en-US', { weekday: 'short' }),
-                hours: pastSleep ? parseFloat(pastSleep) : 0,
-            });
-        }
+            // Set today's current sleep
+            setCurrentSleep(dbMap.get(selectedDate) || 0);
+        };
         
-        // Use today's updated sleep for the last chart entry if it's today
-        if (data.length > 0 && selectedDate === (new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0'))) {
-            data[data.length - 1].hours = savedSleep ? parseFloat(savedSleep) : 0;
-        }
-        
-        setChartData(data);
+        loadSleepData();
     }, [selectedDate]);
 
-    const handleAdd = (amount: number, type: string) => {
+    const saveToSupabase = async (newTotal: number) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || !selectedDate) return;
+        
+        // check if row exists
+        const { data: existing } = await supabase
+            .from('daily_logs')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('date', selectedDate)
+            .single();
+            
+        if (existing) {
+            await supabase.from('daily_logs').update({ sleep_hours: newTotal }).eq('id', existing.id);
+        } else {
+            await supabase.from('daily_logs').insert({ user_id: user.id, date: selectedDate, sleep_hours: newTotal });
+        }
+    };
+
+    const handleAdd = async (amount: number, type: string) => {
         if (!selectedDate) return;
         const newTotal = currentSleep + amount;
         setCurrentSleep(newTotal);
-        localStorage.setItem(`workout_os_sleep_${selectedDate}`, newTotal.toString());
         
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -76,19 +114,21 @@ export default function SleepPage() {
         setLogs(newLogs);
         localStorage.setItem(`workout_os_sleep_logs_${selectedDate}`, JSON.stringify(newLogs));
         
+        await saveToSupabase(newTotal);
         window.dispatchEvent(new Event('storage')); // Sync to dashboard
         
         // Update chart data for today
         setChartData(prev => {
             const next = [...prev];
-            if (next.length > 0) {
-                next[next.length - 1].hours = newTotal;
+            const idx = next.findIndex(d => d.rawDate === selectedDate);
+            if (idx !== -1) {
+                next[idx].hours = newTotal;
             }
             return next;
         });
     };
 
-    const handleDelete = (id: number, amount: number) => {
+    const handleDelete = async (id: number, amount: number) => {
         if (!selectedDate) return;
         const newLogs = logs.filter(log => log.id !== id);
         setLogs(newLogs);
@@ -96,14 +136,15 @@ export default function SleepPage() {
         
         const newTotal = Math.max(0, currentSleep - amount);
         setCurrentSleep(newTotal);
-        localStorage.setItem(`workout_os_sleep_${selectedDate}`, newTotal.toString());
         
+        await saveToSupabase(newTotal);
         window.dispatchEvent(new Event('storage'));
         
         setChartData(prev => {
             const next = [...prev];
-            if (next.length > 0) {
-                next[next.length - 1].hours = newTotal;
+            const idx = next.findIndex(d => d.rawDate === selectedDate);
+            if (idx !== -1) {
+                next[idx].hours = newTotal;
             }
             return next;
         });

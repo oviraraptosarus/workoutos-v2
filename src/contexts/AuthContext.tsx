@@ -22,6 +22,9 @@ export interface UserProfile {
     monthlyBudget: number;
     monthlyIncome?: number;
     enableFinancialReminders: boolean;
+    dob?: string;
+    heightCm: number;
+    gender: 'male' | 'female' | 'other';
     createdAt?: string;
     updatedAt: string;
 }
@@ -37,6 +40,8 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
     calorieGoal: 2600,
     monthlyBudget: 1200,
     enableFinancialReminders: true,
+    heightCm: 170,
+    gender: 'male',
     updatedAt: new Date().toISOString()
 };
 
@@ -109,14 +114,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     let localCalorieGoal = DEFAULT_USER_PROFILE.calorieGoal;
                     let localWaterGoalMl = DEFAULT_USER_PROFILE.waterGoalMl;
                     let localMonthlyBudget = DEFAULT_USER_PROFILE.monthlyBudget;
-                    
-                    if (typeof window !== 'undefined') {
-                        const savedCal = localStorage.getItem('workout_os_calorie_goal');
-                        if (savedCal) localCalorieGoal = parseInt(savedCal, 10);
-                        
-                        const savedBudget = localStorage.getItem('workout_os_budget_target');
-                        if (savedBudget) localMonthlyBudget = parseInt(savedBudget, 10);
-                    }
 
                     setUserProfile({
                         fullName: data.full_name || '',
@@ -129,6 +126,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         calorieGoal: data.calorie_goal || localCalorieGoal,
                         monthlyBudget: data.monthly_budget || localMonthlyBudget,
                         enableFinancialReminders: data.enable_financial_reminders !== false, // default true
+                        dob: data.dob,
+                        heightCm: Number(data.height_cm) || DEFAULT_USER_PROFILE.heightCm,
+                        gender: data.gender || DEFAULT_USER_PROFILE.gender,
                         createdAt: user.created_at || data.created_at || new Date().toISOString(),
                         updatedAt: data.updated_at || new Date().toISOString()
                     });
@@ -160,6 +160,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 current_weight: next.currentWeight,
                 target_weight: next.targetWeight,
                 enable_financial_reminders: next.enableFinancialReminders,
+                dob: next.dob,
+                height_cm: next.heightCm,
+                gender: next.gender,
+                calorie_goal: next.calorieGoal,
+                monthly_budget: next.monthlyBudget,
+                water_goal_ml: next.waterGoalMl,
                 updated_at: next.updatedAt
             }).eq('id', user.id);
             

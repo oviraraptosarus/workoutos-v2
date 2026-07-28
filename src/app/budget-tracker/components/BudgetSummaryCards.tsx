@@ -9,9 +9,9 @@ export default function BudgetSummaryCards() {
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
 
     useEffect(() => {
-        const load = () => {
-            setIncome(getIncome());
-            setExpenses(getExpenses());
+        const load = async () => {
+            setIncome(await getIncome());
+            setExpenses(await getExpenses());
         };
         load();
         
@@ -40,70 +40,70 @@ export default function BudgetSummaryCards() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Card 1: Total Income */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                        <div className="w-6 h-6 rounded-md bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50">
-                            <TrendingDown size={14} className="rotate-180" />
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-inner">
+                            <TrendingDown size={16} className="rotate-180" />
                         </div>
-                        <span className="text-xs font-semibold tracking-wide uppercase">Total Income</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-gray-400 dark:text-gray-500">Total Income</span>
                     </div>
                 </div>
                 
                 <div>
-                    <div className="text-[32px] font-bold text-gray-900 dark:text-white tracking-tight leading-none mb-2">₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">From {income.length} income streams</div>
+                    <div className="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-2">₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">From {income.length} income streams</div>
                 </div>
             </div>
 
             {/* Card 2: Total Expenses */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
-                <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4 relative z-10">
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                        <div className="w-6 h-6 rounded-md bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/50">
-                            <TrendingDown size={14} />
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-inner">
+                            <TrendingDown size={16} />
                         </div>
-                        <span className="text-xs font-semibold tracking-wide uppercase">Total Expenses</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-gray-400 dark:text-gray-500">Total Expenses</span>
                     </div>
-                    <span className="bg-[#f0fdf4] dark:bg-emerald-900/30 text-[#166534] dark:text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-[#bbf7d0] dark:border-emerald-800/50">
+                    <span className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm">
                         On track
                     </span>
                 </div>
                 
-                <div>
-                    <div className="text-[32px] font-bold text-gray-900 dark:text-white tracking-tight leading-none mb-4">₹{totalExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div className="relative z-10">
+                    <div className="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">₹{totalExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     
-                    <div className="flex justify-between text-[11px] text-gray-500 dark:text-gray-400 font-medium mb-1.5">
+                    <div className="flex justify-between text-[11px] text-gray-500 dark:text-gray-400 font-bold mb-2">
                         <span>{expenseRatio}% of income</span>
                         <span>84% of month</span>
                     </div>
-                    <div className="w-full bg-[#f1f1f1] dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mb-3">
-                        <div className="bg-[#e11d48] dark:bg-rose-500 h-full rounded-full" style={{ width: `${expenseRatio}%` }} />
+                    <div className="w-full bg-gray-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden mb-3 shadow-inner">
+                        <div className="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${expenseRatio}%` }} />
                     </div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Projected total: <span className="text-gray-900 dark:text-gray-200 font-semibold">₹{(totalExpenses * 1.15).toLocaleString('en-IN')}</span></div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Projected total: <span className="text-gray-900 dark:text-gray-200 font-bold">₹{(totalExpenses * 1.15).toLocaleString('en-IN')}</span></div>
                 </div>
             </div>
 
             {/* Card 3: Net Savings */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div>
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-4">
-                        <div className="w-6 h-6 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50">
-                            <Calculator size={14} />
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
+                            <Calculator size={16} />
                         </div>
-                        <span className="text-xs font-semibold tracking-wide uppercase">Net Savings</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-gray-400 dark:text-gray-500">Net Savings</span>
                     </div>
-                    <div className="text-[32px] font-bold text-[#166534] dark:text-emerald-400 tracking-tight leading-none mb-1">₹{netSavings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">{savingsRate}% savings rate</div>
+                    <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-200 tracking-tight leading-none mb-2">₹{netSavings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-semibold">{savingsRate}% savings rate</div>
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold tracking-wide uppercase mb-1">Cost Per Gram Protein</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 font-bold tracking-widest uppercase mb-1.5">Cost Per Gram Protein</div>
                     <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-xl font-bold text-[#8b5cf6] dark:text-purple-400">₹{avgCostPerG.toFixed(3)}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">/g</span>
+                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-purple-400 dark:from-purple-400 dark:to-purple-200 drop-shadow-sm">₹{avgCostPerG.toFixed(3)}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-bold">/g</span>
                     </div>
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{totalG}g purchased • ₹{totalProteinSpend.toFixed(0)} spent on protein foods</div>
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{totalG}g purchased • ₹{totalProteinSpend.toFixed(0)} spent</div>
                 </div>
             </div>
         </div>

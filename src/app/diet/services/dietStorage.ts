@@ -1,4 +1,5 @@
-import { MealItem, MacroGoals } from '../types';
+import { MealItem, MacroGoals, MealCategory } from '../types';
+import { supabase } from '@/lib/supabaseClient';
 
 export const formatDateKey = (date: Date): string => {
     const year = date.getFullYear();
@@ -28,43 +29,69 @@ const MEALS_PREFIX = 'workout_os_diet_meals_';
 const WATER_PREFIX = 'workout_os_water_ml_';
 const GOALS_KEY = 'workout_os_macro_goals_v1';
 
-export const getMealsForDate = (dateKey: string, initialFallback: MealItem[]): MealItem[] => {
-    if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem(`${MEALS_PREFIX}${dateKey}`);
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {}
-        }
-    }
-    return initialFallback || [];
+export const getMealsForDate = async (dateKey: string): Promise<MealItem[]> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+        .from('meal_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', dateKey);
+
+    if (error || !data) return [];
+
+    return data.map(row => ({
+        id: row.id,
+        category: row.meal_slot as MealCategory,
+        name: row.name,
+        calories: row.calories,
+        protein: Number(row.protein),
+        carbs: Number(row.carbs),
+        fat: Number(row.fat),
+        sugar: Number(row.sugar),
+        fiber: Number(row.fiber_g_estimate),
+        isOffPlan: row.is_off_plan,
+        offPlanReason: row.off_plan_reason || undefined
+    }));
 };
 
-export const saveMealsForDate = (dateKey: string, meals: MealItem[]): void => {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(`${MEALS_PREFIX}${dateKey}`, JSON.stringify(meals));
-        
-        // Always update the nutrition summary key so NutritionCard stays in sync
-        const totalCals = meals.reduce((acc, m) => acc + (m.calories || 0), 0);
-        localStorage.setItem(`workout_os_nutrition_${dateKey}`, totalCals.toString());
-        
-        window.dispatchEvent(new Event('storage'));
+export const saveMealsForDate = async (dateKey: string, meals: MealItem[]): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('meal_entries').delete().eq('user_id', user.id).eq('date', dateKey);
+
+    if (meals.length > 0) {
+        const payload = meals.map(m => ({
+            user_id: user.id,
+            date: dateKey,
+            meal_slot: m.category,
+            name: m.name,
+            calories: m.calories,
+            protein: m.protein,
+            carbs: m.carbs,
+            fat: m.fat,
+            sugar: m.sugar,
+            fiber_g_estimate: m.fiber,
+            is_off_plan: m.isOffPlan || false,
+            off_plan_reason: m.offPlanReason || null
+        }));
+        await supabase.from('meal_entries').insert(payload);
     }
 };
 
-export const getWaterForDate = (dateKey: string): number => {
-    if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem(`${WATER_PREFIX}${dateKey}`);
-        if (saved) return parseInt(saved, 10);
-    }
-    return 0;
+export const getWaterForDate = async (dateKey: string): Promise<number> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return 0;
+    const { data } = await supabase.from('daily_logs').select('water_ml_total').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
+    return data?.water_ml_total || 0;
 };
 
-export const saveWaterForDate = (dateKey: string, amount: number): void => {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(`${WATER_PREFIX}${dateKey}`, amount.toString());
-        window.dispatchEvent(new Event('storage'));
-    }
+export const saveWaterForDate = async (dateKey: string, amount: number): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, water_ml_total: amount }, { onConflict: 'user_id,date' });
 };
 
 export const getMacroGoals = (): MacroGoals => {

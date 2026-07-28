@@ -18,7 +18,8 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
 
     // Sync water state whenever currentDateKey changes
     useEffect(() => {
-        setWaterMl(getWaterForDate(dateKey));
+        const load = async () => setWaterMl(await getWaterForDate(dateKey));
+        load();
     }, [dateKey]);
 
     const addWater = (amount: number) => {

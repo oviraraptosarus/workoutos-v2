@@ -10,8 +10,8 @@ export default function SignupForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fitnessGoal, setFitnessGoal] = useState('Build Muscle & Stay Active');
-    const [currentWeight, setCurrentWeight] = useState('80');
-    const [targetWeight, setTargetWeight] = useState('82');
+    const [currentWeight, setCurrentWeight] = useState('');
+    const [targetWeight, setTargetWeight] = useState('');
     const [dob, setDob] = useState('');
     const [error, setError] = useState('');
 

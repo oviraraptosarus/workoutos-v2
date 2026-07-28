@@ -37,7 +37,7 @@ export default function SleepCard() {
     return (
         <Link
             href="/sleep"
-            className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between h-full min-h-[220px] cursor-pointer hover:shadow-md transition-shadow group block"
+            className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex flex-col justify-between h-full min-h-[220px] cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all group block"
         >
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -61,10 +61,10 @@ export default function SleepCard() {
             {hasData ? (
                 <>
                     <div className="my-3">
-                        <div className="flex items-baseline">
+                        <div className="flex flex-wrap items-baseline gap-y-1">
                             <span className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">{currentSleep.toFixed(1)}</span>
                             <span className="text-gray-500 text-lg font-bold ml-1.5">hrs</span>
-                            <span className={`font-bold text-xs ml-3 ${isOnTarget ? 'text-emerald-600' : 'text-orange-500'}`}>
+                            <span className={`font-bold text-xs ml-auto sm:ml-3 ${isOnTarget ? 'text-emerald-600' : 'text-orange-500'}`}>
                                 {diffStr} vs target
                             </span>
                         </div>

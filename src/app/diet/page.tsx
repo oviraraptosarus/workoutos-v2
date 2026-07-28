@@ -70,8 +70,13 @@ export default function DietPage() {
 
     // Synchronize meals whenever currentDateKey changes
     useEffect(() => {
-        setMeals(getMealsForDate(currentDateKey, INITIAL_MEALS));
-        setIsLoaded(true);
+        setIsLoaded(false);
+        const load = async () => {
+            const dbMeals = await getMealsForDate(currentDateKey);
+            setMeals(dbMeals);
+            setIsLoaded(true);
+        };
+        load();
     }, [currentDateKey]);
 
     // Save meals for selected currentDateKey whenever state updates
@@ -129,11 +134,11 @@ export default function DietPage() {
         setMeals((prev) => prev.filter((m) => m.id !== id));
     };
 
-    const handleCopyYesterdayMeals = () => {
+    const handleCopyYesterdayMeals = async () => {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayKey = formatDateKey(yesterday);
-        const yesterdayMeals = getMealsForDate(yesterdayKey, INITIAL_MEALS);
+        const yesterdayMeals = await getMealsForDate(yesterdayKey);
 
         const copied = (yesterdayMeals.length > 0 ? yesterdayMeals : INITIAL_MEALS).map((m) => ({
             ...m,
@@ -164,6 +169,35 @@ export default function DietPage() {
     const totalFat = meals.reduce((acc, m) => acc + (m.fat || 0), 0);
     const totalSugar = meals.reduce((acc, m) => acc + (m.sugar || 0), 0);
 
+    // Dynamic TDEE Calculation (Mifflin-St Jeor)
+    const calculateTDEE = () => {
+        let weight = userProfile?.currentWeight || 75;
+
+        const height = userProfile?.heightCm || 170;
+        let age = 25;
+        if (userProfile?.dob) {
+            const birthDate = new Date(userProfile.dob);
+            const today = new Date();
+            age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+        }
+
+        let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+        if (userProfile?.gender === 'female') {
+            bmr -= 161;
+        } else {
+            bmr += 5; // male or other
+        }
+
+        // Base Sedentary TDEE (Activity burn is handled separately in the UI)
+        return Math.round(bmr * 1.2);
+    };
+
+    const dynamicTDEE = calculateTDEE();
+
     return (
         <AppLayout>
             <div className="space-y-6 pb-12">
@@ -172,7 +206,7 @@ export default function DietPage() {
                         <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2 drop-shadow-sm">
                             Diet & Nutrition
                         </h1>
-                        <p className="text-sm text-gray-600 font-bold mt-0.5">
+                        <p className="hidden sm:block text-sm text-gray-600 font-bold mt-0.5">
                             Track your meals, macros, calories, and hydration
                         </p>
                     </div>
@@ -194,7 +228,7 @@ export default function DietPage() {
                 <TDEEDeficitCard
                     totalCalories={totalCalories}
                     activityBurned={180}
-                    tdeeGoal={macroGoals.calories + 200}
+                    tdeeGoal={dynamicTDEE}
                 />
 
                 {/* YOUR MEAL PLAN Carousel Card */}

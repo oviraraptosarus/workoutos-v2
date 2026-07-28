@@ -2,26 +2,40 @@
 
 import React from 'react';
 import { Clock, TrendingUp } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function RecentWorkouts() {
     const [pastWorkouts, setPastWorkouts] = React.useState<any[]>([]);
 
     React.useEffect(() => {
-        const loadWorkouts = () => {
-            try {
-                const saved = JSON.parse(localStorage.getItem('workout_os_recent_workouts') || '[]');
-                if (saved && Array.isArray(saved)) {
-                    setPastWorkouts(saved);
-                } else {
-                    setPastWorkouts([]);
-                }
-            } catch (e) {
-                setPastWorkouts([]);
+        const loadWorkouts = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            
+            const { data } = await supabase
+                .from('workout_logs')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(10);
+                
+            if (data) {
+                const mapped = data.map(d => {
+                    const metadata = d.exercises?.find((e: any) => e.type === 'metadata') || {};
+                    return {
+                        id: d.id,
+                        name: d.session_type,
+                        date: d.date,
+                        duration: metadata.duration || 'Completed',
+                        volume: metadata.volume || 'Check logs'
+                    };
+                });
+                setPastWorkouts(mapped);
             }
         };
         loadWorkouts();
-        window.addEventListener('storage', loadWorkouts);
-        return () => window.removeEventListener('storage', loadWorkouts);
+        window.addEventListener('workout_os_recent_workouts_updated', loadWorkouts);
+        return () => window.removeEventListener('workout_os_recent_workouts_updated', loadWorkouts);
     }, []);
 
     return (

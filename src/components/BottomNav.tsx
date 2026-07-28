@@ -22,8 +22,8 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#0f1115]/80 backdrop-blur-xl border-t border-gray-100 dark:border-slate-800 z-40 px-4 py-2 pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.05)] transition-colors">
-        <ul className="flex justify-around items-center max-w-lg mx-auto">
+      <nav className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-[500px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-slate-800/80 z-40 px-3 py-2.5 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300">
+        <ul className="flex justify-between items-center w-full">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.href === '/dashboard' ? (pathname === '/dashboard' || pathname === '/') : pathname === item.href;

@@ -3,16 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
+import { getExpenses } from '../services/budgetStorage';
 
 export default function SpendPaceChart() {
     const { userProfile } = useAuth();
     const [expenses, setExpenses] = useState<any[]>([]);
 
     useEffect(() => {
-        const load = () => {
+        const load = async () => {
             try {
-                const saved = JSON.parse(localStorage.getItem('workout_os_budget_expenses') || '[]');
-                setExpenses(saved);
+                const data = await getExpenses();
+                setExpenses(data);
             } catch(e) {}
         };
         load();
