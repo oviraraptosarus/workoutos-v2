@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Scale, CheckCircle2, Camera, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
