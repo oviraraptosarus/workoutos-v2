@@ -44,7 +44,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
             <div className="bg-white border border-gray-100 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                    <h2 className="text-xl font-black mb-1 flex items-center gap-2">
+                    <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
                         <Sparkles size={20} /> Welcome to Workout OS
                     </h2>
                     <p className="text-sm font-medium text-blue-100">Let's set up your profile to personalize your experience.</p>

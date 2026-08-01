@@ -157,36 +157,36 @@ export default function SleepPage() {
                             <ArrowLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                                <Moon className="text-indigo-500" /> Sleep Tracking
+                            <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
+                                <Moon className="text-secondary" /> Sleep Tracking
                             </h1>
-                            <p className="text-sm text-gray-500 font-medium mt-0.5">
+                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">
                                 {isToday ? "Today's Recovery" : `History for ${selectedDate}`}
                             </p>
                         </div>
                     </div>
                     <div className="text-right hidden sm:block">
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">Daily Target</span>
-                        <span className="text-xl font-black text-indigo-900">{targetSleep} <span className="text-sm text-indigo-500">hrs</span></span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">Daily Target</span>
+                        <span className="text-xl font-black text-on-surface">{targetSleep} <span className="text-sm text-secondary">hrs</span></span>
                     </div>
                 </div>
 
                 {/* Top Metrics Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
-                        <span className="text-xs font-bold text-gray-400 uppercase">Logged {isToday ? 'Today' : selectedDate}</span>
-                        <div className="text-3xl font-black text-gray-900 mt-1">{currentSleep} <span className="text-sm text-gray-500">hrs</span></div>
+                    <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Logged {isToday ? 'Today' : selectedDate}</span>
+                        <div className="text-3xl font-black text-on-surface mt-1">{currentSleep} <span className="text-sm text-on-surface-variant">hrs</span></div>
                     </div>
-                    <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
-                        <span className="text-xs font-bold text-gray-400 uppercase">7-Day Avg</span>
-                        <div className="text-3xl font-black text-indigo-600 mt-1">{avgSleep.toFixed(1)} <span className="text-sm text-indigo-400">hrs</span></div>
+                    <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">7-Day Avg</span>
+                        <div className="text-3xl font-black text-secondary mt-1">{avgSleep.toFixed(1)} <span className="text-sm opacity-70">hrs</span></div>
                     </div>
-                    <div className="col-span-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-5 text-white flex items-center justify-between shadow-md">
+                    <div className="col-span-2 bg-secondary rounded-[2rem] p-5 text-on-secondary flex items-center justify-between shadow-md transition-colors">
                         <div>
-                            <span className="text-xs font-bold text-indigo-100 uppercase block mb-1">Status</span>
+                            <span className="text-xs font-bold opacity-80 uppercase tracking-wider block mb-1">Status</span>
                             <div className="text-xl font-black flex items-center gap-2">
                                 {currentSleep >= targetSleep ? "Optimal Recovery" : "Need more rest"}
-                                {isTrendingUp ? <TrendingUp size={20} className="text-emerald-300" /> : <TrendingDown size={20} className="text-rose-300" />}
+                                {isTrendingUp ? <TrendingUp size={20} className="text-white" /> : <TrendingDown size={20} className="text-white/60" />}
                             </div>
                         </div>
                         <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
@@ -198,9 +198,9 @@ export default function SleepPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     {/* Graph Section */}
-                    <div className="md:col-span-2 bg-white border border-gray-100 p-6 rounded-3xl shadow-sm">
-                        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-6 flex items-center gap-2">
-                            <History size={18} className="text-indigo-500" /> 7-Day Sleep Trends
+                    <div className="md:col-span-2 bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm transition-colors">
+                        <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2 mb-6">
+                            <History size={18} className="text-secondary" /> 7-Day Sleep Trends
                         </h2>
                         <div className="h-[280px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -248,24 +248,24 @@ export default function SleepPage() {
                         <EnhancedSleepLogger onLogSaved={(data) => handleAdd(data.amount, data.type, data.details)} />
 
 
-                        <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm">
-                            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-4 flex items-center gap-2">
-                                <History size={18} className="text-gray-400" /> Recent Logs
+                        <div className="bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm transition-colors">
+                            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface mb-4 flex items-center gap-2">
+                                <History size={18} className="text-on-surface-variant" /> Recent Logs
                             </h2>
                             
                             <div className="space-y-3 overflow-y-auto max-h-40 custom-scrollbar pr-2">
                                 {logs.length === 0 ? (
-                                    <div className="text-center text-gray-400 text-sm font-medium py-4">No sleep logged.</div>
+                                    <div className="text-center text-on-surface-variant text-sm font-medium py-4">No sleep logged.</div>
                                 ) : (
                                     logs.map((log) => (
-                                        <div key={log.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-3 flex items-center justify-between shadow-sm group">
+                                        <div key={log.id} className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-4 flex items-center justify-between shadow-sm group">
                                             <div>
-                                                <p className="font-black text-gray-900 text-sm">{log.amount} hrs</p>
-                                                <p className="text-[10px] font-bold text-gray-400 uppercase">{log.type} • {log.time}</p>
+                                                <p className="font-black text-on-surface text-sm">{log.amount} hrs</p>
+                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase">{log.type} • {log.time}</p>
                                             </div>
                                             <button 
                                                 onClick={() => handleDelete(log.id, log.amount)}
-                                                className="w-8 h-8 rounded-full hover:bg-rose-100 text-gray-300 hover:text-rose-500 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                                                className="w-8 h-8 rounded-full hover:bg-error-container text-on-surface-variant hover:text-error flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                                             >
                                                 <Trash2 size={14} />
                                             </button>

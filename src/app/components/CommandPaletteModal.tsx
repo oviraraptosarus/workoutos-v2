@@ -161,7 +161,7 @@ export default function CommandPaletteModal() {
                         <div className="px-5 py-2.5 bg-white border-b border-gray-100 flex items-center gap-2">
                             <button
                                 onClick={() => setActiveTab('commands')}
-                                className={`py-1.5 px-3.5 rounded-xl text-xs font-black transition-all border ${
+                                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition-all border ${
                                     activeTab === 'commands'
                                         ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
                                         : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
@@ -171,7 +171,7 @@ export default function CommandPaletteModal() {
                             </button>
                             <button
                                 onClick={() => setActiveTab('help')}
-                                className={`py-1.5 px-3.5 rounded-xl text-xs font-black transition-all border ${
+                                className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition-all border ${
                                     activeTab === 'help'
                                         ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                                         : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
@@ -196,7 +196,7 @@ export default function CommandPaletteModal() {
                                                     {cmd.icon}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-xs font-black text-gray-900 group-hover:text-emerald-800 transition-colors">
+                                                    <h4 className="text-xs font-bold text-gray-900 group-hover:text-emerald-800 transition-colors">
                                                         {cmd.title}
                                                     </h4>
                                                     <p className="text-[11px] font-medium text-gray-500 mt-0.5">
@@ -220,7 +220,7 @@ export default function CommandPaletteModal() {
                                             key={idx}
                                             className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5 shadow-sm"
                                         >
-                                            <h4 className="text-xs font-black text-gray-900 flex items-center gap-1.5">
+                                            <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                                                 <HelpIcon size={14} className="text-emerald-600 flex-shrink-0" />
                                                 <span>{faq.q}</span>
                                             </h4>

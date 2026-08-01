@@ -216,12 +216,12 @@ export default function DietPage() {
     return (
         <AppLayout>
             <div className="space-y-6 pb-12">
-                <div className="pb-2 border-b border-gray-200 flex items-center justify-between">
+                <div className="pb-2 border-b border-surface-variant flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2 drop-shadow-sm">
+                        <h1 className="text-2xl font-black text-on-surface flex items-center gap-2 drop-shadow-sm">
                             Diet & Nutrition
                         </h1>
-                        <p className="hidden sm:block text-sm text-gray-600 font-bold mt-0.5">
+                        <p className="hidden sm:block text-sm text-on-surface-variant font-bold mt-0.5">
                             Track your meals, macros, calories, and hydration
                         </p>
                     </div>

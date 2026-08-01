@@ -170,7 +170,7 @@ export default function PlannerPage() {
                             <BrainCircuit size={24} className="text-emerald-500 animate-pulse" />
                             <h2 className="text-sm font-black text-white tracking-widest uppercase">Deep Work</h2>
                         </div>
-                        <div className="text-4xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
+                        <div className="text-4xl font-black text-emerald-400 tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
                             {formatFocusTime(focusTimeLeft)}
                         </div>
                         <p className="text-[11px] text-slate-400 font-medium px-4">All distractions are blocked. Focus on the task at hand.</p>

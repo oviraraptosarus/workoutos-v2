@@ -100,7 +100,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                             <ScanLine size={16} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">Nutrition Scanner</h2>
+                            <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Nutrition Scanner</h2>
                         </div>
                     </div>
                     <button
@@ -179,19 +179,19 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         <div className="grid grid-cols-4 gap-2 text-center">
                                             <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
                                                 <div className="text-[10px] text-gray-400 font-bold mb-0.5">KCAL</div>
-                                                <div className="text-sm font-black text-emerald-600">{parsedMeal.calories}</div>
+                                                <div className="text-sm font-bold text-emerald-600">{parsedMeal.calories}</div>
                                             </div>
                                             <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
                                                 <div className="text-[10px] text-gray-400 font-bold mb-0.5">PRO</div>
-                                                <div className="text-sm font-black text-gray-700 dark:text-gray-200">{parsedMeal.protein}g</div>
+                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.protein}g</div>
                                             </div>
                                             <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
                                                 <div className="text-[10px] text-gray-400 font-bold mb-0.5">CARB</div>
-                                                <div className="text-sm font-black text-gray-700 dark:text-gray-200">{parsedMeal.carbs}g</div>
+                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.carbs}g</div>
                                             </div>
                                             <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
                                                 <div className="text-[10px] text-gray-400 font-bold mb-0.5">FAT</div>
-                                                <div className="text-sm font-black text-gray-700 dark:text-gray-200">{parsedMeal.fat}g</div>
+                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.fat}g</div>
                                             </div>
                                         </div>
                                     </div>

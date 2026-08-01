@@ -188,14 +188,14 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
     };
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100">
-            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 mb-4">Preset Workouts</h3>
+        <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
+            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">Preset Workouts</h3>
             
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
                 {PRESET_WORKOUTS.map((preset, idx) => (
                     <div 
                         key={preset.id} 
-                        className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 border border-gray-100 transition-all duration-300 shadow-sm hover:bg-gray-100 hover:scale-[1.02] cursor-pointer group"
+                        className="flex items-center justify-between p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant transition-all duration-300 shadow-sm hover:bg-surface-container hover:scale-[1.02] cursor-pointer group"
                         style={{ animationDelay: `${(idx % 5) * 100}ms` }}
                     >
                         <div className="flex items-center gap-3">
@@ -203,18 +203,18 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
                                 {renderIcon(preset.iconType, preset.color.split(' ')[1])}
                             </div>
                             <div>
-                                <h4 className="font-bold text-gray-900 drop-shadow-sm leading-tight">{preset.title}</h4>
+                                <h4 className="font-bold text-on-surface drop-shadow-sm leading-tight">{preset.title}</h4>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                    <span className="text-[11px] text-gray-500 font-medium">{preset.subtitle}</span>
-                                    <span className="text-[10px] text-gray-400">•</span>
-                                    <span className="text-[11px] text-gray-500 font-bold">{preset.duration}</span>
+                                    <span className="text-[11px] text-on-surface-variant font-medium">{preset.subtitle}</span>
+                                    <span className="text-[10px] opacity-40">•</span>
+                                    <span className="text-[11px] text-on-surface-variant font-bold">{preset.duration}</span>
                                 </div>
                             </div>
                         </div>
                         
                         <button 
                             onClick={() => onPlay(preset)}
-                            className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm btn-press"
+                            className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-secondary-container transition-colors shadow-sm btn-press"
                         >
                             <Play size={14} className="ml-0.5" fill="currentColor" />
                         </button>

@@ -52,9 +52,9 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
 
     const parseMarkdown = (text: string) => {
         let html = text
-            .replace(/^### (.*$)/gim, '<h3 class="text-sm font-black text-emerald-600 dark:text-emerald-400 mt-6 mb-3 flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 pb-2">$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2 class="text-base font-black text-gray-900 dark:text-white mt-6 mb-3">$1</h2>')
-            .replace(/^# (.*$)/gim, '<h1 class="text-xl font-black text-gray-900 dark:text-white mb-4">$1</h1>')
+            .replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-6 mb-3 flex items-center gap-2 border-b border-gray-100 dark:border-slate-800 pb-2">$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2 class="text-base font-bold text-gray-900 dark:text-white mt-6 mb-3">$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-gray-900 dark:text-white mb-4">$1</h1>')
             .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900 dark:text-white">$1</strong>')
             .replace(/\*(.*?)\*/g, '<em class="italic text-gray-600 dark:text-gray-400">$1</em>')
             .replace(/^\* (.*$)/gim, '<li class="ml-4 list-disc text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-2">$1</li>')
@@ -165,7 +165,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                             <TrendingUp size={20} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
                                 Bi-Weekly AI Report
                             </h2>
                             <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
@@ -188,7 +188,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                             <div className="w-20 h-20 mx-auto bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
                                 <Sparkles size={32} className="text-blue-500 dark:text-blue-400" />
                             </div>
-                            <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">Ready to crunch the numbers?</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Ready to crunch the numbers?</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto leading-relaxed">
                                 Nova will analyze your tracked data over the last 14 days to generate actionable insights. <br/><br/>
                                 <strong className="text-gray-700 dark:text-gray-300">Generated reports auto-delete after 7 days.</strong>

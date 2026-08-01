@@ -16,10 +16,17 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const dateKey = currentDateKey || new Date().toISOString().slice(0, 10);
     const [waterMl, setWaterMl] = useState<number>(1200);
 
-    // Sync water state whenever currentDateKey changes
+    // Sync water state whenever currentDateKey changes or events fire
     useEffect(() => {
         const load = async () => setWaterMl(await getWaterForDate(dateKey));
         load();
+        
+        window.addEventListener('workout_os_water_updated', load);
+        window.addEventListener('storage', load);
+        return () => {
+            window.removeEventListener('workout_os_water_updated', load);
+            window.removeEventListener('storage', load);
+        };
     }, [dateKey]);
 
     const addWater = (amount: number) => {

@@ -35,7 +35,7 @@ export default function SessionTimer() {
                 </div>
                 <div>
                     <span className="text-xs text-gray-500 font-medium block">Rest Timer</span>
-                    <span className="text-lg font-mono font-bold text-gray-900 dark:text-white">{formatTime(seconds)}</span>
+                    <span className="text-lg font-bold text-on-surface tabular-nums">{formatTime(seconds)}</span>
                 </div>
             </div>
             <div className="flex items-center gap-2">

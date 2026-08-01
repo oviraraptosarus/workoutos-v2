@@ -60,7 +60,7 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
                             <div key={m.name} className="space-y-1.5 p-3 rounded-2xl bg-gray-100 border border-gray-200 shadow-sm">
                                 <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-gray-300">
                                     <span>{m.name}</span>
-                                    <span className="font-mono text-gray-900 dark:text-white">
+                                    <span className="text-on-surface tabular-nums">
                                         {m.current} {m.unit} / {m.goal} {m.unit}
                                     </span>
                                 </div>

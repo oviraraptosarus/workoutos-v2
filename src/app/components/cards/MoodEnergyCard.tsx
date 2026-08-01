@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Smile, Zap, Coffee, Utensils } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
+import { supabase } from '@/lib/supabaseClient';
 
 const MOOD_PREFIX = 'workout_os_mood_energy_';
 
@@ -13,140 +14,173 @@ interface MoodState {
     caffeine: number;
 }
 
+const CUP_MG = 95; // caffeine_mg is stored in mg; ~95mg per cup of coffee.
+
 export default function MoodEnergyCard() {
     const { selectedDate, isToday } = useDate();
-    const [caffeine, setCaffeine] = useState(2);
-    const [mood, setMood] = useState(7);
-    const [energy, setEnergy] = useState(5);
+    const [caffeine, setCaffeine] = useState(0);
+    const [mood, setMood] = useState(0);
+    const [energy, setEnergy] = useState(0);
     const [hunger, setHunger] = useState(0);
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-    // Load from localStorage when date changes
     useEffect(() => {
         if (!selectedDate) return;
-        const load = () => {
+
+        // Backend is the source of truth; localStorage is only a fallback for
+        // rows that predate Supabase persistence.
+        const load = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase
+                    .from('daily_logs')
+                    .select('mood_rating, energy_rating, hunger_rating, caffeine_mg')
+                    .eq('user_id', user.id)
+                    .eq('date', selectedDate)
+                    .maybeSingle();
+
+                if (data && (data.mood_rating || data.energy_rating || data.hunger_rating || data.caffeine_mg)) {
+                    setMood(data.mood_rating ?? 0);
+                    setEnergy(data.energy_rating ?? 0);
+                    setHunger(data.hunger_rating ?? 0);
+                    setCaffeine(data.caffeine_mg ? Math.round(data.caffeine_mg / CUP_MG) : 0);
+                    return;
+                }
+            }
+
             try {
                 const raw = localStorage.getItem(`${MOOD_PREFIX}${selectedDate}`);
                 if (raw) {
-                    const data: MoodState = JSON.parse(raw);
-                    setMood(data.mood ?? 7);
-                    setEnergy(data.energy ?? 5);
-                    setHunger(data.hunger ?? 0);
-                    setCaffeine(data.caffeine ?? 2);
+                    const parsed: MoodState = JSON.parse(raw);
+                    setMood(parsed.mood ?? 0);
+                    setEnergy(parsed.energy ?? 0);
+                    setHunger(parsed.hunger ?? 0);
+                    setCaffeine(parsed.caffeine ?? 0);
                 } else {
-                    // Reset to defaults for new day
-                    setMood(7); setEnergy(5); setHunger(0); setCaffeine(2);
+                    setMood(0); setEnergy(0); setHunger(0); setCaffeine(0);
                 }
             } catch {
-                setMood(7); setEnergy(5); setHunger(0); setCaffeine(2);
+                setMood(0); setEnergy(0); setHunger(0); setCaffeine(0);
             }
         };
 
         load();
-
         window.addEventListener('storage', load);
         return () => window.removeEventListener('storage', load);
     }, [selectedDate]);
 
-    const handleSave = () => {
-        if (!selectedDate) return;
-        const data: MoodState = { mood, energy, hunger, caffeine };
-        localStorage.setItem(`${MOOD_PREFIX}${selectedDate}`, JSON.stringify(data));
-        window.dispatchEvent(new Event('storage'));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+    const handleSave = async () => {
+        if (!selectedDate || saving) return;
+        setSaving(true);
+
+        localStorage.setItem(`${MOOD_PREFIX}${selectedDate}`, JSON.stringify({ mood, energy, hunger, caffeine }));
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase.from('daily_logs').upsert(
+                    {
+                        user_id: user.id,
+                        date: selectedDate,
+                        // Columns are CHECK (1..10), so send null rather than 0 when unset.
+                        mood_rating: mood > 0 ? mood : null,
+                        energy_rating: energy > 0 ? energy : null,
+                        hunger_rating: hunger > 0 ? hunger : null,
+                        caffeine_mg: caffeine * CUP_MG,
+                    },
+                    { onConflict: 'user_id,date' }
+                );
+            }
+            window.dispatchEvent(new Event('storage'));
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+        } finally {
+            setSaving(false);
+        }
     };
 
-    const renderSegments = (value: number, activeColor: string, onChange: (val: number) => void) => {
-        return Array.from({ length: 10 }).map((_, i) => (
-            <button 
-                key={i} 
-                onClick={() => onChange(i + 1)}
-                disabled={!isToday}
-                className={`h-3 rounded-full flex-1 transition-all duration-300 hover:scale-105 active:scale-95 ${i < value ? activeColor : 'bg-[#f1f1f1] hover:bg-[#e5e5e5]'} disabled:cursor-not-allowed`}
-            />
-        ));
-    };
+    const renderSegments = (value: number, activeColor: string, onChange: (val: number) => void, label: string) => (
+        <div className="flex-1 flex gap-1" role="group" aria-label={label}>
+            {Array.from({ length: 10 }).map((_, i) => (
+                <button
+                    key={i}
+                    onClick={() => onChange(i + 1)}
+                    disabled={!isToday}
+                    aria-label={`${label} ${i + 1} of 10`}
+                    aria-pressed={i < value}
+                    className={`h-7 rounded-full flex-1 transition-all duration-200 ${
+                        i < value ? `${activeColor} shadow-sm` : 'bg-surface-container hover:bg-surface-container-high'
+                    } disabled:cursor-not-allowed active:scale-90`}
+                />
+            ))}
+        </div>
+    );
 
     return (
-        <div className="bg-white border border-gray-100 p-6 shadow-sm flex flex-col bg-white dark:bg-slate-900">
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-bold text-gray-900 tracking-tight">How are you feeling today?</h3>
-                <div className="flex flex-col items-end">
-                    <span className="text-[10px] text-gray-400 font-medium mb-0.5">Optional</span>
-                    <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{mood}/10</span>
-                </div>
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col relative overflow-hidden">
+            <div className="flex items-baseline justify-between mb-4">
+                <h3 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">How do you feel?</h3>
+                <span className="font-label-sm text-label-sm text-on-surface-variant">Optional</span>
             </div>
 
-            <div className="space-y-4 mb-6">
-                {/* Mood */}
-                <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75">
-                    <div className="w-20 flex items-center gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                    <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Smile size={14} />
-                        <span className="text-[11px] font-semibold">Mood</span>
+                        <span className="font-label-sm text-label-sm">Mood</span>
                     </div>
-                    <div className="flex-1 flex gap-1">
-                        {renderSegments(mood, 'bg-[#f8b47b]', setMood)}
-                    </div>
+                    {renderSegments(mood, 'bg-[#f8b47b]', setMood, 'Mood')}
+                    <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{mood || '–'}</span>
                 </div>
 
-                {/* Energy */}
-                <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
-                    <div className="w-20 flex items-center gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <div className="flex items-center gap-3">
+                    <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Zap size={14} />
-                        <span className="text-[11px] font-semibold">Energy</span>
+                        <span className="font-label-sm text-label-sm">Energy</span>
                     </div>
-                    <div className="flex-1 flex gap-1">
-                        {renderSegments(energy, 'bg-[#82a88e]', setEnergy)}
-                    </div>
+                    {renderSegments(energy, 'bg-[#82a88e]', setEnergy, 'Energy')}
+                    <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{energy || '–'}</span>
                 </div>
 
-                {/* Hunger */}
-                <div className="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150">
-                    <div className="w-20 flex items-center gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <div className="flex items-center gap-3">
+                    <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Utensils size={14} />
-                        <span className="text-[11px] font-semibold">Hunger</span>
+                        <span className="font-label-sm text-label-sm">Hunger</span>
                     </div>
-                    <div className="flex-1 flex gap-1">
-                        {renderSegments(hunger, 'bg-[#d1d5db]', setHunger)}
-                    </div>
-                    <div className="w-8 text-right text-[11px] font-medium text-gray-400 dark:text-gray-500">
-                        {hunger}/10
-                    </div>
+                    {renderSegments(hunger, 'bg-[#a78bfa]', setHunger, 'Hunger')}
+                    <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{hunger || '–'}</span>
                 </div>
             </div>
 
-            <div className="flex items-center justify-between pt-5 border-t border-gray-100 animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                        <Coffee size={14} />
-                        <span className="text-[11px] font-semibold">Caffeine</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button 
-                            onClick={() => setCaffeine(Math.max(0, caffeine - 1))}
-                            disabled={!isToday}
-                            className="w-6 h-6 rounded-full bg-[#f4f3f0] hover:bg-[#e6e2da] flex items-center justify-center text-gray-600 transition-colors disabled:opacity-50"
-                        >
-                            -
-                        </button>
-                        <span className="text-[13px] font-bold text-gray-900 w-3 text-center">{caffeine}</span>
-                        <button 
-                            onClick={() => setCaffeine(caffeine + 1)}
-                            disabled={!isToday}
-                            className="w-6 h-6 rounded-full bg-[#f4f3f0] hover:bg-[#e6e2da] flex items-center justify-center text-gray-600 transition-colors disabled:opacity-50"
-                        >
-                            +
-                        </button>
-                        <span className="text-[11px] text-gray-500 font-medium">cups</span>
-                    </div>
+            <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-surface-variant">
+                <div className="flex items-center gap-2 min-w-0">
+                    <Coffee size={14} className="text-on-surface-variant shrink-0" />
+                    <button
+                        onClick={() => setCaffeine(Math.max(0, caffeine - 1))}
+                        disabled={!isToday || caffeine === 0}
+                        aria-label="Remove one cup of caffeine"
+                        className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface transition-transform active:scale-90 disabled:opacity-40 shrink-0"
+                    >
+                        −
+                    </button>
+                    <span className="font-label-md text-label-md text-on-surface w-4 text-center tabular-nums">{caffeine}</span>
+                    <button
+                        onClick={() => setCaffeine(caffeine + 1)}
+                        disabled={!isToday}
+                        aria-label="Add one cup of caffeine"
+                        className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface transition-transform active:scale-90 disabled:opacity-40 shrink-0"
+                    >
+                        +
+                    </button>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant truncate">cups</span>
                 </div>
 
-                <button 
+                <button
                     onClick={handleSave}
-                    disabled={!isToday}
-                    className={`text-[11px] font-bold px-5 py-1.5 rounded-full transition-colors shadow-sm btn-press disabled:opacity-50 ${
-                        saved ? 'bg-emerald-500 text-white' : 'bg-[#1f4e38] hover:bg-[#163a2a] text-white'
+                    disabled={!isToday || saving}
+                    className={`font-label-md text-label-md px-5 py-2.5 rounded-full transition-all active:scale-95 disabled:opacity-40 shrink-0 ${
+                        saved ? 'bg-activity-green text-white' : 'bg-primary text-on-primary'
                     }`}
                 >
                     {saved ? '✓ Saved' : 'Save'}

@@ -212,25 +212,50 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 id: data.user.id,
                 email: email,
                 full_name: metadata?.fullName || email.split('@')[0],
-                username: metadata?.username || email.split('@')[0].toLowerCase().replace(/\s+/g, '_')
+                username: metadata?.username ? metadata.username.toLowerCase() : email.split('@')[0].toLowerCase().replace(/\s+/g, '_')
             }).select().single();
+        }
+
+        if (typeof window !== 'undefined' && metadata?.username) {
+            localStorage.setItem('workoutos_remembered_username', metadata.username);
         }
 
         return data;
     };
 
-    // Email/Password Sign In
-    const signIn = async (email?: string, password?: string) => {
-        if (!email || !password) {
-            throw new Error('Email and password are required to sign in.');
+    // Email/Password Sign In (Supports Username)
+    const signIn = async (identifier?: string, password?: string) => {
+        if (!identifier || !password) {
+            throw new Error('Email/Username and password are required to sign in.');
+        }
+
+        let emailToUse = identifier;
+
+        // If identifier does not look like an email, assume it is a username
+        if (!identifier.includes('@')) {
+            const { data, error } = await supabase.rpc('get_email_by_username', { p_username: identifier.toLowerCase() });
+            if (error) {
+                console.error("Error looking up username:", error);
+                throw new Error('Could not find that username.');
+            }
+            if (!data) {
+                throw new Error('Username not found.');
+            }
+            emailToUse = data;
         }
 
         const { data, error } = await supabase.auth.signInWithPassword({
-            email,
+            email: emailToUse,
             password
         });
         
         if (error) throw error;
+        
+        // Remember the username/email
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('workoutos_remembered_username', identifier);
+        }
+        
         return data;
     };
 

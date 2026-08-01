@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { fetchWithFallback } from './fetchWithFallback';
 
 export async function POST(req: Request) {
     try {
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
         }
 
-        const systemInstruction = `You are "Nova", an elite iOS Apple-style AI Assistant for "Workout OS".
+        const systemInstruction = `You are "Ava", an elite iOS Apple-style AI Assistant for "Workout OS".
 Your main job is to help the user with fitness, nutrition, app usage, or anything else they need.
 User Profile Context:
 - Full Name: ${userProfile?.fullName || 'User'}
@@ -83,11 +84,11 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                     contents.push({ role: 'user', parts });
                 }
 
-                // Call Google Gemini API
-                const modelVersion = process.env.GEMINI_MODEL_VERSION || 'gemini-3.6-flash';
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelVersion}:generateContent?key=${apiKey}`;
+                // Call Google Gemini API with fallback for rate limits
+                const initialModel = process.env.GEMINI_MODEL_VERSION || 'gemini-2.5-flash';
+                const urlTemplate = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                 
-                const response = await fetch(url, {
+                const response = await fetchWithFallback(urlTemplate, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json'
@@ -201,7 +202,7 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                             maxOutputTokens: 800
                         }
                     })
-                });
+                }, initialModel);
 
                 if (response.ok) {
                     const data = await response.json();

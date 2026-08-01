@@ -256,7 +256,7 @@ export default function RawDataAITransformerModal({
                             <Wand2 size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 drop-shadow-sm">
+                            <h2 className="text-lg font-bold text-gray-900 drop-shadow-sm">
                                 Raw Data AI Transformer
                             </h2>
                             <p className="text-[11px] font-bold text-cyan-800">
@@ -278,7 +278,7 @@ export default function RawDataAITransformerModal({
                     {/* Raw Text Scratchpad Area */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-black text-gray-700 uppercase tracking-wider">
+                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 Unstructured Raw Dump Scratchpad
                             </label>
                             <button
@@ -310,7 +310,7 @@ export default function RawDataAITransformerModal({
                                 type="button"
                                 onClick={handleTransformRawData}
                                 disabled={isProcessing || !rawText.trim()}
-                                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 text-white font-black px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isProcessing ? (
                                     <>
@@ -328,14 +328,14 @@ export default function RawDataAITransformerModal({
                     {/* Parsed Categorized Results */}
                     {parsedResult && (
                         <div className="space-y-4 pt-3 border-t border-gray-100 animate-in fade-in">
-                            <h3 className="text-xs font-black text-gray-800 uppercase tracking-wider">
+                            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">
                                 Auto-Categorized Logs Preview
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* Food / Meals Card */}
                                 <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/60 shadow-sm space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-xs font-black text-emerald-800">
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
                                         <Utensils size={14} className="text-emerald-600" />
                                         <span>Diet Logs ({parsedResult.meals.length})</span>
                                     </div>
@@ -352,12 +352,12 @@ export default function RawDataAITransformerModal({
 
                                 {/* Water Card */}
                                 <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/60 shadow-sm space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-xs font-black text-blue-800">
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800">
                                         <Droplet size={14} className="text-blue-600" />
                                         <span>Hydration Log</span>
                                     </div>
                                     {parsedResult.waterMl > 0 ? (
-                                        <div className="text-[11px] font-black text-blue-900 bg-white dark:bg-slate-900/70 p-2 rounded-xl border border-blue-100">
+                                        <div className="text-[11px] font-bold text-blue-900 bg-white dark:bg-slate-900/70 p-2 rounded-xl border border-blue-100">
                                             +{parsedResult.waterMl} ml water logged
                                         </div>
                                     ) : (
@@ -370,7 +370,7 @@ export default function RawDataAITransformerModal({
                             {(parsedResult.workoutNote || parsedResult.quickNote || (parsedResult.budget && parsedResult.budget.length > 0)) && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                                     <div className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200/60 shadow-sm space-y-1.5 text-xs font-bold text-purple-900">
-                                        <div className="flex items-center gap-1.5 font-black text-purple-800">
+                                        <div className="flex items-center gap-1.5 font-bold text-purple-800">
                                             <Dumbbell size={14} className="text-purple-600" />
                                             <span>Workout & Notes Logs</span>
                                         </div>
@@ -386,7 +386,7 @@ export default function RawDataAITransformerModal({
                                     </div>
                                     
                                     <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/60 shadow-sm space-y-1.5 text-xs font-bold text-amber-900">
-                                        <div className="flex items-center gap-1.5 font-black text-amber-800">
+                                        <div className="flex items-center gap-1.5 font-bold text-amber-800">
                                             <FileText size={14} className="text-amber-600" />
                                             <span>Budget Logs</span>
                                         </div>
@@ -408,7 +408,7 @@ export default function RawDataAITransformerModal({
                                 type="button"
                                 onClick={handleAutoApplyAll}
                                 disabled={appliedNotice}
-                                className={`w-full font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all btn-press ${
+                                className={`w-full font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all btn-press ${
                                     appliedNotice
                                         ? 'bg-emerald-600 text-white'
                                         : 'bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-700 hover:to-emerald-700 text-white'

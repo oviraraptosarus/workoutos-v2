@@ -50,7 +50,7 @@ export default function OnboardingTourModal() {
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-3 text-2xl shadow-lg">
                         💪
                     </div>
-                    <h2 className="text-xl font-black tracking-tight">Welcome to Workout OS</h2>
+                    <h2 className="text-xl font-bold tracking-tight">Welcome to Workout OS</h2>
                     <p className="text-emerald-100 text-xs font-medium mt-1">Your all-in-one fitness & life tracker</p>
                 </div>
 
@@ -72,14 +72,14 @@ export default function OnboardingTourModal() {
                         <div className="flex items-center gap-2">
                             <Sparkles size={14} className="text-emerald-600 flex-shrink-0" />
                             <p className="text-xs text-emerald-800 font-semibold leading-snug">
-                                Use <strong>Nova AI Copilot</strong> on the dashboard to log food, workouts, and water with natural language!
+                                Use <strong>Ava AI Copilot</strong> on the dashboard to log food, workouts, and water with natural language!
                             </p>
                         </div>
                     </div>
 
                     <button
                         onClick={handleClose}
-                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black py-3 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-colors"
+                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold py-3 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-colors"
                     >
                         Get Started <ChevronRight size={16} />
                     </button>

@@ -46,25 +46,25 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
     };
 
     return (
-        <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 flex items-center gap-2 mb-2">
-                <Moon size={18} className="text-indigo-500" /> Advanced Sleep Log
+        <div className="bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm space-y-4 transition-colors">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 mb-2">
+                <Moon size={18} className="text-secondary" /> Advanced Sleep Log
             </h2>
 
             {/* Core Sleep */}
             <div>
-                <label className="text-xs font-bold text-gray-500 uppercase">Sleep Duration (hrs)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Sleep Duration (hrs)</label>
                 <input 
                     type="number" step="0.5" value={hours} onChange={e => setHours(e.target.value)}
-                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-black text-gray-900 focus:outline-none focus:border-indigo-400"
+                    className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-black text-on-surface focus:outline-none focus:border-secondary transition-colors"
                 />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 {/* Quality */}
                 <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Quality</label>
-                    <select value={quality} onChange={e => setQuality(e.target.value)} className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Quality</label>
+                    <select value={quality} onChange={e => setQuality(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
                         <option value="excellent">Excellent</option>
                         <option value="good">Good</option>
                         <option value="fair">Fair</option>
@@ -73,8 +73,8 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
                 </div>
                 {/* Mood */}
                 <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Waking Mood</label>
-                    <select value={mood} onChange={e => setMood(e.target.value)} className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Waking Mood</label>
+                    <select value={mood} onChange={e => setMood(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
                         <option value="great">Great</option>
                         <option value="good">Good</option>
                         <option value="okay">Okay</option>
@@ -86,16 +86,16 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
             {/* Energy & Stress */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Energy</label>
-                    <select value={energy} onChange={e => setEnergy(e.target.value)} className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Energy</label>
+                    <select value={energy} onChange={e => setEnergy(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
                         <option value="high">High</option>
                         <option value="medium">Medium</option>
                         <option value="low">Low</option>
                     </select>
                 </div>
                 <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase">Stress</label>
-                    <select value={stress} onChange={e => setStress(e.target.value)} className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold focus:outline-none">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Stress</label>
+                    <select value={stress} onChange={e => setStress(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
                         <option value="low">Low</option>
                         <option value="moderate">Moderate</option>
                         <option value="high">High</option>
@@ -105,37 +105,37 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
 
             {/* Notes */}
             <div>
-                <label className="text-xs font-bold text-gray-500 uppercase">Notes & Thoughts</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Notes & Thoughts</label>
                 <textarea 
                     rows={2} value={notes} onChange={e => setNotes(e.target.value)}
-                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-indigo-400"
+                    className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
                     placeholder="How did you sleep?"
                 />
             </div>
             
             {/* Dreams */}
             <div>
-                <label className="text-xs font-bold text-gray-500 uppercase">Dreams (Optional)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Dreams (Optional)</label>
                 <input 
                     type="text" value={dreams} onChange={e => setDreams(e.target.value)}
-                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none"
+                    className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
                     placeholder="Any vivid dreams?"
                 />
             </div>
 
             {/* Tags */}
             <div>
-                <label className="text-xs font-bold text-gray-500 uppercase">Tags (comma separated)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Tags (comma separated)</label>
                 <input 
                     type="text" value={tags} onChange={e => setTags(e.target.value)}
-                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none"
+                    className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
                     placeholder="e.g. late meal, hot room"
                 />
             </div>
 
             <button 
                 onClick={handleSave}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl p-3 flex items-center justify-center gap-2 font-black transition-all btn-press shadow-md"
+                className="w-full bg-secondary hover:bg-secondary-fixed text-on-secondary rounded-2xl p-4 flex items-center justify-center gap-2 font-black transition-all btn-press mt-4"
             >
                 <Plus size={18} /> Save Sleep Entry
             </button>

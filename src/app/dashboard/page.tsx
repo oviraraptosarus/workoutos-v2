@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import nextDynamic from 'next/dynamic';
+import AppLayout from '@/components/AppLayout';
 import DashboardHeader from '@/app/components/DashboardHeader';
 import BentoGrid from '@/app/components/BentoGrid';
 import TouchGrassNudge from '@/app/components/TouchGrassNudge';
@@ -11,13 +12,6 @@ import WeightLogCard from '@/app/components/cards/WeightLogCard';
 import DashboardTasks from '@/app/components/DashboardTasks';
 import QuickNotes from '@/app/components/QuickNotes';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
-
-// Dynamic ssr:false imports to prevent server prerender crashes
-const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
-const FloatingActionMenu = nextDynamic(() => import('@/app/components/FloatingActionMenu'), { ssr: false });
-const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
-const GlobalAICopilot = nextDynamic(() => import('@/components/GlobalAICopilot'), { ssr: false });
-const CommandPaletteModal = nextDynamic(() => import('@/app/components/CommandPaletteModal'), { ssr: false });
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
@@ -32,10 +26,9 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#f7f6f0] dark:bg-[#0f1115] text-stone-900 dark:text-gray-100 pb-32 font-sans selection:bg-emerald-100 dark:selection:bg-emerald-900/50">
-      <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+    <AppLayout>
+      <div className="flex flex-col w-full gap-4 sm:gap-6 pb-8 animate-fade-in">
         <DashboardHeader />
-
 
         <BentoGrid />
 
@@ -45,22 +38,16 @@ export default function Dashboard() {
 
         <WeightLogCard />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
              <TimeProgressWidget />
              <QuickNotes />
           </div>
-          <div className="md:col-span-2">
+          <div className="h-full">
              <DashboardTasks />
           </div>
         </div>
-      </main>
-
-      <FloatingActionMenu />
-      <BottomNav />
-      <OnboardingTourModal />
-      <CommandPaletteModal />
-      <GlobalAICopilot />
-    </div>
+      </div>
+    </AppLayout>
   );
 }

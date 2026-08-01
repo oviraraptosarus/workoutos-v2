@@ -20,18 +20,27 @@ export default function DietGaugeSummary({
     onDateChange,
     totalCalories,
     calorieGoal,
-    activityBurned = 180,
+    activityBurned = 0,
     weeklyRemaining = 42,
     onOpenAIMealModal,
     onOpenBarcodeScanner,
 }: DietGaugeSummaryProps) {
-    const caloriesRemaining = Math.max(0, calorieGoal - totalCalories);
+    const caloriesRemaining = calorieGoal - totalCalories;
+    const isOverLimit = caloriesRemaining < 0;
+    
+    // Gauge calculations
+    const radius = 90;
+    const circumference = Math.PI * radius; // half circle
     const progressPercent = Math.min(100, Math.max(0, (totalCalories / calorieGoal) * 100));
-
-    // Semi-circular arch parameters (Radius = 64)
-    const radius = 64;
-    const circumference = Math.PI * radius; // Approx 201.06
     const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+    
+    // Determine gauge color based on progress
+    let strokeColor = "url(#gaugeGradient)";
+    if (isOverLimit) {
+        strokeColor = "#ef4444"; // Red for over limit
+    } else if (progressPercent > 85) {
+        strokeColor = "#f59e0b"; // Amber if close
+    }
 
     return (
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
@@ -64,10 +73,10 @@ export default function DietGaugeSummary({
                 {/* Center Metric: Upward Arch Gauge */}
                 <div className="flex flex-col items-center justify-center relative">
                     <div className="relative w-44 h-24 flex items-center justify-center">
-                        <svg className="w-44 h-28 overflow-visible" viewBox="0 0 160 100">
-                            {/* Background Track Arc (Upward Arch) */}
+                        <svg className="w-44 h-28 overflow-visible" viewBox="0 0 200 110">
+                            {/* Background Track Arc */}
                             <path
-                                d="M 16,90 A 64,64 0 0,1 144,90"
+                                d="M 10,100 A 90,90 0 0,1 190,100"
                                 fill="none"
                                 stroke="#e2e8f0"
                                 strokeWidth="12"
@@ -75,14 +84,14 @@ export default function DietGaugeSummary({
                             />
                             {/* Dynamic Progress Arc */}
                             <path
-                                d="M 16,90 A 64,64 0 0,1 144,90"
+                                d="M 10,100 A 90,90 0 0,1 190,100"
                                 fill="none"
-                                stroke="url(#gaugeGradient)"
+                                stroke={strokeColor}
                                 strokeWidth="12"
                                 strokeLinecap="round"
                                 strokeDasharray={circumference}
                                 strokeDashoffset={strokeDashoffset}
-                                className="transition-all duration-700 ease-out"
+                                className="transition-all duration-1000 ease-out"
                             />
                             <defs>
                                 <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -93,16 +102,16 @@ export default function DietGaugeSummary({
                             </defs>
                         </svg>
                         {/* Gauge Central Values (Centered inside the dome) */}
-                        <div className="absolute top-7 flex flex-col items-center">
-                            <span className="text-3xl font-black text-cyan-950 tracking-tight drop-shadow-sm leading-none">
-                                {caloriesRemaining}
+                        <div className="absolute top-10 flex flex-col items-center">
+                            <span className={`text-3xl font-black tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-red-600' : 'text-cyan-950'}`}>
+                                {Math.abs(caloriesRemaining)}
                             </span>
                         </div>
                     </div>
                     
                     {/* Gauge Label below the arch with ample spacing */}
-                    <span className="text-[10px] font-extrabold text-cyan-800/90 tracking-widest uppercase mt-2">
-                        DAILY REMAINING
+                    <span className={`text-[10px] font-extrabold tracking-widest uppercase mt-2 ${isOverLimit ? 'text-red-600' : 'text-cyan-800/90'}`}>
+                        {isOverLimit ? 'OVER LIMIT' : 'DAILY REMAINING'}
                     </span>
 
                     {/* Scale Anchors (0 and goal) */}

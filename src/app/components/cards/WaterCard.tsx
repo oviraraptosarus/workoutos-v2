@@ -1,93 +1,122 @@
 'use client';
 
 import React from 'react';
-import { Droplet, ChevronRight } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+const QUICK_ADD_ML = 250;
 
 export default function WaterCard() {
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
+    const router = useRouter();
     const [currentMl, setCurrentMl] = React.useState(0);
+    const [loaded, setLoaded] = React.useState(false);
+    const [saving, setSaving] = React.useState(false);
+    const [splash, setSplash] = React.useState(false);
 
     React.useEffect(() => {
         if (!selectedDate) return;
-        const loadWater = () => {
-            let saved = localStorage.getItem(`workout_os_water_ml_${selectedDate}`);
-            
-            // Migration: check old key formats
-            if (!saved) {
-                saved = localStorage.getItem(`workout_os_water_${selectedDate}`);
-                if (saved) {
-                    // Migrate to new key
-                    localStorage.setItem(`workout_os_water_ml_${selectedDate}`, saved);
-                    localStorage.removeItem(`workout_os_water_${selectedDate}`);
-                }
-            }
-            if (!saved && isToday) {
-                const legacy = localStorage.getItem('workout_os_water_current');
-                if (legacy) {
-                    saved = legacy;
-                    localStorage.setItem(`workout_os_water_ml_${selectedDate}`, legacy);
-                    localStorage.removeItem('workout_os_water_current');
-                }
-            }
-
-            if (saved) setCurrentMl(parseInt(saved, 10));
-            else setCurrentMl(0);
+        const loadWater = async () => {
+            const { getWaterForDate } = await import('@/app/diet/services/dietStorage');
+            const saved = await getWaterForDate(selectedDate);
+            setCurrentMl(saved || 0);
+            setLoaded(true);
         };
-        
+
         loadWater();
-        
-        // Listen for storage events (if logged by Nova AI)
-        window.addEventListener('storage', loadWater);
-        return () => window.removeEventListener('storage', loadWater);
-    }, [selectedDate]);
+
+        window.addEventListener('workout_os_water_updated', loadWater);
+        return () => window.removeEventListener('workout_os_water_updated', loadWater);
+    }, [selectedDate, isToday]);
 
     const goalMl = userProfile?.waterGoalMl || 3000;
     const level = Math.min((currentMl / goalMl) * 100, 100);
-    const leftMl = Math.max(goalMl - currentMl, 0);
+    const reached = currentMl >= goalMl;
+
+    // Logs straight from the dashboard — the card used to only navigate away.
+    const quickAdd = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (saving || !selectedDate) return;
+        setSaving(true);
+        const next = currentMl + QUICK_ADD_ML;
+        setCurrentMl(next); // optimistic
+        setSplash(true);
+        setTimeout(() => setSplash(false), 600);
+        try {
+            const { saveWaterForDate } = await import('@/app/diet/services/dietStorage');
+            await saveWaterForDate(selectedDate, next);
+        } catch {
+            setCurrentMl((v) => Math.max(v - QUICK_ADD_ML, 0));
+        } finally {
+            setSaving(false);
+        }
+    };
 
     return (
-        <Link 
-            href="/water"
-            className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between h-full min-h-[220px] cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/80 hover:shadow-md transition-all btn-press group block"
+        <div
+            onClick={() => router.push('/water')}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') router.push('/water'); }}
+            aria-label="Hydration details"
+            className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
         >
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-blue-50/50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center shadow-sm border border-gray-100 dark:border-slate-700/50">
-                        <Droplet size={18} />
-                    </div>
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-gray-700 dark:text-gray-300">WATER</span>
-                </div>
-                <div className="text-gray-500 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors p-1" aria-label="Expand water details">
-                    <ChevronRight size={18} />
-                </div>
+            {/* Liquid fill — rises with intake */}
+            <div
+                className="absolute inset-x-0 bottom-0 pointer-events-none"
+                style={{
+                    height: `${level}%`,
+                    transition: 'height 700ms cubic-bezier(0.32,0.72,0,1)',
+                }}
+                aria-hidden="true"
+            >
+                <svg
+                    className="absolute -top-3 left-0 w-[200%] h-4 animate-water-wave"
+                    viewBox="0 0 200 20"
+                    preserveAspectRatio="none"
+                >
+                    <path
+                        d="M0 10 Q 25 2, 50 10 T 100 10 T 150 10 T 200 10 V20 H0 Z"
+                        className="fill-activity-blue/20"
+                    />
+                </svg>
+                <div className="w-full h-full bg-activity-blue/20" />
             </div>
 
-            {/* Simple Graphic */}
-            <div className="my-4 flex flex-col items-center justify-center relative flex-1">
-                <div className="w-20 h-20 rounded-full bg-blue-50/50 dark:bg-blue-900/30 flex items-center justify-center text-[#007aff] dark:text-blue-400 relative border border-transparent dark:border-blue-800/50">
-                    <Droplet size={40} strokeWidth={1.5} />
-                    <div className="absolute inset-0 bg-[#007aff] dark:bg-blue-500 rounded-full mix-blend-color opacity-20 dark:opacity-30" style={{ height: `${level}%`, top: 'auto', bottom: 0 }} />
+            <div className="relative flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="material-symbols-outlined text-activity-blue text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>water_drop</span>
+                    <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant truncate">Water</span>
                 </div>
-                <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">{currentMl}</span>
-                    <span className="text-gray-500 dark:text-gray-400 font-bold text-sm">/ {goalMl} ml</span>
-                </div>
+                <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
             </div>
 
-            <div className="flex justify-center mt-2">
-                <span className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-colors ${
-                    isToday 
-                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-800/50 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50' 
-                    : 'text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700'
-                }`}>
-                    {isToday ? 'Tap to log water' : 'Historical data'}
-                </span>
+            <div className="relative mt-auto">
+                <div className="flex items-baseline gap-1 flex-wrap">
+                    <span className={`font-headline-lg text-headline-lg text-on-surface tabular-nums leading-none transition-transform ${splash ? 'scale-110' : 'scale-100'}`} style={{ transitionDuration: '300ms' }}>
+                        {loaded ? currentMl : '—'}
+                    </span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">ml</span>
+                </div>
+                <p className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+                    {reached ? 'Goal reached' : `of ${goalMl} ml`}
+                </p>
+
+                {isToday && (
+                    <button
+                        onClick={quickAdd}
+                        disabled={saving}
+                        aria-label={`Add ${QUICK_ADD_ML} millilitres of water`}
+                        className="mt-2.5 w-full flex items-center justify-center gap-1 bg-primary text-on-primary font-label-md text-label-md py-2 rounded-full active:scale-95 transition-transform disabled:opacity-50"
+                    >
+                        <Plus size={14} /> {QUICK_ADD_ML}
+                    </button>
+                )}
             </div>
-        </Link>
+        </div>
     );
 }

@@ -25,7 +25,25 @@ export default function BudgetSummaryCards() {
     const savingsRate = totalIncome > 0 ? ((netSavings / totalIncome) * 100).toFixed(0) : 0;
 
     const expenseRatio = totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(0) : 0;
-    
+
+    // Real month pace, replacing a hardcoded "84% of month".
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const dayOfMonth = today.getDate();
+    const monthPct = Math.round((dayOfMonth / daysInMonth) * 100);
+
+    // Spending is "on track" when the share of income spent has not outrun the
+    // share of the month that has passed.
+    const onTrack = Number(expenseRatio) <= monthPct;
+
+    // Straight-line projection from actual spend-per-day so far. Suppressed for
+    // the first few days of a month, where one purchase extrapolates to a wild
+    // and misleading month-end figure.
+    const projectionReliable = dayOfMonth >= 5;
+    const projectedTotal = dayOfMonth > 0
+        ? Math.round((totalExpenses / dayOfMonth) * daysInMonth)
+        : totalExpenses;
+
     // Protein metrics logic
     const proteinExpenses = expenses.filter(e => e.protein && e.costPerG);
     let avgCostPerG = 0;
@@ -65,8 +83,12 @@ export default function BudgetSummaryCards() {
                         </div>
                         <span className="text-xs font-bold tracking-wider uppercase text-gray-400 dark:text-gray-500">Total Expenses</span>
                     </div>
-                    <span className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm">
-                        On track
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${
+                        onTrack
+                            ? 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/50'
+                            : 'bg-rose-100/50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200/50 dark:border-rose-800/50'
+                    }`}>
+                        {onTrack ? 'On track' : 'Over pace'}
                     </span>
                 </div>
                 
@@ -75,12 +97,18 @@ export default function BudgetSummaryCards() {
                     
                     <div className="flex justify-between text-[11px] text-gray-500 dark:text-gray-400 font-bold mb-2">
                         <span>{expenseRatio}% of income</span>
-                        <span>84% of month</span>
+                        <span>{monthPct}% of month</span>
                     </div>
                     <div className="w-full bg-gray-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden mb-3 shadow-inner">
                         <div className="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${expenseRatio}%` }} />
                     </div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Projected total: <span className="text-gray-900 dark:text-gray-200 font-bold">₹{(totalExpenses * 1.15).toLocaleString('en-IN')}</span></div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+                        {projectionReliable ? (
+                            <>Projected total: <span className="text-gray-900 dark:text-gray-200 font-bold">₹{projectedTotal.toLocaleString('en-IN')}</span></>
+                        ) : (
+                            <>Day {dayOfMonth} of {daysInMonth} — projection available from day 5</>
+                        )}
+                    </div>
                 </div>
             </div>
 

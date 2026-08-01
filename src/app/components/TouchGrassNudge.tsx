@@ -47,21 +47,21 @@ export default function TouchGrassNudge() {
     if (dismissed || !showNudge) return null;
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-4 sm:p-5 shadow-md flex items-start justify-between gap-3.5 animate-slide-up transition-all mx-4 backdrop-blur-xl">
+        <div className="bg-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 flex items-start justify-between gap-3.5 animate-slide-up transition-all relative overflow-hidden hover:shadow-lg">
             <div className="flex items-start gap-3.5">
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#34c759] to-[#32ade6] text-white flex-shrink-0 flex items-center justify-center shadow-[0_4px_10px_rgba(52,199,89,0.3)] mt-0.5 border border-gray-100 dark:border-slate-800">
+                <div className="w-11 h-11 rounded-full bg-activity-green text-on-primary flex-shrink-0 flex items-center justify-center shadow-[0_4px_10px_rgba(34,197,94,0.3)] mt-0.5">
                     <Trees size={20} />
                 </div>
                 <div>
-                    <h4 className="text-sm font-bold text-gray-900 drop-shadow-sm tracking-tight">Step outside for a bit?</h4>
-                    <p className="text-xs text-gray-700 font-medium leading-relaxed mt-1">
+                    <h4 className="font-headline-sm text-sm text-on-surface drop-shadow-sm tracking-tight">Step outside for a bit?</h4>
+                    <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mt-1">
                         You&apos;ve been logging for over 15 minutes. A short walk outside beats more screen time — the logs will be here when you&apos;re back.
                     </p>
                 </div>
             </div>
             <button
                 onClick={handleDismiss}
-                className="text-gray-500 hover:text-gray-900 bg-white dark:bg-slate-900/30 hover:bg-gray-100 rounded-full border border-gray-100 shadow-sm transition-colors p-1.5 flex-shrink-0 btn-press"
+                className="text-on-surface-variant hover:text-on-surface bg-surface-container hover:bg-surface-container-high rounded-full border border-surface-variant transition-colors p-1.5 flex-shrink-0 btn-press"
                 aria-label="Dismiss banner"
             >
                 <X size={16} />

@@ -39,32 +39,32 @@ export default function RecentWorkouts() {
     }, []);
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all">
-            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 mb-4">Past Sessions</h3>
+        <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm transition-colors">
+            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">Past Sessions</h3>
             
             <div className="space-y-3">
                 {pastWorkouts.length === 0 ? (
-                    <div className="py-6 text-center text-gray-400">
+                    <div className="py-6 text-center text-on-surface-variant">
                         <p className="text-xs font-medium">No recent sessions.</p>
                         <p className="text-[10px] mt-1">Complete a workout to see your history here.</p>
                     </div>
                 ) : (
                     pastWorkouts.map(workout => (
-                        <div key={workout.id} className="group p-4 rounded-2xl bg-gray-50 border border-gray-100 transition-colors shadow-sm hover:bg-gray-100 cursor-pointer">
+                        <div key={workout.id} className="group p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant transition-colors shadow-sm hover:bg-surface-container cursor-pointer">
                             <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-black text-gray-900 drop-shadow-sm">{workout.name}</h4>
-                                <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200 shadow-sm">
+                                <h4 className="font-black text-on-surface drop-shadow-sm">{workout.name}</h4>
+                                <span className="text-[10px] font-bold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full border border-surface-variant shadow-sm">
                                     {workout.date}
                                 </span>
                             </div>
                             
-                            <div className="flex items-center gap-4 text-xs font-bold text-gray-600">
+                            <div className="flex items-center gap-4 text-xs font-bold text-on-surface-variant">
                                 <div className="flex items-center gap-1.5">
-                                    <Clock size={14} className="text-blue-500" />
+                                    <Clock size={14} className="text-secondary" />
                                     <span>{workout.duration}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <TrendingUp size={14} className="text-emerald-500" />
+                                    <TrendingUp size={14} className="text-primary" />
                                     <span>{workout.volume}</span>
                                 </div>
                             </div>

@@ -6,7 +6,7 @@ CREATE TABLE public.profiles (
   id uuid REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   email text,
   full_name text,
-  username text,
+  username text UNIQUE,
   dob date,
   height_cm numeric,
   current_weight numeric,
@@ -34,6 +34,30 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- RPC Functions for Username Handling
+CREATE OR REPLACE FUNCTION check_username_available(p_username text)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN NOT EXISTS (SELECT 1 FROM public.profiles WHERE username = p_username);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION get_email_by_username(p_username text)
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_email text;
+BEGIN
+  SELECT email INTO v_email FROM public.profiles WHERE username = p_username;
+  RETURN v_email;
+END;
+$$;
 
 -- 2. Daily Logs (Water, Sleep, etc)
 CREATE TABLE public.daily_logs (

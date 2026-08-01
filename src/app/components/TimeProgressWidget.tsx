@@ -44,33 +44,33 @@ export default function TimeProgressWidget() {
 
     // Prevent hydration mismatch by returning a skeleton if 0
     if (progress.year === 0) return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm h-full flex flex-col justify-center min-h-[160px]">
+        <div className="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-sm h-full flex flex-col justify-center min-h-[160px]">
             <div className="animate-pulse flex flex-col gap-4">
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-2.5 bg-gray-200 rounded w-full"></div>
-                <div className="h-2.5 bg-gray-200 rounded w-full"></div>
-                <div className="h-2.5 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-surface-container rounded w-1/3"></div>
+                <div className="h-2.5 bg-surface-container rounded w-full"></div>
+                <div className="h-2.5 bg-surface-container rounded w-full"></div>
+                <div className="h-2.5 bg-surface-container rounded w-full"></div>
             </div>
         </div>
     );
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm transition-colors h-full">
-            <h3 className="text-sm font-black text-gray-900 dark:text-white tracking-tight mb-5 flex items-center gap-2">
-                <Hourglass size={16} className="text-indigo-500" />
-                Year Progression
+        <div className="bg-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all h-full relative overflow-hidden hover:shadow-lg">
+            <h3 className="font-headline-sm text-sm text-on-surface mb-5 flex items-center gap-2">
+                <Hourglass size={16} className="text-secondary" />
+                Time Progression
             </h3>
             
             <div className="space-y-4">
                 {/* Year */}
                 <div>
-                    <div className="flex justify-between items-center text-xs font-bold mb-1.5">
-                        <span className="text-gray-500 dark:text-gray-400">Year</span>
-                        <span className="text-gray-900 dark:text-white">{progress.year.toFixed(1)}%</span>
+                    <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
+                        <span className="text-on-surface-variant">Year</span>
+                        <span className="text-on-surface">{progress.year.toFixed(1)}%</span>
                     </div>
-                    <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                            className="h-full bg-secondary rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(0,88,190,0.3)]"
                             style={{ width: `${progress.year}%` }}
                         />
                     </div>
@@ -78,13 +78,13 @@ export default function TimeProgressWidget() {
 
                 {/* Month */}
                 <div>
-                    <div className="flex justify-between items-center text-xs font-bold mb-1.5">
-                        <span className="text-gray-500 dark:text-gray-400">Month</span>
-                        <span className="text-gray-900 dark:text-white">{progress.month.toFixed(1)}%</span>
+                    <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
+                        <span className="text-on-surface-variant">Month</span>
+                        <span className="text-on-surface">{progress.month.toFixed(1)}%</span>
                     </div>
-                    <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-violet-500 rounded-full transition-all duration-1000 ease-out"
+                            className="h-full bg-activity-blue rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(59,130,246,0.3)]"
                             style={{ width: `${progress.month}%` }}
                         />
                     </div>
@@ -92,13 +92,13 @@ export default function TimeProgressWidget() {
 
                 {/* Day */}
                 <div>
-                    <div className="flex justify-between items-center text-xs font-bold mb-1.5">
-                        <span className="text-gray-500 dark:text-gray-400">Today</span>
-                        <span className="text-gray-900 dark:text-white">{progress.day.toFixed(1)}%</span>
+                    <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
+                        <span className="text-on-surface-variant">Today</span>
+                        <span className="text-on-surface">{progress.day.toFixed(1)}%</span>
                     </div>
-                    <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-purple-500 rounded-full transition-all duration-1000 ease-out"
+                            className="h-full bg-activity-green rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(34,197,94,0.3)]"
                             style={{ width: `${progress.day}%` }}
                         />
                     </div>

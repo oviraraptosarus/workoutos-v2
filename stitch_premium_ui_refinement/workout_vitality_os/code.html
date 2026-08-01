@@ -1,0 +1,154 @@
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "inverse-surface": "#2e3034", "on-secondary-fixed": "#001a42", "outline": "#76777d", "activity-red": "#EF4444", "on-secondary-container": "#fefcff", "secondary-fixed-dim": "#adc6ff", "on-tertiary": "#ffffff", "on-tertiary-container": "#009668", "activity-blue": "#3B82F6", "tertiary": "#000000", "on-primary-fixed-variant": "#404758", "surface-container-high": "#e8e8ed", "background": "#f9f9fe", "activity-green": "#22C55E", "primary": "#000000", "surface-container-lowest": "#ffffff", "secondary-container": "#2170e4", "on-secondary": "#ffffff", "surface-dim": "#d9dade", "on-primary-fixed": "#141b2b", "surface-glass": "rgba(255, 255, 255, 0.7)", "surface": "#f9f9fe", "inverse-on-surface": "#f0f0f5", "on-background": "#1a1c1f", "surface-container": "#ededf2", "secondary": "#0058be", "primary-container": "#141b2b", "tertiary-fixed-dim": "#4edea3", "outline-variant": "#c6c6cd", "primary-fixed": "#dce2f7", "surface-bright": "#f9f9fe", "primary-fixed-dim": "#c0c6db", "on-primary-container": "#7d8497", "surface-variant": "#e2e2e7", "tertiary-container": "#002113", "on-error": "#ffffff", "on-surface-variant": "#45464c", "secondary-fixed": "#d8e2ff", "surface-container-low": "#f3f3f8", "surface-container-highest": "#e2e2e7", "on-primary": "#ffffff", "on-secondary-fixed-variant": "#004395", "card-white": "#FFFFFF", "on-tertiary-fixed": "#002113", "inverse-primary": "#c0c6db", "tertiary-fixed": "#6ffbbe", "error-container": "#ffdad6", "error": "#ba1a1a", "surface-tint": "#575e70", "on-error-container": "#93000a", "on-surface": "#1a1c1f", "on-tertiary-fixed-variant": "#005236" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-mobile": "16px", "bento-gap": "24px", "base": "8px", "margin-desktop": "40px", "gutter": "20px" }, "fontFamily": { "body-md": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Hanken Grotesk"], "display-lg": ["Hanken Grotesk"], "headline-md": ["Hanken Grotesk"], "label-sm": ["Inter"], "headline-lg-mobile": ["Hanken Grotesk"] }, "fontSize": { "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}], "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}], "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}] } } } }</script><style>@layer base { body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom); } .pt-safe { padding-top: env(safe-area-inset-top); } } .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }</style></head><body class="bg-background font-body-md text-on-background"><header class="fixed top-0 w-full z-50 glass pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[20px]">vital_signs</span></div><span class="font-headline-md text-headline-md text-on-surface tracking-tight">Vitality OS</span></div><div class="flex items-center gap-3"><button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative w-full pt-16 pb-32 bg-background min-h-screen"><div class="flex flex-col w-full px-margin-mobile gap-bento-gap">
+<!-- Dynamic Greeting & Quick Start -->
+<section class="flex flex-col gap-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Training Lab</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Precision Performance</h1>
+</div>
+<!-- Start Empty Workout Button -->
+<button class="relative group overflow-hidden w-full h-16 bg-primary rounded-xl flex items-center justify-between px-6 transition-transform active:scale-[0.98]">
+<div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary/20 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="relative z-10 flex items-center gap-3">
+<div class="w-8 h-8 bg-on-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">add</span>
+</div>
+<span class="font-label-md text-label-md text-on-primary">Start Empty Session</span>
+</div>
+<span class="material-symbols-outlined text-on-primary/50 relative z-10">chevron_right</span>
+</button>
+</section>
+<!-- Editorial Preset Feed -->
+<section class="flex flex-col gap-base">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface">Curated Programs</h2>
+<span class="font-label-sm text-label-sm text-secondary">See all</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- High Intensity Hero -->
+<div class="relative w-full h-[420px] rounded-3xl overflow-hidden shadow-xl group">
+<img alt="Workout Program Cover" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7DqkrJWzSPEQGV5M3wrgaPVCAs2z5DGNzqcAawmoq89ZTA5CverPJRT_bArd46iDWoQs0CkKHi_eDKNpiz0Cv1ZIdTNRtGwTGH4X-d0uckgn0sX6ZCxc3DcHA0YUr7FPhwxeSP_QyE5wpSlkq_u4yW3l34ffJXCTuSXZnUNPfKw_wDqcDVhJe6emyu2TOJ7DZggXK9BuOkiAGY-c5WG5XW6_A1c86QQWZ2GeGMU8LI7gdCB33iAnN_OFseMyfAA5HmQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<!-- Glassmorphic Info Overlay -->
+<div class="absolute bottom-6 left-6 right-6 p-5 glass rounded-2xl border border-white/20 backdrop-blur-md">
+<div class="flex justify-between items-start mb-3">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-secondary-container/80 uppercase">Strength &amp; Power</span>
+<h3 class="font-headline-md text-headline-md text-on-secondary-container">The Hypertrophy Protocol</h3>
+</div>
+<div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-on-secondary">play_arrow</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-activity-blue">schedule</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container">55 min</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-activity-red">bolt</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container">Advanced</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-activity-green">local_fire_department</span>
+<span class="font-label-sm text-label-sm text-on-secondary-container">640 kcal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Presets Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="relative h-48 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Close up of a person doing a kettlebell swing in a dark, atmospheric gym with blue rim lighting, high contrast, cinematic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCqUfbBxoXmpmr2rYH1i7nJfvAK05W_BCx2ZpMF9GhGzRo_r28q5t5_0D-oYive2H6VU2Zg9RV-DZDQGOBaNU_aSMfhzkf78ELNFT_Eis3p9atRwqkG34k7V31QV-rz2IK-tn3CV6lajvF4oTWxMa27jLsLdnV9rvDg978DIPSXHJMggVZ5FtWBv67aiiVH3F2nqhBdbltue_QuCfGWh68hklTo4gLDnr3cUKKS8juXuwlvM5jsmI_e')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-3 flex flex-col">
+<span class="font-label-sm text-label-sm text-white/70">Metabolic</span>
+<span class="font-label-md text-label-md text-white">HIIT Sprint</span>
+</div>
+</div>
+<div class="relative h-48 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Muscular back of a person doing a pull up, dramatic moody lighting, sweat, fitness editorial style, charcoal and slate tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD825jp6Ih0wpyI7EJb__kRs-_88UGu_VCu99D-tga7JyQlCPAGLpIStagrz2c7_yYb-HchuEEdDYP5hIzTOXXJqAH3-5nkoqp8I3uX6kNW-14dsUZvkrHbgVeBoGy6mjiXGBt7uKww5wJcuv5XD-8p044gXzRgkY-EDdmn11weF5KenYJLJILWMJd2ujPN-8-TD2zxS7rv4AX2wWndsd0CU4QYXsa-lFmp3RVNSqWc1vqHTeR8w6L6')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-3 flex flex-col">
+<span class="font-label-sm text-label-sm text-white/70">Mechanical</span>
+<span class="font-label-md text-label-md text-white">Pull Day II</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Past Sessions Bento -->
+<section class="flex flex-col gap-base">
+<h2 class="font-headline-md text-headline-md text-on-surface px-1">Activity Log</h2>
+<div class="bg-card-white rounded-3xl p-6 shadow-sm flex flex-col gap-6">
+<!-- Session Item -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-xl flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Upper Body Alpha</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Yesterday • 14:20</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-activity-green">+12% Vol</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">6,420kg</span>
+</div>
+</div>
+<div class="h-px bg-outline-variant/30 w-full"></div>
+<!-- Session Item -->
+<div class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-xl flex items-center justify-center text-activity-blue">
+<span class="material-symbols-outlined">directions_run</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Zone 2 Recovery</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tuesday • 07:10</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-on-surface-variant">Steady</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">45:00</span>
+</div>
+</div>
+<!-- Empty State / Footer -->
+<button class="w-full py-3 bg-surface-container-low rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container transition-colors">
+        View Full History
+      </button>
+</div>
+</section>
+<!-- Performance Insight Micro-Card -->
+<div class="bg-primary-container text-on-primary-container p-6 rounded-3xl relative overflow-hidden">
+<div class="relative z-10 flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-activity-green">trending_up</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Insight</span>
+</div>
+<p class="font-body-md text-body-md">You're on a 4-day strength streak. Hit a 15-minute mobility session today to optimize recovery.</p>
+</div>
+<!-- Abstract Shape Decoration -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-secondary/20 rounded-full blur-3xl"></div>
+</div>
+<script>
+    document.querySelectorAll('.active\\:scale-\\[0\\.98\\]').forEach(button => {
+      button.addEventListener('touchstart', () => {
+        button.style.transform = 'scale(0.98)';
+      });
+      button.addEventListener('touchend', () => {
+        button.style.transform = 'scale(1)';
+      });
+    });
+
+    // Subtle parallax effect for the hero image on scroll
+    window.addEventListener('scroll', () => {
+      const hero = document.querySelector('.group img');
+      if (hero) {
+        const scrolled = window.pageYOffset;
+        hero.style.transform = `translateY(${scrolled * 0.05}px) scale(${1 + scrolled * 0.0001})`;
+      }
+    });
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe glass" data-active-classes="text-secondary"><div class="flex justify-between items-center h-20 px-4"><a class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-on-surface-variant" data-path="today" href="#"><span class="material-symbols-outlined">dashboard</span><span class="font-label-sm text-label-sm">Today</span></a><a class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-on-surface-variant" data-path="planner" href="#"><span class="material-symbols-outlined">task_alt</span><span class="font-label-sm text-label-sm">Planner</span></a><a class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-on-surface-variant" data-path="diet" href="#"><span class="material-symbols-outlined">nutrition</span><span class="font-label-sm text-label-sm">Diet</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-secondary" data-path="workout" href="#"><span class="material-symbols-outlined">fitness_center</span><span class="font-label-sm text-label-sm">Workout</span></a><a class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-on-surface-variant" data-path="budget" href="#"><span class="material-symbols-outlined">payments</span><span class="font-label-sm text-label-sm">Budget</span></a><a class="flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] text-on-surface-variant" data-path="profile" href="#"><span class="material-symbols-outlined">person_4</span><span class="font-label-sm text-label-sm">Profile</span></a></div></nav></body></html>

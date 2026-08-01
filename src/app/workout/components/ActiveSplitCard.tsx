@@ -156,23 +156,23 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         const calsBurned = Math.round(6.0 * weightKg * durationHrs);
 
         return (
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-sm border border-emerald-200">
+            <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
+                <div className="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto mb-4 shadow-sm border border-primary-container">
                     <Trophy size={32} />
                 </div>
-                <h2 className="text-xl font-black text-gray-900 mb-1">Workout Complete!</h2>
-                <p className="text-sm text-gray-600 font-medium mb-6">Great job crushing {preset ? preset.title : customTitle}.</p>
+                <h2 className="text-xl font-black text-on-surface mb-1">Workout Complete!</h2>
+                <p className="text-sm text-on-surface-variant font-medium mb-6">Great job crushing {preset ? preset.title : customTitle}.</p>
                 
-                <div className="flex justify-center gap-6 text-left border-t border-gray-100 pt-5">
+                <div className="flex justify-center gap-6 text-left border-t border-surface-variant pt-5">
                     <div>
-                        <span className="text-xs font-bold text-gray-500 uppercase">Duration</span>
-                        <p className="text-lg font-black text-gray-900 mt-0.5">{formatTime(elapsedSeconds)}</p>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Duration</span>
+                        <p className="text-lg font-black text-on-surface mt-0.5">{formatTime(elapsedSeconds)}</p>
                     </div>
-                    <div className="w-px bg-gray-200" />
+                    <div className="w-px bg-surface-variant" />
                     <div>
-                        <span className="text-xs font-bold text-gray-500 uppercase">Burned</span>
-                        <p className="text-lg font-black text-orange-500 mt-0.5 flex items-center gap-1">
-                            {calsBurned} kcal <Flame size={14} className="text-orange-500" />
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Burned</span>
+                        <p className="text-lg font-black text-tertiary mt-0.5 flex items-center gap-1">
+                            {calsBurned} kcal <Flame size={14} className="text-tertiary" />
                         </p>
                     </div>
                 </div>
@@ -182,58 +182,58 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
 
     if (isBuilderMode) {
         return (
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="mb-4">
-                    <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1 mb-1">Plan Workout</h3>
+                    <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1">Plan Workout</h3>
                     <input 
                         type="text" 
                         value={customTitle} 
                         onChange={(e) => setCustomTitle(e.target.value)}
-                        className="w-full text-xl font-black text-gray-900 drop-shadow-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-300 transition-colors"
+                        className="w-full text-xl font-black text-on-surface drop-shadow-sm bg-surface-container-highest border border-transparent rounded-xl px-4 py-3 focus:outline-none focus:border-secondary transition-colors"
                     />
                 </div>
                 
                 <div className="space-y-2 mt-4">
                     {exercises.map((ex: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs shadow-sm">
-                            <span className="font-bold text-gray-900 drop-shadow-sm">{ex.name}</span>
-                            <span className="text-gray-500 font-bold">{ex.sets}</span>
+                        <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-surface-container-lowest border border-surface-variant text-xs shadow-sm">
+                            <span className="font-bold text-on-surface drop-shadow-sm">{ex.name}</span>
+                            <span className="text-on-surface-variant font-bold">{ex.sets}</span>
                         </div>
                     ))}
                     
-                    <div className="flex flex-col sm:flex-row gap-2 mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row gap-2 mt-3 pt-3 border-t border-surface-variant">
                         <input 
                             type="text" 
                             placeholder="Exercise Name (e.g. Squat)" 
                             value={newExName} 
                             onChange={(e) => setNewExName(e.target.value)}
-                            className="flex-1 bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-300"
+                            className="flex-1 bg-surface-container border border-surface-variant rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-secondary"
                         />
                         <input 
                             type="number" 
                             placeholder="Sets (e.g. 3)" 
                             value={newExSets} 
                             onChange={(e) => setNewExSets(e.target.value)}
-                            className="w-full sm:w-20 bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-300"
+                            className="w-full sm:w-20 bg-surface-container border border-surface-variant rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-secondary"
                         />
                         <input 
                             type="number" 
                             placeholder="Reps (e.g. 10)" 
                             value={newExReps} 
                             onChange={(e) => setNewExReps(e.target.value)}
-                            className="w-full sm:w-20 bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-300"
+                            className="w-full sm:w-20 bg-surface-container border border-surface-variant rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-secondary"
                         />
-                        <button onClick={handleAddCustomExercise} className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm flex items-center justify-center gap-1">
+                        <button onClick={handleAddCustomExercise} className="bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-on-secondary px-3 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm flex items-center justify-center gap-1">
                             <Plus size={14} /> Add
                         </button>
                     </div>
                 </div>
 
-                <div className="mt-5 pt-5 border-t border-gray-200">
+                <div className="mt-5 pt-5 border-t border-surface-variant">
                     <button 
                         onClick={handleStartCustom}
                         disabled={exercises.length === 0}
-                        className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-500 text-white font-bold py-3.5 rounded-2xl transition-colors text-[14px] shadow-sm btn-press flex items-center justify-center gap-2"
+                        className="w-full bg-secondary hover:bg-secondary-fixed disabled:bg-surface-container disabled:text-on-surface-variant text-on-secondary font-bold py-3.5 rounded-2xl transition-colors text-[14px] shadow-sm btn-press flex items-center justify-center gap-2"
                     >
                         <Play size={16} fill="currentColor" /> Start Workout
                     </button>
@@ -245,43 +245,43 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     if (exercises.length === 0 && !isBuilderMode) return null;
 
     return (
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="flex items-center justify-between mb-4">
+        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider ml-1">Today's Split</h3>
-                    <h2 className="text-xl font-black text-gray-900 drop-shadow-sm mt-0.5">{preset ? preset.title : customTitle}</h2>
+                    <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1">Today's Split</h3>
+                    <h2 className="text-2xl font-black text-on-surface drop-shadow-sm mt-0.5">{preset ? preset.title : customTitle}</h2>
                 </div>
-                <div className="flex items-center gap-2 bg-emerald-100/80 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-black shadow-sm border border-emerald-200/50">
-                    <span className="animate-pulse w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="font-mono">{formatTime(elapsedSeconds)}</span>
+                <div className="flex items-center gap-2 bg-primary-container text-on-primary-container px-3 py-1.5 rounded-full text-sm font-black shadow-sm border border-primary-container">
+                    <span className="animate-pulse w-2 h-2 rounded-full bg-primary" />
+                    <span className="tabular-nums">{formatTime(elapsedSeconds)}</span>
                 </div>
             </div>
             
-            <div className="space-y-2 mt-4">
+            <div className="space-y-3 mt-4">
                 {exercises.map((ex: any, idx: number) => (
-                    <div key={idx} className="flex flex-col p-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs transition-colors shadow-sm hover:bg-gray-100 group">
+                    <div key={idx} className="flex flex-col p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant text-xs transition-colors shadow-sm hover:bg-surface-container group">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <button onClick={() => toggleExercise(idx)} className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${ex.completed ? 'bg-emerald-500 border-emerald-600 text-white shadow-sm' : 'bg-gray-50 border-gray-300 text-transparent hover:border-gray-400'}`}>
-                                    <CheckCircle2 size={12} strokeWidth={3} className={ex.completed ? 'opacity-100' : 'opacity-0'} />
+                                <button onClick={() => toggleExercise(idx)} className={`w-6 h-6 rounded-full flex items-center justify-center border transition-colors ${ex.completed ? 'bg-primary border-primary text-on-primary shadow-sm' : 'bg-surface-container border-surface-variant text-transparent hover:border-on-surface-variant'}`}>
+                                    <CheckCircle2 size={14} strokeWidth={3} className={ex.completed ? 'opacity-100' : 'opacity-0'} />
                                 </button>
-                                <span className={`font-bold text-gray-900 drop-shadow-sm ${ex.completed ? 'line-through text-gray-400' : ''}`}>{ex.name}</span>
+                                <span className={`font-bold text-on-surface drop-shadow-sm text-sm ${ex.completed ? 'line-through opacity-50' : ''}`}>{ex.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 {ex.youtubeUrl ? (
-                                    <a href={ex.youtubeUrl} target="_blank" rel="noreferrer" className="p-1 rounded-full text-red-500 hover:bg-red-50 transition-colors tooltip-trigger" title="Watch tutorial">
+                                    <a href={ex.youtubeUrl} target="_blank" rel="noreferrer" className="p-1.5 rounded-full text-error hover:bg-error-container transition-colors tooltip-trigger" title="Watch tutorial">
                                         <Video size={16} />
                                     </a>
                                 ) : (
                                     <button 
                                         onClick={() => { setAddingLinkForIdx(addingLinkForIdx === idx ? null : idx); setLinkInput(''); }}
-                                        className="p-1 rounded-full text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
+                                        className="p-1.5 rounded-full text-on-surface-variant hover:text-secondary hover:bg-secondary-container transition-colors opacity-0 group-hover:opacity-100"
                                         title="Add YouTube Link"
                                     >
                                         <LinkIcon size={14} />
                                     </button>
                                 )}
-                                <span className="text-gray-500 font-bold ml-1">{ex.sets}</span>
+                                <span className="text-on-surface-variant font-bold ml-1 text-sm">{ex.sets}</span>
                             </div>
                         </div>
 
@@ -292,11 +292,11 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                                     placeholder="Paste YouTube URL..."
                                     value={linkInput}
                                     onChange={(e) => setLinkInput(e.target.value)}
-                                    className="flex-1 bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-300 text-gray-800 placeholder:text-gray-400 font-medium"
+                                    className="flex-1 bg-surface-container border border-surface-variant rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-secondary text-on-surface placeholder-on-surface-variant font-medium"
                                 />
                                 <button 
                                     onClick={() => handleSaveLink(idx)}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold transition-colors"
+                                    className="bg-secondary hover:bg-secondary-fixed text-on-secondary px-4 py-2 rounded-xl font-bold transition-colors"
                                 >
                                     Save
                                 </button>
@@ -306,10 +306,10 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                 ))}
             </div>
 
-            <div className="mt-5 pt-5 border-t border-gray-200">
+            <div className="mt-6 pt-6 border-t border-surface-variant">
                 <button 
                     onClick={handleFinish}
-                    className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold py-3.5 rounded-2xl transition-colors text-[14px] shadow-sm btn-press"
+                    className="w-full bg-secondary hover:bg-secondary-fixed text-on-secondary font-bold py-4 rounded-2xl transition-colors text-[15px] shadow-sm btn-press"
                 >
                     Finish Workout
                 </button>

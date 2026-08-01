@@ -1,14 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Utensils, Plus } from 'lucide-react';
+import { Plus, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+
+interface MacroGoal {
+    label: string;
+    grams: number;
+    goal: number;
+    color: string;
+}
 
 export default function NutritionCard() {
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
     const [currentCals, setCurrentCals] = useState(0);
+    const [loaded, setLoaded] = useState(false);
     const [isLogging, setIsLogging] = useState(false);
     const [mealName, setMealName] = useState('');
     const [mealCals, setMealCals] = useState('');
@@ -18,15 +27,15 @@ export default function NutritionCard() {
     React.useEffect(() => {
         if (!selectedDate) return;
         const loadNutrition = async () => {
-            import('@/app/diet/services/dietStorage').then(async ({ getMealsForDate }) => {
-                const meals = await getMealsForDate(selectedDate);
-                const totalCals = meals.reduce((acc, m) => acc + (m.calories || 0), 0);
-                const totalP = meals.reduce((acc, m) => acc + (m.protein || 0), 0);
-                const totalC = meals.reduce((acc, m) => acc + (m.carbs || 0), 0);
-                const totalF = meals.reduce((acc, m) => acc + (m.fat || 0), 0);
-                setCurrentCals(totalCals);
-                setMacros({ protein: totalP, carbs: totalC, fat: totalF });
+            const { getMealsForDate } = await import('@/app/diet/services/dietStorage');
+            const meals = await getMealsForDate(selectedDate);
+            setCurrentCals(meals.reduce((acc, m) => acc + (m.calories || 0), 0));
+            setMacros({
+                protein: meals.reduce((acc, m) => acc + (m.protein || 0), 0),
+                carbs: meals.reduce((acc, m) => acc + (m.carbs || 0), 0),
+                fat: meals.reduce((acc, m) => acc + (m.fat || 0), 0),
             });
+            setLoaded(true);
         };
 
         const loadGoal = () => {
@@ -34,10 +43,10 @@ export default function NutritionCard() {
             if (savedGoal) setGoalCals(parseInt(savedGoal, 10));
             else if (userProfile?.calorieGoal) setGoalCals(userProfile.calorieGoal);
         };
-        
+
         loadNutrition();
         loadGoal();
-        
+
         window.addEventListener('storage', loadNutrition);
         window.addEventListener('workout_os_diet_updated', loadNutrition);
         window.addEventListener('storage', loadGoal);
@@ -48,17 +57,22 @@ export default function NutritionCard() {
         };
     }, [selectedDate, isToday, userProfile]);
 
-    const handleEditGoal = () => {
-        const newGoal = window.prompt("Enter your daily calorie goal:", goalCals.toString());
-        if (newGoal !== null && !isNaN(parseInt(newGoal, 10)) && parseInt(newGoal, 10) > 0) {
-            const val = parseInt(newGoal, 10);
-            setGoalCals(val);
-            localStorage.setItem('workout_os_calorie_goal', val.toString());
-            window.dispatchEvent(new Event('storage'));
-        }
-    };
+    const pct = Math.min(currentCals / goalCals, 1);
+    const remaining = Math.max(goalCals - currentCals, 0);
+    const over = currentCals > goalCals;
 
-    const percentage = Math.min((currentCals / goalCals) * 100, 100);
+    // Ring geometry — centred in the card.
+    const SIZE = 132;
+    const R = 56;
+    const C = 2 * Math.PI * R;
+
+    // Macro targets follow a standard 30/40/30 split of the calorie goal
+    // (4 kcal/g protein and carbs, 9 kcal/g fat).
+    const macroGoals: MacroGoal[] = [
+        { label: 'Protein', grams: macros.protein, goal: Math.round((goalCals * 0.3) / 4), color: 'bg-activity-green' },
+        { label: 'Carbs', grams: macros.carbs, goal: Math.round((goalCals * 0.4) / 4), color: 'bg-activity-blue' },
+        { label: 'Fats', grams: macros.fat, goal: Math.round((goalCals * 0.3) / 9), color: 'bg-[#f8b47b]' },
+    ];
 
     const handleAddMeal = (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,7 +93,6 @@ export default function NutritionCard() {
                     icon: '⚡'
                 });
                 await saveMealsForDate(selectedDate, meals);
-                // Trigger reload
                 window.dispatchEvent(new Event('storage'));
                 window.dispatchEvent(new Event('workout_os_diet_updated'));
                 setIsLogging(false);
@@ -90,100 +103,110 @@ export default function NutritionCard() {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 shadow-sm flex flex-col h-full relative transition-colors">
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#fff7ed] dark:bg-orange-900/30 text-[#f97316] flex items-center justify-center">
-                        <Utensils size={18} />
-                    </div>
-                    <span className="text-sm font-bold tracking-wide text-gray-800 dark:text-gray-200">NUTRITION</span>
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden">
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-on-tertiary-container text-[20px]">restaurant</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Nutrition</span>
                 </div>
-                <span 
-                    onClick={handleEditGoal}
-                    className="text-[13px] font-medium text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-slate-700 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
-                    title="Click to edit calorie target"
-                >
-                    Target: {(goalCals / 1000).toFixed(1)}k kcal
-                </span>
+                <Link href="/diet" aria-label="Nutrition details" className="text-on-surface-variant/50 active:scale-90 transition-transform">
+                    <ChevronRight size={18} />
+                </Link>
             </div>
 
-            <div className="mb-2">
-                <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-[42px] font-black text-[#0f172a] dark:text-white tracking-tight leading-none">{currentCals.toLocaleString()}</span>
-                    <span 
-                        onClick={handleEditGoal}
-                        className="text-sm text-gray-500 dark:text-gray-400 font-medium cursor-pointer hover:text-[#f97316] transition-colors hover:underline"
-                        title="Click to edit calorie target"
-                    >
-                        / {goalCals.toLocaleString()} kcal
-                    </span>
-                </div>
-                <div className="w-full bg-[#f1f1f1] h-2.5 rounded-full overflow-hidden">
-                    <div 
-                        className="bg-[#f97316] h-full rounded-full transition-all duration-500" 
-                        style={{ width: `${percentage}%` }} 
+            {isLogging ? (
+                <form onSubmit={handleAddMeal} className="flex-1 flex flex-col gap-2 animate-fade-in">
+                    <input
+                        type="text"
+                        placeholder="Meal name"
+                        value={mealName}
+                        onChange={(e) => setMealName(e.target.value)}
+                        className="w-full bg-surface-container border-none rounded-2xl px-4 py-3 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary"
+                        autoFocus
                     />
-                </div>
-            </div>
-
-            {/* Blurred Macros & Floating Button */}
-            <div className="mt-auto relative pt-6">
-                <div className="grid grid-cols-3 gap-2 text-center pb-2">
-                    <div>
-                        <span className="text-gray-400 block text-[11px] font-medium">Protein</span>
-                        <span className="font-bold text-[#f97316]">{macros.protein}g</span>
+                    <div className="relative">
+                        <input
+                            type="number"
+                            inputMode="numeric"
+                            placeholder="Calories"
+                            value={mealCals}
+                            onChange={(e) => setMealCals(e.target.value)}
+                            className="w-full bg-surface-container border-none rounded-2xl px-4 py-3 pr-14 font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 font-label-sm text-label-sm text-on-surface-variant">kcal</span>
                     </div>
-                    <div>
-                        <span className="text-gray-400 block text-[11px] font-medium">Carbs</span>
-                        <span className="font-bold text-gray-800 dark:text-gray-200">{macros.carbs}g</span>
-                    </div>
-                    <div>
-                        <span className="text-gray-400 block text-[11px] font-medium">Fats</span>
-                        <span className="font-bold text-gray-800 dark:text-gray-200">{macros.fat}g</span>
-                    </div>
-                </div>
-
-                <div className="absolute inset-x-0 bottom-0 top-0 flex items-center justify-center pt-2 px-4">
-                    {isLogging ? (
-                        <form onSubmit={handleAddMeal} className="bg-gray-50 dark:bg-slate-800/90 dark:bg-slate-800/90 backdrop-blur-md p-4 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-700 w-full animate-in zoom-in duration-300">
-                            <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-3">Quick Log</h4>
-                            <div className="space-y-2 mb-3">
-                                <input 
-                                    type="text"
-                                    placeholder="Meal (e.g. Chicken Rice)"
-                                    value={mealName}
-                                    onChange={(e) => setMealName(e.target.value)}
-                                    className="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#f97316]"
-                                    autoFocus
-                                />
-                                <div className="relative">
-                                    <input 
-                                        type="number"
-                                        placeholder="Calories"
-                                        value={mealCals}
-                                        onChange={(e) => setMealCals(e.target.value)}
-                                        className="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#f97316]"
-                                    />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 dark:text-gray-500">kcal</span>
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <button type="button" onClick={() => setIsLogging(false)} className="flex-1 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 font-bold py-2 rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">Cancel</button>
-                                <button type="submit" disabled={!mealCals} className="flex-1 bg-[#f97316] text-white font-bold py-2 rounded-xl text-sm hover:bg-[#ea580c] transition-colors disabled:opacity-50">Save</button>
-                            </div>
-                        </form>
-                    ) : (
-                        <button 
-                            onClick={() => setIsLogging(true)}
-                            disabled={!isToday}
-                            className={`${isToday ? 'bg-[#f97316] hover:bg-[#ea580c] text-white shadow-md' : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 dark:text-gray-500'} text-[15px] font-bold px-6 py-2.5 rounded-full transition-colors flex items-center gap-1.5 btn-press`}
-                        >
-                            <Plus size={18} strokeWidth={3} />
-                            {isToday ? 'Log Meal' : 'Historical Data'}
+                    <div className="flex gap-2 mt-auto pt-1">
+                        <button type="button" onClick={() => setIsLogging(false)} className="flex-1 bg-surface-container text-on-surface font-label-md text-label-md py-3 rounded-full active:scale-95 transition-transform">
+                            Cancel
                         </button>
-                    )}
-                </div>
-            </div>
+                        <button type="submit" disabled={!mealCals} className="flex-1 bg-primary text-on-primary font-label-md text-label-md py-3 rounded-full disabled:opacity-40 active:scale-95 transition-transform">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            ) : (
+                <>
+                    {/* Centred calorie ring */}
+                    <div className="flex flex-col items-center">
+                        <div className="relative" style={{ width: SIZE, height: SIZE }}>
+                            <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="-rotate-90" aria-hidden="true">
+                                <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" className="stroke-surface-container" />
+                                <circle
+                                    cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" strokeLinecap="round"
+                                    className={over ? 'stroke-activity-red' : 'stroke-on-tertiary-container'}
+                                    strokeDasharray={C}
+                                    strokeDashoffset={loaded ? C * (1 - pct) : C}
+                                    style={{ transition: 'stroke-dashoffset 900ms cubic-bezier(0.32,0.72,0,1)' }}
+                                />
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="font-display-lg text-headline-lg font-bold text-on-surface tabular-nums leading-none">
+                                    {loaded ? currentCals.toLocaleString() : '—'}
+                                </span>
+                                <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+                                    of {goalCals.toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p className="font-label-md text-label-md text-on-surface mt-2">
+                            {over
+                                ? `${(currentCals - goalCals).toLocaleString()} kcal over`
+                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} kcal left`}
+                        </p>
+
+                        {isToday && (
+                            <button
+                                onClick={() => setIsLogging(true)}
+                                className="mt-3 flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-full active:scale-95 transition-transform"
+                            >
+                                <Plus size={15} /> Log meal
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Macro bars */}
+                    <div className="mt-4 pt-4 border-t border-surface-variant space-y-2.5">
+                        {macroGoals.map((m) => (
+                            <div key={m.label} className="flex items-center gap-3">
+                                <span className="w-14 font-label-sm text-label-sm text-on-surface-variant shrink-0">{m.label}</span>
+                                <div className="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full ${m.color}`}
+                                        style={{
+                                            width: loaded ? `${Math.min((m.grams / Math.max(m.goal, 1)) * 100, 100)}%` : '0%',
+                                            transition: 'width 900ms cubic-bezier(0.32,0.72,0,1)',
+                                        }}
+                                    />
+                                </div>
+                                <span className="w-16 text-right font-label-sm text-label-sm text-on-surface tabular-nums shrink-0">
+                                    {Math.round(m.grams)}/{m.goal}g
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

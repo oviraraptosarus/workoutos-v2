@@ -82,7 +82,7 @@ export default function CategoryBreakdown() {
                                     <div className={`w-2.5 h-2.5 rounded-full ${cat.color} shadow-sm group-hover:scale-125 transition-transform`} />
                                     <span className="text-gray-700 dark:text-gray-300">{cat.name}</span>
                                 </div>
-                                <div className="font-mono tracking-tight">
+                                <div className="tracking-tight">
                                     <span className="text-gray-900 dark:text-white">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
                                     <span className="text-gray-400 dark:text-gray-500"> / ₹{cat.limit}</span>
                                 </div>

@@ -8,12 +8,14 @@ interface TDEEDeficitCardProps {
     totalCalories: number;
     activityBurned?: number;
     tdeeGoal?: number;
+    onOpenActivityModal?: () => void;
 }
 
 export default function TDEEDeficitCard({
     totalCalories,
-    activityBurned = 180,
+    activityBurned = 0,
     tdeeGoal = 2400,
+    onOpenActivityModal,
 }: TDEEDeficitCardProps) {
     const netCaloriesIn = Math.max(0, totalCalories - activityBurned);
     const deficitOrSurplus = netCaloriesIn - tdeeGoal; // Negative = Deficit, Positive = Surplus
@@ -63,9 +65,16 @@ export default function TDEEDeficitCard({
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Food Consumed</span>
                     <span className="text-sm font-black text-stone-900">{totalCalories} kcal</span>
                 </div>
-                <div>
-                    <span className="text-[10px] font-black text-purple-600 uppercase tracking-wider block">Active Burn</span>
-                    <span className="text-sm font-black text-purple-700">-{activityBurned} kcal</span>
+                <div 
+                    className="cursor-pointer group relative"
+                    onClick={onOpenActivityModal}
+                    title="Click to log steps/activity"
+                >
+                    <span className="text-[10px] font-black text-purple-600 group-hover:text-purple-700 uppercase tracking-wider block transition-colors">Active Burn</span>
+                    <span className="text-sm font-black text-purple-700 group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
+                    <div className="absolute -top-1 -right-1 bg-purple-100 text-purple-600 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Zap size={10} />
+                    </div>
                 </div>
                 <div>
                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider block">Weekly Velocity</span>

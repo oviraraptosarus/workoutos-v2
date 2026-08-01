@@ -19,13 +19,6 @@ interface Message {
     imageUrl?: string;
 }
 
-const QUICK_PROMPTS = [
-    { label: 'Sleep Impact', text: 'How does my recent sleep quality affect my workout performance?' },
-    { label: 'Diet Review', text: 'Are there any habits in my current diet that are killing my progress?' },
-    { label: 'Log Meal', text: 'I had 600 calories for lunch' },
-    { label: 'Add Expense', text: 'I spent ₹1500 on groceries' }
-];
-
 export default function GlobalAICopilot() {
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
@@ -36,39 +29,47 @@ export default function GlobalAICopilot() {
     const [isListening, setIsListening] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
     
-    // Initialize welcome message only once
-    useEffect(() => {
-        setMessages([
-            {
-                id: '1',
-                sender: 'gemini',
-                text: `👋 Hey ${userProfile?.fullName ? userProfile.fullName.split(' ')[0] : 'there'}! I'm Nova, your AI Copilot. Ask me anything, tell me to log a workout, or jot down a quick note!`,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
-        ]);
-    }, [userProfile?.fullName]);
+    // We only keep track of the most recent interaction for the Siri-style UI
+    const [activeQuery, setActiveQuery] = useState<string>('');
+    const [activeResponse, setActiveResponse] = useState<string>('');
+    
+    // Hidden history for context to the API
+    const [history, setHistory] = useState<{role: string, text: string}[]>([]);
 
-    const chatEndRef = useRef<HTMLDivElement>(null);
+    const recognitionRef = useRef<any>(null);
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // Stop speech synthesis when closing
     useEffect(() => {
-        if (isOpen) {
-            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (!isOpen) {
+            window.speechSynthesis.cancel();
+            if (isListening && recognitionRef.current) {
+                recognitionRef.current.stop();
+                setIsListening(false);
+            }
+        } else {
+            // Reset state when opening
+            setActiveQuery('');
+            setActiveResponse(`Hi ${userProfile?.fullName ? userProfile.fullName.split(' ')[0] : 'there'}. What can I help you with?`);
         }
-    }, [messages, isOpen]);
+    }, [isOpen, userProfile?.fullName]);
 
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setPrompt(e.target.value);
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
         }
     };
 
     const toggleListening = () => {
+        window.speechSynthesis.cancel();
+
         if (isListening) {
+            if (recognitionRef.current) recognitionRef.current.stop();
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             setIsListening(false);
             return;
         }
@@ -80,19 +81,29 @@ export default function GlobalAICopilot() {
         }
 
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        recognitionRef.current = recognition;
+        
+        recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.lang = 'en-IN'; // Optimized for Indian English
+        recognition.lang = 'en-IN';
+
+        const existingPrompt = prompt ? prompt + ' ' : '';
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            const current = event.resultIndex;
-            const transcript = event.results[current][0].transcript;
-            setPrompt(transcript);
-            if (textareaRef.current) {
-                textareaRef.current.style.height = 'auto';
-                textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+            let currentTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                currentTranscript += event.results[i][0].transcript;
             }
+            const newPrompt = existingPrompt + currentTranscript;
+            setPrompt(newPrompt);
+            setActiveQuery(newPrompt); // Show immediately in the UI
+
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+            debounceTimerRef.current = setTimeout(() => {
+                if (recognitionRef.current) recognitionRef.current.stop();
+                setIsListening(false);
+            }, 2000);
         };
         recognition.onerror = () => setIsListening(false);
         recognition.onend = () => setIsListening(false);
@@ -104,66 +115,108 @@ export default function GlobalAICopilot() {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setSelectedImage(reader.result as string);
-            };
+            reader.onloadend = () => setSelectedImage(reader.result as string);
             reader.readAsDataURL(file);
         }
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
-    const handleSend = async (queryText?: string) => {
-        const q = queryText || prompt;
-        if (!q.trim() && !selectedImage) return;
+    const handleSend = async () => {
+        window.speechSynthesis.cancel();
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+
+        const q = prompt.trim();
+        if (!q && !selectedImage) return;
 
         const currentImage = selectedImage;
-        const userMsg: Message = {
-            id: Date.now().toString(),
-            sender: 'user',
-            text: q,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            imageUrl: currentImage || undefined
-        };
-
-        setMessages((prev) => [...prev, userMsg]);
-        if (!queryText) {
-            setPrompt('');
-            if (textareaRef.current) textareaRef.current.style.height = 'auto';
-        }
+        
+        // Update UI
+        setActiveQuery(q || "Analyzing image...");
+        setActiveResponse('');
+        setPrompt('');
+        if (textareaRef.current) textareaRef.current.style.height = 'auto';
         setSelectedImage(null);
         setLoading(true);
 
         try {
-            const currentHistory = [...messages, userMsg].map(m => ({
-                role: m.sender === 'user' ? 'user' : 'model',
-                text: m.text,
-                imageUrl: m.imageUrl
-            }));
-
-            // Auto-scroll effect
-            setTimeout(() => {
-                chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-
             const dateKey = selectedDate || new Date().toISOString().split('T')[0];
-            
             const { data: { user } } = await supabase.auth.getUser();
+            
             let dbState: any = {};
+            let dbTasks: any[] = [];
+            let recentDays: any[] = [];
+            let workoutToday: any = null;
             if (user) {
-                const { data } = await supabase.from('daily_logs').select('water_ml, sleep_hours').eq('user_id', user.id).eq('date', dateKey).single();
-                if (data) {
-                    dbState = { waterMl: data.water_ml, sleepHrs: data.sleep_hours };
-                }
+                const { data } = await supabase
+                    .from('daily_logs')
+                    .select('water_ml_total, sleep_hours, sleep_bedtime, sleep_waketime, weight_kg, mood_rating, energy_rating, hunger_rating, caffeine_mg, steps')
+                    .eq('user_id', user.id)
+                    .eq('date', dateKey)
+                    .maybeSingle();
+                if (data) dbState = {
+                    waterMl: data.water_ml_total,
+                    sleepHrs: data.sleep_hours,
+                    bedtime: data.sleep_bedtime,
+                    waketime: data.sleep_waketime,
+                    weightKg: data.weight_kg,
+                    mood: data.mood_rating,
+                    energy: data.energy_rating,
+                    hunger: data.hunger_rating,
+                    caffeineMg: data.caffeine_mg,
+                    steps: data.steps,
+                };
+
                 const meals = await getMealsForDate(dateKey);
                 dbState.nutritionKcal = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
+                dbState.meals = meals.map((m: any) => ({
+                    name: m.name, kcal: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat,
+                }));
+
+                const { data: tasksData } = await supabase.from('tasks').select('*').eq('user_id', user.id).eq('date', dateKey);
+                if (tasksData) dbTasks = tasksData;
+
+                // 14-day trend so Ava can answer "how has my week been?" instead of
+                // only seeing a single day.
+                const since = new Date();
+                since.setDate(since.getDate() - 13);
+                const sinceKey = `${since.getFullYear()}-${String(since.getMonth() + 1).padStart(2, '0')}-${String(since.getDate()).padStart(2, '0')}`;
+                const { data: trend } = await supabase
+                    .from('daily_logs')
+                    .select('date, sleep_hours, water_ml_total, weight_kg, mood_rating, energy_rating')
+                    .eq('user_id', user.id)
+                    .gte('date', sinceKey)
+                    .order('date', { ascending: true });
+                if (trend) recentDays = trend;
+
+                const { data: wk } = await supabase
+                    .from('workout_logs')
+                    .select('session_type, exercises, completed')
+                    .eq('user_id', user.id)
+                    .eq('date', dateKey);
+                if (wk?.length) workoutToday = wk;
             }
 
             const currentAppState = {
                 date: dateKey,
                 waterMl: dbState.waterMl || 0,
+                waterGoalMl: userProfile?.waterGoalMl ?? null,
                 sleepHrs: dbState.sleepHrs || 0,
+                sleepGoal: userProfile?.sleepGoal ?? null,
+                bedtime: dbState.bedtime ?? null,
+                waketime: dbState.waketime ?? null,
+                weightKg: dbState.weightKg ?? null,
+                targetWeight: userProfile?.targetWeight ?? null,
+                mood: dbState.mood ?? null,
+                energy: dbState.energy ?? null,
+                hunger: dbState.hunger ?? null,
+                caffeineMg: dbState.caffeineMg ?? null,
+                steps: dbState.steps ?? null,
                 nutritionKcal: dbState.nutritionKcal || 0,
-                tasks: JSON.parse(localStorage.getItem('workout_os_tasks') || '[]'),
+                calorieGoal: userProfile?.calorieGoal ?? null,
+                meals: dbState.meals || [],
+                workoutToday,
+                tasks: dbTasks,
+                last14Days: recentDays,
                 quickNotes: localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '',
                 budgetIncome: await getIncome(),
                 budgetExpenses: await getExpenses()
@@ -176,46 +229,37 @@ export default function GlobalAICopilot() {
                     prompt: q,
                     userProfile,
                     image: currentImage,
-                    history: currentHistory,
+                    history: history,
                     appState: currentAppState
                 })
             });
 
             const data = await res.json();
             if (data.result || data.functionCall) {
-                // Handle local app side-effects from AI function calls
                 if (data.functionCall) {
                     const fn = data.functionCall.name;
                     const args = data.functionCall.args;
                     
-                    if (fn === 'add_task') {
-                        const tasks = JSON.parse(localStorage.getItem('workout_os_tasks') || '[]');
-                        tasks.push({
-                            id: Date.now().toString(),
-                            title: args.title || 'New Task',
-                            completed: false,
-                            dueDate: dateKey
-                        });
-                        localStorage.setItem('workout_os_tasks', JSON.stringify(tasks));
+                    if (fn === 'add_task' && user) {
+                        await supabase.from('tasks').insert({ user_id: user.id, date: dateKey, title: args.title || 'New Task', description: '', completed: false });
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
                     } else if (fn === 'append_quick_note') {
                         const currentNote = localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '';
                         localStorage.setItem(`workout_os_quick_note_${dateKey}`, currentNote + '\n' + (args.text || ''));
                         window.dispatchEvent(new StorageEvent('storage', { key: `workout_os_quick_note_${dateKey}` }));
-                    } else if (fn === 'navigate_to') {
-                        if (args.path) {
-                            router.push(args.path);
-                            setIsOpen(false);
-                        }
-                    } else if (fn === 'log_water') {
+                    } else if (fn === 'navigate_to' && args.path) {
+                        router.push(args.path);
+                        setTimeout(() => setIsOpen(false), 1000);
+                    }
+                    else if (fn === 'log_water') {
                         const added = Number(args.amount) || 0;
                         const newWater = currentAppState.waterMl + added;
                         if (user) {
-                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
+                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
                             if (existing) {
-                                await supabase.from('daily_logs').update({ water_ml: newWater }).eq('id', existing.id);
+                                await supabase.from('daily_logs').update({ water_ml_total: newWater }).eq('id', existing.id);
                             } else {
-                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, water_ml: newWater });
+                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, water_ml_total: newWater });
                             }
                         }
                         window.dispatchEvent(new Event('storage'));
@@ -274,25 +318,23 @@ export default function GlobalAICopilot() {
                     }
                 }
 
-                const aiMsg: Message = {
-                    id: (Date.now() + 1).toString(),
-                    sender: 'gemini',
-                    text: data.result,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    source: data.source
-                };
-                setMessages((prev) => [...prev, aiMsg]);
+                setActiveResponse(data.result);
+                setHistory(prev => [...prev, {role: 'user', text: q}, {role: 'model', text: data.result}]);
+                
+                // Speak the response natively if it's short
+                if (data.result && data.result.length < 150) {
+                    const utterance = new SpeechSynthesisUtterance(data.result);
+                    utterance.lang = 'en-IN';
+                    // Prefer a matching Indian-English voice when the platform ships one.
+                    const inVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'en-IN');
+                    if (inVoice) utterance.voice = inVoice;
+                    window.speechSynthesis.speak(utterance);
+                }
             } else {
                 throw new Error(data.error || 'No response');
             }
         } catch (err: any) {
-            const errorMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                sender: 'gemini',
-                text: `⚠️ Error: ${err.message || "Couldn't fetch response right now. Please try again!"}`,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages((prev) => [...prev, errorMsg]);
+            setActiveResponse(`⚠️ ${err.message || "I couldn't process that right now."}`);
         } finally {
             setLoading(false);
         }
@@ -300,171 +342,163 @@ export default function GlobalAICopilot() {
 
     return (
         <>
-            {/* Floating Action Button */}
+            {/* Minimalist AI Command Trigger */}
             {!isOpen && (
-                <button
-                    onClick={() => setIsOpen(true)}
-                    className="fixed bottom-28 left-5 sm:bottom-6 sm:left-8 z-[60] p-4 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center animate-in zoom-in-50"
-                >
-                    <Sparkles size={24} className="animate-pulse" />
-                </button>
+                <div className="fixed bottom-28 left-5 sm:bottom-8 sm:left-8 z-[9998] flex pointer-events-none">
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        aria-label="Open Ava, the AI assistant"
+                        className="pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-full bg-black/90 dark:bg-white/90 text-white dark:text-black shadow-[0_4px_12px_rgba(0,0,0,0.15),0_12px_32px_rgba(0,0,0,0.2)] active:scale-95 transition-transform duration-200"
+                    >
+                        <Sparkles size={16} />
+                        <span className="font-label-md text-label-md tracking-wide">Ava</span>
+                    </button>
+                </div>
             )}
 
-            {/* Modal Overlay & Card */}
+            {/* Siri-Style Full Screen Modal */}
             {isOpen && (
-                <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-md transition-opacity duration-300">
-                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-white/20 dark:border-slate-800/50 w-full max-w-3xl sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-[700px] animate-in slide-in-from-bottom duration-300">
-                        
-                        {/* Header */}
-                        <div className="px-6 py-4 border-b border-gray-100/50 dark:border-slate-800 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
-                                    <Sparkles size={20} />
-                                </div>
-                                <div>
-                                    <h3 className="text-base font-black text-gray-900 dark:text-white drop-shadow-sm flex items-center gap-2">
-                                        Nova AI
-                                    </h3>
-                                    <p className="text-[11px] text-gray-500 font-bold dark:text-gray-400">Always-on Copilot</p>
-                                </div>
+                <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-between p-6 sm:p-12 bg-black/70 backdrop-blur-3xl animate-in fade-in duration-300">
+                    
+                    {/* Top Right Close Button */}
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        className="absolute top-12 right-6 sm:top-12 sm:right-12 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-50"
+                    >
+                        <X size={24} />
+                    </button>
+
+                    {/* Content Area - Top/Center Aligned */}
+                    <div className="flex-1 w-full max-w-3xl flex flex-col items-center pt-32 pb-8 space-y-8 overflow-y-auto scrollbar-hide text-center">
+                        {/* Active Query */}
+                        {activeQuery && (
+                            <h2 className="text-3xl sm:text-4xl font-semibold text-white/90 leading-tight animate-in slide-in-from-bottom-4">
+                                {activeQuery}
+                            </h2>
+                        )}
+
+                        {/* Active Response */}
+                        {loading ? (
+                            <div className="text-xl text-white/50 animate-pulse font-medium mt-4">
+                                Hmm...
                             </div>
+                        ) : activeResponse ? (
+                            <div className="text-xl sm:text-2xl text-white/70 font-medium leading-relaxed max-w-2xl animate-in slide-in-from-bottom-4 delay-150 prose prose-invert prose-p:leading-relaxed">
+                                <ReactMarkdown>{activeResponse}</ReactMarkdown>
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {/* Bottom Area: Siri Wave & Input */}
+                    <div className="w-full max-w-3xl flex flex-col items-center gap-8 relative z-20 pb-8">
+                        
+                        {/* Siri-style animated orb */}
+                        <div className="relative w-64 h-32 flex items-center justify-center">
+                            {(() => {
+                                const active = isListening || loading;
+                                return (
+                                    <>
+                                        {/* Layered gradient blooms — drift slowly at rest, surge when active */}
+                                        <div
+                                            className="absolute w-32 h-32 rounded-full mix-blend-screen blur-[42px] animate-blob"
+                                            style={{
+                                                background: 'radial-gradient(circle, #2997FF 0%, transparent 70%)',
+                                                opacity: active ? 0.95 : 0.35,
+                                                transition: 'opacity 500ms ease',
+                                                animationDuration: active ? '4s' : '15s',
+                                            }}
+                                        />
+                                        <div
+                                            className="absolute w-32 h-32 rounded-full mix-blend-screen blur-[42px] animate-blob"
+                                            style={{
+                                                background: 'radial-gradient(circle, #7B2FBE 0%, transparent 70%)',
+                                                opacity: active ? 0.9 : 0.3,
+                                                transition: 'opacity 500ms ease',
+                                                animationDuration: active ? '5s' : '17s',
+                                                animationDelay: '1.5s',
+                                            }}
+                                        />
+                                        <div
+                                            className="absolute w-32 h-32 rounded-full mix-blend-screen blur-[42px] animate-blob"
+                                            style={{
+                                                background: 'radial-gradient(circle, #E040A0 0%, transparent 70%)',
+                                                opacity: active ? 0.85 : 0.25,
+                                                transition: 'opacity 500ms ease',
+                                                animationDuration: active ? '6s' : '19s',
+                                                animationDelay: '3s',
+                                            }}
+                                        />
+
+                                        {/* Expanding ring pulse while listening */}
+                                        {isListening && (
+                                            <>
+                                                <span className="absolute w-24 h-24 rounded-full border border-white/30 animate-siri-ring" />
+                                                <span className="absolute w-24 h-24 rounded-full border border-white/20 animate-siri-ring [animation-delay:0.8s]" />
+                                            </>
+                                        )}
+
+                                        {/* Waveform bars — the clearest "I'm listening" signal */}
+                                        {active && (
+                                            <div className="absolute inset-x-0 bottom-1 flex items-end justify-center gap-1 h-8" aria-hidden="true">
+                                                {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                                                    <span
+                                                        key={i}
+                                                        className="w-1 rounded-full bg-white/80 animate-siri-bar"
+                                                        style={{
+                                                            animationDelay: `${i * 90}ms`,
+                                                            animationDuration: loading ? '1.1s' : '0.7s',
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <button
+                                            onClick={toggleListening}
+                                            aria-label={isListening ? 'Stop listening' : 'Start voice input'}
+                                            aria-pressed={isListening}
+                                            className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center transition-transform duration-300 active:scale-90 ${isListening ? 'scale-110' : ''}`}
+                                        >
+                                            {isListening
+                                                ? <Mic size={30} className="text-white drop-shadow-lg" />
+                                                : <Sparkles size={30} className={`text-white ${loading ? 'animate-pulse' : 'opacity-85'}`} />}
+                                        </button>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Stealth Input Form */}
+                        <form
+                            onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                            className="w-full flex items-end gap-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-3xl p-2 pl-4 transition-colors focus-within:bg-white/15 focus-within:border-white/30 backdrop-blur-md shadow-2xl"
+                        >
+                            <input type="file" accept="image/*" capture="environment" ref={fileInputRef} onChange={handleImageSelect} className="hidden" />
+                            
+                            <button type="button" onClick={() => fileInputRef.current?.click()} className="p-2.5 text-white/60 hover:text-white transition-colors shrink-0 mb-0.5">
+                                <Camera size={22} />
+                            </button>
+                            
+                            <textarea
+                                ref={textareaRef}
+                                rows={1}
+                                value={prompt}
+                                onChange={handleInput}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+                                }}
+                                placeholder={selectedImage ? "Image ready. Add a message..." : "Message Ava..."}
+                                className="flex-1 max-h-[120px] bg-transparent py-3.5 text-base text-white font-medium focus:outline-none resize-none placeholder:text-white/40"
+                            />
 
                             <button
-                                onClick={() => setIsOpen(false)}
-                                className="p-2 rounded-full bg-gray-100/50 hover:bg-gray-200/50 dark:bg-slate-800 text-gray-500 transition-colors shadow-sm"
+                                type="submit"
+                                disabled={(!prompt.trim() && !selectedImage) || loading}
+                                className="w-12 h-12 rounded-2xl bg-white/20 hover:bg-white/30 disabled:opacity-20 text-white flex items-center justify-center transition-colors shrink-0 mb-0.5"
                             >
-                                <X size={20} />
+                                <Send size={20} className={(!prompt.trim() && !selectedImage) ? "opacity-30" : ""} />
                             </button>
-                        </div>
-
-                        {/* Quick Prompts */}
-                        <div className="px-4 py-3 border-b border-gray-100/50 dark:border-slate-800 overflow-x-auto scrollbar-hide flex gap-2">
-                            {QUICK_PROMPTS.map((qp, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handleSend(qp.text)}
-                                    disabled={loading}
-                                    className="flex-shrink-0 text-xs font-bold bg-white/50 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full border border-gray-200/50 dark:border-slate-700 shadow-sm transition-all"
-                                >
-                                    {qp.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Chat Window */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                            {messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
-                                >
-                                    <div className="flex items-center gap-2 mb-1 px-1">
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
-                                            {msg.sender === 'user' ? 'You' : 'Nova'}
-                                        </span>
-                                        <span className="text-[10px] text-gray-400/70 font-semibold">{msg.timestamp}</span>
-                                    </div>
-
-                                    <div
-                                        className={`max-w-[90%] sm:max-w-[85%] rounded-3xl p-4 text-sm leading-relaxed shadow-sm ${
-                                            msg.sender === 'user'
-                                                ? 'bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-tr-sm font-medium border border-blue-400/20'
-                                                : 'bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-slate-700 rounded-tl-sm font-medium shadow-md'
-                                        }`}
-                                    >
-                                        {msg.imageUrl && (
-                                            <img src={msg.imageUrl} alt="Uploaded" className="w-full max-w-xs rounded-xl mb-3 object-cover shadow-sm" />
-                                        )}
-                                        {msg.sender === 'gemini' ? (
-                                            <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900 prose-pre:rounded-xl">
-                                                <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                            </div>
-                                        ) : (
-                                            msg.text
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-
-                            {loading && (
-                                <div className="flex items-center gap-3 text-sm text-blue-600 font-bold bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 px-5 py-4 rounded-3xl w-fit animate-pulse shadow-sm">
-                                    <Sparkles size={16} className="animate-spin" />
-                                    <span>Nova is thinking...</span>
-                                </div>
-                            )}
-
-                            <div ref={chatEndRef} />
-                        </div>
-
-                        {/* Input Area - Sticky at bottom */}
-                        <div className="p-4 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-t border-gray-100 dark:border-slate-800 relative z-10">
-                            {selectedImage && (
-                                <div className="absolute -top-16 left-4 right-4 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl p-2 shadow-xl flex items-center justify-between animate-in slide-in-from-bottom-2">
-                                    <div className="flex items-center gap-3">
-                                        <img src={selectedImage} alt="Preview" className="w-12 h-12 object-cover rounded-xl border border-gray-100 dark:border-slate-700" />
-                                        <span className="text-xs text-gray-600 dark:text-gray-300 font-bold">Image ready for analysis</span>
-                                    </div>
-                                    <button onClick={() => setSelectedImage(null)} className="p-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-full text-gray-600 dark:text-gray-300 transition-colors">
-                                        <X size={16} />
-                                    </button>
-                                </div>
-                            )}
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    handleSend();
-                                }}
-                                className="flex items-end gap-2"
-                            >
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    capture="environment"
-                                    ref={fileInputRef} 
-                                    onChange={handleImageSelect} 
-                                    className="hidden" 
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400 flex items-center justify-center transition-colors border border-transparent shadow-sm shrink-0 mb-0.5"
-                                >
-                                    <Camera size={20} />
-                                </button>
-                                
-                                <div className="flex-1 relative rounded-3xl bg-gray-100/80 dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 overflow-hidden shadow-inner flex items-center min-h-[52px]">
-                                    <textarea
-                                        ref={textareaRef}
-                                        rows={1}
-                                        value={prompt}
-                                        onChange={handleInput}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                                e.preventDefault();
-                                                handleSend();
-                                            }
-                                        }}
-                                        placeholder={selectedImage ? "Add details (optional)..." : "Message Nova..."}
-                                        className="w-full max-h-[150px] bg-transparent px-4 py-3 text-sm text-gray-900 dark:text-white font-medium focus:outline-none resize-none placeholder:text-gray-500"
-                                    />
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={toggleListening}
-                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm border shrink-0 mb-0.5 ${isListening ? 'bg-rose-500 text-white border-rose-600 animate-pulse scale-105' : 'bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-400 border-transparent'}`}
-                                >
-                                    {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={(!prompt.trim() && !selectedImage) || loading}
-                                    className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 text-white flex items-center justify-center transition-all shadow-md border border-white/20 shrink-0 mb-0.5"
-                                >
-                                    <Send size={20} className={(!prompt.trim() && !selectedImage) ? "opacity-50" : ""} />
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             )}

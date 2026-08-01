@@ -45,13 +45,6 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
         setTimeout(() => setSavedNotice(false), 3000);
     };
 
-    const handleReset = () => {
-        if (confirm('Are you sure you want to log out?')) {
-            signOut();
-            onClose();
-        }
-    };
-
     const handleSignOut = () => {
         signOut();
         onClose();
@@ -210,7 +203,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'profile' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-black text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Profile & Goals</h3>
+                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Profile & Goals</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                     <div>
                                         <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
@@ -298,7 +291,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                 </div>
 
                                 <div className="mt-6">
-                                    <h3 className="text-sm font-black text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Diet & Finance Targets</h3>
+                                    <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Diet & Finance Targets</h3>
                                     
                                     <div className="mb-4">
                                         <label className="block text-xs font-bold text-gray-700 mb-1">Daily Calorie Limit (kcal)</label>
@@ -325,7 +318,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'preferences' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-black text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">App Preferences</h3>
+                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">App Preferences</h3>
                                 
                                 <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-2">Measurement Units</label>
@@ -358,10 +351,6 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <p className="text-[10px] text-gray-400 mt-1">Graphs and historical data will track back up to this date.</p>
                                     </div>
                                     
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Theme (Coming Soon)</label>
-                                        <input disabled type="text" value="Auto (System Match)" className="w-full bg-gray-100 dark:bg-slate-800/50 border border-transparent rounded-xl px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
-                                    </div>
                                 </div>
                                 
                                 <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800/50">
@@ -384,7 +373,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'config' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-black text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">
+                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">
                                     Account Configuration (Import / Export)
                                 </h3>
                                 <p className="text-xs text-gray-600 font-medium">
@@ -401,7 +390,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <span className="flex items-center gap-2">
                                             <Download size={16} /> Export Account Configuration (.json)
                                         </span>
-                                        <span className="text-[10px] uppercase bg-white dark:bg-slate-900/20 px-2 py-0.5 rounded text-white font-mono">JSON</span>
+                                        <span className="text-[10px] uppercase bg-white dark:bg-slate-900/20 px-2 py-0.5 rounded text-white tracking-wider font-bold">JSON</span>
                                     </button>
 
                                     {/* Import File Button */}
@@ -421,7 +410,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                             <span className="flex items-center gap-2">
                                                 <Upload size={16} className="text-stone-600" /> Import Account Configuration
                                             </span>
-                                            <span className="text-[10px] uppercase bg-stone-200 px-2 py-0.5 rounded text-stone-700 font-mono">Select File</span>
+                                            <span className="text-[10px] uppercase bg-stone-200 px-2 py-0.5 rounded text-stone-700 tracking-wider font-bold">Select File</span>
                                         </button>
                                     </div>
                                 </div>

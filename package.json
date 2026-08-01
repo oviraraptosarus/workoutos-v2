@@ -63,7 +63,8 @@
         "react-hook-form": "^7.83.0",
         "react-markdown": "^10.1.0",
         "recharts": "^2.15.2",
-        "sonner": "^1.7.4"
+        "sonner": "^1.7.4",
+        "zustand": "^5.0.14"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",

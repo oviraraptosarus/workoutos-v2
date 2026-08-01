@@ -3,14 +3,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { DateProvider } from '@/contexts/DateContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
-import { Inter } from 'next/font/google';
 import '@/styles/index.css';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'Workout OS',
@@ -39,8 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`min-h-screen bg-[#faf9f6] dark:bg-[#0f1115] text-stone-900 dark:text-gray-100 antialiased selection:bg-emerald-100 dark:selection:bg-emerald-900/50 font-sans relative overflow-x-hidden transition-colors duration-300`}>
+    <html lang="en">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+      </head>
+      <body className="bg-background font-body-md text-on-background min-h-screen relative overflow-x-hidden selection:bg-activity-green/20 overscroll-none">
         <ThemeProvider>
           <AuthProvider>
             <DateProvider>

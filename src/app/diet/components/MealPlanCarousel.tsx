@@ -50,19 +50,19 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
     ];
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all">
+        <div className="bg-card-white rounded-3xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)] transition-all">
             <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider">YOUR MEAL PLAN</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Your Meal Plan</span>
                 <button
                     id="tour-see-details"
                     onClick={onOpenDetails}
-                    className="text-xs font-black text-cyan-600 hover:text-cyan-700 uppercase tracking-wider flex items-center gap-0.5 btn-press transition-colors group relative z-[110]"
+                    className="font-label-sm text-label-sm text-secondary hover:text-secondary-fixed-variant uppercase tracking-wider flex items-center gap-0.5 transition-colors group relative z-[110]"
                 >
                     SEE DETAILS <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
             </div>
             
-            <h2 className="text-lg font-black text-gray-900 mb-4 tracking-tight">5-Day Getting Started</h2>
+            <h2 className="font-headline-md text-headline-md text-on-surface mb-4">5-Day Getting Started</h2>
 
             <div className="grid grid-cols-4 gap-3 sm:gap-4">
                 {plans.map((item) => (
@@ -73,11 +73,11 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
                         title="Click to view complete 5-day recipe plan"
                     >
                         {/* Icon above image */}
-                        <div className="mb-2 p-1.5 rounded-full bg-gray-100 border border-gray-200 shadow-sm group-hover:scale-110 transition-transform">
+                        <div className="mb-2 p-1.5 rounded-full bg-surface-container-low group-hover:scale-110 transition-transform flex items-center justify-center">
                             {item.icon}
                         </div>
                         {/* Thumbnail image container */}
-                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-gray-200 shadow-sm group-hover:shadow-md transition-all">
+                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-all">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={item.imageUrl}
@@ -85,8 +85,8 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                             {item.completed && (
-                                <div className="absolute inset-0 bg-emerald-900/30 backdrop-blur-[1px] flex items-center justify-center">
-                                    <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md">
+                                <div className="absolute inset-0 bg-secondary-container/30 backdrop-blur-[1px] flex items-center justify-center">
+                                    <div className="w-6 h-6 rounded-full bg-activity-green text-white flex items-center justify-center shadow-md">
                                         <Check size={14} strokeWidth={3} />
                                     </div>
                                 </div>

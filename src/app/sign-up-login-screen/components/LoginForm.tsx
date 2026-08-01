@@ -10,6 +10,13 @@ export default function LoginForm() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    React.useEffect(() => {
+        const remembered = localStorage.getItem('workoutos_remembered_username');
+        if (remembered) {
+            setEmail(remembered);
+        }
+    }, []);
+
     const focusNext = (e: React.KeyboardEvent<HTMLInputElement>, nextId?: string) => {
         if (e.key === 'Enter' && nextId) {
             e.preventDefault();
@@ -34,16 +41,16 @@ export default function LoginForm() {
             {error && <div className="p-3 text-xs bg-rose-50 text-rose-600 border border-rose-200 rounded-xl">{error}</div>}
 
             <div>
-                <label htmlFor="login-email" className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                <label htmlFor="login-email" className="block text-xs font-medium text-gray-700 mb-1">Email or Username</label>
                 <input
                     id="login-email"
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={(e) => focusNext(e, 'login-password')}
                     enterKeyHint="next"
-                    placeholder="you@email.com"
+                    placeholder="you@email.com or username"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
             </div>

@@ -28,8 +28,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (!isMounted) return;
         const root = document.documentElement;
-        root.classList.remove('dark');
-        localStorage.setItem('workout_os_theme', 'light');
+        if (theme === 'dark') {
+            root.classList.add('dark');
+        } else {
+            root.classList.remove('dark');
+        }
+        localStorage.setItem('workout_os_theme', theme);
     }, [theme, isMounted]);
 
     const toggleTheme = () => {

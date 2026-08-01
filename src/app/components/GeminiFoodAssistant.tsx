@@ -127,9 +127,9 @@ export default function GeminiFoodAssistant() {
             const { data: { user } } = await supabase.auth.getUser();
             let dbState: any = {};
             if (user) {
-                const { data } = await supabase.from('daily_logs').select('water_ml, sleep_hours').eq('user_id', user.id).eq('date', dateKey).single();
+                const { data } = await supabase.from('daily_logs').select('water_ml_total, sleep_hours').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
                 if (data) {
-                    dbState = { waterMl: data.water_ml, sleepHrs: data.sleep_hours };
+                    dbState = { waterMl: data.water_ml_total, sleepHrs: data.sleep_hours };
                 }
                 const meals = await getMealsForDate(dateKey);
                 dbState.nutritionKcal = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
@@ -191,9 +191,9 @@ export default function GeminiFoodAssistant() {
                         if (user) {
                             const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
                             if (existing) {
-                                await supabase.from('daily_logs').update({ water_ml: newWater }).eq('id', existing.id);
+                                await supabase.from('daily_logs').update({ water_ml_total: newWater }).eq('id', existing.id);
                             } else {
-                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, water_ml: newWater });
+                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, water_ml_total: newWater });
                             }
                         }
                         window.dispatchEvent(new Event('storage'));
@@ -296,7 +296,7 @@ export default function GeminiFoodAssistant() {
                         
                         <div className="flex-1 flex flex-col justify-center min-w-0">
                             <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 truncate">
+                                <span className="text-[11px] font-bold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 truncate">
                                     Nova AI Copilot
                                 </span>
                             </div>
@@ -329,10 +329,10 @@ export default function GeminiFoodAssistant() {
                                     <Sparkles size={18} />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black text-gray-900 drop-shadow-sm flex items-center gap-2">
+                                    <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm flex items-center gap-2">
                                         Nova AI Copilot
                                     </h3>
-                                    <p className="text-[11px] text-gray-600 font-bold">Tailored to goal: <span className="text-blue-600 font-black">{userProfile.fitnessGoal}</span></p>
+                                    <p className="text-[11px] text-gray-600 font-bold">Tailored to goal: <span className="text-blue-600 font-bold">{userProfile.fitnessGoal}</span></p>
                                 </div>
                             </div>
 

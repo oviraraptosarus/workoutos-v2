@@ -75,6 +75,11 @@ export const saveMealsForDate = async (dateKey: string, meals: MealItem[]): Prom
         }));
         await supabase.from('meal_entries').insert(payload);
     }
+    
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('workout_os_diet_updated'));
+        window.dispatchEvent(new Event('storage'));
+    }
 };
 
 export const getWaterForDate = async (dateKey: string): Promise<number> => {
@@ -88,6 +93,28 @@ export const saveWaterForDate = async (dateKey: string, amount: number): Promise
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, water_ml_total: amount }, { onConflict: 'user_id,date' });
+    
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('workout_os_water_updated'));
+        window.dispatchEvent(new Event('storage'));
+    }
+};
+
+export const getActivityBurnedForDate = async (dateKey: string): Promise<number> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return 0;
+    const { data } = await supabase.from('daily_logs').select('activity_burned').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
+    return data?.activity_burned || 0;
+};
+
+export const saveActivityBurnedForDate = async (dateKey: string, amount: number): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, activity_burned: amount }, { onConflict: 'user_id,date' });
+    
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('storage'));
+    }
 };
 
 export const getMacroGoals = async (): Promise<MacroGoals> => {
