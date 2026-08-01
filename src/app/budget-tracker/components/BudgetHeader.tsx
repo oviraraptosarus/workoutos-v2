@@ -27,14 +27,14 @@ export default function BudgetHeader() {
                 <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 tracking-tight drop-shadow-sm mb-1">
                     Budget Tracker
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-semibold">{currentMonthStr} • {currentDay} of {daysInMonth} days elapsed</p>
+                <p className="text-sm text-on-surface-variant dark:text-on-surface-variant font-semibold">{currentMonthStr} • {currentDay} of {daysInMonth} days elapsed</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-                <button className="flex items-center gap-2 bg-white dark:bg-slate-800/80 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-700 dark:text-gray-200 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-sm border border-gray-200/50 dark:border-white/5 active:scale-95">
-                    {currentMonthStr} <ChevronDown size={16} className="text-gray-400" />
+                <button className="flex items-center gap-2 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-slate-700/80 text-on-surface-variant dark:text-gray-200 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 active:scale-95">
+                    {currentMonthStr} <ChevronDown size={16} className="text-on-surface-variant" />
                 </button>
-                <button className="flex items-center justify-center w-10 h-10 bg-white dark:bg-slate-800/80 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-700 dark:text-gray-200 rounded-2xl transition-all shadow-sm border border-gray-200/50 dark:border-white/5 active:scale-95">
-                    <Download size={18} className="text-gray-500 dark:text-gray-400" />
+                <button className="flex items-center justify-center w-10 h-10 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-slate-700/80 text-on-surface-variant dark:text-gray-200 rounded-2xl transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 active:scale-95">
+                    <Download size={18} className="text-on-surface-variant dark:text-on-surface-variant" />
                 </button>
                 <div className="flex items-center gap-2 ml-1">
                     <button 

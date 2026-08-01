@@ -32,6 +32,7 @@ export default function SleepCard() {
     const [bedtime, setBedtime] = React.useState<string | null>(null);
     const [waketime, setWaketime] = React.useState<string | null>(null);
     const [hasData, setHasData] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
         if (!selectedDate) return;
@@ -56,6 +57,7 @@ export default function SleepCard() {
                 setWaketime(null);
                 setHasData(false);
             }
+            setIsLoading(false);
         };
         loadSleep();
         window.addEventListener('storage', loadSleep);
@@ -83,7 +85,7 @@ export default function SleepCard() {
             <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <span className="material-symbols-outlined text-secondary text-[18px]">dark_mode</span>
-                    <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant truncate">Sleep</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">Sleep</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
             </div>
@@ -146,6 +148,10 @@ export default function SleepCard() {
                             {diff >= 0 ? '+' : ''}{diff.toFixed(1)}h
                         </div>
                     </div>
+                </div>
+            ) : isLoading ? (
+                <div className="flex flex-col items-center justify-center mt-auto h-full w-full opacity-60">
+                    <div className="w-20 h-20 rounded-full border-4 border-surface-variant/30 border-t-surface-variant/80 animate-spin"></div>
                 </div>
             ) : (
                 <div className="flex flex-col items-start gap-2 mt-auto">

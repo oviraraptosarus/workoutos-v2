@@ -35,7 +35,7 @@ export default function FloatingActionMenu() {
                 {/* Sleep */}
                 <button 
                     onClick={() => openModal('sleep')}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
                     <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#3b82f6] flex items-center justify-center">
                         <Moon size={16} />
@@ -46,7 +46,7 @@ export default function FloatingActionMenu() {
                 {/* Water */}
                 <button 
                     onClick={() => openModal('water')}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
                     <div className="w-8 h-8 rounded-full bg-[#f0fdfa] text-[#0ea5e9] flex items-center justify-center">
                         <Droplet size={16} />
@@ -57,7 +57,7 @@ export default function FloatingActionMenu() {
                 {/* Workout */}
                 <button 
                     onClick={() => openModal('workout')}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
                     <div className="w-8 h-8 rounded-full bg-[#f0fdf4] text-[#16a34a] flex items-center justify-center">
                         <Dumbbell size={16} />
@@ -68,7 +68,7 @@ export default function FloatingActionMenu() {
                 {/* Meal */}
                 <button 
                     onClick={() => openModal('meal')}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
                     <div className="w-8 h-8 rounded-full bg-[#fff7ed] text-[#f97316] flex items-center justify-center">
                         <Apple size={16} />
@@ -79,7 +79,7 @@ export default function FloatingActionMenu() {
                 {/* Expense */}
                 <button 
                     onClick={() => openModal('expense')}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
                     <div className="w-8 h-8 rounded-full bg-[#f5f3ff] text-[#8b5cf6] flex items-center justify-center">
                         <Wallet size={16} />
@@ -93,9 +93,9 @@ export default function FloatingActionMenu() {
                         setIsOpen(false);
                         router.push('/progress');
                     }}
-                    className="bg-white hover:bg-gray-50 text-gray-900 text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-gray-100 dark:border-slate-800"
+                    className="bg-card-white hover:bg-surface-container-low text-on-surface text-[15px] font-medium px-4 py-2.5 rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] flex items-center gap-3 transition-colors border border-surface-variant "
                 >
-                    <div className="w-8 h-8 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-surface-container text-stone-700 flex items-center justify-center">
                         <Camera size={16} />
                     </div>
                     <span className="pr-2">Progress</span>

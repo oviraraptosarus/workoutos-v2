@@ -6,6 +6,7 @@ import nextDynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 
+
 // Dynamic imports with ssr:false to prevent prerender crashes
 const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
 const TopNav = nextDynamic(() => import('@/components/TopNav').then(m => m.TopNav), { ssr: false });
@@ -19,6 +20,7 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
+
     const { userProfile, session } = useAuth();
     const pathname = usePathname();
     const isDashboard = pathname === '/dashboard';

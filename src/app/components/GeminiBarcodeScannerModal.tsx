@@ -91,21 +91,21 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-card-white  border border-surface-variant  rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant  bg-surface-container-low/50">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <ScanLine size={16} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Nutrition Scanner</h2>
+                            <h2 className="text-sm font-bold text-on-surface dark:text-white uppercase tracking-wider">Nutrition Scanner</h2>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-slate-800 transition-colors text-gray-400 btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors text-on-surface-variant btn-press"
                     >
                         <X size={18} />
                     </button>
@@ -119,8 +119,8 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                             <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-emerald-100 dark:border-emerald-800 border-dashed">
                                 <ScanLine size={32} className="text-emerald-500" />
                             </div>
-                            <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Scan Label or Barcode</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                            <h3 className="font-bold text-on-surface dark:text-white text-lg mb-2">Scan Label or Barcode</h3>
+                            <p className="text-sm text-on-surface-variant dark:text-on-surface-variant mb-6">
                                 Snap a picture of a nutrition label or product barcode. Gemini will auto-extract all macros.
                             </p>
                             
@@ -135,7 +135,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                             
                             <button 
                                 onClick={() => fileInputRef.current?.click()}
-                                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg btn-press"
+                                className="w-full py-4 bg-gray-900 dark:bg-card-white text-white dark:text-on-surface font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg btn-press"
                             >
                                 <Camera size={18} /> Take Photo / Upload
                             </button>
@@ -145,7 +145,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                     {imagePreview && (
                         <div className="w-full space-y-4">
                             {/* Image Preview Container */}
-                            <div className="relative w-full h-48 bg-gray-100 dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-slate-700">
+                            <div className="relative w-full h-48 bg-surface-container dark:bg-surface-container-high rounded-2xl overflow-hidden border border-surface-variant ">
                                 <img src={imagePreview} alt="Scanned" className="w-full h-full object-contain" />
                                 
                                 {isScanning && (
@@ -171,39 +171,39 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         <div className="flex items-center gap-3 mb-3 pb-3 border-b border-emerald-100 dark:border-emerald-800/30">
                                             <div className="text-2xl">{parsedMeal.icon}</div>
                                             <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{parsedMeal.name}</h4>
-                                                <p className="text-[10px] text-gray-500 uppercase tracking-wider">{parsedMeal.category} • {parsedMeal.portion}</p>
+                                                <h4 className="font-bold text-on-surface dark:text-white leading-tight">{parsedMeal.name}</h4>
+                                                <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">{parsedMeal.category} • {parsedMeal.portion}</p>
                                             </div>
                                         </div>
                                         
                                         <div className="grid grid-cols-4 gap-2 text-center">
-                                            <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
-                                                <div className="text-[10px] text-gray-400 font-bold mb-0.5">KCAL</div>
+                                            <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
+                                                <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">KCAL</div>
                                                 <div className="text-sm font-bold text-emerald-600">{parsedMeal.calories}</div>
                                             </div>
-                                            <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
-                                                <div className="text-[10px] text-gray-400 font-bold mb-0.5">PRO</div>
-                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.protein}g</div>
+                                            <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
+                                                <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">PRO</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.protein}g</div>
                                             </div>
-                                            <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
-                                                <div className="text-[10px] text-gray-400 font-bold mb-0.5">CARB</div>
-                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.carbs}g</div>
+                                            <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
+                                                <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">CARB</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.carbs}g</div>
                                             </div>
-                                            <div className="bg-white dark:bg-slate-900 rounded-xl p-2 border border-gray-100 dark:border-slate-800 shadow-sm">
-                                                <div className="text-[10px] text-gray-400 font-bold mb-0.5">FAT</div>
-                                                <div className="text-sm font-bold text-gray-700 dark:text-gray-200">{parsedMeal.fat}g</div>
+                                            <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
+                                                <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">FAT</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.fat}g</div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-3 shadow-sm">
-                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">Categorize Meal As</p>
-                                        <div className="flex bg-gray-50 dark:bg-slate-800 p-1 rounded-xl">
+                                    <div className="bg-card-white  border border-surface-variant  rounded-2xl p-3 shadow-sm">
+                                        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2 text-center">Categorize Meal As</p>
+                                        <div className="flex bg-surface-container-low dark:bg-surface-container-high p-1 rounded-xl">
                                             {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(cat => (
                                                 <button
                                                     key={cat}
                                                     onClick={() => setParsedMeal({...parsedMeal, category: cat as any})}
-                                                    className={`flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-colors ${parsedMeal.category === cat ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm ring-1 ring-gray-200 dark:ring-slate-600' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                                                    className={`flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-colors ${parsedMeal.category === cat ? 'bg-card-white dark:bg-slate-700 text-on-surface dark:text-white shadow-sm ring-1 ring-gray-200 dark:ring-slate-600' : 'text-on-surface-variant hover:text-on-surface-variant dark:hover:text-on-surface-variant'}`}
                                                 >
                                                     {cat}
                                                 </button>
@@ -214,7 +214,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                     <div className="flex gap-2">
                                         <button 
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="flex-1 py-3 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl transition-colors"
+                                            className="flex-1 py-3 bg-surface-container dark:bg-surface-container-high hover:bg-surface-container-high dark:hover:bg-slate-700 text-on-surface-variant dark:text-on-surface-variant text-xs font-bold rounded-xl transition-colors"
                                         >
                                             Retake
                                         </button>
@@ -231,7 +231,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                             {(!parsedMeal && !isScanning && error) && (
                                 <button 
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-full py-3 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl transition-colors"
+                                    className="w-full py-3 bg-surface-container dark:bg-surface-container-high hover:bg-surface-container-high dark:hover:bg-slate-700 text-on-surface-variant dark:text-on-surface-variant text-xs font-bold rounded-xl transition-colors"
                                 >
                                     Try Again
                                 </button>

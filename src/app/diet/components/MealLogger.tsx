@@ -77,18 +77,18 @@ export default function MealLogger({
             
             {/* Top Toolbar / Filter & Action Buttons */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-                <span className="text-xs font-black text-gray-500 uppercase tracking-wider">Daily Meal Log</span>
+                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Daily Meal Log</span>
                 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Log Filter Input */}
                     <div className="relative flex-1 sm:flex-initial">
-                        <Search size={14} className="absolute left-2.5 top-2.5 text-gray-400 dark:text-gray-500" />
+                        <Search size={14} className="absolute left-2.5 top-2.5 text-on-surface-variant dark:text-on-surface-variant" />
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Filter logged foods..."
-                            className="bg-gray-100 border border-gray-200 rounded-full pl-8 pr-3 py-1 text-xs font-bold text-gray-800 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-cyan-300 shadow-sm w-full sm:w-40"
+                            className="bg-surface-container border border-surface-variant rounded-full pl-8 pr-3 py-1 text-xs font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-card-white focus:border-cyan-300 shadow-sm w-full sm:w-40"
                         />
                     </div>
 
@@ -123,7 +123,7 @@ export default function MealLogger({
                     {onCopyYesterdayMeals && (
                         <button
                             onClick={handleCopyYesterdayClick}
-                            className="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-stone-200 shadow-sm btn-press"
+                            className="flex items-center gap-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface dark:text-on-surface px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-surface-variant dark:border-surface-variant shadow-sm btn-press"
                         >
                             {copiedNotice ? (
                                 <>
@@ -149,7 +149,7 @@ export default function MealLogger({
                 return (
                     <div
                         key={name}
-                        className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all overflow-hidden"
+                        className="bg-card-white border border-surface-variant border-surface-variant rounded-3xl p-5 shadow-sm transition-all overflow-hidden"
                     >
                         {/* Section Header */}
                         <div className="flex items-center justify-between">
@@ -157,17 +157,17 @@ export default function MealLogger({
                                 onClick={() => toggleCollapse(name)}
                                 className="flex items-center gap-3 cursor-pointer select-none group"
                             >
-                                <div className={`p-2 rounded-2xl border border-gray-200 shadow-sm transition-transform group-hover:scale-105 ${color}`}>
+                                <div className={`p-2 rounded-2xl border border-surface-variant shadow-sm transition-transform group-hover:scale-105 ${color}`}>
                                     {icon}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-black text-cyan-950 uppercase tracking-wider drop-shadow-sm">
+                                        <h3 className="text-sm font-black text-on-surface uppercase tracking-wider">
                                             {name}
                                         </h3>
-                                        {isCollapsed ? <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" /> : <ChevronUp size={16} className="text-gray-400 dark:text-gray-500" />}
+                                        {isCollapsed ? <ChevronDown size={16} className="text-on-surface-variant dark:text-on-surface-variant" /> : <ChevronUp size={16} className="text-on-surface-variant dark:text-on-surface-variant" />}
                                     </div>
-                                    <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500">
+                                    <span className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant">
                                         {categoryMeals.length} item{categoryMeals.length === 1 ? '' : 's'} • {totalCategoryCalories} kcal
                                     </span>
                                 </div>
@@ -176,7 +176,7 @@ export default function MealLogger({
                             {/* Section Subtotal & Add Button */}
                             <div className="flex items-center gap-3">
                                 {totalCategoryBites > 0 && (
-                                    <span className="text-xs font-black text-cyan-900 tracking-wider">
+                                    <span className="text-xs font-black text-activity-blue tracking-wider">
                                         {totalCategoryBites} BITES
                                     </span>
                                 )}
@@ -210,17 +210,17 @@ export default function MealLogger({
                                         <div
                                             key={item.id}
                                             onClick={() => onEditMealClick(item)}
-                                            className="group flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-white dark:bg-slate-900/90 border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                                            className="group flex items-center justify-between p-3 rounded-2xl bg-surface-container-low hover:bg-card-white/90 border border-surface-variant shadow-sm hover:shadow-md transition-all cursor-pointer"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-2xl bg-stone-100/80 border border-stone-200/60 flex items-center justify-center text-xl shadow-inner group-hover:scale-105 transition-transform">
+                                                <div className="w-10 h-10 rounded-2xl bg-surface-container/80 border border-stone-200/60 flex items-center justify-center text-xl shadow-inner group-hover:scale-105 transition-transform">
                                                     {item.icon || '🥗'}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-sm font-black text-gray-900 drop-shadow-sm group-hover:text-emerald-700 transition-colors">
+                                                    <h4 className="text-sm font-black text-on-surface drop-shadow-sm group-hover:text-emerald-700 transition-colors">
                                                         {item.name}
                                                     </h4>
-                                                    <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mt-0.5">
+                                                    <p className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider mt-0.5">
                                                         {item.bites ? `${item.bites} BITES` : `${item.calories} KCAL`} • {item.portion}
                                                         {item.carbs ? ` • ${item.carbs}g carbs` : ''}
                                                         {item.sugar ? ` • ${item.sugar}g sugar` : ''}
@@ -236,7 +236,7 @@ export default function MealLogger({
                                                         e.stopPropagation();
                                                         onEditMealClick(item);
                                                     }}
-                                                    className="p-1.5 rounded-xl hover:bg-stone-100 text-gray-400 hover:text-emerald-600 transition-colors btn-press"
+                                                    className="p-1.5 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-emerald-600 transition-colors btn-press"
                                                     title="Modify nutrient contents"
                                                 >
                                                     <Edit3 size={15} />
@@ -249,7 +249,7 @@ export default function MealLogger({
                                                             onDeleteMeal(item.id);
                                                         }
                                                     }}
-                                                    className="p-1.5 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors btn-press"
+                                                    className="p-1.5 rounded-xl hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors btn-press"
                                                     title="Remove meal item"
                                                 >
                                                     <Trash2 size={15} />
@@ -260,7 +260,7 @@ export default function MealLogger({
                                 ) : (
                                     <div
                                         onClick={() => onAddMealClick(name)}
-                                        className="p-3 text-center rounded-2xl border border-dashed border-gray-200 text-xs font-bold text-gray-400 hover:border-emerald-400 hover:text-emerald-600 transition-all cursor-pointer bg-white dark:bg-slate-900/20"
+                                        className="p-3 text-center rounded-2xl border border-dashed border-surface-variant text-xs font-bold text-on-surface-variant hover:border-emerald-400 hover:text-emerald-600 transition-all cursor-pointer bg-card-white/20"
                                     >
                                         + Tap to add food to {name.toLowerCase()}
                                     </div>

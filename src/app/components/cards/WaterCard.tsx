@@ -47,8 +47,8 @@ export default function WaterCard() {
         setSplash(true);
         setTimeout(() => setSplash(false), 600);
         try {
-            const { saveWaterForDate } = await import('@/app/diet/services/dietStorage');
-            await saveWaterForDate(selectedDate, next);
+            const { addWaterLog } = await import('@/app/diet/services/dietStorage');
+            await addWaterLog(selectedDate, QUICK_ADD_ML, 'Dashboard');
         } catch {
             setCurrentMl((v) => Math.max(v - QUICK_ADD_ML, 0));
         } finally {
@@ -90,17 +90,23 @@ export default function WaterCard() {
             <div className="relative flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <span className="material-symbols-outlined text-activity-blue text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>water_drop</span>
-                    <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant truncate">Water</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">Water</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
             </div>
 
             <div className="relative mt-auto">
-                <div className="flex items-baseline gap-1 flex-wrap">
-                    <span className={`font-headline-lg text-headline-lg text-on-surface tabular-nums leading-none transition-transform ${splash ? 'scale-110' : 'scale-100'}`} style={{ transitionDuration: '300ms' }}>
-                        {loaded ? currentMl : '—'}
-                    </span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">ml</span>
+                <div className="flex items-baseline gap-1 flex-wrap h-10">
+                    {loaded ? (
+                        <>
+                            <span className={`font-headline-lg text-headline-lg text-on-surface tabular-nums leading-none transition-transform ${splash ? 'scale-110' : 'scale-100'}`} style={{ transitionDuration: '300ms' }}>
+                                {currentMl}
+                            </span>
+                            <span className="font-label-sm text-label-sm text-on-surface-variant">ml</span>
+                        </>
+                    ) : (
+                        <div className="h-8 w-16 bg-surface-variant/50 animate-pulse rounded-md my-auto"></div>
+                    )}
                 </div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
                     {reached ? 'Goal reached' : `of ${goalMl} ml`}

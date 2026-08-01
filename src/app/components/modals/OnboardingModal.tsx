@@ -42,7 +42,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white border border-gray-100 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white border border-surface-variant rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                     <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
                         <Sparkles size={20} /> Welcome to Workout OS
@@ -52,7 +52,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                 
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
                     <div>
-                        <label htmlFor="onboarding-fullname" className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                        <label htmlFor="onboarding-fullname" className="block text-xs font-bold text-on-surface-variant mb-1">Full Name</label>
                         <input
                             id="onboarding-fullname"
                             type="text"
@@ -61,12 +61,12 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             value={formData.fullName}
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             onKeyDown={(e) => focusNext(e, 'onboarding-dob')}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="onboarding-dob" className="block text-xs font-bold text-gray-700 mb-1">Date of Birth</label>
+                        <label htmlFor="onboarding-dob" className="block text-xs font-bold text-on-surface-variant mb-1">Date of Birth</label>
                         <input
                             id="onboarding-dob"
                             type="date"
@@ -74,19 +74,19 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             value={formData.dob}
                             onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                             onKeyDown={(e) => focusNext(e, 'onboarding-gender')}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="onboarding-gender" className="block text-xs font-bold text-gray-700 mb-1">Gender</label>
+                            <label htmlFor="onboarding-gender" className="block text-xs font-bold text-on-surface-variant mb-1">Gender</label>
                             <select
                                 id="onboarding-gender"
                                 value={formData.gender}
                                 onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male'|'female'|'other' })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-height')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             >
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -94,7 +94,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="onboarding-height" className="block text-xs font-bold text-gray-700 mb-1">Height (cm)</label>
+                            <label htmlFor="onboarding-height" className="block text-xs font-bold text-on-surface-variant mb-1">Height (cm)</label>
                             <input
                                 id="onboarding-height"
                                 type="number"
@@ -102,14 +102,14 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.heightCm || ''}
                                 onChange={(e) => setFormData({ ...formData, heightCm: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-currentwt')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="onboarding-currentwt" className="block text-xs font-bold text-gray-700 mb-1">Current Wt (kg)</label>
+                            <label htmlFor="onboarding-currentwt" className="block text-xs font-bold text-on-surface-variant mb-1">Current Wt (kg)</label>
                             <input
                                 id="onboarding-currentwt"
                                 type="number"
@@ -117,11 +117,11 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.currentWeight || ''}
                                 onChange={(e) => setFormData({ ...formData, currentWeight: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-targetwt')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
                         <div>
-                            <label htmlFor="onboarding-targetwt" className="block text-xs font-bold text-gray-700 mb-1">Target Wt (kg)</label>
+                            <label htmlFor="onboarding-targetwt" className="block text-xs font-bold text-on-surface-variant mb-1">Target Wt (kg)</label>
                             <input
                                 id="onboarding-targetwt"
                                 type="number"
@@ -129,18 +129,18 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.targetWeight || ''}
                                 onChange={(e) => setFormData({ ...formData, targetWeight: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-goal')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label htmlFor="onboarding-goal" className="block text-xs font-bold text-gray-700 mb-1">Fitness Primary Goal</label>
+                        <label htmlFor="onboarding-goal" className="block text-xs font-bold text-on-surface-variant mb-1">Fitness Primary Goal</label>
                         <select
                             id="onboarding-goal"
                             value={formData.fitnessGoal}
                             onChange={(e) => setFormData({ ...formData, fitnessGoal: e.target.value })}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         >
                             <option value="Build Muscle & Stay Active">Build Muscle & Stay Active</option>
                             <option value="Weight Loss & Fat Burn">Weight Loss & Fat Burn</option>

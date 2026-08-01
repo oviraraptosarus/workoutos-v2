@@ -144,7 +144,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'activity',
         duration: '60 min',
         intensity: 'High',
-        color: 'bg-slate-100 text-slate-700',
+        color: 'bg-slate-100 text-on-surface-variant',
         exercises: [
             { name: 'Barbell Squat', sets: '5 sets x 5 reps', youtubeUrl: '' },
             { name: 'Bench Press', sets: '5 sets x 5 reps', youtubeUrl: '' },

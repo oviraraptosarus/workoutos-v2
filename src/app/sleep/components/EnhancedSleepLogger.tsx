@@ -8,6 +8,8 @@ interface EnhancedSleepLoggerProps {
 }
 
 export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerProps) {
+    const [bedtime, setBedtime] = useState('23:00');
+    const [waketime, setWaketime] = useState('07:00');
     const [hours, setHours] = useState('8');
     const [mood, setMood] = useState('good');
     const [energy, setEnergy] = useState('medium');
@@ -16,6 +18,19 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
     const [notes, setNotes] = useState('');
     const [dreams, setDreams] = useState('');
     const [tags, setTags] = useState('');
+
+    // Derive duration from bed/wake, handling the overnight wrap (e.g. 23:00 → 07:00).
+    const computeHours = (bed: string, wake: string): number => {
+        const [bh, bm] = bed.split(':').map(Number);
+        const [wh, wm] = wake.split(':').map(Number);
+        if ([bh, bm, wh, wm].some(Number.isNaN)) return 0;
+        let mins = (wh * 60 + wm) - (bh * 60 + bm);
+        if (mins <= 0) mins += 24 * 60;
+        return Math.round((mins / 60) * 10) / 10;
+    };
+
+    const handleBed = (v: string) => { setBedtime(v); setHours(String(computeHours(v, waketime))); };
+    const handleWake = (v: string) => { setWaketime(v); setHours(String(computeHours(bedtime, v))); };
 
     const handleSave = () => {
         const numHours = parseFloat(hours);
@@ -27,6 +42,8 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
             type: 'Night Sleep',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             details: {
+                bedtime,
+                waketime,
                 mood,
                 energy,
                 stress,
@@ -38,8 +55,7 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
         };
 
         onLogSaved(logData);
-        // Reset form slightly
-        setHours('');
+        // Reset text fields; keep times/duration for quick re-entry.
         setNotes('');
         setDreams('');
         setTags('');
@@ -51,10 +67,28 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
                 <Moon size={18} className="text-secondary" /> Advanced Sleep Log
             </h2>
 
-            {/* Core Sleep */}
+            {/* Bed & Wake times */}
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Bedtime</label>
+                    <input
+                        type="time" value={bedtime} onChange={e => handleBed(e.target.value)}
+                        className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-secondary transition-colors"
+                    />
+                </div>
+                <div>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Wake time</label>
+                    <input
+                        type="time" value={waketime} onChange={e => handleWake(e.target.value)}
+                        className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-secondary transition-colors"
+                    />
+                </div>
+            </div>
+
+            {/* Core Sleep — duration auto-computed from times, still editable */}
             <div>
                 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Sleep Duration (hrs)</label>
-                <input 
+                <input
                     type="number" step="0.5" value={hours} onChange={e => setHours(e.target.value)}
                     className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-black text-on-surface focus:outline-none focus:border-secondary transition-colors"
                 />

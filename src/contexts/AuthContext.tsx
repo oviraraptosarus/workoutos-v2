@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 export interface UserMetadata {
     fullName?: string;
     avatarUrl?: string;
+    avatarPath?: string;
     [key: string]: string | number | boolean | undefined;
 }
 
@@ -26,6 +27,16 @@ export interface UserProfile {
     heightCm: number;
     gender: 'male' | 'female' | 'other';
     sleepGoal?: number;
+    units: 'metric' | 'imperial';
+    theme: 'light' | 'dark' | 'system';
+    avatarPath?: string;
+    voiceEnabled: boolean;
+    aiMemoryEnabled: boolean;
+    preferredAiVoice?: string;
+    preferredLanguage: string;
+    notificationsEnabled: boolean;
+    streamingResponsesEnabled: boolean;
+    targetConfig?: any;
     createdAt?: string;
     updatedAt: string;
 }
@@ -45,6 +56,14 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
     enableFinancialReminders: true,
     heightCm: 170,
     gender: 'male',
+    units: 'metric',
+    theme: 'system',
+    voiceEnabled: true,
+    aiMemoryEnabled: true,
+    preferredLanguage: 'en',
+    notificationsEnabled: true,
+    streamingResponsesEnabled: true,
+    targetConfig: {},
     updatedAt: new Date().toISOString()
 };
 
@@ -58,6 +77,7 @@ interface AuthContextType {
     signIn: (email?: string, password?: string) => Promise<unknown>;
     login: (email?: string, password?: string) => Promise<unknown>;
     signOut: () => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
     updateUserProfile: (updates: Partial<UserProfile>) => Promise<void>;
     clearUserCache: () => void;
     getCurrentUser: () => Promise<User | null>;
@@ -107,37 +127,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const fetchProfile = async () => {
             if (user) {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
 
-                if (!error && data) {
-                    let localCalorieGoal = DEFAULT_USER_PROFILE.calorieGoal;
-                    let localWaterGoalMl = DEFAULT_USER_PROFILE.waterGoalMl;
-                    let localMonthlyBudget = DEFAULT_USER_PROFILE.monthlyBudget;
+                    if (!error && data) {
+                        setUserProfile({
+                            fullName: data.full_name || '',
+                            username: data.username || '',
+                            email: data.email || user.email || '',
+                            fitnessGoal: data.fitness_goal || DEFAULT_USER_PROFILE.fitnessGoal,
+                            currentWeight: Number(data.current_weight) || DEFAULT_USER_PROFILE.currentWeight,
+                            targetWeight: Number(data.target_weight) || DEFAULT_USER_PROFILE.targetWeight,
+                            waterGoalMl: data.water_goal_ml || DEFAULT_USER_PROFILE.waterGoalMl,
+                            calorieGoal: data.calorie_goal || DEFAULT_USER_PROFILE.calorieGoal,
+                            sleepGoal: data.sleep_goal || DEFAULT_USER_PROFILE.sleepGoal,
+                            monthlyBudget: data.monthly_budget || DEFAULT_USER_PROFILE.monthlyBudget,
+                            monthlyIncome: data.monthly_income || DEFAULT_USER_PROFILE.monthlyIncome,
+                            enableFinancialReminders: data.enable_financial_reminders !== false,
+                            dob: data.dob,
+                            heightCm: Number(data.height_cm) || DEFAULT_USER_PROFILE.heightCm,
+                            gender: data.gender || DEFAULT_USER_PROFILE.gender,
+                            units: data.units || DEFAULT_USER_PROFILE.units,
+                            theme: data.theme || DEFAULT_USER_PROFILE.theme,
+                            avatarPath: data.avatar_path,
+                            voiceEnabled: data.voice_enabled ?? DEFAULT_USER_PROFILE.voiceEnabled,
+                            aiMemoryEnabled: data.ai_memory_enabled ?? DEFAULT_USER_PROFILE.aiMemoryEnabled,
+                            preferredAiVoice: data.preferred_ai_voice,
+                            preferredLanguage: data.preferred_language || DEFAULT_USER_PROFILE.preferredLanguage,
+                            notificationsEnabled: data.notifications_enabled ?? DEFAULT_USER_PROFILE.notificationsEnabled,
+                            streamingResponsesEnabled: data.target_config?.streaming_responses_enabled ?? DEFAULT_USER_PROFILE.streamingResponsesEnabled,
+                            targetConfig: data.target_config || {},
+                            createdAt: user.created_at || data.created_at || new Date().toISOString(),
+                            updatedAt: data.updated_at || new Date().toISOString()
+                        });
 
-                    setUserProfile({
-                        fullName: data.full_name || '',
-                        username: data.username || '',
-                        email: data.email || user.email || '',
-                        fitnessGoal: data.fitness_goal || DEFAULT_USER_PROFILE.fitnessGoal,
-                        currentWeight: Number(data.current_weight) || DEFAULT_USER_PROFILE.currentWeight,
-                        targetWeight: Number(data.target_weight) || DEFAULT_USER_PROFILE.targetWeight,
-                        waterGoalMl: data.water_goal_ml || localWaterGoalMl,
-                        calorieGoal: data.calorie_goal || localCalorieGoal,
-                        sleepGoal: data.sleep_goal || DEFAULT_USER_PROFILE.sleepGoal,
-                        monthlyBudget: data.monthly_budget || localMonthlyBudget,
-                        monthlyIncome: data.monthly_income || DEFAULT_USER_PROFILE.monthlyIncome,
-                        enableFinancialReminders: data.enable_financial_reminders !== false, // default true
-                        dob: data.dob,
-                        heightCm: Number(data.height_cm) || DEFAULT_USER_PROFILE.heightCm,
-                        gender: data.gender || DEFAULT_USER_PROFILE.gender,
-                        createdAt: user.created_at || data.created_at || new Date().toISOString(),
-                        updatedAt: data.updated_at || new Date().toISOString()
-                    });
-                } else {
+                        // Sync loaded theme with DOM and localStorage
+                        if (data.theme && typeof document !== 'undefined') {
+                            const root = document.documentElement;
+                            if (data.theme === 'dark') {
+                                root.classList.add('dark');
+                            } else {
+                                root.classList.remove('dark');
+                            }
+                            localStorage.setItem('workout_os_theme', data.theme);
+                            window.dispatchEvent(new Event('workout_os_theme_updated'));
+                        }
+                    } else {
+                        throw new Error('Profile not found');
+                    }
+                } catch (error) {
                     // Fallback to minimal profile if not found in DB yet
                     setUserProfile(prev => ({
                         ...prev,
@@ -176,6 +218,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 monthly_budget: next.monthlyBudget,
                 monthly_income: next.monthlyIncome,
                 water_goal_ml: next.waterGoalMl,
+                units: next.units,
+                theme: next.theme,
+                avatar_path: next.avatarPath,
+                voice_enabled: next.voiceEnabled,
+                ai_memory_enabled: next.aiMemoryEnabled,
+                preferred_ai_voice: next.preferredAiVoice,
+                preferred_language: next.preferredLanguage,
+                notifications_enabled: next.notificationsEnabled,
+                target_config: {
+                    ...(next.targetConfig || {}),
+                    streaming_responses_enabled: next.streamingResponsesEnabled
+                },
                 updated_at: next.updatedAt
             }, { onConflict: 'id' });
             
@@ -271,6 +325,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         clearUserCache();
     };
 
+    // Reset Password
+    const resetPassword = async (email: string) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/sign-up-login-screen?view=reset` : undefined,
+        });
+        if (error) throw error;
+    };
+
     // Get Current User
     const getCurrentUser = async () => {
         const { data: { user }, error } = await supabase.auth.getUser();
@@ -305,6 +367,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signIn,
         login,
         signOut,
+        resetPassword,
         updateUserProfile,
         clearUserCache,
         getCurrentUser,

@@ -2,13 +2,19 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { KeyRound, Mail, Sparkles } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 
-export default function LoginForm() {
+interface LoginFormProps {
+    onForgotPassword: () => void;
+}
+
+export default function LoginForm({ onForgotPassword }: LoginFormProps) {
     const { signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(true);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
         const remembered = localStorage.getItem('workoutos_remembered_username');
@@ -26,64 +32,99 @@ export default function LoginForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         try {
             await signIn(email, password);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('Failed to sign in');
+            if (!rememberMe) {
+                localStorage.removeItem('workoutos_remembered_username');
             }
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Failed to sign in');
+        } finally {
+            setLoading(false);
         }
     };
+
+    const inputWrap = 'relative';
+    const inputCls =
+        'w-full bg-surface-container-low border border-surface-variant rounded-2xl pl-11 pr-3 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
+
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="p-3 text-xs bg-rose-50 text-rose-600 border border-rose-200 rounded-xl">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {error && (
+                <div className="p-3 font-label-sm text-label-sm bg-error-container text-on-error-container rounded-xl">
+                    {error}
+                </div>
+            )}
 
             <div>
-                <label htmlFor="login-email" className="block text-xs font-medium text-gray-700 mb-1">Email or Username</label>
-                <input
-                    id="login-email"
-                    type="text"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => focusNext(e, 'login-password')}
-                    enterKeyHint="next"
-                    placeholder="you@email.com or username"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
+                <label htmlFor="login-email" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">
+                    Email or Username
+                </label>
+                <div className={inputWrap}>
+                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <input
+                        id="login-email"
+                        type="text"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={(e) => focusNext(e, 'login-password')}
+                        enterKeyHint="next"
+                        placeholder="you@email.com or username"
+                        className={inputCls}
+                    />
+                </div>
             </div>
+
             <div>
-                <label htmlFor="login-password" className="block text-xs font-medium text-gray-700 mb-1">Password</label>
-                <input
-                    id="login-password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    enterKeyHint="go"
-                    placeholder="••••••••"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
+                <label htmlFor="login-password" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">
+                    Password
+                </label>
+                <div className={inputWrap}>
+                    <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <input
+                        id="login-password"
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        enterKeyHint="go"
+                        placeholder="••••••••"
+                        className={inputCls}
+                    />
+                </div>
             </div>
+
+            <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        id="remember-me"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="w-4 h-4 rounded border-surface-variant text-primary focus:ring-primary bg-surface-container-low cursor-pointer"
+                    />
+                    <label htmlFor="remember-me" className="font-label-sm text-label-sm text-on-surface-variant cursor-pointer">
+                        Remember Me
+                    </label>
+                </div>
+                <button
+                    type="button"
+                    onClick={onForgotPassword}
+                    className="font-label-sm text-label-sm text-secondary hover:underline"
+                >
+                    Forgot Password?
+                </button>
+            </div>
+
             <button
                 type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm shadow-sm"
+                disabled={loading}
+                className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98] disabled:opacity-50 mt-1"
             >
-                Sign In
-            </button>
-            <button
-                type="button"
-                onClick={() => {
-                    setEmail('demo@workoutos.com');
-                    setPassword('demo1234');
-                    signIn('demo@workoutos.com', 'demo1234').catch(err => setError(err.message || 'Demo login failed'));
-                }}
-                className="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
-            >
-                <Sparkles size={16} className="text-blue-500" />
-                Quick Login (Demo)
+                {loading ? 'Signing in…' : 'Sign In'}
             </button>
         </form>
     );

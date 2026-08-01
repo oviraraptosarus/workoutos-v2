@@ -7,12 +7,12 @@ import { X, Sparkles, Dumbbell, Droplet, Apple, Moon, IndianRupee, Calendar, Che
 const ONBOARDING_KEY = 'workout_os_onboarding_completed_v1';
 
 const FEATURES = [
-    { icon: <Moon size={18} />, color: 'bg-indigo-100 text-indigo-600', label: 'Sleep', desc: 'Log your nightly rest' },
-    { icon: <Droplet size={18} />, color: 'bg-blue-100 text-blue-600', label: 'Water', desc: 'Track hydration' },
-    { icon: <Dumbbell size={18} />, color: 'bg-orange-100 text-orange-600', label: 'Workout', desc: 'Log sets & reps' },
-    { icon: <Apple size={18} />, color: 'bg-green-100 text-green-600', label: 'Diet', desc: 'Count calories with AI' },
-    { icon: <IndianRupee size={18} />, color: 'bg-purple-100 text-purple-600', label: 'Budget', desc: 'Track spending' },
-    { icon: <Calendar size={18} />, color: 'bg-rose-100 text-rose-600', label: 'Planner', desc: 'Manage your day' },
+    { icon: <Moon size={18} />, color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300', label: 'Sleep', desc: 'Log your nightly rest' },
+    { icon: <Droplet size={18} />, color: 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300', label: 'Water', desc: 'Track hydration' },
+    { icon: <Dumbbell size={18} />, color: 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-300', label: 'Workout', desc: 'Log sets & reps' },
+    { icon: <Apple size={18} />, color: 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-300', label: 'Diet', desc: 'Count calories with AI' },
+    { icon: <IndianRupee size={18} />, color: 'bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300', label: 'Budget', desc: 'Track spending' },
+    { icon: <Calendar size={18} />, color: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300', label: 'Planner', desc: 'Manage your day' },
 ];
 
 export default function OnboardingTourModal() {
@@ -38,40 +38,41 @@ export default function OnboardingTourModal() {
 
     const modal = (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl border border-gray-100 overflow-hidden">
+            <div className="bg-card-white rounded-3xl w-full max-w-sm shadow-2xl border border-surface-variant overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white text-center relative">
+                <div className="p-6 text-center relative border-b border-surface-variant">
                     <button
                         onClick={handleClose}
-                        className="absolute top-4 right-4 p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                        aria-label="Close"
+                        className="absolute top-4 right-4 p-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors"
                     >
                         <X size={16} />
                     </button>
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-3 text-2xl shadow-lg">
-                        💪
+                    <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-3 shadow-[0_8px_24px_rgba(0,0,0,0.16)]">
+                        <span className="material-symbols-outlined text-on-primary text-[28px]">vital_signs</span>
                     </div>
-                    <h2 className="text-xl font-bold tracking-tight">Welcome to Workout OS</h2>
-                    <p className="text-emerald-100 text-xs font-medium mt-1">Your all-in-one fitness & life tracker</p>
+                    <h2 className="text-xl font-bold tracking-tight text-on-surface">Welcome to Workout OS</h2>
+                    <p className="text-on-surface-variant text-xs font-medium mt-1">Your all-in-one fitness &amp; life tracker</p>
                 </div>
 
                 {/* Features Grid */}
                 <div className="p-5">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">What you can track</p>
+                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">What you can track</p>
                     <div className="grid grid-cols-3 gap-2 mb-5">
                         {FEATURES.map((f) => (
-                            <div key={f.label} className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div key={f.label} className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-surface-container-low border border-surface-variant">
                                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${f.color}`}>
                                     {f.icon}
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-700">{f.label}</span>
+                                <span className="text-[10px] font-bold text-on-surface-variant">{f.label}</span>
                             </div>
                         ))}
                     </div>
 
-                    <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 mb-4">
+                    <div className="bg-secondary/10 border border-secondary/20 rounded-2xl p-3 mb-4">
                         <div className="flex items-center gap-2">
-                            <Sparkles size={14} className="text-emerald-600 flex-shrink-0" />
-                            <p className="text-xs text-emerald-800 font-semibold leading-snug">
+                            <Sparkles size={14} className="text-secondary flex-shrink-0" />
+                            <p className="text-xs text-on-surface font-semibold leading-snug">
                                 Use <strong>Ava AI Copilot</strong> on the dashboard to log food, workouts, and water with natural language!
                             </p>
                         </div>
@@ -79,7 +80,7 @@ export default function OnboardingTourModal() {
 
                     <button
                         onClick={handleClose}
-                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold py-3 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-colors"
+                        className="w-full bg-primary text-on-primary font-bold py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
                     >
                         Get Started <ChevronRight size={16} />
                     </button>

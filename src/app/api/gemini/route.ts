@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchWithFallback } from './fetchWithFallback';
+import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 
 export async function POST(req: Request) {
     try {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.GEMINI_API_KEY; // Kept for legacy verification, though Orchestrator handles it
         if (!apiKey) {
             return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
         }
@@ -53,12 +53,12 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
 
         if (apiKey) {
             try {
-                const contents = [];
+                const contents: any[] = [];
                 
-                // Map conversation history if provided
-                if (history && Array.isArray(history)) {
+                // 1. Process conversation history if non-empty array
+                if (Array.isArray(history) && history.length > 0) {
                     history.forEach((msg: any) => {
-                        if (!msg.text && !msg.imageUrl) return;
+                        if (!msg || (!msg.text && !msg.imageUrl)) return;
                         const parts: any[] = [];
                         if (msg.imageUrl && typeof msg.imageUrl === 'string' && msg.imageUrl.startsWith('data:image')) {
                             const matches = msg.imageUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
@@ -69,36 +69,54 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                         if (msg.text) {
                             parts.push({ text: msg.text });
                         }
-                        contents.push({ role: msg.role, parts });
-                    });
-                } else {
-                    // Fallback to single prompt if no history
-                    const parts: any[] = [];
-                    if (image && typeof image === 'string' && image.startsWith('data:image')) {
-                        const matches = image.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
-                        if (matches && matches.length === 3) {
-                            parts.push({ inlineData: { mimeType: matches[1], data: matches[2] } });
+                        if (parts.length > 0) {
+                            const role = (msg.role === 'model' || msg.role === 'ava' || msg.role === 'assistant') ? 'model' : 'user';
+                            contents.push({ role, parts });
                         }
-                    }
-                    parts.push({ text: prompt || 'Please analyze this.' });
-                    contents.push({ role: 'user', parts });
+                    });
                 }
 
-                // Call Google Gemini API with fallback for rate limits
-                const initialModel = process.env.GEMINI_MODEL_VERSION || 'gemini-2.5-flash';
-                const urlTemplate = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                
-                const response = await fetchWithFallback(urlTemplate, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        systemInstruction: {
-                            parts: [{ text: systemInstruction }]
-                        },
-                        contents: contents,
-                        tools: [
+                // 2. Append current user prompt / image if provided
+                const currentParts: any[] = [];
+                if (image && typeof image === 'string' && image.startsWith('data:image')) {
+                    const matches = image.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+                    if (matches && matches.length === 3) {
+                        currentParts.push({ inlineData: { mimeType: matches[1], data: matches[2] } });
+                    }
+                }
+                if (prompt) {
+                    currentParts.push({ text: prompt });
+                }
+
+                if (currentParts.length > 0) {
+                    const lastContent = contents[contents.length - 1];
+                    const isDuplicate = lastContent && lastContent.role === 'user' && 
+                        lastContent.parts.some((p: any) => p.text === prompt);
+                    
+                    if (!isDuplicate) {
+                        contents.push({ role: 'user', parts: currentParts });
+                    }
+                }
+
+                // Fallback safeguard: contents MUST never be empty
+                if (contents.length === 0) {
+                    contents.push({ role: 'user', parts: [{ text: prompt || 'Hello' }] });
+                }
+
+                // Map Gemini contents format to Orchestrator history format
+                const mappedHistory = contents.map(c => ({
+                    role: c.role as 'user' | 'model',
+                    text: c.parts.map((p: any) => p.text).join('\n') || ''
+                }));
+                // Pop the last one as it's the current prompt
+                const currentPromptObj = mappedHistory.pop();
+
+                const response = await orchestrator.generateContent({
+                    systemInstruction: systemInstruction,
+                    prompt: currentPromptObj?.text || prompt,
+                    history: mappedHistory,
+                    image: image,
+                    tools: [
                             {
                                 functionDeclarations: [
                                     {
@@ -197,30 +215,20 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                                 ]
                             }
                         ],
-                        generationConfig: {
-                            temperature: 0.7,
-                            maxOutputTokens: 800
-                        }
-                    })
-                }, initialModel);
+                            }
+                        ],
+                        temperature: 0.7,
+                        maxOutputTokens: 800
+                });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    const functionCall = data.candidates?.[0]?.content?.parts?.find((p: any) => p.functionCall)?.functionCall;
-                    const text = data.candidates?.[0]?.content?.parts?.find((p: any) => p.text)?.text;
-
-                    if (text || functionCall) {
-                        return NextResponse.json({ 
-                            result: text || "Sure, I'll take care of that for you.", 
-                            source: 'gemini-flash-latest',
-                            functionCall: functionCall
-                        });
-                    }
+                if (response.text || response.functionCall) {
+                    return NextResponse.json({ 
+                        result: response.text || "Sure, I'll take care of that for you.", 
+                        source: response.sourceModel,
+                        functionCall: response.functionCall
+                    });
                 } else {
-                    const errorData = await response.text();
-                    console.error('Gemini API Error:', errorData);
-                    return NextResponse.json({ error: `Gemini API Error: ${errorData}` }, { status: response.status });
+                    return NextResponse.json({ error: `LLM Returned Empty Content` }, { status: 500 });
                 }
             } catch (err) {
                 console.error('Gemini API call failed:', err);

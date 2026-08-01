@@ -287,7 +287,7 @@ export default function GeminiFoodAssistant() {
                 
                 <div 
                     onClick={() => setIsOpen(true)}
-                    className="relative bg-white border border-gray-200 rounded-full h-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-text transition-all flex items-center pl-4 pr-2"
+                    className="relative bg-card-white border border-surface-variant rounded-full h-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-text transition-all flex items-center pl-4 pr-2"
                 >
                     <div className="flex items-center gap-2 sm:gap-3 w-full">
                         <div className="flex-shrink-0 text-blue-500">
@@ -300,16 +300,16 @@ export default function GeminiFoodAssistant() {
                                     Nova AI Copilot
                                 </span>
                             </div>
-                            <div className="text-sm font-medium text-gray-400 truncate">
+                            <div className="text-sm font-medium text-on-surface-variant truncate">
                                 Ask anything or log a workout...
                             </div>
                         </div>
 
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors btn-press">
                                 <Mic size={18} />
                             </div>
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors btn-press">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors btn-press">
                                 <Camera size={18} />
                             </div>
                         </div>
@@ -320,26 +320,26 @@ export default function GeminiFoodAssistant() {
             {/* iOS Apple Sheet Popup Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/20 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white border border-gray-100 border-gray-200 w-full max-w-2xl sm:rounded-3xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[75vh] sm:h-[550px]">
+                    <div className="bg-card-white border border-surface-variant border-surface-variant w-full max-w-2xl sm:rounded-3xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[75vh] sm:h-[550px]">
                         
                         {/* iOS Sheet Handlebar & Top Bar */}
-                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white dark:bg-slate-900/20 backdrop-blur-md">
+                        <div className="px-6 py-4 border-b border-surface-variant flex items-center justify-between bg-card-white/20 backdrop-blur-md">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-white shadow-sm border border-gray-100 dark:border-slate-800">
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-white shadow-sm border border-surface-variant ">
                                     <Sparkles size={18} />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900 drop-shadow-sm flex items-center gap-2">
+                                    <h3 className="text-sm font-bold text-on-surface drop-shadow-sm flex items-center gap-2">
                                         Nova AI Copilot
                                     </h3>
-                                    <p className="text-[11px] text-gray-600 font-bold">Tailored to goal: <span className="text-blue-600 font-bold">{userProfile.fitnessGoal}</span></p>
+                                    <p className="text-[11px] text-on-surface-variant font-bold">Tailored to goal: <span className="text-blue-600 font-bold">{userProfile.fitnessGoal}</span></p>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="p-2 rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors shadow-sm"
+                                    className="p-2 rounded-full bg-surface-container-low border border-surface-variant hover:bg-surface-container text-on-surface-variant transition-colors shadow-sm"
                                 >
                                     <X size={18} />
                                 </button>
@@ -347,13 +347,13 @@ export default function GeminiFoodAssistant() {
                         </div>
 
                         {/* Quick Action Pills Bar */}
-                        <div className="px-4 py-2.5 bg-white dark:bg-slate-900/30 border-b border-gray-100 overflow-x-auto scrollbar-hide flex gap-2">
+                        <div className="px-4 py-2.5 bg-card-white/30 border-b border-surface-variant overflow-x-auto scrollbar-hide flex gap-2">
                             {QUICK_PROMPTS.map((qp, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => handleSend(qp.text)}
                                     disabled={loading}
-                                    className="flex-shrink-0 text-xs font-bold bg-gray-50 hover:bg-white dark:bg-slate-900/70 text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm transition-all btn-press"
+                                    className="flex-shrink-0 text-xs font-bold bg-surface-container-low hover:bg-card-white/70 text-on-surface-variant hover:text-on-surface px-3 py-1.5 rounded-full border border-surface-variant shadow-sm transition-all btn-press"
                                 >
                                     {qp.label}
                                 </button>
@@ -368,17 +368,17 @@ export default function GeminiFoodAssistant() {
                                     className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
                                 >
                                     <div className="flex items-center gap-1.5 mb-1 px-1">
-                                        <span className="text-[10px] font-bold text-gray-500 uppercase">
+                                        <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                                             {msg.sender === 'user' ? 'You' : 'Nova'}
                                         </span>
-                                        <span className="text-[10px] text-gray-400 font-semibold">{msg.timestamp}</span>
+                                        <span className="text-[10px] text-on-surface-variant font-semibold">{msg.timestamp}</span>
                                     </div>
 
                                     <div
                                         className={`max-w-[90%] sm:max-w-[80%] rounded-2xl p-4 text-xs leading-relaxed shadow-sm ${
                                             msg.sender === 'user'
                                                 ? 'bg-blue-500/90 text-white rounded-tr-xs font-bold border border-white/20 backdrop-blur-md'
-                                                : 'bg-gray-100 text-gray-900 border border-gray-200 rounded-tl-xs font-medium whitespace-pre-wrap shadow-inner'
+                                                : 'bg-surface-container text-on-surface border border-surface-variant rounded-tl-xs font-medium whitespace-pre-wrap shadow-inner'
                                         }`}
                                     >
                                         {msg.imageUrl && (
@@ -400,14 +400,14 @@ export default function GeminiFoodAssistant() {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-gray-50 border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.02)] relative">
+                        <div className="p-4 bg-surface-container-low border-t border-surface-variant shadow-[0_-4px_12px_rgba(0,0,0,0.02)] relative">
                             {selectedImage && (
-                                <div className="absolute -top-16 left-4 right-4 bg-white border border-gray-200 rounded-xl p-2 shadow-lg flex items-center justify-between animate-in slide-in-from-bottom-2">
+                                <div className="absolute -top-16 left-4 right-4 bg-card-white border border-surface-variant rounded-xl p-2 shadow-lg flex items-center justify-between animate-in slide-in-from-bottom-2">
                                     <div className="flex items-center gap-3">
-                                        <img src={selectedImage} alt="Preview" className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-slate-800" />
-                                        <span className="text-xs text-gray-600 font-bold">Image ready for analysis</span>
+                                        <img src={selectedImage} alt="Preview" className="w-10 h-10 object-cover rounded-lg border border-surface-variant " />
+                                        <span className="text-xs text-on-surface-variant font-bold">Image ready for analysis</span>
                                     </div>
-                                    <button onClick={() => setSelectedImage(null)} className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition-colors">
+                                    <button onClick={() => setSelectedImage(null)} className="p-1.5 bg-surface-container hover:bg-surface-container-high rounded-full text-on-surface-variant transition-colors">
                                         <X size={14} />
                                     </button>
                                 </div>
@@ -430,7 +430,7 @@ export default function GeminiFoodAssistant() {
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="w-11 h-11 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition-colors shadow-sm border border-gray-200 shrink-0"
+                                    className="w-11 h-11 rounded-2xl bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors shadow-sm border border-surface-variant shrink-0"
                                 >
                                     <Camera size={18} />
                                 </button>
@@ -439,12 +439,12 @@ export default function GeminiFoodAssistant() {
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
                                     placeholder={selectedImage ? "Add details (optional)..." : "Can I eat 2 donuts before leg day?"}
-                                    className="flex-1 bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-900 font-bold focus:outline-none focus:bg-white dark:bg-slate-900/90 focus:border-blue-400 placeholder:text-gray-500 shadow-inner"
+                                    className="flex-1 bg-surface-container border border-surface-variant rounded-2xl px-4 py-3 text-xs text-on-surface font-bold focus:outline-none focus:bg-card-white/90 focus:border-blue-400 placeholder:text-on-surface-variant shadow-inner"
                                 />
                                 <button
                                     type="button"
                                     onClick={toggleListening}
-                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm border shrink-0 ${isListening ? 'bg-rose-500 text-white border-rose-600 animate-pulse' : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border-gray-200 dark:border-slate-700'}`}
+                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm border shrink-0 ${isListening ? 'bg-rose-500 text-white border-rose-600 animate-pulse' : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant border-surface-variant '}`}
                                 >
                                     {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                                 </button>

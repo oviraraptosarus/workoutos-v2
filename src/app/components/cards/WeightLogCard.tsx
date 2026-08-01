@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { CheckCircle2, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CheckCircle2, ChevronRight, Camera } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
+import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
+import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
 
 interface WeightEntry {
     date: string;
@@ -21,6 +24,48 @@ export default function WeightLogCard() {
     const [errorMsg, setErrorMsg] = useState('');
     
     const [chartData, setChartData] = useState<WeightEntry[]>([]);
+
+    // Progress photos state
+    const [photos, setPhotos] = useState<ProgressPhotoItem[]>([]);
+    const [galleryOpen, setGalleryOpen] = useState(false);
+    const [galleryInitialPhotoId, setGalleryInitialPhotoId] = useState<string | undefined>(undefined);
+    const [showWeighInPrompt, setShowWeighInPrompt] = useState(false);
+
+    const fetchPhotos = useCallback(async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data, error } = await supabase
+            .from('progress_photos')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('uploaded_at', { ascending: true });
+        if (error || !data) return;
+
+        const loaded: ProgressPhotoItem[] = [];
+        for (const row of data) {
+            const { data: fileData } = await supabase.storage
+                .from('progress_photos')
+                .download(row.storage_path);
+            if (fileData) {
+                const displayLabel = new Date(row.taken_at || row.uploaded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                loaded.push({
+                    id: row.id,
+                    storage_path: row.storage_path,
+                    uploaded_at: row.uploaded_at,
+                    taken_at: row.taken_at,
+                    weight_snapshot: row.weight_snapshot,
+                    notes: row.notes,
+                    dataUrl: URL.createObjectURL(fileData),
+                    label: displayLabel
+                });
+            }
+        }
+        setPhotos(loaded);
+    }, []);
+
+    useEffect(() => {
+        fetchPhotos();
+    }, [fetchPhotos]);
 
     useEffect(() => {
         const load = async () => {
@@ -127,6 +172,16 @@ export default function WeightLogCard() {
                 setIsLogged(true);
                 setTimeout(() => setIsLogged(false), 3000);
                 window.dispatchEvent(new Event('storage'));
+
+                // 7-day prompt check for progress photo on weigh-in save
+                const latestPhoto = photos[photos.length - 1];
+                const nowMs = Date.now();
+                const lastUploadMs = latestPhoto ? new Date(latestPhoto.uploaded_at).getTime() : 0;
+                const daysDiff = (nowMs - lastUploadMs) / (1000 * 60 * 60 * 24);
+
+                if (!latestPhoto || daysDiff > 7) {
+                    setTimeout(() => setShowWeighInPrompt(true), 400);
+                }
             } catch (err: any) {
                 console.error('Error logging weight:', err);
                 setErrorMsg(err.message || 'Failed to log weight');
@@ -135,27 +190,39 @@ export default function WeightLogCard() {
     };
 
     return (
-        <div className="bg-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-lg">
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-on-surface-variant">
                     <span className="material-symbols-outlined text-[20px]">monitor_weight</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Weight</span>
                 </div>
-                <Link href="/progress" aria-label="View weight progress" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 active:scale-90 transition-transform">
-                    Trend <ChevronRight size={16} />
-                </Link>
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setGalleryOpen(true)}
+                        className="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1 font-bold active:scale-90 transition-transform bg-secondary/10 px-2.5 py-1 rounded-full border border-secondary/20"
+                        title="Progress Photos Gallery"
+                    >
+                        <Camera size={13} />
+                        Photos
+                    </button>
+                    <Link href="/progress" aria-label="View weight progress" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 active:scale-90 transition-transform">
+                        Trend <ChevronRight size={16} />
+                    </Link>
+                </div>
             </div>
 
             <div className="h-40 w-full mb-4">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(150,150,150,0.1)" />
-                        <XAxis 
-                            dataKey="date" 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{ fontSize: 10, fill: '#64748b', fontWeight: 'bold' }} 
+                        <XAxis
+                            dataKey="date"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 10, fill: '#64748b', fontWeight: 'bold' }}
                             dy={5}
+                            padding={{ left: 10, right: 10 }}
                         />
                         <YAxis 
                             domain={['dataMin - 1', 'dataMax + 1']} 
@@ -214,6 +281,33 @@ export default function WeightLogCard() {
                     </p>
                 )}
             </form>
+
+            {/* Progress Photos Row Shortcut inside Weight Card */}
+            <ProgressPhotosRow
+                photos={photos}
+                currentWeight={Number(weight) || null}
+                onPhotosUpdated={fetchPhotos}
+                onOpenGallery={(photoId) => {
+                    setGalleryInitialPhotoId(photoId);
+                    setGalleryOpen(true);
+                }}
+            />
+
+            {/* Modals */}
+            <ProgressPhotoGalleryModal
+                isOpen={galleryOpen}
+                initialPhotoId={galleryInitialPhotoId}
+                photos={photos}
+                onClose={() => setGalleryOpen(false)}
+                onPhotosUpdated={fetchPhotos}
+            />
+
+            <WeightWeighInPromptModal
+                isOpen={showWeighInPrompt}
+                currentWeight={Number(weight) || null}
+                onClose={() => setShowWeighInPrompt(false)}
+                onPhotoUploaded={fetchPhotos}
+            />
         </div>
     );
 }

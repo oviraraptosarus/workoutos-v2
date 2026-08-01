@@ -6,9 +6,10 @@ interface TaskState {
     tasks: Task[];
     isLoading: boolean;
     fetchTasks: (date: string) => Promise<void>;
-    addTask: (task: Omit<Task, 'id' | 'completed' | 'subTasks'> & { subtasks?: { title: string }[] }) => Promise<void>;
+    addTask: (task: Omit<Task, 'id' | 'completed' | 'subTasks' | 'priority'> & { subtasks?: { title: string }[]; priority?: Task['priority'] }) => Promise<void>;
     toggleTask: (id: string) => Promise<void>;
     toggleSubTask: (taskId: string, subTaskId: string) => Promise<void>;
+    setPriority: (id: string, priority: Task['priority']) => Promise<void>;
     deleteTask: (id: string) => Promise<void>;
 }
 
@@ -33,7 +34,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                     description: d.description || '',
                     dueDate: d.due_date || '',
                     subTasks: d.subtasks || [],
-                    completed: d.completed || false
+                    completed: d.completed || false,
+                    priority: d.priority || 'none'
                 })),
                 isLoading: false
             });
@@ -46,7 +48,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const newTaskObj = {
+        const base = {
             user_id: user.id,
             date: new Date().toISOString().split('T')[0],
             title: taskData.title,
@@ -56,7 +58,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             completed: false
         };
 
-        const { data } = await supabase.from('tasks').insert(newTaskObj).select().single();
+        // Insert with priority; if the column isn't migrated yet (400), retry without it.
+        let { data } = await supabase.from('tasks').insert({ ...base, priority: taskData.priority || 'none' }).select().single();
+        if (!data) {
+            ({ data } = await supabase.from('tasks').insert(base).select().single());
+        }
         if (data) {
             const newTask: Task = {
                 id: data.id,
@@ -64,7 +70,8 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                 description: data.description || '',
                 dueDate: data.due_date || '',
                 subTasks: data.subtasks || [],
-                completed: data.completed
+                completed: data.completed,
+                priority: data.priority || 'none'
             };
             set(state => ({ tasks: [newTask, ...state.tasks] }));
         }
@@ -96,6 +103,17 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }));
         
         await supabase.from('tasks').update({ subtasks: updatedSubTasks }).eq('id', taskId);
+    },
+
+    setPriority: async (id: string, priority: Task['priority']) => {
+        // Optimistic update
+        set(state => ({
+            tasks: state.tasks.map(t => t.id === id ? { ...t, priority } : t)
+        }));
+        // Ignore failure if the column isn't migrated yet — UI still reflects the change.
+        try {
+            await supabase.from('tasks').update({ priority }).eq('id', id);
+        } catch { /* pre-migration: column may not exist */ }
     },
 
     deleteTask: async (id: string) => {

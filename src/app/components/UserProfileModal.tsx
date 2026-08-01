@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { X, User, Save, Trash2, Database, Settings, LogOut, CheckCircle2, Ruler, Download, Upload, FileJson, HelpCircle, Sparkles } from 'lucide-react';
 import clsx from 'clsx';
 
+
 interface UserProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -12,8 +13,9 @@ interface UserProfileModalProps {
 }
 
 export default function UserProfileModal({ isOpen, onClose, initialTab = 'profile' }: UserProfileModalProps) {
+
     const { userProfile, updateUserProfile, clearUserCache, signOut } = useAuth();
-    const [formData, setFormData] = useState({ units: 'metric', ...userProfile });
+    const [formData, setFormData] = useState({ ...userProfile, units: userProfile.units || 'metric' });
     const [savedNotice, setSavedNotice] = useState(false);
     const [noticeText, setNoticeText] = useState('Settings saved to local cache!');
     const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'config'>(initialTab);
@@ -23,7 +25,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
     useEffect(() => {
         if (isOpen) {
             setActiveTab(initialTab);
-            setFormData({ units: 'metric', ...userProfile });
+            setFormData({ ...userProfile, units: userProfile.units || 'metric' });
         }
     }, [isOpen, initialTab, userProfile]);
 
@@ -137,36 +139,36 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl w-full max-w-xl shadow-lg overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="bg-card-white dark:bg-surface-container-high border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
                 
                 {/* Sidebar Tabs */}
-                <div className="w-full md:w-1/3 bg-white dark:bg-slate-900/30 border-r border-gray-100 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible">
+                <div className="w-full md:w-1/3 bg-surface-container-low border-r border-surface-variant p-4 flex flex-row md:flex-col gap-2 overflow-x-auto overscroll-x-contain touch-pan-x scrollbar-hide md:overflow-x-visible">
                     <div className="hidden md:flex items-center gap-2 mb-6 px-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-500/80 text-white flex items-center justify-center font-bold text-sm shadow-sm border border-white/20">
+                        <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-sm border border-white/20">
                             {userProfile.fullName ? userProfile.fullName.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <h2 className="text-sm font-bold text-gray-900 leading-tight drop-shadow-sm">Settings</h2>
+                        <h2 className="text-sm font-bold text-on-surface leading-tight drop-shadow-sm">Settings</h2>
                     </div>
                     
                     <button 
                         type="button"
                         onClick={() => setActiveTab('profile')}
-                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'profile' ? "bg-gray-100 text-blue-700 shadow-sm" : "text-gray-600 hover:bg-gray-50 dark:bg-slate-800")}
+                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'profile' ? "bg-surface-container text-secondary shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high")}
                     >
                         <User size={14} /> Profile & Goals
                     </button>
                     <button 
                         type="button"
                         onClick={() => setActiveTab('preferences')}
-                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'preferences' ? "bg-gray-100 text-blue-700 shadow-sm" : "text-gray-600 hover:bg-gray-50 dark:bg-slate-800")}
+                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'preferences' ? "bg-surface-container text-secondary shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high")}
                     >
                         <Ruler size={14} /> Preferences
                     </button>
                     <button 
                         type="button"
                         onClick={() => setActiveTab('config')}
-                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'config' ? "bg-gray-100 text-blue-700 shadow-sm" : "text-gray-600 hover:bg-gray-50 dark:bg-slate-800")}
+                        className={clsx("flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors", activeTab === 'config' ? "bg-surface-container text-secondary shadow-sm" : "text-on-surface-variant hover:bg-surface-container-high")}
                     >
                         <FileJson size={14} /> Import / Export
                     </button>
@@ -176,7 +178,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                             onClose();
                             window.dispatchEvent(new Event('open-command-palette'));
                         }}
-                        className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors text-gray-600 hover:bg-gray-50 dark:bg-slate-800 md:mt-auto border border-gray-100"
+                        className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors text-on-surface-variant hover:bg-surface-container-high md:mt-auto border border-surface-variant"
                     >
                         <HelpCircle size={14} /> Help & Navigation
                     </button>
@@ -187,7 +189,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                     {/* Header Mobile Close */}
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-gray-50 text-gray-600 transition-colors bg-white dark:bg-slate-900/30 border border-gray-100 shadow-sm z-10"
+                        className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-surface-container-low text-on-surface-variant transition-colors bg-surface-container-low border border-surface-variant shadow-sm z-10"
                     >
                         <X size={16} />
                     </button>
@@ -195,7 +197,7 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                     <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-5 flex-1">
                         
                         {savedNotice && (
-                            <div className="bg-emerald-500/90 backdrop-blur-md border border-gray-100 text-white rounded-xl p-2.5 text-xs font-bold flex items-center gap-2 animate-in fade-in shadow-md mb-4">
+                            <div className="bg-activity-green text-white rounded-xl p-2.5 text-xs font-bold flex items-center gap-2 animate-in fade-in shadow-md mb-4">
                                 <CheckCircle2 size={16} />
                                 <span>{noticeText}</span>
                             </div>
@@ -203,85 +205,85 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'profile' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Profile & Goals</h3>
+                                <h3 className="text-sm font-bold text-on-surface border-b border-surface-variant/50 pb-2 mb-4">Profile & Goals</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Full Name</label>
                                         <input
                                             type="text"
                                             value={formData.fullName}
                                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Username</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Username</label>
                                         <input
                                             type="text"
                                             value={formData.username}
                                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+                                    <label className="block text-xs font-bold text-on-surface-variant mb-1">Email Address</label>
                                     <input
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 mb-1">Primary Fitness Goal</label>
+                                    <label className="block text-xs font-bold text-on-surface-variant mb-1">Primary Fitness Goal</label>
                                     <input
                                         type="text"
                                         value={formData.fitnessGoal}
                                         onChange={(e) => setFormData({ ...formData, fitnessGoal: e.target.value })}
-                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3.5">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Current Weight</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Current Weight</label>
                                         <input
                                             type="number"
                                             value={formData.currentWeight === 0 ? '' : formData.currentWeight}
                                             onChange={(e) => setFormData({ ...formData, currentWeight: Number(e.target.value) })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Target Weight</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Target Weight</label>
                                         <input
                                             type="number"
                                             value={formData.targetWeight === 0 ? '' : formData.targetWeight}
                                             onChange={(e) => setFormData({ ...formData, targetWeight: Number(e.target.value) })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3.5">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Height (cm)</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Height (cm)</label>
                                         <input
                                             type="number"
                                             value={formData.heightCm === 0 ? '' : formData.heightCm}
                                             onChange={(e) => setFormData({ ...formData, heightCm: Number(e.target.value) })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Gender (for TDEE)</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Gender (for TDEE)</label>
                                         <select
                                             value={formData.gender || 'male'}
                                             onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male'|'female'|'other' })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         >
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
@@ -291,25 +293,25 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                 </div>
 
                                 <div className="mt-6">
-                                    <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">Diet & Finance Targets</h3>
+                                    <h3 className="text-sm font-bold text-on-surface border-b border-surface-variant/50 pb-2 mb-4">Diet & Finance Targets</h3>
                                     
                                     <div className="mb-4">
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Daily Calorie Limit (kcal)</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Daily Calorie Limit (kcal)</label>
                                         <input
                                             type="number"
                                             value={formData.calorieGoal === 0 ? '' : formData.calorieGoal !== undefined ? formData.calorieGoal : 2200}
                                             onChange={(e) => setFormData({ ...formData, calorieGoal: e.target.value === '' ? 0 : Number(e.target.value) })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
 
                                     <div className="mb-4">
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Water Goal (ml)</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Water Goal (ml)</label>
                                         <input
                                             type="number"
                                             value={formData.waterGoalMl === 0 ? '' : formData.waterGoalMl !== undefined ? formData.waterGoalMl : 3000}
                                             onChange={(e) => setFormData({ ...formData, waterGoalMl: e.target.value === '' ? 0 : Number(e.target.value) })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:bg-white dark:bg-slate-900/80 focus:border-blue-400 transition-colors shadow-inner"
+                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:bg-card-white bg-card-white focus:border-secondary transition-colors shadow-inner"
                                         />
                                     </div>
                                 </div>
@@ -318,22 +320,22 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'preferences' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">App Preferences</h3>
+                                <h3 className="text-sm font-bold text-on-surface border-b border-surface-variant/50 pb-2 mb-4">App Preferences</h3>
                                 
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 mb-2">Measurement Units</label>
-                                    <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-200 shadow-inner">
+                                    <label className="block text-xs font-bold text-on-surface-variant mb-2">Measurement Units</label>
+                                    <div className="flex bg-surface-container-low p-1 rounded-xl border border-surface-variant shadow-inner">
                                         <button 
                                             type="button"
                                             onClick={() => setFormData({ ...formData, units: 'metric' })}
-                                            className={clsx("flex-1 py-2 rounded-lg text-xs font-bold transition-all", formData.units === 'metric' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700 dark:text-gray-300')}
+                                            className={clsx("flex-1 py-2 rounded-lg text-xs font-bold transition-all", formData.units === 'metric' ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant hover:text-on-surface-variant dark:text-on-surface-variant')}
                                         >
                                             Metric (kg, cm, ml)
                                         </button>
                                         <button 
                                             type="button"
                                             onClick={() => setFormData({ ...formData, units: 'imperial' })}
-                                            className={clsx("flex-1 py-2 rounded-lg text-xs font-bold transition-all", formData.units === 'imperial' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700 dark:text-gray-300')}
+                                            className={clsx("flex-1 py-2 rounded-lg text-xs font-bold transition-all", formData.units === 'imperial' ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant hover:text-on-surface-variant dark:text-on-surface-variant')}
                                         >
                                             Imperial (lbs, in, oz)
                                         </button>
@@ -341,30 +343,105 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                 </div>
                                 <div className="space-y-6">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 mb-1">Account Created</label>
+                                        <label className="block text-xs font-bold text-on-surface-variant mb-1">Account Created</label>
                                         <input 
                                             disabled 
                                             type="text" 
                                             value={userProfile?.createdAt ? new Date(userProfile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown'} 
-                                            className="w-full bg-gray-100 dark:bg-slate-800/50 border border-transparent rounded-xl px-3 py-2 text-sm text-gray-500 font-medium cursor-not-allowed" 
+                                            className="w-full bg-surface-container dark:bg-surface-container-high/50 border border-transparent rounded-xl px-3 py-2 text-sm text-on-surface-variant font-medium cursor-not-allowed" 
                                         />
-                                        <p className="text-[10px] text-gray-400 mt-1">Graphs and historical data will track back up to this date.</p>
+                                        <p className="text-[10px] text-on-surface-variant mt-1">Graphs and historical data will track back up to this date.</p>
                                     </div>
                                     
                                 </div>
                                 
-                                <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800/50">
+                                <div className="mt-6 pt-4 border-t border-surface-variant/50">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">Theme</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Choose your preferred app appearance.</p>
+                                        </div>
+                                        <select
+                                            value={formData.theme || 'system'}
+                                            onChange={(e) => setFormData({ ...formData, theme: e.target.value as 'light' | 'dark' | 'system' })}
+                                            className="bg-surface-container-low border border-surface-variant rounded-xl px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-secondary transition-colors"
+                                        >
+                                            <option value="system">System</option>
+                                            <option value="light">Light</option>
+                                            <option value="dark">Dark</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">Language</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Preferred language for the interface and AI.</p>
+                                        </div>
+                                        <select
+                                            value={formData.preferredLanguage || 'en'}
+                                            onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value })}
+                                            className="bg-surface-container-low border border-surface-variant rounded-xl px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-secondary transition-colors"
+                                        >
+                                            <option value="en">English</option>
+                                            <option value="es">Spanish</option>
+                                            <option value="fr">French</option>
+                                            <option value="de">German</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">Voice Enabled</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Allow AVA AI to speak responses aloud.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, voiceEnabled: !formData.voiceEnabled })}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.voiceEnabled ? 'bg-secondary' : 'bg-surface-container-high dark:bg-surface-container-high'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-card-white transition-transform ${formData.voiceEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">AI Memory</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Allow AVA to remember past conversations.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, aiMemoryEnabled: !formData.aiMemoryEnabled })}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.aiMemoryEnabled ? 'bg-secondary' : 'bg-surface-container-high dark:bg-surface-container-high'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-card-white transition-transform ${formData.aiMemoryEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">Push Notifications</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Receive reminders and updates.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, notificationsEnabled: !formData.notificationsEnabled })}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.notificationsEnabled ? 'bg-secondary' : 'bg-surface-container-high dark:bg-surface-container-high'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-card-white transition-transform ${formData.notificationsEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-0.5">Financial Reminders</h4>
-                                            <p className="text-[11px] text-gray-500 font-medium">Show reminders for insurance, subscriptions, and passive income tracking on the dashboard.</p>
+                                            <h4 className="text-sm font-bold text-on-surface dark:text-white mb-0.5">Financial Reminders</h4>
+                                            <p className="text-[11px] text-on-surface-variant font-medium">Show reminders for insurance, subscriptions, and passive income tracking on the dashboard.</p>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, enableFinancialReminders: !formData.enableFinancialReminders })}
-                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.enableFinancialReminders ? 'bg-blue-600' : 'bg-gray-200 dark:bg-slate-700'}`}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.enableFinancialReminders ? 'bg-secondary' : 'bg-surface-container-high dark:bg-surface-container-high'}`}
                                         >
-                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.enableFinancialReminders ? 'translate-x-6' : 'translate-x-1'}`} />
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-card-white transition-transform ${formData.enableFinancialReminders ? 'translate-x-6' : 'translate-x-1'}`} />
                                         </button>
                                     </div>
                                 </div>
@@ -373,10 +450,10 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {activeTab === 'config' && (
                             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <h3 className="text-sm font-bold text-gray-900 border-b border-gray-200 dark:border-slate-700/50 pb-2 mb-4">
+                                <h3 className="text-sm font-bold text-on-surface border-b border-surface-variant/50 pb-2 mb-4">
                                     Account Configuration (Import / Export)
                                 </h3>
-                                <p className="text-xs text-gray-600 font-medium">
+                                <p className="text-xs text-on-surface-variant font-medium">
                                     Backup your profile settings, macro targets, diet logs, and preferences into a JSON file, or restore them onto any device.
                                 </p>
 
@@ -385,12 +462,12 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                     <button
                                         type="button"
                                         onClick={handleExportConfig}
-                                        className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center justify-between shadow-sm btn-press"
+                                        className="w-full bg-secondary text-on-secondary font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center justify-between shadow-sm btn-press"
                                     >
                                         <span className="flex items-center gap-2">
                                             <Download size={16} /> Export Account Configuration (.json)
                                         </span>
-                                        <span className="text-[10px] uppercase bg-white dark:bg-slate-900/20 px-2 py-0.5 rounded text-white tracking-wider font-bold">JSON</span>
+                                        <span className="text-[10px] uppercase bg-surface-container-high px-2 py-0.5 rounded text-white tracking-wider font-bold">JSON</span>
                                     </button>
 
                                     {/* Import File Button */}
@@ -405,12 +482,12 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300/80 font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center justify-between shadow-sm btn-press"
+                                            className="w-full bg-surface-container hover:bg-surface-container-high text-on-surface border border-surface-variant font-bold px-4 py-3 rounded-2xl transition-all text-xs flex items-center justify-between shadow-sm btn-press"
                                         >
                                             <span className="flex items-center gap-2">
-                                                <Upload size={16} className="text-stone-600" /> Import Account Configuration
+                                                <Upload size={16} className="text-on-surface-variant" /> Import Account Configuration
                                             </span>
-                                            <span className="text-[10px] uppercase bg-stone-200 px-2 py-0.5 rounded text-stone-700 tracking-wider font-bold">Select File</span>
+                                            <span className="text-[10px] uppercase bg-surface-container-high px-2 py-0.5 rounded text-on-surface-variant tracking-wider font-bold">Select File</span>
                                         </button>
                                     </div>
                                 </div>
@@ -419,13 +496,20 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
 
                         {/* Cache tab removed */}
 
-                        {/* Save Button (Always visible) */}
-                        <div className="pt-4 border-t border-gray-200 dark:border-slate-700/50">
+                        {/* Save + Account actions (always visible) */}
+                        <div className="pt-4 border-t border-surface-variant/50 space-y-3">
                             <button
                                 type="submit"
-                                className="w-full bg-blue-500/90 border border-white/20 backdrop-blur-md hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 shadow-md btn-press"
+                                className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl transition-transform active:scale-[0.98] text-sm flex items-center justify-center gap-2 shadow-sm"
                             >
                                 <Save size={16} /> Save Settings
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSignOut}
+                                className="w-full bg-error/10 hover:bg-error/20 text-error font-bold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                            >
+                                <LogOut size={16} /> Sign Out
                             </button>
                         </div>
 

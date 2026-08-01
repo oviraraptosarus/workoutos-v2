@@ -5,22 +5,24 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
+
 export default function BottomNav() {
+
   const pathname = usePathname();
 
+  // Profile intentionally lives behind the top-right avatar now, not the tab bar.
   const navItems = [
     { name: 'Today', href: '/dashboard', icon: 'dashboard', matchRoot: true },
     { name: 'Planner', href: '/planner', icon: 'task_alt' },
     { name: 'Diet', href: '/diet', icon: 'nutrition' },
     { name: 'Workout', href: '/workout', icon: 'fitness_center' },
     { name: 'Budget', href: '/budget-tracker', icon: 'payments' },
-    { name: 'Profile', href: '/profile', icon: 'person_4' },
   ];
 
   return (
     <>
-      <nav className="fixed bottom-0 w-full z-50 pb-safe glass" data-active-classes="text-secondary">
-        <div className="flex justify-between items-center h-20 px-4 max-w-5xl mx-auto">
+      <nav className="fixed bottom-0 w-full z-50 pb-safe glass border-t border-surface-variant/30" data-active-classes="text-secondary">
+        <div className="flex justify-between items-center min-h-[5rem] py-2 px-4 max-w-5xl mx-auto">
           {navItems.map((item) => {
             const isActive = item.matchRoot 
                 ? (pathname === item.href || pathname === '/') 

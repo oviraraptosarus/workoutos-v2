@@ -36,16 +36,16 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 <div className="w-12 h-1.5 bg-gray-400/50 rounded-full mx-auto mb-6 sm:hidden shadow-sm" />
                 
                 <div className="flex items-center justify-between pb-4">
-                    <h2 className="text-xl font-bold text-gray-900 drop-shadow-sm">{title}</h2>
+                    <h2 className="text-xl font-bold text-on-surface drop-shadow-sm">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full bg-white/50 text-gray-600 hover:text-gray-900 hover:bg-white/80 transition-colors btn-press border border-white/40 shadow-sm"
+                        className="p-2 rounded-full bg-card-white/50 text-on-surface-variant hover:text-on-surface hover:bg-card-white/80 transition-colors btn-press border border-white/40 shadow-sm"
                         aria-label="Close modal"
                     >
                         <X size={20} />
                     </button>
                 </div>
-                <div className="pt-2 max-h-[85vh] overflow-y-auto scrollbar-hide">{children}</div>
+                <div className="pt-2 max-h-[85vh] overflow-y-auto overscroll-y-contain touch-pan-y scrollbar-hide">{children}</div>
             </div>
         </div>
     );

@@ -50,6 +50,7 @@ export default function DietPage() {
     const [editingMeal, setEditingMeal] = useState<MealItem | null>(null);
     const [modalDefaultCategory, setModalDefaultCategory] = useState<MealCategory>('Breakfast');
     const [isLoaded, setIsLoaded] = useState(false);
+    const [activityBurned, setActivityBurned] = useState(0);
 
     const { userProfile } = useAuth();
 
@@ -80,6 +81,9 @@ export default function DietPage() {
         const load = async () => {
             const dbMeals = await getMealsForDate(currentDateKey);
             setMeals(dbMeals);
+            // Real activity burn for the day, not a hardcoded value.
+            const { getActivityBurnedForDate } = await import('./services/dietStorage');
+            setActivityBurned(await getActivityBurnedForDate(currentDateKey));
             setIsLoaded(true);
         };
         load();
@@ -227,14 +231,14 @@ export default function DietPage() {
                     </div>
                 </div>
 
-                {/* Top Gauge & Metrics Summary matching screenshot */}
+                {/* Top Gauge & Metrics Summary */}
                 <DietGaugeSummary
                     currentDateKey={currentDateKey}
                     onDateChange={setCurrentDateKey}
                     totalCalories={totalCalories}
                     calorieGoal={macroGoals.calories}
-                    activityBurned={180}
-                    weeklyRemaining={42}
+                    activityBurned={activityBurned}
+                    weeklyRemaining={Math.max(macroGoals.calories - totalCalories + activityBurned, 0)}
                     onOpenAIMealModal={handleOpenAIModal}
                     onOpenBarcodeScanner={() => setIsBarcodeScannerOpen(true)}
                 />
@@ -242,7 +246,7 @@ export default function DietPage() {
                 {/* TDEE & Net Energy Deficit Balance Card */}
                 <TDEEDeficitCard
                     totalCalories={totalCalories}
-                    activityBurned={180}
+                    activityBurned={activityBurned}
                     tdeeGoal={dynamicTDEE}
                 />
 

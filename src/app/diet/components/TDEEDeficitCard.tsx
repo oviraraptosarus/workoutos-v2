@@ -26,17 +26,17 @@ export default function TDEEDeficitCard({
     const weeklyPaceKg = ((absoluteDiff * 7) / 7700).toFixed(2);
 
     return (
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
+        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-2xl bg-purple-500/10 text-purple-600 border border-purple-500/20 shadow-sm">
+                    <div className="p-2 rounded-2xl bg-purple-500/10 text-activity-purple border border-purple-500/20 shadow-sm">
                         <TrendingDown size={18} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-900 drop-shadow-sm">
+                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
                             TDEE & Net Energy Balance
                         </h3>
-                        <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                        <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
                             Real-time caloric deficit & weekly weight velocity
                         </p>
                     </div>
@@ -56,29 +56,29 @@ export default function TDEEDeficitCard({
             </div>
 
             {/* Metrics Breakdown Bar */}
-            <div className="grid grid-cols-4 gap-2 text-center p-3 rounded-2xl bg-gray-100 border border-gray-200 shadow-inner mb-4">
+            <div className="grid grid-cols-4 gap-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
                 <div>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Maintenance (TDEE)</span>
-                    <span className="text-sm font-black text-gray-900 dark:text-white">{tdeeGoal} kcal</span>
+                    <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-wider block">Maintenance (TDEE)</span>
+                    <span className="text-sm font-black text-on-surface dark:text-white">{tdeeGoal} kcal</span>
                 </div>
                 <div>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Food Consumed</span>
-                    <span className="text-sm font-black text-stone-900">{totalCalories} kcal</span>
+                    <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-wider block">Food Consumed</span>
+                    <span className="text-sm font-black text-on-surface">{totalCalories} kcal</span>
                 </div>
                 <div 
                     className="cursor-pointer group relative"
                     onClick={onOpenActivityModal}
                     title="Click to log steps/activity"
                 >
-                    <span className="text-[10px] font-black text-purple-600 group-hover:text-purple-700 uppercase tracking-wider block transition-colors">Active Burn</span>
-                    <span className="text-sm font-black text-purple-700 group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
-                    <div className="absolute -top-1 -right-1 bg-purple-100 text-purple-600 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] font-black text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">Active Burn</span>
+                    <span className="text-sm font-black text-activity-purple group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
+                    <div className="absolute -top-1 -right-1 bg-purple-100 text-activity-purple rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Zap size={10} />
                     </div>
                 </div>
                 <div>
-                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider block">Weekly Velocity</span>
-                    <span className="text-sm font-black text-emerald-700">
+                    <span className="text-[10px] font-black text-activity-green uppercase tracking-wider block">Weekly Velocity</span>
+                    <span className="text-sm font-black text-activity-green">
                         {isDeficit ? `-${weeklyPaceKg} kg/wk` : `+${weeklyPaceKg} kg/wk`}
                     </span>
                 </div>
@@ -86,11 +86,11 @@ export default function TDEEDeficitCard({
 
             {/* Visual Gauge Bar */}
             <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold text-gray-600 dark:text-gray-300">
+                <div className="flex justify-between text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
                     <span>Net Energy Intake ({netCaloriesIn} kcal)</span>
                     <span>TDEE Limit ({tdeeGoal} kcal)</span>
                 </div>
-                <div className="w-full bg-stone-100 h-3 rounded-full overflow-hidden shadow-inner border border-gray-100 dark:border-slate-800">
+                <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
                     <div
                         className={`h-full rounded-full transition-all duration-700 ease-out shadow-sm ${
                             isDeficit

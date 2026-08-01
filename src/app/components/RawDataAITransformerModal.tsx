@@ -247,16 +247,16 @@ export default function RawDataAITransformerModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Modal Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-cyan-50/80 via-white to-emerald-50/80">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
                     <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
                             <Wand2 size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900 drop-shadow-sm">
+                            <h2 className="text-lg font-bold text-on-surface drop-shadow-sm">
                                 Raw Data AI Transformer
                             </h2>
                             <p className="text-[11px] font-bold text-cyan-800">
@@ -266,7 +266,7 @@ export default function RawDataAITransformerModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
                     >
                         <X size={18} />
                     </button>
@@ -278,7 +278,7 @@ export default function RawDataAITransformerModal({
                     {/* Raw Text Scratchpad Area */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                                 Unstructured Raw Dump Scratchpad
                             </label>
                             <button
@@ -299,18 +299,18 @@ export default function RawDataAITransformerModal({
                             value={rawText}
                             onChange={(e) => setRawText(e.target.value)}
                             placeholder='Type or paste anything raw, e.g. "had 2 eggs n toast 8am, 500ml water, bought whey protein for 1500, earned 500 freelance, 1L water"'
-                            className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 text-xs font-bold text-stone-900 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all placeholder:text-gray-400 resize-none shadow-inner"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-cyan-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
                         />
 
                         <div className="flex justify-between items-center pt-1">
-                            <span className="text-[10px] text-gray-400 font-bold">
+                            <span className="text-[10px] text-on-surface-variant font-bold">
                                 No formatting needed! AI handles diet, water, workout & notes.
                             </span>
                             <button
                                 type="button"
                                 onClick={handleTransformRawData}
                                 disabled={isProcessing || !rawText.trim()}
-                                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-300 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-surface-container-high text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isProcessing ? (
                                     <>
@@ -327,8 +327,8 @@ export default function RawDataAITransformerModal({
 
                     {/* Parsed Categorized Results */}
                     {parsedResult && (
-                        <div className="space-y-4 pt-3 border-t border-gray-100 animate-in fade-in">
-                            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                        <div className="space-y-4 pt-3 border-t border-surface-variant animate-in fade-in">
+                            <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
                                 Auto-Categorized Logs Preview
                             </h3>
 
@@ -341,12 +341,12 @@ export default function RawDataAITransformerModal({
                                     </div>
                                     {parsedResult.meals.length > 0 ? (
                                         parsedResult.meals.map((m, i) => (
-                                            <div key={i} className="text-[11px] font-bold text-gray-700 bg-white dark:bg-slate-900/70 p-2 rounded-xl border border-emerald-100">
+                                            <div key={i} className="text-[11px] font-bold text-on-surface-variant bg-card-white/70 p-2 rounded-xl border border-emerald-100">
                                                 {m.icon} [{m.category}] {m.name} • <span className="text-emerald-700">{m.calories} kcal</span>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="text-[10px] text-gray-400 font-bold">No food items detected</div>
+                                        <div className="text-[10px] text-on-surface-variant font-bold">No food items detected</div>
                                     )}
                                 </div>
 
@@ -357,11 +357,11 @@ export default function RawDataAITransformerModal({
                                         <span>Hydration Log</span>
                                     </div>
                                     {parsedResult.waterMl > 0 ? (
-                                        <div className="text-[11px] font-bold text-blue-900 bg-white dark:bg-slate-900/70 p-2 rounded-xl border border-blue-100">
+                                        <div className="text-[11px] font-bold text-blue-900 bg-card-white/70 p-2 rounded-xl border border-blue-100">
                                             +{parsedResult.waterMl} ml water logged
                                         </div>
                                     ) : (
-                                        <div className="text-[10px] text-gray-400 font-bold">No water intake detected</div>
+                                        <div className="text-[10px] text-on-surface-variant font-bold">No water intake detected</div>
                                     )}
                                 </div>
                             </div>
@@ -375,13 +375,13 @@ export default function RawDataAITransformerModal({
                                             <span>Workout & Notes Logs</span>
                                         </div>
                                         {parsedResult.workoutNote && (
-                                            <div className="bg-white dark:bg-slate-900/70 p-2 rounded-xl text-[11px]">🏃 {parsedResult.workoutNote}</div>
+                                            <div className="bg-card-white/70 p-2 rounded-xl text-[11px]">🏃 {parsedResult.workoutNote}</div>
                                         )}
                                         {parsedResult.quickNote && (
-                                            <div className="bg-white dark:bg-slate-900/70 p-2 rounded-xl text-[11px]">📝 {parsedResult.quickNote}</div>
+                                            <div className="bg-card-white/70 p-2 rounded-xl text-[11px]">📝 {parsedResult.quickNote}</div>
                                         )}
                                         {!parsedResult.workoutNote && !parsedResult.quickNote && (
-                                            <div className="text-[10px] text-gray-400 font-bold">No notes detected</div>
+                                            <div className="text-[10px] text-on-surface-variant font-bold">No notes detected</div>
                                         )}
                                     </div>
                                     
@@ -392,12 +392,12 @@ export default function RawDataAITransformerModal({
                                         </div>
                                         {parsedResult.budget && parsedResult.budget.length > 0 ? (
                                             parsedResult.budget.map((b, i) => (
-                                                <div key={i} className="bg-white dark:bg-slate-900/70 p-2 rounded-xl text-[11px]">
+                                                <div key={i} className="bg-card-white/70 p-2 rounded-xl text-[11px]">
                                                     {b.type === 'income' ? '💰' : '💳'} {b.type === 'income' ? '+' : '-'}₹{b.amount} ({b.category})
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="text-[10px] text-gray-400 font-bold">No budget items detected</div>
+                                            <div className="text-[10px] text-on-surface-variant font-bold">No budget items detected</div>
                                         )}
                                     </div>
                                 </div>

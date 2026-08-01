@@ -79,36 +79,32 @@ export default function QuickNotes() {
     if (!isClient) return null;
 
     return (
-        <section className="bg-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 flex flex-col h-full transition-all animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 relative overflow-hidden hover:shadow-lg">
-            <div className="flex items-center justify-between mb-4 px-1">
-                <h2 className="font-headline-md text-lg text-on-surface flex items-center gap-2 tracking-tight">
-                    <PenTool size={20} className="text-activity-blue" /> Quick Notes
+        <section className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all animate-fade-in relative overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <PenTool size={16} className="text-activity-blue" /> Quick Notes
                     {saveStatus === 'saving' && <Loader2 size={12} className="text-on-surface-variant animate-spin ml-1" />}
-                    {saveStatus === 'saved' && <CheckCircle2 size={14} className="text-emerald-500 ml-1" />}
+                    {saveStatus === 'saved' && <CheckCircle2 size={14} className="text-activity-green ml-1" />}
                 </h2>
 
-                <div className="flex items-center gap-2">
-                    {note.trim() && (
-                        <button 
-                            onClick={clearNote}
-                            className="font-label-sm text-[11px] text-on-surface-variant hover:text-error uppercase tracking-wider flex items-center transition-colors btn-press gap-1"
-                        >
-                            Clear <Trash2 size={12} />
-                        </button>
-                    )}
-                </div>
+                {note.trim() && (
+                    <button
+                        onClick={clearNote}
+                        className="font-label-sm text-label-sm text-on-surface-variant hover:text-error flex items-center transition-colors gap-1 active:scale-95"
+                    >
+                        Clear <Trash2 size={12} />
+                    </button>
+                )}
             </div>
 
-            <div className="bg-surface-container-low border border-surface-variant p-1 rounded-xl shadow-sm relative group flex-1">
-                <textarea 
-                    value={note}
-                    onChange={handleChange}
-                    disabled={!isToday}
-                    placeholder={isToday ? "Jot down anything raw here (e.g. 2 eggs, 500ml water, 30 min run)..." : "Cannot edit historical notes."}
-                    className={`w-full bg-transparent border-none focus:outline-none font-body-md text-sm text-on-surface p-4 resize-none min-h-[150px] h-full custom-scrollbar rounded-xl ${!isToday ? 'opacity-70 cursor-not-allowed' : ''}`}
-                    style={{ backgroundImage: 'linear-gradient(to right, rgba(150, 150, 150, 0.1) 1px, transparent 1px)', backgroundSize: '100% 24px' }}
-                />
-            </div>
+            <textarea
+                value={note}
+                onChange={handleChange}
+                disabled={!isToday}
+                rows={3}
+                placeholder={isToday ? "Jot down anything raw (e.g. 2 eggs, 500ml water, 30 min run)..." : "Cannot edit historical notes."}
+                className={`w-full bg-surface-container-low border border-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary font-body-md text-on-surface p-4 resize-none rounded-2xl transition-shadow custom-scrollbar ${!isToday ? 'opacity-70 cursor-not-allowed' : ''}`}
+            />
         </section>
     );
 }

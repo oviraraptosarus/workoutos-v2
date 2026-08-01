@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import AuthScreen from './components/AuthScreen';
 
 export default function SignUpLoginScreen() {
-  const { user, login, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -16,11 +16,20 @@ export default function SignUpLoginScreen() {
   }, [user, isLoading, router]);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#F2F2F7] text-gray-500">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-on-surface-variant">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
+            <span className="material-symbols-outlined text-on-primary">vital_signs</span>
+          </div>
+          <span className="font-label-md text-label-md">Loading…</span>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F2F2F7] p-4">
+    <div className="min-h-screen bg-background">
       <AuthScreen />
     </div>
   );

@@ -61,13 +61,13 @@ export default function CategoryBreakdown() {
     const displayedCategories = showAll ? categories : categories.slice(0, 5);
 
     return (
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 p-6 h-full flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 h-full flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-lg font-black text-gray-900 dark:text-white tracking-tight mb-0.5 drop-shadow-sm">By category</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Budget vs. actual</p>
+                    <h3 className="text-lg font-black text-on-surface dark:text-white tracking-tight mb-0.5 drop-shadow-sm">By category</h3>
+                    <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">Budget vs. actual</p>
                 </div>
-                <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded-full">
+                <span className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant bg-surface-container dark:bg-surface-container-high px-2 py-1 rounded-full">
                     {categories.length} categories
                 </span>
             </div>
@@ -80,20 +80,20 @@ export default function CategoryBreakdown() {
                             <div className="flex justify-between items-center text-xs font-bold">
                                 <div className="flex items-center gap-2">
                                     <div className={`w-2.5 h-2.5 rounded-full ${cat.color} shadow-sm group-hover:scale-125 transition-transform`} />
-                                    <span className="text-gray-700 dark:text-gray-300">{cat.name}</span>
+                                    <span className="text-on-surface-variant dark:text-on-surface-variant">{cat.name}</span>
                                 </div>
                                 <div className="tracking-tight">
-                                    <span className="text-gray-900 dark:text-white">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
-                                    <span className="text-gray-400 dark:text-gray-500"> / ₹{cat.limit}</span>
+                                    <span className="text-on-surface dark:text-white">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
+                                    <span className="text-on-surface-variant dark:text-on-surface-variant"> / ₹{cat.limit}</span>
                                 </div>
                             </div>
-                            <div className="w-full bg-gray-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden shadow-inner">
+                            <div className="w-full bg-surface-container dark:bg-surface-container-high/50 h-2 rounded-full overflow-hidden shadow-inner">
                                 <div className={`${cat.color} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: `${percentage}%` }} />
                             </div>
                         </div>
                     );
                 }) : (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[150px] text-gray-400 dark:text-gray-500 gap-2">
+                    <div className="flex flex-col items-center justify-center h-full min-h-[150px] text-on-surface-variant dark:text-on-surface-variant gap-2">
                         <span className="text-sm font-bold">No expenses yet</span>
                         <span className="text-xs font-medium text-center max-w-[200px]">Log an expense using the + button to see your category breakdown.</span>
                     </div>
@@ -104,7 +104,7 @@ export default function CategoryBreakdown() {
                 <div className="mt-8 text-center">
                     <button 
                         onClick={() => setShowAll(!showAll)}
-                        className="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mx-auto transition-colors bg-gray-50 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-slate-800 px-4 py-2 rounded-full"
+                        className="flex items-center justify-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-on-surface-variant dark:text-on-surface-variant dark:hover:text-on-surface-variant mx-auto transition-colors bg-surface-container-low dark:bg-surface-container-high/50 hover:bg-surface-container dark:hover:bg-surface-container-high px-4 py-2 rounded-full"
                     >
                         <ChevronDown size={14} strokeWidth={2.5} className={`transition-transform ${showAll ? 'rotate-180' : ''}`} /> 
                         {showAll ? 'Show less' : `Show ${categories.length - 5} more categories`}
@@ -113,8 +113,8 @@ export default function CategoryBreakdown() {
             )}
             
             {summaryString && (
-                <div className="mt-6 text-[10px] text-gray-400 dark:text-gray-500 font-medium pt-5 border-t border-gray-100 dark:border-slate-800/50 leading-relaxed">
-                    <span className="font-bold text-gray-600 dark:text-gray-300 tracking-wide uppercase mr-1">Where it went this month:</span> {summaryString}
+                <div className="mt-6 text-[10px] text-on-surface-variant dark:text-on-surface-variant font-medium pt-5 border-t border-surface-variant/50 leading-relaxed">
+                    <span className="font-bold text-on-surface-variant dark:text-on-surface-variant tracking-wide uppercase mr-1">Where it went this month:</span> {summaryString}
                 </div>
             )}
         </div>

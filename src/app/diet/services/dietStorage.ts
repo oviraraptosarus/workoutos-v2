@@ -82,18 +82,155 @@ export const saveMealsForDate = async (dateKey: string, meals: MealItem[]): Prom
     }
 };
 
-export const getWaterForDate = async (dateKey: string): Promise<number> => {
+export interface WaterLogItem {
+    id: number;
+    amount: number;
+    time: string;
+    type: string;
+}
+
+export const getWaterDataForDate = async (dateKey: string): Promise<{ totalMl: number; logs: WaterLogItem[] }> => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return 0;
-    const { data } = await supabase.from('daily_logs').select('water_ml_total').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
-    return data?.water_ml_total || 0;
+    if (!user) return { totalMl: 0, logs: [] };
+
+    const { data } = await supabase
+        .from('daily_logs')
+        .select('water_ml_total, water_logs')
+        .eq('user_id', user.id)
+        .eq('date', dateKey)
+        .maybeSingle();
+
+    const totalMl = data?.water_ml_total || 0;
+    let rawLogs: WaterLogItem[] = Array.isArray(data?.water_logs) ? data.water_logs : [];
+
+    // Reconcile: If totalMl > 0 but logs array is empty (e.g. legacy or quick add), create a fallback log item
+    if (totalMl > 0 && rawLogs.length === 0) {
+        rawLogs = [{
+            id: Date.now(),
+            amount: totalMl,
+            time: 'Recorded',
+            type: 'Total Intake'
+        }];
+    }
+
+    // Ensure all log IDs are unique
+    const seenIds = new Set<number>();
+    const logs: WaterLogItem[] = rawLogs.map((item, idx) => {
+        let uniqueId = item.id || (Date.now() + idx);
+        while (seenIds.has(uniqueId)) {
+            uniqueId += Math.floor(Math.random() * 1000) + 1;
+        }
+        seenIds.add(uniqueId);
+        return { ...item, id: uniqueId };
+    });
+
+    return { totalMl, logs };
+};
+
+export const getWaterForDate = async (dateKey: string): Promise<number> => {
+    const data = await getWaterDataForDate(dateKey);
+    return data.totalMl;
 };
 
 export const saveWaterForDate = async (dateKey: string, amount: number): Promise<void> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, water_ml_total: amount }, { onConflict: 'user_id,date' });
+
+    const { logs } = await getWaterDataForDate(dateKey);
     
+    // Create new log entry if amount increased
+    const existingTotal = logs.reduce((sum, item) => sum + item.amount, 0);
+    let updatedLogs = [...logs];
+
+    if (amount > existingTotal) {
+        const added = amount - existingTotal;
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        updatedLogs.unshift({
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            amount: added,
+            time: timeStr,
+            type: 'Quick Add'
+        });
+    } else if (amount === 0) {
+        updatedLogs = [];
+    }
+
+    await supabase.from('daily_logs').upsert(
+        { user_id: user.id, date: dateKey, water_ml_total: amount, water_logs: updatedLogs },
+        { onConflict: 'user_id,date' }
+    );
+    
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('workout_os_water_updated'));
+        window.dispatchEvent(new Event('storage'));
+    }
+};
+
+export const addWaterLog = async (dateKey: string, amount: number, type: string = 'Quick Add'): Promise<{ totalMl: number; logs: WaterLogItem[] }> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { totalMl: 0, logs: [] };
+
+    const current = await getWaterDataForDate(dateKey);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const newLog: WaterLogItem = {
+        id: Date.now() + Math.floor(Math.random() * 10000),
+        amount,
+        time: timeStr,
+        type
+    };
+
+    const newLogs = [newLog, ...current.logs];
+    const newTotal = current.totalMl + amount;
+
+    await supabase.from('daily_logs').upsert(
+        { user_id: user.id, date: dateKey, water_ml_total: newTotal, water_logs: newLogs },
+        { onConflict: 'user_id,date' }
+    );
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('workout_os_water_updated'));
+        window.dispatchEvent(new Event('storage'));
+    }
+
+    return { totalMl: newTotal, logs: newLogs };
+};
+
+export const deleteWaterLog = async (dateKey: string, logId: number): Promise<{ totalMl: number; logs: WaterLogItem[] }> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { totalMl: 0, logs: [] };
+
+    const current = await getWaterDataForDate(dateKey);
+    const target = current.logs.find(l => l.id === logId);
+    
+    const newLogs = current.logs.filter(l => l.id !== logId);
+    const amountToRemove = target ? target.amount : 0;
+    const newTotal = Math.max(0, current.totalMl - amountToRemove);
+
+    await supabase.from('daily_logs').upsert(
+        { user_id: user.id, date: dateKey, water_ml_total: newTotal, water_logs: newLogs },
+        { onConflict: 'user_id,date' }
+    );
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('workout_os_water_updated'));
+        window.dispatchEvent(new Event('storage'));
+    }
+
+    return { totalMl: newTotal, logs: newLogs };
+};
+
+export const resetWaterForDate = async (dateKey: string): Promise<void> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from('daily_logs').upsert(
+        { user_id: user.id, date: dateKey, water_ml_total: 0, water_logs: [] },
+        { onConflict: 'user_id,date' }
+    );
+
     if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('workout_os_water_updated'));
         window.dispatchEvent(new Event('storage'));

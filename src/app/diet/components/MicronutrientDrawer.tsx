@@ -26,7 +26,7 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
     ];
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all bg-gradient-to-r from-emerald-50/20 via-white/50 to-teal-50/20">
+        <div className="bg-card-white border border-surface-variant rounded-3xl p-5 shadow-sm transition-all">
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center justify-between cursor-pointer select-none"
@@ -36,35 +36,35 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
                         <HeartPulse size={18} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-900 drop-shadow-sm">
+                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
                             Micronutrients & Health Targets
                         </h3>
-                        <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                        <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
                             Fiber, sodium, potassium, and essential mineral targets
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <div className="flex items-center gap-2 text-xs font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
                     <span>{isOpen ? 'Collapse' : 'Expand Details'}</span>
                     {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </div>
             </div>
 
             {isOpen && (
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in">
+                <div className="mt-4 pt-4 border-t border-surface-variant/80 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in">
                     {micros.map((m) => {
                         const percent = Math.min(100, Math.round((m.current / m.goal) * 100));
 
                         return (
-                            <div key={m.name} className="space-y-1.5 p-3 rounded-2xl bg-gray-100 border border-gray-200 shadow-sm">
-                                <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-gray-300">
+                            <div key={m.name} className="space-y-1.5 p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-sm">
+                                <div className="flex justify-between text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
                                     <span>{m.name}</span>
                                     <span className="text-on-surface tabular-nums">
                                         {m.current} {m.unit} / {m.goal} {m.unit}
                                     </span>
                                 </div>
-                                <div className="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden shadow-inner border border-gray-100 dark:border-slate-800">
+                                <div className="w-full bg-surface-container h-2.5 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
                                     <div
                                         className={`h-full rounded-full transition-all duration-700 ease-out ${m.color}`}
                                         style={{ width: `${percent}%` }}

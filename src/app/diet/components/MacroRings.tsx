@@ -50,7 +50,7 @@ export default function MacroRings({
     };
 
     return (
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all flex flex-col md:flex-row items-center gap-6 md:gap-8 relative hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="bg-card-white backdrop-blur-xl border border-surface-variant rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all flex flex-col md:flex-row items-center gap-6 md:gap-8 relative hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             
             {/* Top Right Goal Customize Button */}
             {onUpdateGoals && (
@@ -59,7 +59,7 @@ export default function MacroRings({
                         setTempGoals(macroGoals);
                         setIsEditingGoals(true);
                     }}
-                    className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-stone-100/80 text-gray-400 hover:text-gray-700 transition-colors btn-press"
+                    className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-surface-container/80 text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
                     title="Customize Daily Macro Goals"
                 >
                     <Settings2 size={16} />
@@ -68,7 +68,7 @@ export default function MacroRings({
 
             {/* Circular Gauge */}
             <div className="flex-1 flex flex-col items-center justify-center text-center">
-                <div className="relative w-40 h-40 rounded-full border-8 border-gray-100 shadow-inner flex items-center justify-center">
+                <div className="relative w-40 h-40 rounded-full border-8 border-surface-variant shadow-inner flex items-center justify-center">
                     <div className="absolute inset-0 rounded-full border-8 border-transparent" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}>
                         <div 
                             className="absolute inset-0 rounded-full border-8 border-emerald-400 opacity-90 transition-all duration-1000"
@@ -76,9 +76,9 @@ export default function MacroRings({
                         />
                     </div>
                     <div className="flex flex-col items-center">
-                        <Flame size={24} className="text-emerald-500 mb-1" />
-                        <span className="text-3xl font-black text-gray-900 drop-shadow-sm">{caloriesLeft}</span>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Kcal Left</span>
+                        <Flame size={24} className="text-activity-green mb-1" />
+                        <span className="text-3xl font-black text-on-surface drop-shadow-sm">{caloriesLeft}</span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Kcal Left</span>
                     </div>
                 </div>
             </div>
@@ -86,14 +86,14 @@ export default function MacroRings({
             {/* Macro Bars */}
             <div className="flex-1 w-full space-y-3.5">
                 {macros.map(m => {
-                    const percent = Math.min(100, Math.round((m.eaten / m.goal) * 100));
+                    const percent = m.goal > 0 ? Math.min(100, Math.round((m.eaten / m.goal) * 100)) : (m.eaten > 0 ? 100 : 0);
                     return (
                         <div key={m.name} className="space-y-1.5">
-                            <div className="flex justify-between text-[11px] sm:text-xs font-bold text-gray-600 dark:text-gray-300">
+                            <div className="flex justify-between text-[11px] sm:text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
                                 <span>{m.name}</span>
-                                <span className="text-gray-900 drop-shadow-sm ml-2 shrink-0">{m.eaten}{m.unit} / {m.goal}{m.unit}</span>
+                                <span className="text-on-surface drop-shadow-sm ml-2 shrink-0">{m.eaten}{m.unit} / {m.goal}{m.unit}</span>
                             </div>
-                            <div className="w-full bg-gray-50 h-3 rounded-full overflow-hidden shadow-inner border border-gray-100 dark:border-slate-800">
+                            <div className="w-full bg-surface-container-low h-3 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
                                 <div 
                                     className={`bg-gradient-to-r ${m.color} h-full rounded-full transition-all duration-500 ease-out shadow-sm`} 
                                     style={{ width: `${percent}%` }} 
@@ -107,12 +107,12 @@ export default function MacroRings({
             {/* Goal Customization Modal */}
             {isEditingGoals && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-gray-200 space-y-4">
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                            <h3 className="text-base font-black text-gray-900 dark:text-white">Set Target Goals</h3>
+                    <div className="bg-card-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-surface-variant space-y-4">
+                        <div className="flex items-center justify-between border-b border-surface-variant pb-3">
+                            <h3 className="text-base font-black text-on-surface dark:text-white">Set Target Goals</h3>
                             <button
                                 onClick={() => setIsEditingGoals(false)}
-                                className="p-1 rounded-full hover:bg-gray-100 text-gray-400 dark:text-gray-500"
+                                className="p-1 rounded-full hover:bg-surface-container text-on-surface-variant dark:text-on-surface-variant"
                             >
                                 <X size={18} />
                             </button>
@@ -120,12 +120,12 @@ export default function MacroRings({
 
                         <form onSubmit={handleSaveGoals} className="space-y-3">
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 mb-1">Calorie Target (kcal)</label>
+                                <label className="block text-xs font-bold text-on-surface-variant mb-1">Calorie Target (kcal)</label>
                                 <input
                                     type="number"
                                     value={tempGoals.calories}
                                     onChange={(e) => setTempGoals({ ...tempGoals, calories: Number(e.target.value) })}
-                                    className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                    className="w-full bg-surface-container-low border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-2">
@@ -173,7 +173,7 @@ export default function MacroRings({
                                 <button
                                     type="button"
                                     onClick={() => setIsEditingGoals(false)}
-                                    className="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 dark:bg-slate-800"
+                                    className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container dark:bg-surface-container-high"
                                 >
                                     Cancel
                                 </button>

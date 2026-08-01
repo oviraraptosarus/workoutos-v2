@@ -7,11 +7,14 @@ import clsx from 'clsx';
 import { supabase } from '@/lib/supabaseClient';
 import { ArrowLeft, Target, BrainCircuit, Plus, Trash2, Play, Pause, GripVertical, CheckCircle2, AlignLeft, Calendar, Circle, Bookmark, Clock, Star } from 'lucide-react';
 
+import { useAuth } from '@/contexts/AuthContext';
 export interface SubTask {
     id: string;
     title: string;
     completed: boolean;
 }
+
+export type TaskPriority = 'high' | 'medium' | 'low' | 'none';
 
 export interface Task {
     id: string;
@@ -20,6 +23,7 @@ export interface Task {
     dueDate: string;
     subTasks: SubTask[];
     completed: boolean;
+    priority: TaskPriority;
 }
 
 export default function PlannerPage() {
@@ -31,55 +35,55 @@ export default function PlannerPage() {
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isClient, setIsClient] = useState(false);
+    const { userProfile, updateUserProfile } = useAuth();
 
     const [isAdding, setIsAdding] = useState(false);
     const [newTitle, setNewTitle] = useState('');
     const [newDesc, setNewDesc] = useState('');
     const [newDate, setNewDate] = useState('');
+    const [newPriority, setNewPriority] = useState<TaskPriority>('none');
     const [newSubTasks, setNewSubTasks] = useState<{id: string, title: string}[]>([]);
 
     // --- LOCAL WIDGET STATE (Not Synced) ---
-    const [priorities, setPriorities] = useState(['', '', '']);
+    const [priorities, setPriorities] = useState<string[]>(['', '', '']);
     const [focusSessions, setFocusSessions] = useState([false, false, false, false]);
     const [habitsList, setHabitsList] = useState(['Wake up early', 'Deep focus block', 'Workout / Movement', 'Drink 3L Water', 'Read 10 pages', 'Review goals']);
     const [habitsState, setHabitsState] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         setIsClient(true);
-        const loadTasks = async () => {
+        const loadData = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
-            const { data } = await supabase.from('tasks').select('*').eq('user_id', user.id);
-            if (data) {
-                setTasks(data.map(d => ({
+            
+            // Load Tasks
+            const { data: taskData } = await supabase.from('tasks').select('*').eq('user_id', user.id);
+            if (taskData) {
+                setTasks(taskData.map(d => ({
                     id: d.id,
                     title: d.title,
                     description: d.description || '',
                     dueDate: d.due_date || '',
                     subTasks: d.subtasks || [],
-                    completed: d.completed || false
+                    completed: d.completed || false,
+                    priority: d.priority || 'none'
                 })));
             }
+
+            // Load Widgets from target_config
+            const config = userProfile?.targetConfig || {};
+            if (config.planner_priorities) setPriorities(config.planner_priorities);
+            if (config.planner_focus) setFocusSessions(config.planner_focus);
+            if (config.planner_habits_state) setHabitsState(config.planner_habits_state);
+            if (config.planner_habits_list) setHabitsList(config.planner_habits_list);
         };
-        loadTasks();
-        // Load local widgets
-        try {
-            const sp = localStorage.getItem(PRIORITIES_KEY);
-            if (sp) setPriorities(JSON.parse(sp));
-        } catch {}
-        try {
-            const sf = localStorage.getItem(FOCUS_KEY);
-            if (sf) setFocusSessions(JSON.parse(sf));
-        } catch {}
-        try {
-            const sh = localStorage.getItem(HABITS_KEY);
-            if (sh) setHabitsState(JSON.parse(sh));
-        } catch {}
-        try {
-            const shl = localStorage.getItem('workout_os_planner_habits_list');
-            if (shl) setHabitsList(JSON.parse(shl));
-        } catch {}
-    }, []);
+        loadData();
+    }, [userProfile?.targetConfig]);
+
+    const updateTargetConfig = async (updates: any) => {
+        const currentConfig = userProfile?.targetConfig || {};
+        await updateUserProfile({ targetConfig: { ...currentConfig, ...updates } });
+    };
 
     const saveTasks = async (newTasks: Task[]) => {
         setTasks(newTasks);
@@ -101,7 +105,11 @@ export default function PlannerPage() {
             completed: false
         };
 
-        const { data } = await supabase.from('tasks').insert(newTaskObj).select().single();
+        // Insert with priority; fall back without it if the column isn't migrated yet.
+        let { data } = await supabase.from('tasks').insert({ ...newTaskObj, priority: newPriority }).select().single();
+        if (!data) {
+            ({ data } = await supabase.from('tasks').insert(newTaskObj).select().single());
+        }
         if (data) {
             const newTask: Task = {
                 id: data.id,
@@ -109,11 +117,44 @@ export default function PlannerPage() {
                 description: data.description || '',
                 dueDate: data.due_date || '',
                 subTasks: data.subtasks || [],
-                completed: data.completed
+                completed: data.completed,
+                priority: data.priority || newPriority
             };
             saveTasks([newTask, ...tasks]);
         }
-        setNewTitle(''); setNewDesc(''); setNewDate(''); setNewSubTasks([]);
+        setNewTitle(''); setNewDesc(''); setNewDate(''); setNewPriority('none'); setNewSubTasks([]);
+    };
+
+    // Create a task directly from a title + priority (used by the priority→tasks
+    // drag-drop). Writes to Supabase and syncs the dashboard via the shared event.
+    const createTaskFromPriority = async (title: string, priority: TaskPriority) => {
+        const clean = title.trim();
+        if (!clean) return;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const base = {
+            user_id: user.id,
+            date: new Date().toISOString().split('T')[0],
+            title: clean,
+            description: '',
+            due_date: '',
+            subtasks: [],
+            completed: false
+        };
+        // Try with priority; if the column isn't migrated yet the insert 400s, so
+        // retry without it. Task still appears either way.
+        let { data } = await supabase.from('tasks').insert({ ...base, priority }).select().single();
+        if (!data) {
+            ({ data } = await supabase.from('tasks').insert(base).select().single());
+        }
+        if (data) {
+            const newTask: Task = {
+                id: data.id, title: data.title, description: '', dueDate: '',
+                subTasks: [], completed: false, priority: data.priority || priority
+            };
+            saveTasks([newTask, ...tasks]);
+        }
     };
 
     const toggleTask = async (taskId: string) => {
@@ -177,7 +218,7 @@ export default function PlannerPage() {
                         
                         <button 
                             onClick={() => { setIsFocusModeActive(false); setFocusTimeLeft(25 * 60); }}
-                            className="mt-4 px-6 py-2 rounded-full border border-slate-700 text-slate-300 text-xs font-bold hover:bg-slate-800 hover:text-white transition-all btn-press w-full"
+                            className="mt-4 px-6 py-2 rounded-full border border-slate-700 text-slate-300 text-xs font-bold hover:bg-surface-container-high hover:text-white transition-all btn-press w-full"
                         >
                             End Session Early
                         </button>
@@ -190,14 +231,14 @@ export default function PlannerPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors btn-press">
+                        <Link href="/dashboard" className="w-10 h-10 rounded-full bg-card-white shadow-sm flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors btn-press">
                             <ArrowLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                            <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
                                 <Target className="text-emerald-500" /> Planner
                             </h1>
-                            <p className="text-sm text-gray-500 font-medium mt-0.5">Organize your action items</p>
+                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">Organize your action items</p>
                         </div>
                     </div>
                 </div>
@@ -206,31 +247,31 @@ export default function PlannerPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Add Task Section */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-white border border-gray-100 p-6 rounded-3xl shadow-sm border-t border-gray-200 relative overflow-hidden group">
-                            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 mb-6 flex items-center gap-2">
+                        <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant relative overflow-hidden group">
+                            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-6 flex items-center gap-2">
                                 <Plus size={18} className="text-emerald-500" /> New Task
                             </h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1.5 ml-1">Title</label>
-                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What needs to be done?" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:border-emerald-400 shadow-sm" />
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Title</label>
+                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What needs to be done?" className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-emerald-400 shadow-sm" />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> Description</label>
-                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Add details..." className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-emerald-400 shadow-sm resize-none h-20" />
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> Description</label>
+                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Add details..." className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-emerald-400 shadow-sm resize-none h-20" />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> Due Date</label>
-                                    <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-emerald-400 shadow-sm" />
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> Due Date</label>
+                                    <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-emerald-400 shadow-sm" />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1.5 ml-1">Sub-tasks</label>
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Sub-tasks</label>
                                     <div className="space-y-2 mb-3">
                                         {newSubTasks.map((st, i) => (
-                                            <div key={st.id} className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg p-2">
-                                                <GripVertical size={14} className="text-gray-300" />
-                                                <input type="text" value={st.title} onChange={(e) => { const copy = [...newSubTasks]; copy[i].title = e.target.value; setNewSubTasks(copy); }} className="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-800 font-medium" placeholder="Sub-task title..." />
-                                                <button onClick={() => setNewSubTasks(newSubTasks.filter(s => s.id !== st.id))} className="text-gray-400 hover:text-rose-500"><Trash2 size={14} /></button>
+                                            <div key={st.id} className="flex items-center gap-2 bg-surface-container-low border border-surface-variant rounded-lg p-2">
+                                                <GripVertical size={14} className="text-on-surface-variant" />
+                                                <input type="text" value={st.title} onChange={(e) => { const copy = [...newSubTasks]; copy[i].title = e.target.value; setNewSubTasks(copy); }} className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface font-medium" placeholder="Sub-task title..." />
+                                                <button onClick={() => setNewSubTasks(newSubTasks.filter(s => s.id !== st.id))} className="text-on-surface-variant hover:text-rose-500"><Trash2 size={14} /></button>
                                             </div>
                                         ))}
                                     </div>
@@ -245,20 +286,38 @@ export default function PlannerPage() {
                         </div>
                     </div>
 
-                    {/* Task List Section */}
-                    <div className="lg:col-span-8 space-y-4">
+                    {/* Task List Section — also a drop target for priorities */}
+                    <div
+                        className="lg:col-span-8 space-y-4"
+                        onDragOver={(e) => {
+                            if (e.dataTransfer.types.includes('priority_text')) {
+                                e.preventDefault();
+                                e.dataTransfer.dropEffect = 'copy';
+                            }
+                        }}
+                        onDrop={(e) => {
+                            const pText = e.dataTransfer.getData('priority_text');
+                            const pRank = e.dataTransfer.getData('priority_rank');
+                            if (pText) {
+                                e.preventDefault();
+                                // Rank 1 → high, 2 → medium, else low.
+                                const level: TaskPriority = pRank === '1' ? 'high' : pRank === '2' ? 'medium' : 'low';
+                                createTaskFromPriority(pText, level);
+                            }
+                        }}
+                    >
                         {isClient && tasks.length === 0 ? (
-                            <div className="bg-white border border-gray-100 p-10 rounded-3xl shadow-sm border-t border-gray-200 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-300 mb-4"><Target size={32} /></div>
-                                <h3 className="font-bold text-gray-900 mb-1">No tasks yet</h3>
-                                <p className="text-sm text-gray-500">Add a task on the left to get started.</p>
+                            <div className="bg-card-white border border-surface-variant p-10 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[300px]">
+                                <div className="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant mb-4"><Target size={32} /></div>
+                                <h3 className="font-bold text-on-surface mb-1">No tasks yet</h3>
+                                <p className="text-sm text-on-surface-variant">Add a task on the left, or drag a priority here.</p>
                             </div>
                         ) : (
                             isClient && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {tasks.map((task) => (
-                                    <div key={task.id} className={`bg-white border border-gray-100 p-5 rounded-3xl shadow-sm border-t border-gray-200 transition-all ${task.completed ? 'opacity-60 bg-gray-50/50' : ''}`}>
+                                    <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
                                         <div className="flex items-start gap-3">
-                                            <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 text-transparent hover:border-emerald-400'}`}>
+                                            <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-surface-variant text-transparent hover:border-emerald-400'}`}>
                                                 <CheckCircle2 size={16} />
                                             </button>
                                             <div 
@@ -267,19 +326,30 @@ export default function PlannerPage() {
                                                 onDragStart={(e) => e.dataTransfer.setData('task_title', task.title)}
                                             >
                                                 <div className="flex items-start justify-between gap-2 mb-1">
-                                                    <h3 className={`font-bold text-gray-900 text-lg cursor-grab active:cursor-grabbing ${task.completed ? 'line-through text-gray-500' : ''}`}>{task.title}</h3>
-                                                    <button onClick={() => deleteTask(task.id)} className="text-gray-300 hover:text-rose-500 flex-shrink-0 p-1"><Trash2 size={16} /></button>
+                                                    <div className="flex items-center gap-2 min-w-0">
+                                                        {task.priority && task.priority !== 'none' && (
+                                                            <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
+                                                                task.priority === 'high' ? 'bg-error/15 text-error'
+                                                                : task.priority === 'medium' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                                                : 'bg-secondary/15 text-secondary'
+                                                            }`}>
+                                                                {task.priority}
+                                                            </span>
+                                                        )}
+                                                        <h3 className={`font-bold text-on-surface text-lg cursor-grab active:cursor-grabbing truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`}>{task.title}</h3>
+                                                    </div>
+                                                    <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-rose-500 flex-shrink-0 p-1"><Trash2 size={16} /></button>
                                                 </div>
                                                 {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2"><Calendar size={12} /> Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
-                                                {task.description && <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
+                                                {task.description && <p className="text-sm text-on-surface-variant mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
                                                 {task.subTasks && task.subTasks.length > 0 && (
-                                                    <div className="space-y-2 mt-3 pt-3 border-t border-gray-100">
+                                                    <div className="space-y-2 mt-3 pt-3 border-t border-surface-variant">
                                                         {task.subTasks.map(st => (
                                                             <div key={st.id} className="flex items-start gap-2 group">
-                                                                <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-gray-400 group-hover:text-emerald-500 flex-shrink-0">
+                                                                <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-emerald-500 flex-shrink-0">
                                                                     {st.completed ? <CheckCircle2 size={16} className="text-emerald-500" /> : <Circle size={16} />}
                                                                 </button>
-                                                                <span className={`text-sm text-gray-700 font-medium ${st.completed ? 'line-through text-gray-400' : ''}`}>{st.title}</span>
+                                                                <span className={`text-sm text-on-surface-variant font-medium ${st.completed ? 'line-through text-on-surface-variant' : ''}`}>{st.title}</span>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -294,19 +364,35 @@ export default function PlannerPage() {
                 </div>
 
                 {/* ROW 2: LOCAL RESTORED WIDGETS */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-surface-variant">
                     
-                    {/* Top Priorities */}
-                    <div className="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm border-t border-gray-200">
-                        <div className="text-gray-700 text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
-                            <Bookmark size={14} className="text-emerald-500" /> Top Priorities
+                    {/* Top Priorities — dynamic, drag into Tasks to promote */}
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm">
+                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
+                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-emerald-500" /> Top Priorities</div>
+                            <button
+                                onClick={() => {
+                                    const p = [...priorities, ''];
+                                    setPriorities(p);
+                                    updateTargetConfig({ planner_priorities: p });
+                                }}
+                                className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded flex items-center gap-1 active:scale-95 transition-transform"
+                            >
+                                <Plus size={10} /> Add
+                            </button>
                         </div>
+                        <p className="text-[10px] text-on-surface-variant mb-3 -mt-2">Drag a priority into Tasks to turn it into a tracked task.</p>
                         <div className="space-y-3">
-                            {[1, 2, 3].map((num, i) => (
-                                <div 
-                                    key={i} 
+                            {priorities.map((priorityText, i) => (
+                                <div
+                                    key={i}
                                     draggable
-                                    onDragStart={(e) => e.dataTransfer.setData('text/plain', i.toString())}
+                                    onDragStart={(e) => {
+                                        // Carry the priority text + rank so the Tasks drop target can promote it.
+                                        e.dataTransfer.setData('priority_text', priorityText || `Priority ${i + 1}`);
+                                        e.dataTransfer.setData('priority_rank', String(i + 1));
+                                        e.dataTransfer.setData('text/plain', i.toString());
+                                    }}
                                     onDragOver={(e) => e.preventDefault()}
                                     onDrop={(e) => {
                                         e.preventDefault();
@@ -315,58 +401,78 @@ export default function PlannerPage() {
                                             const p = [...priorities];
                                             p[i] = taskTitle;
                                             setPriorities(p);
-                                            localStorage.setItem(PRIORITIES_KEY, JSON.stringify(p));
+                                            updateTargetConfig({ planner_priorities: p });
                                             return;
                                         }
                                         const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                                        const toIdx = i;
-                                        if (!isNaN(fromIdx) && fromIdx !== toIdx) {
+                                        if (!isNaN(fromIdx) && fromIdx !== i) {
                                             const p = [...priorities];
-                                            const temp = p[fromIdx];
-                                            p[fromIdx] = p[toIdx];
-                                            p[toIdx] = temp;
+                                            [p[fromIdx], p[i]] = [p[i], p[fromIdx]];
                                             setPriorities(p);
-                                            localStorage.setItem(PRIORITIES_KEY, JSON.stringify(p));
+                                            updateTargetConfig({ planner_priorities: p });
                                         }
                                     }}
-                                    className="flex items-center gap-3 bg-gray-100 p-2 rounded-xl border border-gray-100 cursor-move hover:border-emerald-300 hover:shadow-sm transition-all group"
+                                    className="flex items-center gap-2 bg-surface-container p-2 rounded-xl border border-surface-variant cursor-move hover:border-emerald-400 hover:shadow-sm transition-all group"
                                 >
-                                    <GripVertical size={14} className="text-gray-300 group-hover:text-emerald-500 transition-colors" />
-                                    <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-[10px]">
+                                    <GripVertical size={14} className="text-on-surface-variant group-hover:text-emerald-500 transition-colors shrink-0" />
+                                    <div className="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-[10px] shrink-0">
                                         {i + 1}
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        value={priorities[i]}
+                                    <input
+                                        type="text"
+                                        value={priorityText}
                                         onChange={(e) => {
                                             const p = [...priorities];
                                             p[i] = e.target.value;
                                             setPriorities(p);
-                                            localStorage.setItem(PRIORITIES_KEY, JSON.stringify(p));
+                                            updateTargetConfig({ planner_priorities: p });
                                         }}
                                         placeholder={`Priority ${i + 1}`}
-                                        className="flex-1 bg-transparent border-none text-sm text-gray-900 font-medium focus:outline-none"
+                                        className="flex-1 min-w-0 bg-transparent border-none text-sm text-on-surface font-medium focus:outline-none placeholder:text-on-surface-variant/50"
                                     />
+                                    {/* Non-drag fallback: promote to a task on click */}
+                                    <button
+                                        onClick={() => createTaskFromPriority(priorityText || `Priority ${i + 1}`, i === 0 ? 'high' : i === 1 ? 'medium' : 'low')}
+                                        aria-label="Promote to task"
+                                        title="Send to Tasks"
+                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-emerald-500 transition-all shrink-0 p-1"
+                                    >
+                                        <ArrowLeft size={13} className="rotate-[135deg]" />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const p = priorities.filter((_, idx) => idx !== i);
+                                            setPriorities(p);
+                                            updateTargetConfig({ planner_priorities: p });
+                                        }}
+                                        aria-label="Remove priority"
+                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-error transition-all shrink-0 p-1"
+                                    >
+                                        <Trash2 size={13} />
+                                    </button>
                                 </div>
                             ))}
+                            {priorities.length === 0 && (
+                                <p className="text-center text-on-surface-variant text-xs py-3">No priorities. Tap Add.</p>
+                            )}
                         </div>
                     </div>
 
                     {/* Focus Sessions */}
-                    <div className="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm border-t border-gray-200">
-                        <div className="text-gray-700 text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
+                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
                             <BrainCircuit size={14} className="text-emerald-500" /> Focus Sessions
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-4">
                             {[1, 2, 3, 4].map((num, i) => (
                                 <div 
                                     key={i} 
-                                    className={clsx("border rounded-2xl p-3 flex justify-between items-center transition-colors cursor-pointer", focusSessions[i] ? "bg-emerald-50 border-emerald-200" : "bg-gray-100 border-gray-100 hover:border-gray-300")}
+                                    className={clsx("border rounded-2xl p-3 flex justify-between items-center transition-colors cursor-pointer", focusSessions[i] ? "bg-emerald-50 border-emerald-200" : "bg-surface-container border-surface-variant hover:border-surface-variant")}
                                     onClick={() => {
                                         const n = [...focusSessions];
                                         n[i] = !n[i];
                                         setFocusSessions(n);
-                                        localStorage.setItem(FOCUS_KEY, JSON.stringify(n));
+                                        updateTargetConfig({ planner_focus: n });
                                         if (n[i]) {
                                             setIsFocusModeActive(true);
                                             setFocusTimeLeft(25 * 60);
@@ -374,10 +480,10 @@ export default function PlannerPage() {
                                     }}
                                 >
                                     <div>
-                                        <div className="text-xs font-bold text-gray-900 mb-0.5">SESSION {num}</div>
-                                        <div className="text-[10px] text-gray-500 flex items-center gap-1"><Clock size={10} /> 25 MIN</div>
+                                        <div className="text-xs font-bold text-on-surface mb-0.5">SESSION {num}</div>
+                                        <div className="text-[10px] text-on-surface-variant flex items-center gap-1"><Clock size={10} /> 25 MIN</div>
                                     </div>
-                                    <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-300")}>
+                                    <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-emerald-500 border-emerald-500 text-white" : "border-surface-variant")}>
                                         {focusSessions[i] && <CheckCircle2 size={12} />}
                                     </div>
                                 </div>
@@ -386,62 +492,90 @@ export default function PlannerPage() {
                     </div>
 
                     {/* Habits to Build */}
-                    <div className="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm border-t border-gray-200">
-                        <div className="text-gray-700 text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
+                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
                             <div className="flex items-center gap-2"><Star size={14} className="text-emerald-500" /> Habits</div>
                             <div className="flex items-center gap-2">
                                 <button 
                                     onClick={() => {
                                         const nh = [...habitsList, 'New Habit'];
                                         setHabitsList(nh);
-                                        localStorage.setItem('workout_os_planner_habits_list', JSON.stringify(nh));
+                                        updateTargetConfig({ planner_habits_list: nh });
                                     }}
                                     className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded hover:bg-emerald-100 flex items-center gap-1"
                                 >
                                     <Plus size={10} /> Add
                                 </button>
-                                <div className="flex gap-2 text-[9px] text-gray-400 w-40 justify-between px-1">
+                                <div className="flex gap-2 text-[9px] text-on-surface-variant w-40 justify-between px-1">
                                     <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
                                 </div>
                             </div>
                         </div>
                         <div className="space-y-3">
                             {habitsList.map((habit, i) => (
-                                <div key={i} className="flex justify-between items-center group">
-                                    <div className="flex items-center gap-2 text-[11px] font-bold text-gray-700 truncate pr-2 flex-1">
+                                <div key={i} className="flex justify-between items-center gap-2 group">
+                                    <div className="flex items-center gap-2 text-[13px] font-bold text-on-surface truncate pr-1 flex-1 min-w-0">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></div>
-                                        <input 
+                                        <input
                                             type="text"
                                             value={habit}
+                                            placeholder="Name this habit"
                                             onChange={(e) => {
                                                 const nh = [...habitsList];
                                                 nh[i] = e.target.value;
                                                 setHabitsList(nh);
-                                                localStorage.setItem('workout_os_planner_habits_list', JSON.stringify(nh));
+                                                updateTargetConfig({ planner_habits_list: nh });
                                             }}
-                                            className="bg-transparent border-none focus:outline-none focus:bg-gray-100 rounded px-1 py-0.5 w-full hover:bg-gray-50 transition-colors"
+                                            className="bg-transparent border-none focus:outline-none focus:bg-surface-container rounded px-1 py-0.5 w-full text-on-surface placeholder:text-on-surface-variant/50 hover:bg-surface-container-low transition-colors"
                                         />
+                                        <button
+                                            onClick={() => {
+                                                const nh = habitsList.filter((_, idx) => idx !== i);
+                                                setHabitsList(nh);
+                                                
+                                                // Reindex the check states so days don't shift onto other habits.
+                                                const remapped: Record<string, boolean> = {};
+                                                nh.forEach((_, newIdx) => {
+                                                    const oldIdx = newIdx < i ? newIdx : newIdx + 1;
+                                                    [1,2,3,4,5,6,7].forEach((day) => {
+                                                        if (habitsState[`${oldIdx}_${day}`]) remapped[`${newIdx}_${day}`] = true;
+                                                    });
+                                                });
+                                                setHabitsState(remapped);
+                                                updateTargetConfig({ 
+                                                    planner_habits_list: nh,
+                                                    planner_habits_state: remapped 
+                                                });
+                                            }}
+                                            aria-label={`Delete habit ${habit}`}
+                                            className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-error transition-all flex-shrink-0 p-1"
+                                        >
+                                            <Trash2 size={13} />
+                                        </button>
                                     </div>
                                     <div className="flex gap-2 w-40 justify-between flex-shrink-0 items-center">
                                         {[1,2,3,4,5,6,7].map((day) => {
                                             const key = `${i}_${day}`;
                                             return (
-                                                <input 
-                                                    key={day} 
-                                                    type="checkbox" 
+                                                <input
+                                                    key={day}
+                                                    type="checkbox"
                                                     checked={habitsState[key] || false}
                                                     onChange={(e) => {
                                                         const newState = { ...habitsState, [key]: e.target.checked };
                                                         setHabitsState(newState);
-                                                        localStorage.setItem(HABITS_KEY, JSON.stringify(newState));
+                                                        updateTargetConfig({ planner_habits_state: newState });
                                                     }}
-                                                    className="accent-emerald-500 w-5 h-5 cursor-pointer opacity-40 hover:opacity-100 checked:opacity-100 transition-all rounded-sm" 
+                                                    className="accent-emerald-500 w-5 h-5 cursor-pointer opacity-40 hover:opacity-100 checked:opacity-100 transition-all rounded-sm"
                                                 />
                                             );
                                         })}
                                     </div>
                                 </div>
                             ))}
+                            {habitsList.length === 0 && (
+                                <p className="text-center text-on-surface-variant text-[13px] py-4">No habits yet. Tap Add to create one.</p>
+                            )}
                         </div>
                     </div>
 

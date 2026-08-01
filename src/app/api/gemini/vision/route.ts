@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 
 export async function POST(req: Request) {
     try {
@@ -7,11 +8,6 @@ export async function POST(req: Request) {
 
         if (!imageBase64) {
             return NextResponse.json({ error: 'No image provided' }, { status: 400 });
-        }
-
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
         }
 
         const systemInstruction = `You are a strict JSON-only API that extracts nutritional information from food labels and barcodes.
@@ -40,79 +36,38 @@ Example response:
   "icon": "🍫"
 }`;
 
-        if (apiKey) {
-            try {
-                // Remove the data:image/jpeg;base64, prefix if present
-                const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-                
-                const modelVersion = process.env.GEMINI_MODEL_VERSION || 'gemini-1.5-flash';
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelVersion}:generateContent?key=${apiKey}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        systemInstruction: {
-                            parts: [{ text: systemInstruction }]
-                        },
-                        contents: [{
-                            role: 'user',
-                            parts: [
-                                { text: 'Extract the nutritional info from this image.' },
-                                {
-                                    inline_data: {
-                                        mime_type: mimeType || 'image/jpeg',
-                                        data: base64Data
-                                    }
-                                }
-                            ]
-                        }],
-                        generationConfig: {
-                            temperature: 0.1,
-                            response_mime_type: "application/json"
-                        }
-                    })
-                });
+        try {
+            // Remove the data:image/jpeg;base64, prefix if present, then rebuild it as the Orchestrator expects a full URI
+            const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+            const universalImage = `data:${mimeType || 'image/jpeg'};base64,${base64Data}`;
 
-                if (response.ok) {
-                    const data = await response.json();
-                    let text = data.candidates?.[0]?.content?.parts?.find((p: any) => p.text)?.text;
-                    
-                    if (text) {
-                        try {
-                            const parsed = JSON.parse(text);
-                            return NextResponse.json({ meal: parsed });
-                        } catch (e) {
-                            return NextResponse.json({ error: 'Failed to parse JSON from AI response' }, { status: 500 });
-                        }
+            const response = await orchestrator.generateContent({
+                systemInstruction: systemInstruction,
+                prompt: 'Extract the nutritional info from this image.',
+                image: universalImage,
+                responseFormat: 'json',
+                temperature: 0.1
+            });
+
+            if (response.text) {
+                try {
+                    // Try to parse the LLM text. (Some models might wrap in ```json, so we could strip it if needed, but responseFormat should handle it)
+                    let cleanText = response.text;
+                    if (cleanText.startsWith('```json')) {
+                        cleanText = cleanText.replace(/```json\n?/, '').replace(/```$/, '');
                     }
-                } else {
-                    const errorData = await response.text();
-                    console.error('Gemini API Error:', errorData);
-                    return NextResponse.json({ error: `Gemini API Error: ${errorData}` }, { status: response.status });
+                    const parsed = JSON.parse(cleanText);
+                    return NextResponse.json({ meal: parsed });
+                } catch {
+                    return NextResponse.json({ error: 'Failed to parse JSON from AI response' }, { status: 500 });
                 }
-            } catch (err) {
-                console.error('Gemini API call failed:', err);
-                return NextResponse.json({ error: 'Network error connecting to Gemini.' }, { status: 500 });
+            } else {
+                return NextResponse.json({ error: `LLM Returned Empty Content` }, { status: 500 });
             }
+        } catch (err: any) {
+            console.error('Vision API call failed:', err);
+            return NextResponse.json({ error: `Orchestrator error: ${err.message}` }, { status: 500 });
         }
-
-        // Fallback dummy data if no API key
-        return NextResponse.json({
-            meal: {
-                category: "Snacks",
-                name: "Scanned Food Item",
-                portion: "1 serving",
-                calories: 180,
-                protein: 10,
-                carbs: 20,
-                fat: 5,
-                sugar: 3,
-                icon: "📸"
-            }
-        });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
     }

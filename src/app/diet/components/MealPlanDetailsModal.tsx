@@ -356,33 +356,33 @@ export default function MealPlanDetailsModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Modal Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-gray-100 dark:bg-slate-800">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container dark:bg-surface-container-high">
                     <div className="flex items-center gap-2">
                         <div className="w-9 h-9 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center font-bold">
                             <ShoppingBag size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 drop-shadow-sm">
+                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
                                 5-Day Getting Started Plan
                             </h2>
-                            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                            <p className="text-xs font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
                                 Complete nutrition breakdown, ingredients & prep guides
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
                     >
                         <X size={20} />
                     </button>
                 </div>
 
                 {/* Day Navigation Tabs */}
-                <div className="px-6 py-3 bg-stone-50/80 border-b border-stone-200/60 flex items-center justify-between overflow-x-auto gap-2">
+                <div className="px-6 py-3 bg-surface-container-low/80 border-b border-stone-200/60 flex items-center justify-between overflow-x-auto gap-2">
                     {[1, 2, 3, 4, 5].map((dayNum) => (
                         <button
                             key={dayNum}
@@ -390,7 +390,7 @@ export default function MealPlanDetailsModal({
                             className={`flex-1 py-2 px-4 rounded-2xl text-xs font-black transition-all border ${
                                 selectedDay === dayNum
                                     ? 'bg-cyan-600 text-white border-cyan-600 shadow-md scale-[1.02]'
-                                    : 'bg-white text-gray-600 border-gray-200 hover:bg-stone-100'
+                                    : 'bg-card-white text-on-surface-variant border-surface-variant hover:bg-surface-container'
                             }`}
                         >
                             Day {dayNum}
@@ -406,18 +406,18 @@ export default function MealPlanDetailsModal({
                         return (
                             <div
                                 key={recipe.id}
-                                className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all bg-white dark:bg-slate-900/70 relative overflow-hidden"
+                                className="bg-card-white border border-surface-variant border-surface-variant rounded-3xl p-5 shadow-sm hover:shadow-md transition-all bg-card-white/70 relative overflow-hidden"
                             >
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     {/* Image Thumbnail */}
-                                    <div className="relative w-full sm:w-36 h-36 rounded-2xl overflow-hidden border border-gray-200 shadow-sm flex-shrink-0">
+                                    <div className="relative w-full sm:w-36 h-36 rounded-2xl overflow-hidden border border-surface-variant shadow-sm flex-shrink-0">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={recipe.imageUrl}
                                             alt={recipe.title}
                                             className="w-full h-full object-cover"
                                         />
-                                        <div className="absolute top-2 left-2 bg-white dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-xl text-xs font-black text-gray-800 shadow-sm flex items-center gap-1">
+                                        <div className="absolute top-2 left-2 bg-card-white/90 backdrop-blur-sm px-2 py-1 rounded-xl text-xs font-black text-on-surface shadow-sm flex items-center gap-1">
                                             <span>{recipe.icon}</span>
                                             <span>{recipe.category}</span>
                                         </div>
@@ -427,7 +427,7 @@ export default function MealPlanDetailsModal({
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div>
                                             <div className="flex items-start justify-between gap-2">
-                                                <h3 className="text-base font-black text-gray-900 drop-shadow-sm">
+                                                <h3 className="text-base font-black text-on-surface drop-shadow-sm">
                                                     {recipe.title}
                                                 </h3>
                                                 {onLogMeal && (
@@ -455,7 +455,7 @@ export default function MealPlanDetailsModal({
 
                                             {/* Macro Badges */}
                                             <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                <span className="bg-stone-100 text-stone-800 text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                                                <span className="bg-surface-container text-stone-800 text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1">
                                                     <Flame size={12} className="text-orange-500" /> {recipe.calories} kcal
                                                 </span>
                                                 <span className="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
@@ -467,25 +467,25 @@ export default function MealPlanDetailsModal({
                                                 <span className="bg-rose-50 text-rose-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
                                                     F: {recipe.fat}g
                                                 </span>
-                                                <span className="text-[11px] text-gray-400 font-bold flex items-center gap-1 ml-auto">
+                                                <span className="text-[11px] text-on-surface-variant font-bold flex items-center gap-1 ml-auto">
                                                     <Clock size={12} /> {recipe.prepTime}
                                                 </span>
                                             </div>
                                         </div>
 
                                         {/* Ingredients & Instructions preview */}
-                                        <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        <div className="mt-3 pt-3 border-t border-surface-variant grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                             <div>
-                                                <h4 className="font-black text-gray-700 uppercase tracking-wider text-[10px] mb-1">Ingredients</h4>
-                                                <ul className="list-disc list-inside text-gray-600 space-y-0.5 font-medium">
+                                                <h4 className="font-black text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Ingredients</h4>
+                                                <ul className="list-disc list-inside text-on-surface-variant space-y-0.5 font-medium">
                                                     {recipe.ingredients.slice(0, 3).map((ing, i) => (
                                                         <li key={i}>{ing}</li>
                                                     ))}
                                                 </ul>
                                             </div>
                                             <div>
-                                                <h4 className="font-black text-gray-700 uppercase tracking-wider text-[10px] mb-1">Prep Steps</h4>
-                                                <ol className="list-decimal list-inside text-gray-600 space-y-0.5 font-medium">
+                                                <h4 className="font-black text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Prep Steps</h4>
+                                                <ol className="list-decimal list-inside text-on-surface-variant space-y-0.5 font-medium">
                                                     {recipe.prepSteps.slice(0, 2).map((step, i) => (
                                                         <li key={i}>{step}</li>
                                                     ))}

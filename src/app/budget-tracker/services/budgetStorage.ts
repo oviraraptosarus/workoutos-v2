@@ -69,19 +69,25 @@ export const addTransaction = async (
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Convert date string "MMM D" or whatever to YYYY-MM-DD
-    let dateStr = item.date;
-    try {
-        const d = new Date(item.date);
-        if (!isNaN(d.getTime())) {
-            dateStr = d.toISOString().split('T')[0];
+    // Normalize the date to YYYY-MM-DD in LOCAL time. Callers historically passed
+    // yearless strings like "Jul 31", which `new Date()` interprets as year 2001;
+    // guard against that by falling back to today whenever the parsed year looks wrong.
+    const toLocalKey = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    const today = new Date();
+    let dateStr = toLocalKey(today);
+    if (item.date) {
+        // Already ISO (YYYY-MM-DD)? Trust it.
+        if (/^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+            dateStr = item.date;
         } else {
-            const today = new Date();
-            dateStr = today.toISOString().split('T')[0];
+            const parsed = new Date(item.date);
+            // Reject NaN and the classic yearless-string → 2001 fallback.
+            if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= 2015) {
+                dateStr = toLocalKey(parsed);
+            }
         }
-    } catch {
-        const today = new Date();
-        dateStr = today.toISOString().split('T')[0];
     }
 
     const payload = {

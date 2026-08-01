@@ -24,7 +24,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (onAdd) {
-            onAdd({ description, amount: parseFloat(amount), category, date: new Date().toISOString() });
+            onAdd({ description, amount: parseFloat(amount), category, date: new Date().toISOString().split('T')[0] });
         }
         onClose();
     };
@@ -33,18 +33,18 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
         <Modal isOpen={isOpen} onClose={onClose} title="Add New Expense">
                 <form onSubmit={handleSubmit} className="space-y-4 text-xs">
                 <div>
-                    <label className="block font-bold text-gray-700 mb-1">Description</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">Description</label>
                     <input
                         type="text"
                         required
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="e.g. Protein powder"
-                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-gray-900 focus:outline-none focus:bg-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
                     />
                 </div>
                 <div>
-                    <label className="block font-bold text-gray-700 mb-1">Amount (₹)</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">Amount (₹)</label>
                     <input
                         type="number"
                         step="0.01"
@@ -52,15 +52,15 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.00"
-                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-gray-900 focus:outline-none focus:bg-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
                     />
                 </div>
                 <div>
-                    <label className="block font-bold text-gray-700 mb-1">Category</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">Category</label>
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-gray-900 focus:outline-none focus:bg-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
                     >
                         <option value="Groceries">Groceries & Meal Prep</option>
                         <option value="Supplements">Supplements & Protein</option>
@@ -73,7 +73,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 rounded-xl bg-gray-50 hover:bg-white/80 text-gray-700 font-bold border border-gray-100 transition-colors shadow-sm"
+                        className="px-4 py-2 rounded-xl bg-surface-container-low hover:bg-card-white/80 text-on-surface-variant font-bold border border-surface-variant transition-colors shadow-sm"
                     >
                         Cancel
                     </button>

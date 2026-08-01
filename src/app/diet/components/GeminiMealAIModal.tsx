@@ -151,16 +151,16 @@ export default function GeminiMealAIModal({
 
     return (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-lg shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-lg shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-emerald-50/60 via-white to-cyan-50/60">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
                             <Sparkles size={16} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 drop-shadow-sm">
+                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
                                 AI Natural Meal Logger
                             </h2>
                             <p className="text-[11px] font-bold text-emerald-700">
@@ -170,7 +170,7 @@ export default function GeminiMealAIModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
                     >
                         <X size={18} />
                     </button>
@@ -182,7 +182,7 @@ export default function GeminiMealAIModal({
                     {/* Prompt Box */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-black text-gray-600 uppercase tracking-wider">
+                            <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
                                 Describe What You Ate
                             </label>
                             <button
@@ -204,19 +204,19 @@ export default function GeminiMealAIModal({
                                 value={promptText}
                                 onChange={(e) => setPromptText(e.target.value)}
                                 placeholder='e.g. "I had 2 eggs with avocado toast and a black coffee for breakfast"'
-                                className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 text-xs font-bold text-stone-900 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all placeholder:text-gray-400 resize-none shadow-inner"
+                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
                             />
                         </div>
 
                         <div className="flex justify-between items-center pt-1">
-                            <span className="text-[10px] text-gray-400 font-bold">
+                            <span className="text-[10px] text-on-surface-variant font-bold">
                                 Try typing: "200g chicken breast, 1 cup brown rice, broccoli"
                             </span>
                             <button
                                 type="button"
                                 onClick={handleAnalyze}
                                 disabled={isAnalyzing || !promptText.trim()}
-                                className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-surface-container-high text-white font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isAnalyzing ? (
                                     <>
@@ -233,9 +233,9 @@ export default function GeminiMealAIModal({
 
                     {/* Parsed Preview Results */}
                     {parsedFoods.length > 0 && (
-                        <div className="space-y-3 pt-3 border-t border-gray-100 animate-in fade-in">
+                        <div className="space-y-3 pt-3 border-t border-surface-variant animate-in fade-in">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-black text-gray-700 uppercase tracking-wider">
+                                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
                                     Parsed Ingredients ({parsedFoods.length})
                                 </span>
                                 <span className="text-[10px] text-emerald-600 font-bold">
@@ -247,19 +247,19 @@ export default function GeminiMealAIModal({
                                 {parsedFoods.map((item, idx) => (
                                     <div
                                         key={idx}
-                                        className="flex items-center justify-between p-3 rounded-2xl bg-white border border-stone-200 shadow-sm text-xs"
+                                        className="flex items-center justify-between p-3 rounded-2xl bg-card-white border border-stone-200 shadow-sm text-xs"
                                     >
                                         <div className="flex items-center gap-2.5">
                                             <span className="text-lg">{item.icon}</span>
                                             <div>
-                                                <div className="font-bold text-gray-900 dark:text-white">{item.name}</div>
-                                                <div className="text-[10px] text-gray-400 font-medium">
+                                                <div className="font-bold text-on-surface dark:text-white">{item.name}</div>
+                                                <div className="text-[10px] text-on-surface-variant font-medium">
                                                     [{item.category}] • {item.portion}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-black text-gray-900 dark:text-white">{item.calories} kcal</div>
+                                            <div className="font-black text-on-surface dark:text-white">{item.calories} kcal</div>
                                             <div className="text-[10px] text-emerald-700 font-bold">
                                                 P:{item.protein}g C:{item.carbs}g F:{item.fat}g
                                             </div>

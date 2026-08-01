@@ -130,26 +130,26 @@ export default function RecipeGroupBuilderModal({
 
     return (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-stone-50">
+                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-sm">
                             <ChefHat size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-gray-900 drop-shadow-sm">
+                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
                                 Saved Recipe & Meal Combos
                             </h2>
-                            <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                            <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
                                 Log multi-ingredient meals in 1 click
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
                     >
                         <X size={18} />
                     </button>
@@ -161,7 +161,7 @@ export default function RecipeGroupBuilderModal({
                     {!isCreatingNew ? (
                         <>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-black text-gray-600 uppercase tracking-wider">
+                                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
                                     Your Saved Recipes ({recipes.length})
                                 </span>
                                 <button
@@ -180,15 +180,15 @@ export default function RecipeGroupBuilderModal({
                                     return (
                                         <div
                                             key={recipe.id}
-                                            className="p-4 rounded-2xl bg-stone-50 border border-stone-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-3"
+                                            className="p-4 rounded-2xl bg-surface-container-low border border-stone-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-3"
                                         >
                                             <div className="flex items-center gap-3">
                                                 <span className="text-2xl">{recipe.icon}</span>
                                                 <div>
-                                                    <h3 className="text-sm font-black text-gray-900 drop-shadow-sm">
+                                                    <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
                                                         {recipe.title}
                                                     </h3>
-                                                    <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500">
+                                                    <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant">
                                                         {recipe.items.length} ingredients • {totalCal} kcal ({totalP}g Protein)
                                                     </p>
                                                 </div>
@@ -206,7 +206,7 @@ export default function RecipeGroupBuilderModal({
                                                         const updated = recipes.filter((r) => r.id !== recipe.id);
                                                         saveRecipesToStorage(updated);
                                                     }}
-                                                    className="p-2 text-gray-400 hover:text-red-600 rounded-xl hover:bg-red-50 transition-colors"
+                                                    className="p-2 text-on-surface-variant hover:text-red-600 rounded-xl hover:bg-red-50 transition-colors"
                                                     title="Delete recipe"
                                                 >
                                                     <Trash2 size={16} />
@@ -221,7 +221,7 @@ export default function RecipeGroupBuilderModal({
                         /* New Recipe Form */
                         <form onSubmit={handleSaveNewRecipe} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-black text-gray-600 uppercase tracking-wider mb-1">
+                                <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">
                                     Recipe Title
                                 </label>
                                 <input
@@ -230,7 +230,7 @@ export default function RecipeGroupBuilderModal({
                                     value={newTitle}
                                     onChange={(e) => setNewTitle(e.target.value)}
                                     placeholder="e.g. My Morning Protein Smoothie"
-                                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white"
+                                    className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-4 py-2.5 text-xs font-bold text-on-surface dark:text-white"
                                 />
                             </div>
 
@@ -238,7 +238,7 @@ export default function RecipeGroupBuilderModal({
                                 <button
                                     type="button"
                                     onClick={() => setIsCreatingNew(false)}
-                                    className="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 dark:bg-slate-800"
+                                    className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container dark:bg-surface-container-high"
                                 >
                                     Back
                                 </button>

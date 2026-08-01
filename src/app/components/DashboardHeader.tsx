@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { ChevronLeft, ChevronRight, User } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 
@@ -48,17 +48,17 @@ export default function DashboardHeader() {
                             <button 
                                 onClick={() => setOffsetDays(Math.max(offsetDays - 1, -14))}
                                 disabled={offsetDays <= -14}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors text-gray-500 dark:text-gray-400"
+                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high disabled:opacity-30 transition-colors text-on-surface-variant dark:text-on-surface-variant"
                             >
                                 <ChevronLeft size={12} />
                             </button>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 font-bold whitespace-nowrap select-none">
+                            <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none">
                                 {isToday ? 'Today, ' : ''}{dateStr || 'Loading...'}
                             </p>
                             <button 
                                 onClick={() => setOffsetDays(Math.min(offsetDays + 1, 0))}
                                 disabled={isToday}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors text-gray-500 dark:text-gray-400"
+                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high disabled:opacity-30 transition-colors text-on-surface-variant dark:text-on-surface-variant"
                             >
                                 <ChevronRight size={12} />
                             </button>
@@ -80,10 +80,6 @@ export default function DashboardHeader() {
                     </Link>
                 </div>
             </div>
-
-
-
-
         </div>
     );
 }

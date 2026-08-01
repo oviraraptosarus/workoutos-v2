@@ -8,6 +8,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
+import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
+import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
+
 interface Point {
     date: string;
     label: string;
@@ -25,6 +28,47 @@ export default function ProgressPage() {
     const [points, setPoints] = useState<Point[]>([]);
     const [range, setRange] = useState<(typeof RANGES)[number]['key']>('30');
     const [loading, setLoading] = useState(true);
+
+    // Progress photos state
+    const [photos, setPhotos] = useState<ProgressPhotoItem[]>([]);
+    const [galleryOpen, setGalleryOpen] = useState(false);
+    const [galleryInitialPhotoId, setGalleryInitialPhotoId] = useState<string | undefined>(undefined);
+
+    const fetchPhotos = React.useCallback(async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data, error } = await supabase
+            .from('progress_photos')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('uploaded_at', { ascending: true });
+        if (error || !data) return;
+
+        const loaded: ProgressPhotoItem[] = [];
+        for (const row of data) {
+            const { data: fileData } = await supabase.storage
+                .from('progress_photos')
+                .download(row.storage_path);
+            if (fileData) {
+                const displayLabel = new Date(row.taken_at || row.uploaded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                loaded.push({
+                    id: row.id,
+                    storage_path: row.storage_path,
+                    uploaded_at: row.uploaded_at,
+                    taken_at: row.taken_at,
+                    weight_snapshot: row.weight_snapshot,
+                    notes: row.notes,
+                    dataUrl: URL.createObjectURL(fileData),
+                    label: displayLabel
+                });
+            }
+        }
+        setPhotos(loaded);
+    }, []);
+
+    useEffect(() => {
+        fetchPhotos();
+    }, [fetchPhotos]);
 
     useEffect(() => {
         const load = async () => {
@@ -120,6 +164,19 @@ export default function ProgressPage() {
                     </div>
                 </div>
 
+                {/* Integrated Progress Photos Row */}
+                <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                    <ProgressPhotosRow
+                        photos={photos}
+                        currentWeight={latest}
+                        onPhotosUpdated={fetchPhotos}
+                        onOpenGallery={(photoId) => {
+                            setGalleryInitialPhotoId(photoId);
+                            setGalleryOpen(true);
+                        }}
+                    />
+                </div>
+
                 {/* Chart */}
                 <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                     <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-4">Weight</h2>
@@ -134,12 +191,18 @@ export default function ProgressPage() {
                                 Log weight
                             </Link>
                         </div>
+                    ) : points.length === 1 ? (
+                        <div className="h-56 flex flex-col items-center justify-center gap-2 text-center">
+                            <p className="font-display-lg text-display-lg font-bold text-on-surface tabular-nums">{points[0].weight.toFixed(1)}<span className="font-label-md text-label-md text-on-surface-variant ml-1">kg</span></p>
+                            <p className="font-label-md text-label-md text-on-surface-variant">{points[0].label}</p>
+                            <p className="font-label-sm text-label-sm text-on-surface-variant max-w-[220px]">Log another day to see your trend line</p>
+                        </div>
                     ) : (
                         <div className="h-56 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={points} margin={{ top: 8, right: 8, bottom: 4, left: -18 }}>
+                                <LineChart data={points} margin={{ top: 8, right: 12, bottom: 4, left: -18 }}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(150,150,150,0.15)" />
-                                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6E6E73' }} minTickGap={24} />
+                                    <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6E6E73' }} minTickGap={24} padding={{ left: 8, right: 8 }} />
                                     <YAxis domain={['dataMin - 1', 'dataMax + 1']} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6E6E73' }} width={44} />
                                     <Tooltip
                                         contentStyle={{ borderRadius: 14, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
@@ -195,6 +258,15 @@ export default function ProgressPage() {
                     <ChevronRight size={18} className="text-on-surface-variant" />
                 </Link>
             </div>
+
+            {/* Progress Photo Full Gallery Modal */}
+            <ProgressPhotoGalleryModal
+                isOpen={galleryOpen}
+                initialPhotoId={galleryInitialPhotoId}
+                photos={photos}
+                onClose={() => setGalleryOpen(false)}
+                onPhotosUpdated={fetchPhotos}
+            />
         </AppLayout>
     );
 }

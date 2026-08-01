@@ -24,14 +24,14 @@ export default function DateNavigator({ currentDateKey, onDateChange }: DateNavi
         <div className="flex items-center justify-between gap-2">
             <button
                 onClick={() => navigateDay(-1)}
-                className="p-1.5 rounded-full hover:bg-stone-100/80 text-gray-500 hover:text-gray-900 transition-colors btn-press"
+                className="p-1.5 rounded-full hover:bg-surface-container/80 text-on-surface-variant hover:text-on-surface transition-colors btn-press"
                 title="Previous Day"
             >
                 <ChevronLeft size={18} />
             </button>
 
             <div className="flex items-center gap-2 relative">
-                <label className="flex items-center gap-1.5 text-xs font-black text-gray-800 uppercase tracking-wider cursor-pointer hover:text-cyan-700 transition-colors bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                <label className="flex items-center gap-1.5 text-xs font-black text-on-surface uppercase tracking-wider cursor-pointer hover:text-cyan-700 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant shadow-sm">
                     <Calendar size={14} className="text-cyan-600" />
                     <span>{getDisplayDateString(currentDateKey)}</span>
                     <input
@@ -59,7 +59,7 @@ export default function DateNavigator({ currentDateKey, onDateChange }: DateNavi
 
             <button
                 onClick={() => navigateDay(1)}
-                className="p-1.5 rounded-full hover:bg-stone-100/80 text-gray-500 hover:text-gray-900 transition-colors btn-press"
+                className="p-1.5 rounded-full hover:bg-surface-container/80 text-on-surface-variant hover:text-on-surface transition-colors btn-press"
                 title="Next Day"
             >
                 <ChevronRight size={18} />

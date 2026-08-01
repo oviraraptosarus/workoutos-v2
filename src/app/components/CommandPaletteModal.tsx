@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Command, HelpCircle, Utensils, Dumbbell, Droplet, Sparkles, FileJson, BookOpen, Settings, Moon, DollarSign, ChevronRight, HelpCircle as HelpIcon } from 'lucide-react';
 
+
 interface CommandPaletteModalProps {
     isOpen?: boolean;
     onClose?: () => void;
@@ -43,6 +44,7 @@ const FAQ_ITEMS = [
 ];
 
 export default function CommandPaletteModal() {
+
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -136,35 +138,35 @@ export default function CommandPaletteModal() {
             {/* Modal Overlay */}
             {isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] border border-gray-200 overflow-hidden flex flex-col max-h-[85vh]">
+                    <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[85vh]">
                         
                         {/* Search Input Bar */}
-                        <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3 bg-stone-50/80">
-                            <Search size={20} className="text-gray-400 dark:text-gray-500" />
+                        <div className="px-5 py-4 border-b border-surface-variant flex items-center gap-3 bg-surface-container-low/80">
+                            <Search size={20} className="text-on-surface-variant dark:text-on-surface-variant" />
                             <input
                                 type="text"
                                 autoFocus
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search sections, features, or help topics (Ctrl+K)..."
-                                className="w-full bg-transparent text-sm font-bold text-gray-900 placeholder:text-gray-400 focus:outline-none"
+                                className="w-full bg-transparent text-sm font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none"
                             />
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="p-1.5 rounded-full hover:bg-gray-200/60 text-gray-400 hover:text-gray-600 transition-colors"
+                                className="p-1.5 rounded-full hover:bg-surface-container-high/60 text-on-surface-variant hover:text-on-surface-variant transition-colors"
                             >
                                 <X size={18} />
                             </button>
                         </div>
 
                         {/* Tabs Bar */}
-                        <div className="px-5 py-2.5 bg-white border-b border-gray-100 flex items-center gap-2">
+                        <div className="px-5 py-2.5 bg-card-white border-b border-surface-variant flex items-center gap-2">
                             <button
                                 onClick={() => setActiveTab('commands')}
                                 className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition-all border ${
                                     activeTab === 'commands'
-                                        ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
-                                        : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
+                                        ? 'bg-primary text-on-primary border-primary shadow-sm'
+                                        : 'bg-surface-container-low text-on-surface-variant border-surface-variant hover:bg-surface-container'
                                 }`}
                             >
                                 Quick Section Jumper
@@ -173,8 +175,8 @@ export default function CommandPaletteModal() {
                                 onClick={() => setActiveTab('help')}
                                 className={`py-1.5 px-3.5 rounded-xl text-xs font-bold transition-all border ${
                                     activeTab === 'help'
-                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                                        : 'bg-stone-50 text-gray-600 border-gray-200 hover:bg-stone-100'
+                                        ? 'bg-secondary text-on-secondary border-secondary shadow-sm'
+                                        : 'bg-surface-container-low text-on-surface-variant border-surface-variant hover:bg-surface-container'
                                 }`}
                             >
                                 Help & FAQ Guide
@@ -189,26 +191,26 @@ export default function CommandPaletteModal() {
                                         <div
                                             key={cmd.id}
                                             onClick={() => handleSelectCommand(cmd)}
-                                            className="group flex items-center justify-between p-3.5 rounded-2xl bg-stone-50 hover:bg-emerald-50/60 border border-stone-200 hover:border-emerald-300 shadow-sm transition-all cursor-pointer"
+                                            className="group flex items-center justify-between p-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container border border-surface-variant hover:border-secondary/40 shadow-sm transition-all cursor-pointer"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2.5 rounded-2xl bg-white border border-stone-200/80 shadow-sm group-hover:scale-105 transition-transform">
+                                                <div className="p-2.5 rounded-2xl bg-card-white border border-surface-variant shadow-sm group-hover:scale-105 transition-transform">
                                                     {cmd.icon}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-xs font-bold text-gray-900 group-hover:text-emerald-800 transition-colors">
+                                                    <h4 className="text-xs font-bold text-on-surface group-hover:text-secondary transition-colors">
                                                         {cmd.title}
                                                     </h4>
-                                                    <p className="text-[11px] font-medium text-gray-500 mt-0.5">
+                                                    <p className="text-[11px] font-medium text-on-surface-variant mt-0.5">
                                                         {cmd.description}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <ChevronRight size={16} className="text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+                                            <ChevronRight size={16} className="text-on-surface-variant group-hover:text-secondary group-hover:translate-x-0.5 transition-all" />
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 text-xs font-bold text-gray-400 dark:text-gray-500">
+                                    <div className="text-center py-8 text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
                                         No matching sections found. Try searching for "Diet", "Workout", or "Budget".
                                     </div>
                                 )
@@ -218,19 +220,19 @@ export default function CommandPaletteModal() {
                                     filteredFaqs.map((faq, idx) => (
                                         <div
                                             key={idx}
-                                            className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-1.5 shadow-sm"
+                                            className="p-4 rounded-2xl bg-surface-container-low border border-surface-variant space-y-1.5 shadow-sm"
                                         >
-                                            <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                                                <HelpIcon size={14} className="text-emerald-600 flex-shrink-0" />
+                                            <h4 className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                                                <HelpIcon size={14} className="text-secondary flex-shrink-0" />
                                                 <span>{faq.q}</span>
                                             </h4>
-                                            <p className="text-[11px] font-medium text-gray-600 leading-relaxed pl-5">
+                                            <p className="text-[11px] font-medium text-on-surface-variant leading-relaxed pl-5">
                                                 {faq.a}
                                             </p>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 text-xs font-bold text-gray-400 dark:text-gray-500">
+                                    <div className="text-center py-8 text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
                                         No matching help guides found.
                                     </div>
                                 )

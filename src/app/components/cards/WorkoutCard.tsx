@@ -129,7 +129,7 @@ export default function WorkoutCard() {
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-on-surface-variant text-[20px]">fitness_center</span>
-                    <span className="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Workout</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Workout</span>
                     {isCompleted && (
                         <span className="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-activity-green/10 text-activity-green">
                             Done
@@ -143,14 +143,20 @@ export default function WorkoutCard() {
             </div>
 
             {exercises.length === 0 ? (
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                    <p className="font-body-md text-on-surface-variant">Nothing logged</p>
-                    <Link
-                        href="/workout"
-                        className="font-label-md text-label-md text-on-primary bg-primary px-4 py-2 rounded-full shrink-0 active:scale-95 transition-transform text-center"
-                    >
-                        Start workout
-                    </Link>
+                <div className="flex flex-col items-center justify-center gap-3 py-4 mb-2">
+                    <div className="w-12 h-12 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-on-surface-variant/50 shadow-inner">
+                        <span className="material-symbols-outlined text-[24px]">fitness_center</span>
+                    </div>
+                    <div className="text-center">
+                        <p className="font-label-md font-bold text-on-surface">No workouts yet</p>
+                        <p className="font-label-sm text-xs text-on-surface-variant mt-0.5 mb-3">Time to crush your goals.</p>
+                        <Link
+                            href="/workout"
+                            className="font-label-md text-xs font-bold text-on-primary bg-primary px-5 py-2.5 rounded-full active:scale-95 transition-transform shadow-sm"
+                        >
+                            Start your first workout
+                        </Link>
+                    </div>
                 </div>
             ) : (
                 <>

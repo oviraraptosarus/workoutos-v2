@@ -81,32 +81,39 @@ export default function SleepPage() {
         loadSleepData();
     }, [selectedDate]);
 
-    const saveToSupabase = async (newTotal: number, newLogs: any[]) => {
+    const saveToSupabase = async (newTotal: number, newLogs: any[], bedtime?: string, waketime?: string) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user || !selectedDate) return;
-        
-        await supabase.from('daily_logs').upsert(
-            { 
-                user_id: user.id, 
-                date: selectedDate, 
-                sleep_hours: newTotal,
-                sleep_logs: newLogs
-            },
-            { onConflict: 'user_id,date' }
-        );
+
+        const row: any = {
+            user_id: user.id,
+            date: selectedDate,
+            sleep_hours: newTotal,
+            sleep_logs: newLogs,
+        };
+        // Persist bed/wake so the dashboard SleepCard can show them.
+        if (bedtime) row.sleep_bedtime = bedtime;
+        if (waketime) row.sleep_waketime = waketime;
+
+        await supabase.from('daily_logs').upsert(row, { onConflict: 'user_id,date' });
     };
 
     const handleAdd = async (amount: number, type: string, details?: any) => {
         if (!selectedDate) return;
-        const newTotal = currentSleep + amount;
+        // A night's sleep is a single value — replace the day's total rather than
+        // accumulate, so re-logging corrects instead of doubling.
+        const isNightSleep = type === 'Night Sleep';
+        const newTotal = isNightSleep ? amount : currentSleep + amount;
         setCurrentSleep(newTotal);
-        
+
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const newLogs = [{ id: Date.now(), amount, time: timeStr, type, details }, ...logs];
+        const newLogs = isNightSleep
+            ? [{ id: Date.now(), amount, time: timeStr, type, details }]
+            : [{ id: Date.now(), amount, time: timeStr, type, details }, ...logs];
         setLogs(newLogs);
-        
-        await saveToSupabase(newTotal, newLogs);
+
+        await saveToSupabase(newTotal, newLogs, details?.bedtime, details?.waketime);
         window.dispatchEvent(new Event('storage')); // Sync to dashboard
         
         // Update chart data for today
@@ -153,7 +160,7 @@ export default function SleepPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors btn-press">
+                        <Link href="/dashboard" className="w-10 h-10 rounded-full bg-card-white shadow-sm flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors btn-press">
                             <ArrowLeft size={20} />
                         </Link>
                         <div>
@@ -189,7 +196,7 @@ export default function SleepPage() {
                                 {isTrendingUp ? <TrendingUp size={20} className="text-white" /> : <TrendingDown size={20} className="text-white/60" />}
                             </div>
                         </div>
-                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+                        <div className="w-12 h-12 bg-card-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
                             <Moon size={24} className="text-white" />
                         </div>
                     </div>

@@ -47,7 +47,7 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const percentage = Math.min(100, Math.round((waterMl / goal) * 100));
 
     return (
-        <div className="bg-white border border-gray-100 border-gray-200 rounded-3xl p-5 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-blue-50/40 via-white/50 to-cyan-50/40">
+        <div className="bg-card-white border border-surface-variant rounded-3xl p-5 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm relative overflow-hidden flex-shrink-0">
                     <div 
@@ -58,21 +58,21 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                 </div>
                 <div>
                     <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black text-gray-900 drop-shadow-sm">Hydration Tracker</h3>
+                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">Hydration Tracker</h3>
                         {percentage >= 100 && (
                             <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                 <Check size={12} strokeWidth={3} /> Goal Met!
                             </span>
                         )}
                     </div>
-                    <p className="text-xs text-gray-600 font-bold mt-0.5">
+                    <p className="text-xs text-on-surface-variant font-bold mt-0.5">
                         {waterMl} ml / {goal} ml consumed ({percentage}%)
                     </p>
                 </div>
             </div>
 
             <div className="flex items-center gap-2 w-full md:w-auto">
-                <div className="flex-1 md:w-36 bg-gray-100 h-2.5 rounded-full overflow-hidden shadow-inner border border-gray-100 dark:border-slate-800">
+                <div className="flex-1 md:w-36 bg-surface-container h-2.5 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
                     <div 
                         className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(96,165,250,0.6)]" 
                         style={{ width: `${percentage}%` }} 
@@ -97,7 +97,7 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                     </button>
                     <button
                         onClick={resetWater}
-                        className="p-1.5 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors btn-press"
+                        className="p-1.5 rounded-xl hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors btn-press"
                         title="Reset water intake"
                     >
                         <RefreshCw size={14} />

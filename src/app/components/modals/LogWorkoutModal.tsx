@@ -13,14 +13,14 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-card-white/95 /95 backdrop-blur-2xl border border-surface-variant dark:border-white/10 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
-                <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800">
-                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">Log workout</h2>
+                <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant ">
+                    <h2 className="text-lg font-bold text-on-surface dark:text-white">Log workout</h2>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition-colors btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors btn-press"
                     >
                         <X size={18} />
                     </button>
@@ -29,9 +29,9 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
                 {/* Body Form */}
                 <form className="p-5 space-y-4" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
                     <div>
-                        <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">Session type</label>
+                        <label className="block text-[13px] font-semibold text-on-surface mb-1.5">Session type</label>
                         <select
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:bg-[#f5ebd7]/60 transition-colors font-medium font-sans appearance-none"
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium font-sans appearance-none"
                             defaultValue=""
                         >
                             <option value="" disabled>Select activity...</option>
@@ -57,11 +57,11 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
                     </div>
 
                     <div>
-                        <label className="block text-[13px] font-semibold text-gray-800 mb-1.5">Duration (min)</label>
+                        <label className="block text-[13px] font-semibold text-on-surface mb-1.5">Duration (min)</label>
                         <input
                             type="number"
                             placeholder="45"
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-gray-400 font-medium"
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
                         />
                     </div>
 

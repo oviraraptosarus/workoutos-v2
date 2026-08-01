@@ -161,7 +161,9 @@ export default function NutritionCard() {
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="font-display-lg text-headline-lg font-bold text-on-surface tabular-nums leading-none">
-                                    {loaded ? currentCals.toLocaleString() : '—'}
+                                    {loaded ? currentCals.toLocaleString() : (
+                                        <div className="h-8 w-16 bg-surface-variant/50 animate-pulse rounded-md inline-block"></div>
+                                    )}
                                 </span>
                                 <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
                                     of {goalCals.toLocaleString()}

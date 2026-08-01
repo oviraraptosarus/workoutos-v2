@@ -120,7 +120,7 @@ export default function MoodEnergyCard() {
     return (
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col relative overflow-hidden">
             <div className="flex items-baseline justify-between mb-4">
-                <h3 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">How do you feel?</h3>
+                <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">How do you feel?</h3>
                 <span className="font-label-sm text-label-sm text-on-surface-variant">Optional</span>
             </div>
 

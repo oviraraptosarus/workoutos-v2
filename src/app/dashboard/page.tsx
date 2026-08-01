@@ -13,7 +13,9 @@ import DashboardTasks from '@/app/components/DashboardTasks';
 import QuickNotes from '@/app/components/QuickNotes';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 
+
 export default function Dashboard() {
+
   const { user, isLoading } = useAuth();
   const router = useRouter();
 

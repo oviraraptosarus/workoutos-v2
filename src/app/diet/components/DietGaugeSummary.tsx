@@ -31,7 +31,7 @@ export default function DietGaugeSummary({
     // Gauge calculations
     const radius = 90;
     const circumference = Math.PI * radius; // half circle
-    const progressPercent = Math.min(100, Math.max(0, (totalCalories / calorieGoal) * 100));
+    const progressPercent = calorieGoal > 0 ? Math.min(100, Math.max(0, (totalCalories / calorieGoal) * 100)) : (totalCalories > 0 ? 100 : 0);
     const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
     
     // Determine gauge color based on progress
@@ -43,17 +43,17 @@ export default function DietGaugeSummary({
     }
 
     return (
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
+        <div className="bg-card-white backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
             {/* Top Toolbar with Date Navigator */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100 dark:border-slate-800/60 mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-variant/60 mb-4">
                 <div className="w-full flex justify-center sm:justify-start sm:w-auto">
                     <DateNavigator currentDateKey={currentDateKey} onDateChange={onDateChange} />
                 </div>
 
-                <div className="flex items-center justify-center w-full sm:w-auto gap-2 text-gray-500 dark:text-gray-400 shrink-0">
+                <div className="flex items-center justify-center w-full sm:w-auto gap-2 text-on-surface-variant dark:text-on-surface-variant shrink-0">
                     <button
                         onClick={onOpenBarcodeScanner}
-                        className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-slate-800/80 transition-colors text-gray-600 btn-press"
+                        className="p-1.5 rounded-full hover:bg-surface-container dark:bg-surface-container-high/80 transition-colors text-on-surface-variant btn-press"
                         title="Barcode Scanner"
                     >
                         <ScanLine size={18} />
@@ -66,8 +66,8 @@ export default function DietGaugeSummary({
                 {/* Left Metric: Activity */}
                 <div className="flex flex-col items-center justify-center">
                     <span className="text-2xl font-black text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
-                    <span className="text-[10px] font-extrabold text-purple-600/80 tracking-widest uppercase mt-1">ACTIVITY</span>
-                    <span className="text-[9px] text-gray-400 font-bold mt-0.5">kcal burned</span>
+                    <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">ACTIVITY</span>
+                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal burned</span>
                 </div>
 
                 {/* Center Metric: Upward Arch Gauge */}
@@ -103,29 +103,29 @@ export default function DietGaugeSummary({
                         </svg>
                         {/* Gauge Central Values (Centered inside the dome) */}
                         <div className="absolute top-10 flex flex-col items-center">
-                            <span className={`text-3xl font-black tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-red-600' : 'text-cyan-950'}`}>
+                            <span className={`text-3xl font-black tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
                                 {Math.abs(caloriesRemaining)}
                             </span>
                         </div>
                     </div>
                     
                     {/* Gauge Label below the arch with ample spacing */}
-                    <span className={`text-[10px] font-extrabold tracking-widest uppercase mt-2 ${isOverLimit ? 'text-red-600' : 'text-cyan-800/90'}`}>
+                    <span className={`text-[10px] font-extrabold tracking-widest uppercase mt-2 ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
                         {isOverLimit ? 'OVER LIMIT' : 'DAILY REMAINING'}
                     </span>
 
                     {/* Scale Anchors (0 and goal) */}
-                    <div className="w-full max-w-[140px] flex justify-between text-[10px] font-bold text-gray-400 px-1 mt-1">
+                    <div className="w-full max-w-[140px] flex justify-between text-[10px] font-bold text-on-surface-variant px-1 mt-1">
                         <span>0</span>
                         <span>{calorieGoal} kcal</span>
                     </div>
                 </div>
 
-                {/* Right Metric: Weekly Remaining */}
+                {/* Right Metric: Net calories left after activity */}
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-cyan-900 tracking-tight drop-shadow-sm">{weeklyRemaining}</span>
-                    <span className="text-[10px] font-extrabold text-cyan-700/80 tracking-widest uppercase mt-1">WEEKLY REMAINING</span>
-                    <span className="text-[9px] text-gray-400 font-bold mt-0.5">points / bites</span>
+                    <span className="text-2xl font-black text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
+                    <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">NET LEFT</span>
+                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal today</span>
                 </div>
             </div>
         </div>

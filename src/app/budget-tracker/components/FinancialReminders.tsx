@@ -59,30 +59,30 @@ export default function FinancialReminders() {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 rounded-3xl shadow-sm transition-colors h-full flex flex-col">
+        <div className="bg-card-white  border border-surface-variant  p-6 rounded-3xl shadow-sm transition-colors h-full flex flex-col">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-500 shadow-sm border border-gray-100 dark:border-slate-800">
+                    <div className="p-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-500 shadow-sm border border-surface-variant ">
                         <Bell size={16} />
                     </div>
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">Financial Reminders</h3>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight">Financial Reminders</h3>
                 </div>
                 <button 
                     onClick={() => setIsAdding(!isAdding)}
-                    className="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                    className="p-1 rounded-full text-on-surface-variant hover:text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors"
                 >
                     <Plus size={18} />
                 </button>
             </div>
 
             {isAdding && (
-                <form onSubmit={handleAdd} className="mb-4 bg-gray-50 dark:bg-slate-800/50 p-3 rounded-xl border border-gray-100 dark:border-slate-700 animate-in fade-in slide-in-from-top-2">
+                <form onSubmit={handleAdd} className="mb-4 bg-surface-container-low dark:bg-surface-container-high/50 p-3 rounded-xl border border-surface-variant  animate-in fade-in slide-in-from-top-2">
                     <input 
                         type="text"
                         placeholder="e.g. Pay Rent"
                         value={newText}
                         onChange={(e) => setNewText(e.target.value)}
-                        className="w-full text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 px-3 py-2 rounded-lg mb-2 focus:outline-none focus:border-amber-400"
+                        className="w-full text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg mb-2 focus:outline-none focus:border-amber-400"
                         autoFocus
                     />
                     <div className="flex gap-2">
@@ -90,7 +90,7 @@ export default function FinancialReminders() {
                             type="date"
                             value={newDate}
                             onChange={(e) => setNewDate(e.target.value)}
-                            className="flex-1 text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 px-3 py-2 rounded-lg focus:outline-none focus:border-amber-400"
+                            className="flex-1 text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg focus:outline-none focus:border-amber-400"
                         />
                         <button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 rounded-lg text-xs transition-colors">
                             Add
@@ -101,26 +101,26 @@ export default function FinancialReminders() {
 
             <div className="flex-1 overflow-y-auto space-y-2 pr-1">
                 {reminders.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 opacity-60">
+                    <div className="h-full flex flex-col items-center justify-center text-center text-on-surface-variant opacity-60">
                         <Bell size={24} className="mb-2" />
                         <p className="text-xs font-medium">No reminders yet</p>
                     </div>
                 ) : (
                     reminders.map(r => (
-                        <div key={r.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-slate-800/40 border border-gray-100 dark:border-slate-700/50 group">
+                        <div key={r.id} className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low dark:bg-surface-container-high/40 border border-surface-variant/50 group">
                             <div className="flex items-center gap-3">
                                 <button 
                                     onClick={() => toggleComplete(r.id)}
-                                    className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${r.completed ? 'bg-amber-500 border-amber-500 text-white' : 'border-gray-300 dark:border-gray-600 text-transparent hover:border-amber-400'}`}
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${r.completed ? 'bg-amber-500 border-amber-500 text-white' : 'border-surface-variant dark:border-gray-600 text-transparent hover:border-amber-400'}`}
                                 >
                                     <CheckCircle2 size={12} strokeWidth={4} />
                                 </button>
                                 <div>
-                                    <p className={`text-sm font-semibold transition-colors ${r.completed ? 'text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200'}`}>
+                                    <p className={`text-sm font-semibold transition-colors ${r.completed ? 'text-on-surface-variant line-through' : 'text-on-surface dark:text-gray-200'}`}>
                                         {r.text}
                                     </p>
                                     {r.date && (
-                                        <p className="text-[10px] text-gray-500 font-medium mt-0.5">
+                                        <p className="text-[10px] text-on-surface-variant font-medium mt-0.5">
                                             Due: {new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </p>
                                     )}
@@ -128,7 +128,7 @@ export default function FinancialReminders() {
                             </div>
                             <button 
                                 onClick={() => deleteReminder(r.id)}
-                                className="text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                className="text-on-surface-variant hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 size={14} />
                             </button>

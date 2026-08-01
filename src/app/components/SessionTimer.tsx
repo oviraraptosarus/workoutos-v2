@@ -28,13 +28,13 @@ export default function SessionTimer() {
     };
 
     return (
-        <div className="bg-white dark:bg-[#1c1c1e] border border-gray-200 dark:border-gray-800 rounded-3xl p-4 flex items-center justify-between shadow-sm transition-all">
+        <div className="bg-card-white dark:bg-[#1c1c1e] border border-surface-variant dark:border-gray-800 rounded-3xl p-4 flex items-center justify-between shadow-sm transition-all">
             <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-orange-50 dark:bg-orange-500/10 text-orange-500">
                     <Timer size={20} />
                 </div>
                 <div>
-                    <span className="text-xs text-gray-500 font-medium block">Rest Timer</span>
+                    <span className="text-xs text-on-surface-variant font-medium block">Rest Timer</span>
                     <span className="text-lg font-bold text-on-surface tabular-nums">{formatTime(seconds)}</span>
                 </div>
             </div>
@@ -47,7 +47,7 @@ export default function SessionTimer() {
                 </button>
                 <button
                     onClick={() => { setIsActive(false); setSeconds(0); }}
-                    className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors btn-press"
+                    className="p-2.5 rounded-full bg-surface-container dark:bg-gray-800 text-on-surface-variant hover:text-on-surface dark:hover:text-white transition-colors btn-press"
                 >
                     <RotateCcw size={16} />
                 </button>

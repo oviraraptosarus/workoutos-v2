@@ -17,12 +17,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setIsMounted(true);
-        const stored = localStorage.getItem('workout_os_theme');
-        if (stored === 'dark' || stored === 'light') {
-            setTheme(stored);
-        } else {
-            setTheme('light');
-        }
+        const loadTheme = () => {
+            const stored = localStorage.getItem('workout_os_theme');
+            if (stored === 'dark' || stored === 'light') {
+                setTheme(stored);
+            } else {
+                setTheme('light');
+            }
+        };
+        loadTheme();
+        
+        window.addEventListener('workout_os_theme_updated', loadTheme);
+        return () => window.removeEventListener('workout_os_theme_updated', loadTheme);
     }, []);
 
     useEffect(() => {

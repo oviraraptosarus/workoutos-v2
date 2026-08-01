@@ -8,6 +8,7 @@ import { getExpenses } from '../services/budgetStorage';
 export default function SpendPaceChart() {
     const { userProfile } = useAuth();
     const [expenses, setExpenses] = useState<any[]>([]);
+    const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
         const load = async () => {
@@ -17,8 +18,23 @@ export default function SpendPaceChart() {
             } catch(e) {}
         };
         load();
+        // Listen to both the specific budget event AND the generic storage event
+        // (Ava AI and other components dispatch 'storage' when they log expenses)
         window.addEventListener('workout_os_budget_updated', load);
-        return () => window.removeEventListener('workout_os_budget_updated', load);
+        window.addEventListener('storage', load);
+        return () => {
+            window.removeEventListener('workout_os_budget_updated', load);
+            window.removeEventListener('storage', load);
+        };
+    }, []);
+
+    // Track theme so the recharts tooltip (inline-styled) matches dark mode.
+    useEffect(() => {
+        const check = () => setIsDark(document.documentElement.classList.contains('dark'));
+        check();
+        const obs = new MutationObserver(check);
+        obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => obs.disconnect();
     }, []);
 
     const today = new Date();
@@ -36,26 +52,30 @@ export default function SpendPaceChart() {
         last7Days.push(d);
     }
 
-    // Weekly Budget Pace (e.g. Monthly target / 4)
-    const savedTarget = typeof window !== 'undefined' ? localStorage.getItem('workout_os_budget_target') : null;
-    const monthlyTarget = savedTarget ? parseFloat(savedTarget) : 5000;
-    const weeklyTarget = monthlyTarget / 4;
+    // Use userProfile.monthlyBudget as the source of truth (falls back to localStorage, then 5000)
+    const monthlyTarget = userProfile?.monthlyBudget
+        || (typeof window !== 'undefined' ? parseFloat(localStorage.getItem('workout_os_budget_target') || '0') || 5000 : 5000);
+    const weeklyTarget = monthlyTarget / 4.33; // average weeks per month
 
     // Calculate daily cumulative spend over these 7 days
     let weeklyTotal = 0;
     let runningTotal = 0;
     
     const chartData = last7Days.map((dateObj, index) => {
-        const dateStr = `${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getDate()}`;
-        const dayExpenses = expenses.filter(e => e.date === dateStr);
+        // getExpenses() returns dates as ISO (YYYY-MM-DD). Build the same key to
+        // match — the old code compared against "Aug 1"-style labels, so the
+        // filter never matched and the chart was always empty.
+        const isoKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        const label = `${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getDate()}`;
+        const dayExpenses = expenses.filter(e => e.date === isoKey);
         const daySpend = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
         weeklyTotal += daySpend;
         runningTotal += daySpend;
-        
+
         const budgetPace = (weeklyTarget / 6) * index;
-        
-        return { 
-            date: dateStr, 
+
+        return {
+            date: label,
             spend: runningTotal,
             budgetPace: budgetPace
         };
@@ -64,13 +84,13 @@ export default function SpendPaceChart() {
     const maxY = Math.max(weeklyTarget * 1.2, weeklyTotal * 1.2, 100);
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-6 h-full flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
+        <div className="bg-card-white  border border-surface-variant  p-6 h-full flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight mb-1">Weekly spend pace</h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Cumulative spend vs. budget pace</p>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight mb-1">Weekly spend pace</h3>
+                    <p className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">Cumulative spend vs. budget pace</p>
                 </div>
-                <div className="flex items-center gap-4 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-4 text-[11px] font-semibold text-on-surface-variant dark:text-on-surface-variant">
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-0.5 bg-[#8b5cf6] dark:bg-purple-400" />
                         <span>Actual</span>
@@ -106,9 +126,10 @@ export default function SpendPaceChart() {
                             tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }}
                             tickFormatter={(value) => `₹${Math.round(value)}`}
                         />
-                        <Tooltip 
-                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontWeight: 'bold' }}
+                        <Tooltip
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontWeight: 'bold', backgroundColor: isDark ? '#1c1c1e' : '#ffffff', color: isDark ? '#ffffff' : '#1a1c1f' }}
                             itemStyle={{ color: '#8b5cf6' }}
+                            labelStyle={{ color: isDark ? '#98989d' : '#45464c' }}
                             formatter={(value: number, name: string) => {
                                 if (name === 'spend') return [`₹${Math.round(value)}`, 'Cumulative Spend'];
                                 if (name === 'budgetPace') return [`₹${Math.round(value)}`, 'Budget Pace'];
