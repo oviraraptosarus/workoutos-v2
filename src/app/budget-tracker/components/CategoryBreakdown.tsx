@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { getExpenses, ExpenseItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CategoryBreakdown() {
+    const { t } = useLanguage();
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
     const [showAll, setShowAll] = useState(false);
 
@@ -54,7 +56,7 @@ export default function CategoryBreakdown() {
         summaryString = top3.map(c => `${c.name} (${Math.round((c.actual / totalSpend) * 100)}%)`).join(' • ');
         if (categories.length > 3) {
             const otherActual = categories.slice(3).reduce((sum, c) => sum + c.actual, 0);
-            summaryString += ` • Other (${Math.round((otherActual / totalSpend) * 100)}%)`;
+            summaryString += ` • ${t('budget.category.other')} (${Math.round((otherActual / totalSpend) * 100)}%)`;
         }
     }
 
@@ -64,11 +66,11 @@ export default function CategoryBreakdown() {
         <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 h-full flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-lg font-black text-on-surface dark:text-white tracking-tight mb-0.5 drop-shadow-sm">By category</h3>
-                    <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">Budget vs. actual</p>
+                    <h3 className="text-lg font-black text-on-surface dark:text-white tracking-tight mb-0.5 drop-shadow-sm">{t('budget.category.title')}</h3>
+                    <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{t('budget.category.subtitle')}</p>
                 </div>
                 <span className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant bg-surface-container dark:bg-surface-container-high px-2 py-1 rounded-full">
-                    {categories.length} categories
+                    {t('budget.category.count').replace('{count}', categories.length.toString())}
                 </span>
             </div>
 
@@ -94,8 +96,8 @@ export default function CategoryBreakdown() {
                     );
                 }) : (
                     <div className="flex flex-col items-center justify-center h-full min-h-[150px] text-on-surface-variant dark:text-on-surface-variant gap-2">
-                        <span className="text-sm font-bold">No expenses yet</span>
-                        <span className="text-xs font-medium text-center max-w-[200px]">Log an expense using the + button to see your category breakdown.</span>
+                        <span className="text-sm font-bold">{t('budget.category.noExpenses')}</span>
+                        <span className="text-xs font-medium text-center max-w-[200px]">{t('budget.category.noExpensesDesc')}</span>
                     </div>
                 )}
             </div>
@@ -107,14 +109,14 @@ export default function CategoryBreakdown() {
                         className="flex items-center justify-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-on-surface-variant dark:text-on-surface-variant dark:hover:text-on-surface-variant mx-auto transition-colors bg-surface-container-low dark:bg-surface-container-high/50 hover:bg-surface-container dark:hover:bg-surface-container-high px-4 py-2 rounded-full"
                     >
                         <ChevronDown size={14} strokeWidth={2.5} className={`transition-transform ${showAll ? 'rotate-180' : ''}`} /> 
-                        {showAll ? 'Show less' : `Show ${categories.length - 5} more categories`}
+                        {showAll ? t('budget.category.showLess') : t('budget.category.showMore').replace('{count}', (categories.length - 5).toString())}
                     </button>
                 </div>
             )}
             
             {summaryString && (
                 <div className="mt-6 text-[10px] text-on-surface-variant dark:text-on-surface-variant font-medium pt-5 border-t border-surface-variant/50 leading-relaxed">
-                    <span className="font-bold text-on-surface-variant dark:text-on-surface-variant tracking-wide uppercase mr-1">Where it went this month:</span> {summaryString}
+                    <span className="font-bold text-on-surface-variant dark:text-on-surface-variant tracking-wide uppercase mr-1">{t('budget.category.summary')}</span> {summaryString}
                 </div>
             )}
         </div>

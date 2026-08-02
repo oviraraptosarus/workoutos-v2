@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2 } from 'lucide-react';
 import { getExpenses, deleteTransaction, ExpenseItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ExpenseTable() {
+    const { t } = useLanguage();
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
     const [highlight, setHighlight] = useState(false);
     const [query, setQuery] = useState('');
@@ -79,8 +81,8 @@ export default function ExpenseTable() {
                     Expense log
                 </h3>
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                    {visible.length} {visible.length === 1 ? 'entry' : 'entries'}
-                    {isFiltered ? ` of ${expenses.length}` : ''} • Total:{' '}
+                    {visible.length === 1 ? t('budget.expense.entry') : t('budget.expense.entries').replace('{count}', visible.length.toString())}
+                    {isFiltered ? ` of ${expenses.length}` : ''} • {t('budget.expense.total')}:{' '}
                     <span className="font-bold text-on-surface tabular-nums">
                         ₹{totalExpenses.toFixed(2)}
                     </span>
@@ -97,7 +99,7 @@ export default function ExpenseTable() {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search expenses..."
+                        placeholder={t('budget.expense.search')}
                         aria-label="Search expenses"
                         className="w-full bg-surface-container border-none rounded-full pl-9 pr-4 py-2.5 font-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:outline-none transition-shadow placeholder:text-on-surface-variant/50"
                     />
@@ -108,7 +110,7 @@ export default function ExpenseTable() {
                     aria-label="Filter by category"
                     className="bg-surface-container border-none rounded-full px-4 py-2.5 font-label-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
                 >
-                    <option value="all">All categories</option>
+                    <option value="all">{t('budget.expense.allCategories')}</option>
                     {categories.map((c) => (
                         <option key={c} value={c}>
                             {c}
@@ -121,8 +123,8 @@ export default function ExpenseTable() {
                 <div className="py-12 text-center">
                     <p className="font-body-md text-on-surface-variant">
                         {expenses.length === 0
-                            ? 'No expenses logged yet.'
-                            : 'No expenses match this filter.'}
+                            ? t('budget.expense.noLog')
+                            : t('budget.expense.noMatch')}
                     </p>
                     {isFiltered && (
                         <button

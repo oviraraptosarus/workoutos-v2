@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { getExpenses } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function SpendPaceChart() {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const [expenses, setExpenses] = useState<any[]>([]);
     const [isDark, setIsDark] = useState(false);
@@ -87,17 +89,17 @@ export default function SpendPaceChart() {
         <div className="bg-card-white  border border-surface-variant  p-6 h-full flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight mb-1">Weekly spend pace</h3>
-                    <p className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">Cumulative spend vs. budget pace</p>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight mb-1">{t('budget.chart.title')}</h3>
+                    <p className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">{t('budget.chart.subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-4 text-[11px] font-semibold text-on-surface-variant dark:text-on-surface-variant">
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-0.5 bg-[#8b5cf6] dark:bg-purple-400" />
-                        <span>Actual</span>
+                        <span>{t('budget.chart.actual')}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-0 border-t border-dashed border-gray-400 dark:border-gray-500" />
-                        <span>Budget pace</span>
+                        <span>{t('budget.chart.budgetPace')}</span>
                     </div>
                 </div>
             </div>
@@ -131,8 +133,8 @@ export default function SpendPaceChart() {
                             itemStyle={{ color: '#8b5cf6' }}
                             labelStyle={{ color: isDark ? '#98989d' : '#45464c' }}
                             formatter={(value: number, name: string) => {
-                                if (name === 'spend') return [`₹${Math.round(value)}`, 'Cumulative Spend'];
-                                if (name === 'budgetPace') return [`₹${Math.round(value)}`, 'Budget Pace'];
+                                if (name === 'spend') return [`₹${Math.round(value)}`, t('budget.chart.tooltipCumulative')];
+                                if (name === 'budgetPace') return [`₹${Math.round(value)}`, t('budget.chart.tooltipPace')];
                                 return [value, name];
                             }}
                         />

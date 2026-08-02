@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check } from 'lucide-react';
 import { IncomeItem, ExpenseItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TransactionModalProps {
     isOpen: boolean;
@@ -20,6 +21,7 @@ export default function TransactionModal({
     onSaveIncome,
     onSaveExpense
 }: TransactionModalProps) {
+    const { t } = useLanguage();
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
     const [categorySource, setCategorySource] = useState('');
@@ -54,7 +56,7 @@ export default function TransactionModal({
             });
             
             // Remind the user to save!
-            window.alert("Expense logged! 💡 Friendly reminder: Don't forget to put some money aside for your savings goals!");
+            window.alert(t('budget.modal.alert'));
         }
         
         // Reset and close
@@ -70,7 +72,7 @@ export default function TransactionModal({
             <div className="bg-card-white  rounded-3xl w-full max-w-md shadow-xl border border-surface-variant  overflow-hidden">
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant ">
                     <h2 className="text-lg font-bold text-on-surface dark:text-white capitalize">
-                        Add {type}
+                        {type === 'income' ? t('budget.modal.addIncome') : t('budget.modal.addExpense')}
                     </h2>
                     <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface-variant dark:hover:text-gray-200">
                         <X size={20} />
@@ -79,7 +81,7 @@ export default function TransactionModal({
 
                 <form onSubmit={handleSave} className="p-6 space-y-4">
                     <div>
-                        <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">Amount (₹)</label>
+                        <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">{t('budget.modal.amount')}</label>
                         <input
                             type="number"
                             step="0.01"
@@ -92,7 +94,7 @@ export default function TransactionModal({
                     </div>
                     
                     <div>
-                        <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">Description</label>
+                        <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">{t('budget.modal.description')}</label>
                         <input
                             type="text"
                             value={description}
@@ -105,7 +107,7 @@ export default function TransactionModal({
                     
                     <div>
                         <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">
-                            {type === 'income' ? 'Source' : 'Category'}
+                            {type === 'income' ? t('budget.modal.source') : t('budget.modal.category')}
                         </label>
                         {type === 'income' ? (
                             <input
@@ -132,7 +134,7 @@ export default function TransactionModal({
                                     className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                                     required={!isOtherCategory}
                                 >
-                                    <option value="" disabled>Select a category</option>
+                                    <option value="" disabled>{t('budget.modal.selectCategory')}</option>
                                     <option value="Groceries">Groceries</option>
                                     <option value="Supplements">Supplements</option>
                                     <option value="Gym & Equipment">Gym & Equipment</option>
@@ -146,7 +148,7 @@ export default function TransactionModal({
                                     <option value="Entertainment">Entertainment</option>
                                     <option value="Travel">Travel</option>
                                     <option value="Education">Education</option>
-                                    <option value="Other">Other (Specify)</option>
+                                    <option value="Other">{t('budget.modal.otherSpecify')}</option>
                                 </select>
                                 {isOtherCategory && (
                                     <input
@@ -168,7 +170,7 @@ export default function TransactionModal({
                             type === 'income' ? 'bg-[#166534] hover:bg-[#14532d]' : 'bg-[#e11d48] hover:bg-[#be123c]'
                         }`}
                     >
-                        <Check size={16} strokeWidth={3} /> Save {type}
+                        <Check size={16} strokeWidth={3} /> {type === 'income' ? t('budget.modal.saveIncome') : t('budget.modal.saveExpense')}
                     </button>
                 </form>
             </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Bell, Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Reminder {
     id: string;
@@ -13,6 +14,7 @@ interface Reminder {
 const REMINDERS_KEY = 'workout_os_financial_reminders';
 
 export default function FinancialReminders() {
+    const { t } = useLanguage();
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [isAdding, setIsAdding] = useState(false);
     const [newText, setNewText] = useState('');
@@ -65,7 +67,7 @@ export default function FinancialReminders() {
                     <div className="p-1.5 rounded-full bg-white/5 dark:bg-amber-900/30 text-white shadow-sm border border-surface-variant ">
                         <Bell size={16} />
                     </div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight">Financial Reminders</h3>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight">{t('budget.reminders.title')}</h3>
                 </div>
                 <button 
                     onClick={() => setIsAdding(!isAdding)}
@@ -79,7 +81,7 @@ export default function FinancialReminders() {
                 <form onSubmit={handleAdd} className="mb-4 bg-surface-container-low dark:bg-surface-container-high/50 p-3 rounded-xl border border-surface-variant  animate-in fade-in slide-in-from-top-2">
                     <input 
                         type="text"
-                        placeholder="e.g. Pay Rent"
+                        placeholder={t("budget.reminders.placeholder")}
                         value={newText}
                         onChange={(e) => setNewText(e.target.value)}
                         className="w-full text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg mb-2 focus:outline-none focus:border-white/20"
@@ -103,7 +105,7 @@ export default function FinancialReminders() {
                 {reminders.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center text-on-surface-variant opacity-60">
                         <Bell size={24} className="mb-2" />
-                        <p className="text-xs font-medium">No reminders yet</p>
+                        <p className="text-xs font-medium">{t('budget.reminders.noReminders')}</p>
                     </div>
                 ) : (
                     reminders.map(r => (
@@ -121,7 +123,7 @@ export default function FinancialReminders() {
                                     </p>
                                     {r.date && (
                                         <p className="text-[10px] text-on-surface-variant font-medium mt-0.5">
-                                            Due: {new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            {t('budget.reminders.due')} {new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </p>
                                     )}
                                 </div>

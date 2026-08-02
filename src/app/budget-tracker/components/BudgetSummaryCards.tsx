@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, TrendingDown, Calculator } from 'lucide-react';
 import { getIncome, getExpenses, IncomeItem, ExpenseItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BudgetSummaryCards() {
+    const { t } = useLanguage();
     const [income, setIncome] = useState<IncomeItem[]>([]);
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
 
@@ -64,13 +66,13 @@ export default function BudgetSummaryCards() {
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <TrendingDown size={16} className="rotate-180" />
                         </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Total Income</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.totalIncome')}</span>
                     </div>
                 </div>
                 
                 <div>
                     <div className="text-4xl font-black text-on-surface dark:text-white tracking-tight leading-none mb-2">₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                    <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">From {income.length} income streams</div>
+                    <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{t('budget.cards.incomeStreams').replace('{count}', income.length.toString())}</div>
                 </div>
             </div>
 
@@ -81,14 +83,14 @@ export default function BudgetSummaryCards() {
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <TrendingDown size={16} />
                         </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Total Expenses</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.totalExpenses')}</span>
                     </div>
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${
                         onTrack
                             ? 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-white border-white/10/50 dark:border-emerald-800/50'
                             : 'bg-rose-100/50 dark:bg-rose-900/30 text-rose-700 dark:text-white border-white/10/50 dark:border-rose-800/50'
                     }`}>
-                        {onTrack ? 'On track' : 'Over pace'}
+                        {onTrack ? t('budget.cards.onTrack') : t('budget.cards.overPace')}
                     </span>
                 </div>
                 
@@ -96,17 +98,17 @@ export default function BudgetSummaryCards() {
                     <div className="text-4xl font-black text-on-surface dark:text-white tracking-tight leading-none mb-4">₹{totalExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     
                     <div className="flex justify-between text-[11px] text-on-surface-variant dark:text-on-surface-variant font-bold mb-2">
-                        <span>{expenseRatio}% of income</span>
-                        <span>{monthPct}% of month</span>
+                        <span>{expenseRatio}{t('budget.cards.ofIncome')}</span>
+                        <span>{monthPct}{t('budget.cards.ofMonth')}</span>
                     </div>
                     <div className="w-full bg-surface-container dark:bg-surface-container-high/50 h-2 rounded-full overflow-hidden mb-3 shadow-inner">
                         <div className="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${expenseRatio}%` }} />
                     </div>
                     <div className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">
                         {projectionReliable ? (
-                            <>Projected total: <span className="text-on-surface dark:text-gray-200 font-bold">₹{projectedTotal.toLocaleString('en-IN')}</span></>
+                            <>{t('budget.cards.projected')} <span className="text-on-surface dark:text-gray-200 font-bold">₹{projectedTotal.toLocaleString('en-IN')}</span></>
                         ) : (
-                            <>Day {dayOfMonth} of {daysInMonth} — projection available from day 5</>
+                            <>{t('budget.cards.projectionMsg').replace('{day}', dayOfMonth.toString()).replace('{total}', daysInMonth.toString())}</>
                         )}
                     </div>
                 </div>
@@ -119,19 +121,19 @@ export default function BudgetSummaryCards() {
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <Calculator size={16} />
                         </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Net Savings</span>
+                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.netSavings')}</span>
                     </div>
                     <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-200 tracking-tight leading-none mb-2">₹{netSavings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                    <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{savingsRate}% savings rate</div>
+                    <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{savingsRate}{t('budget.cards.savingsRate')}</div>
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-surface-variant ">
-                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-bold tracking-widest uppercase mb-1.5">Cost Per Gram Protein</div>
+                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-bold tracking-widest uppercase mb-1.5">{t('budget.cards.costPerG')}</div>
                     <div className="flex items-baseline gap-1 mb-1">
                         <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-purple-400 dark:from-purple-400 dark:to-purple-200 drop-shadow-sm">₹{avgCostPerG.toFixed(3)}</span>
                         <span className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold">/g</span>
                     </div>
-                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-medium">{totalG}g purchased • ₹{totalProteinSpend.toFixed(0)} spent</div>
+                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-medium">{t('budget.cards.proteinPurchased').replace('{g}', totalG.toString()).replace('{spend}', totalProteinSpend.toFixed(0))}</div>
                 </div>
             </div>
         </div>

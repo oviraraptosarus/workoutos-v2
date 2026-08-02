@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { Plus, ChevronDown, Download } from 'lucide-react';
 import TransactionModal from './TransactionModal';
 import { addTransaction, IncomeItem, ExpenseItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BudgetHeader() {
+    const { t } = useLanguage();
     const [modalType, setModalType] = useState<'income' | 'expense' | null>(null);
 
     const today = new Date();
@@ -25,9 +27,9 @@ export default function BudgetHeader() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
             <div>
                 <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 tracking-tight drop-shadow-sm mb-1">
-                    Budget Tracker
+                    {t('budget.title')}
                 </h1>
-                <p className="text-sm text-on-surface-variant dark:text-on-surface-variant font-semibold">{currentMonthStr} • {currentDay} of {daysInMonth} days elapsed</p>
+                <p className="text-sm text-on-surface-variant dark:text-on-surface-variant font-semibold">{currentMonthStr} • {t('budget.elapsedDays').replace('{currentDay}', currentDay.toString()).replace('{daysInMonth}', daysInMonth.toString())}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
                 <button className="flex items-center gap-2 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-slate-700/80 text-on-surface-variant dark:text-gray-200 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 active:scale-95">
@@ -41,13 +43,13 @@ export default function BudgetHeader() {
                         onClick={() => setModalType('income')}
                         className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(16,185,129,0.3)] active:scale-95 border border-white/20/20 whitespace-nowrap"
                     >
-                        <Plus size={16} strokeWidth={3} className="shrink-0" /> Add income
+                        <Plus size={16} strokeWidth={3} className="shrink-0" /> {t('budget.addIncome')}
                     </button>
                     <button 
                         onClick={() => setModalType('expense')}
                         className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(225,29,72,0.3)] active:scale-95 border border-white/20/20 whitespace-nowrap"
                     >
-                        <Plus size={16} strokeWidth={3} className="shrink-0" /> Add expense
+                        <Plus size={16} strokeWidth={3} className="shrink-0" /> {t('budget.addExpense')}
                     </button>
                 </div>
             </div>

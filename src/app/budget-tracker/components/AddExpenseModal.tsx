@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Modal from '@/components/ui/Modal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface ExpenseData {
     description: string;
@@ -17,6 +18,7 @@ interface AddExpenseModalProps {
 }
 
 export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseModalProps) {
+    const { t } = useLanguage();
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('Groceries');
@@ -30,10 +32,10 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Add New Expense">
+        <Modal isOpen={isOpen} onClose={onClose} title={t("budget.modal.title")}>
                 <form onSubmit={handleSubmit} className="space-y-4 text-xs">
                 <div>
-                    <label className="block font-bold text-on-surface-variant mb-1">Description</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">{t('budget.modal.description')}</label>
                     <input
                         type="text"
                         required
@@ -44,7 +46,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                     />
                 </div>
                 <div>
-                    <label className="block font-bold text-on-surface-variant mb-1">Amount (₹)</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">{t('budget.modal.amount')}</label>
                     <input
                         type="number"
                         step="0.01"
@@ -56,7 +58,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                     />
                 </div>
                 <div>
-                    <label className="block font-bold text-on-surface-variant mb-1">Category</label>
+                    <label className="block font-bold text-on-surface-variant mb-1">{t('budget.modal.category')}</label>
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}

@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2 } from 'lucide-react';
 import { getIncome, deleteTransaction, IncomeItem } from '../services/budgetStorage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function IncomeTable() {
+    const { t } = useLanguage();
     const [income, setIncome] = useState<IncomeItem[]>([]);
     const [highlight, setHighlight] = useState(false);
     const [query, setQuery] = useState('');
@@ -77,8 +79,8 @@ export default function IncomeTable() {
                     Income log
                 </h3>
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                    {visible.length} {visible.length === 1 ? 'entry' : 'entries'}
-                    {isFiltered ? ` of ${income.length}` : ''} • Total:{' '}
+                    {visible.length === 1 ? t('budget.income.entry') : t('budget.income.entries').replace('{count}', visible.length.toString())}
+                    {isFiltered ? ` of ${income.length}` : ''} • {t('budget.income.total')}:{' '}
                     <span className="font-bold text-activity-green tabular-nums">
                         ₹{totalIncome.toFixed(2)}
                     </span>
@@ -95,7 +97,7 @@ export default function IncomeTable() {
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search income..."
+                        placeholder={t('budget.income.search')}
                         aria-label="Search income"
                         className="w-full bg-surface-container border-none rounded-full pl-9 pr-4 py-2.5 font-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:outline-none transition-shadow placeholder:text-on-surface-variant/50"
                     />
@@ -106,7 +108,7 @@ export default function IncomeTable() {
                     aria-label="Filter by source"
                     className="bg-surface-container border-none rounded-full px-4 py-2.5 font-label-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
                 >
-                    <option value="all">All sources</option>
+                    <option value="all">{t('budget.income.allSources')}</option>
                     {sources.map((s) => (
                         <option key={s} value={s}>
                             {s}
@@ -119,8 +121,8 @@ export default function IncomeTable() {
                 <div className="py-12 text-center">
                     <p className="font-body-md text-on-surface-variant">
                         {income.length === 0
-                            ? 'No income logged yet.'
-                            : 'No income matches this filter.'}
+                            ? t('budget.income.noLog')
+                            : t('budget.income.noMatch')}
                     </p>
                     {isFiltered && (
                         <button
