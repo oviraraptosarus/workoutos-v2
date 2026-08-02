@@ -169,6 +169,7 @@ export const PRESET_WORKOUTS = [
 ];
 
 export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => void }) {
+    const { t } = useLanguage();
     const renderIcon = (type: string, className: string) => {
         const props = { size: 18, className };
         switch (type) {

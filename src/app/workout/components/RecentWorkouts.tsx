@@ -5,6 +5,7 @@ import { Clock, TrendingUp } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function RecentWorkouts() {
+    const { t } = useLanguage();
     const [pastWorkouts, setPastWorkouts] = React.useState<any[]>([]);
 
     React.useEffect(() => {

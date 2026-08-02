@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Play, CheckCircle2, Trophy, Flame, Video, Link as LinkIcon, Plus, Save } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void }) {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const [isFinished, setIsFinished] = useState(false);
     const [addingLinkForIdx, setAddingLinkForIdx] = useState<number | null>(null);
@@ -160,17 +162,17 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                 <div className="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto mb-4 shadow-sm border border-primary-container">
                     <Trophy size={32} />
                 </div>
-                <h2 className="text-xl font-black text-on-surface mb-1">Workout Complete!</h2>
-                <p className="text-sm text-on-surface-variant font-medium mb-6">Great job crushing {preset ? preset.title : customTitle}.</p>
+                <h2 className="text-xl font-black text-on-surface mb-1">{t('workout.active.complete')}</h2>
+                <p className="text-sm text-on-surface-variant font-medium mb-6">{t('workout.active.greatJob')} {preset ? preset.title : customTitle}.</p>
                 
                 <div className="flex justify-center gap-6 text-left border-t border-surface-variant pt-5">
                     <div>
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Duration</span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('workout.active.duration')}</span>
                         <p className="text-lg font-black text-on-surface mt-0.5">{formatTime(elapsedSeconds)}</p>
                     </div>
                     <div className="w-px bg-surface-variant" />
                     <div>
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Burned</span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('workout.active.burned')}</span>
                         <p className="text-lg font-black text-tertiary mt-0.5 flex items-center gap-1">
                             {calsBurned} kcal <Flame size={14} className="text-tertiary" />
                         </p>
@@ -184,7 +186,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         return (
             <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="mb-4">
-                    <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1">Plan Workout</h3>
+                    <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1">{t('workout.active.plan')}</h3>
                     <input 
                         type="text" 
                         value={customTitle} 
