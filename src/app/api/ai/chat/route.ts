@@ -151,7 +151,9 @@ The user has set their language preference to '${preferredLanguage || 'en'}'. If
                                         type: "OBJECT",
                                         properties: {
                                             title: { type: "STRING", description: "The name of the task" },
-                                            dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format if specified." }
+                                            dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format if specified." },
+                                            priority: { type: "STRING", description: "Optional. 'high', 'medium', 'low', or 'none'. Defaults to 'none'." },
+                                            reminderTime: { type: "STRING", description: "Optional. ISO 8601 timestamp string for when to remind the user (e.g. '2026-08-02T22:00:00Z')." }
                                         },
                                         required: ["title"]
                                     }

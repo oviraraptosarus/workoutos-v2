@@ -24,6 +24,7 @@ export interface Task {
     subTasks: SubTask[];
     completed: boolean;
     priority: TaskPriority;
+    reminderTime?: string;
 }
 
 export default function PlannerPage() {
@@ -34,6 +35,7 @@ export default function PlannerPage() {
     const HABITS_KEY = 'workout_os_planner_habits';
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
     const { userProfile, updateUserProfile } = useAuth();
 
@@ -41,6 +43,7 @@ export default function PlannerPage() {
     const [newTitle, setNewTitle] = useState('');
     const [newDesc, setNewDesc] = useState('');
     const [newDate, setNewDate] = useState('');
+    const [newReminderTime, setNewReminderTime] = useState('');
     const [newPriority, setNewPriority] = useState<TaskPriority>('none');
     const [newSubTasks, setNewSubTasks] = useState<{id: string, title: string}[]>([]);
 
@@ -66,7 +69,8 @@ export default function PlannerPage() {
                     dueDate: d.due_date || '',
                     subTasks: d.subtasks || [],
                     completed: d.completed || false,
-                    priority: d.priority || 'none'
+                    priority: d.priority || 'none',
+                    reminderTime: d.reminder_time || undefined
                 })));
             }
 
@@ -102,13 +106,17 @@ export default function PlannerPage() {
             description: newDesc,
             due_date: newDate,
             subtasks: newSubTasks.map(st => ({ id: st.id, title: st.title, completed: false })),
-            completed: false
+            completed: false,
+            priority: newPriority,
+            reminder_time: newReminderTime ? new Date(newReminderTime).toISOString() : null
         };
 
-        // Insert with priority; fall back without it if the column isn't migrated yet.
-        let { data } = await supabase.from('tasks').insert({ ...newTaskObj, priority: newPriority }).select().single();
+        let { data } = await supabase.from('tasks').insert(newTaskObj).select().single();
         if (!data) {
-            ({ data } = await supabase.from('tasks').insert(newTaskObj).select().single());
+            // Fallback for unmigrated schema
+            const fallbackObj = { ...newTaskObj };
+            delete (fallbackObj as any).reminder_time;
+            ({ data } = await supabase.from('tasks').insert(fallbackObj).select().single());
         }
         if (data) {
             const newTask: Task = {
@@ -118,11 +126,12 @@ export default function PlannerPage() {
                 dueDate: data.due_date || '',
                 subTasks: data.subtasks || [],
                 completed: data.completed,
-                priority: data.priority || newPriority
+                priority: data.priority || newPriority,
+                reminderTime: data.reminder_time || newReminderTime || undefined
             };
             saveTasks([newTask, ...tasks]);
         }
-        setNewTitle(''); setNewDesc(''); setNewDate(''); setNewPriority('none'); setNewSubTasks([]);
+        setNewTitle(''); setNewDesc(''); setNewDate(''); setNewReminderTime(''); setNewPriority('none'); setNewSubTasks([]);
     };
 
     // Create a task directly from a title + priority (used by the priority→tasks
@@ -180,6 +189,21 @@ export default function PlannerPage() {
         const updated = tasks.filter(t => t.id !== taskId);
         saveTasks(updated);
         await supabase.from('tasks').delete().eq('id', taskId);
+    };
+
+    const updateTask = async (taskId: string, updates: Partial<Task>) => {
+        const updated = tasks.map(t => t.id === taskId ? { ...t, ...updates } : t);
+        saveTasks(updated);
+        
+        const dbUpdates: any = {};
+        if (updates.title !== undefined) dbUpdates.title = updates.title;
+        if (updates.description !== undefined) dbUpdates.description = updates.description;
+        if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
+        if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
+        if (updates.reminderTime !== undefined) dbUpdates.reminder_time = updates.reminderTime ? new Date(updates.reminderTime).toISOString() : null;
+        
+        await supabase.from('tasks').update(dbUpdates).eq('id', taskId);
+        setEditingTaskId(null);
     };
 
     const [isFocusModeActive, setIsFocusModeActive] = useState(false);
@@ -264,6 +288,21 @@ export default function PlannerPage() {
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> Due Date</label>
                                     <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Star size={10} /> Priority</label>
+                                        <select value={newPriority} onChange={(e) => setNewPriority(e.target.value as TaskPriority)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm appearance-none cursor-pointer">
+                                            <option value="none">None</option>
+                                            <option value="low">Low</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Clock size={10} /> Reminder</label>
+                                        <input type="datetime-local" value={newReminderTime} onChange={(e) => setNewReminderTime(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-2 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
+                                    </div>
+                                </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Sub-tasks</label>
                                     <div className="space-y-2 mb-3">
@@ -316,45 +355,72 @@ export default function PlannerPage() {
                             isClient && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {tasks.map((task) => (
                                     <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
-                                        <div className="flex items-start gap-3">
+                                        <div className="flex items-start gap-3 w-full">
                                             <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-white border-white/20 text-black' : 'border-surface-variant text-transparent hover:border-white/20'}`}>
                                                 <CheckCircle2 size={16} />
                                             </button>
-                                            <div 
-                                                className="flex-1 min-w-0"
-                                                draggable
-                                                onDragStart={(e) => e.dataTransfer.setData('task_title', task.title)}
-                                            >
-                                                <div className="flex items-start justify-between gap-2 mb-1">
-                                                    <div className="flex items-center gap-2 min-w-0">
-                                                        {task.priority && task.priority !== 'none' && (
-                                                            <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
-                                                                task.priority === 'high' ? 'bg-error/15 text-error'
-                                                                : task.priority === 'medium' ? 'bg-white/15 text-white dark:text-white'
-                                                                : 'bg-secondary/15 text-secondary'
-                                                            }`}>
-                                                                {task.priority}
-                                                            </span>
-                                                        )}
-                                                        <h3 className={`font-bold text-on-surface text-lg cursor-grab active:cursor-grabbing truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`}>{task.title}</h3>
+                                            
+                                            {editingTaskId === task.id ? (
+                                                <div className="flex-1 space-y-3 min-w-0">
+                                                    <input type="text" defaultValue={task.title} onBlur={(e) => updateTask(task.id, { title: e.target.value })} className="w-full bg-transparent border-b border-white/20 px-1 py-1 font-bold text-on-surface focus:outline-none" />
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <select defaultValue={task.priority} onChange={(e) => updateTask(task.id, { priority: e.target.value as TaskPriority })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none appearance-none">
+                                                            <option value="none">Priority: None</option>
+                                                            <option value="low">Priority: Low</option>
+                                                            <option value="medium">Priority: Medium</option>
+                                                            <option value="high">Priority: High</option>
+                                                        </select>
+                                                        <input type="date" defaultValue={task.dueDate} onChange={(e) => updateTask(task.id, { dueDate: e.target.value })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none" />
                                                     </div>
-                                                    <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-white flex-shrink-0 p-1"><Trash2 size={16} /></button>
+                                                    <div>
+                                                        <input type="datetime-local" defaultValue={task.reminderTime ? new Date(new Date(task.reminderTime).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''} onChange={(e) => updateTask(task.id, { reminderTime: e.target.value })} className="w-full bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none" />
+                                                    </div>
+                                                    <div className="flex justify-end gap-2 mt-2">
+                                                        <button onClick={() => setEditingTaskId(null)} className="text-xs font-bold text-on-surface-variant hover:text-white px-3 py-1 bg-surface-container rounded-lg">Done</button>
+                                                    </div>
                                                 </div>
-                                                {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-wider mb-2"><Calendar size={12} /> Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
-                                                {task.description && <p className="text-sm text-on-surface-variant mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
-                                                {task.subTasks && task.subTasks.length > 0 && (
-                                                    <div className="space-y-2 mt-3 pt-3 border-t border-surface-variant">
-                                                        {task.subTasks.map(st => (
-                                                            <div key={st.id} className="flex items-start gap-2 group">
-                                                                <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-white flex-shrink-0">
-                                                                    {st.completed ? <CheckCircle2 size={16} className="text-white" /> : <Circle size={16} />}
-                                                                </button>
-                                                                <span className={`text-sm text-on-surface-variant font-medium ${st.completed ? 'line-through text-on-surface-variant' : ''}`}>{st.title}</span>
-                                                            </div>
-                                                        ))}
+                                            ) : (
+                                                <div 
+                                                    className="flex-1 min-w-0 group/task"
+                                                    draggable
+                                                    onDragStart={(e) => e.dataTransfer.setData('task_title', task.title)}
+                                                >
+                                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                                        <div className="flex items-center gap-2 min-w-0" onClick={() => setEditingTaskId(task.id)}>
+                                                            {task.priority && task.priority !== 'none' && (
+                                                                <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
+                                                                    task.priority === 'high' ? 'bg-error/15 text-error'
+                                                                    : task.priority === 'medium' ? 'bg-white/15 text-white dark:text-white'
+                                                                    : 'bg-secondary/15 text-secondary'
+                                                                }`}>
+                                                                    {task.priority}
+                                                                </span>
+                                                            )}
+                                                            <h3 className={`font-bold text-on-surface text-lg cursor-pointer hover:text-white truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`}>{task.title}</h3>
+                                                        </div>
+                                                        <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-white flex-shrink-0 p-1 opacity-0 group-hover/task:opacity-100 transition-opacity"><Trash2 size={16} /></button>
                                                     </div>
-                                                )}
-                                            </div>
+                                                    
+                                                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                                                        {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-wider"><Calendar size={12} /> {new Date(task.dueDate).toLocaleDateString()}</div>}
+                                                        {task.reminderTime && <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider"><Clock size={12} /> {new Date(task.reminderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>}
+                                                    </div>
+
+                                                    {task.description && <p className="text-sm text-on-surface-variant mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
+                                                    {task.subTasks && task.subTasks.length > 0 && (
+                                                        <div className="space-y-2 mt-3 pt-3 border-t border-surface-variant">
+                                                            {task.subTasks.map(st => (
+                                                                <div key={st.id} className="flex items-start gap-2 group">
+                                                                    <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-white flex-shrink-0">
+                                                                        {st.completed ? <CheckCircle2 size={16} className="text-white" /> : <Circle size={16} />}
+                                                                    </button>
+                                                                    <span className={`text-sm text-on-surface-variant font-medium ${st.completed ? 'line-through text-on-surface-variant' : ''}`}>{st.title}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

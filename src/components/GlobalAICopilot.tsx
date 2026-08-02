@@ -212,7 +212,16 @@ export default function GlobalAICopilot() {
                     const fn = data.functionCall.name;
                     const args = data.functionCall.args;
                     if (fn === 'add_task') {
-                        await supabase.from('tasks').insert({ user_id: user.id, date: dateKey, title: args.title || 'New Task', description: '', completed: false });
+                        await supabase.from('tasks').insert({ 
+                            user_id: user.id, 
+                            date: dateKey, 
+                            title: args.title || 'New Task', 
+                            description: '', 
+                            completed: false,
+                            due_date: args.dueDate || '',
+                            priority: args.priority || 'none',
+                            reminder_time: args.reminderTime || null
+                        });
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
                     } else if (fn === 'append_quick_note') {
                         const cur = localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '';
