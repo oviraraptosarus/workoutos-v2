@@ -60,7 +60,7 @@ export default function BudgetSnapshotCard() {
         >
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">payments</span>
+                    <span className="material-symbols-outlined text-primary text-[20px]">payments</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.budget')}</span>
                 </div>
                 <ChevronRight size={18} className="text-on-surface-variant/50" />

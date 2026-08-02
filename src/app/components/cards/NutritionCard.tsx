@@ -106,7 +106,7 @@ export default function NutritionCard() {
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-on-tertiary-container text-[20px]">restaurant</span>
+                    <span className="material-symbols-outlined text-primary text-[20px]">restaurant</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Nutrition</span>
                 </div>
                 <Link href="/diet" aria-label="Nutrition details" className="text-on-surface-variant/50 active:scale-90 transition-transform">

@@ -195,7 +195,7 @@ export default function WeightLogCard() {
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[20px]">monitor_weight</span>
+                    <span className="material-symbols-outlined text-primary text-[20px]">monitor_weight</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.weight')}</span>
                 </div>
                 <div className="flex items-center gap-2">

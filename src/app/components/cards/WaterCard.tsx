@@ -91,7 +91,7 @@ export default function WaterCard() {
 
             <div className="relative flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="material-symbols-outlined text-activity-blue text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>water_drop</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>water_drop</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">{t('dash.water')}</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />

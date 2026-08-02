@@ -130,7 +130,7 @@ export default function WorkoutCard() {
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden">
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">fitness_center</span>
+                    <span className="material-symbols-outlined text-primary text-[20px]">fitness_center</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Workout</span>
                     {isCompleted && (
                         <span className="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-activity-green/10 text-activity-green">

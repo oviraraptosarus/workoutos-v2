@@ -86,7 +86,7 @@ export default function SleepCard() {
         >
             <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="material-symbols-outlined text-secondary text-[18px]">dark_mode</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">dark_mode</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">{t('dash.sleep')}</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
