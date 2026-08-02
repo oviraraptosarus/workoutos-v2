@@ -89,8 +89,15 @@ export default function SleepPage() {
     }, [selectedDate]);
 
     const saveToSupabase = async (newTotal: number, newLogs: any[], bedtime?: string, waketime?: string) => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !selectedDate) return;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) {
+            alert("Auth Error: Could not verify session. " + authError.message);
+            return;
+        }
+        if (!user || !selectedDate) {
+            alert("Missing user or date!");
+            return;
+        }
 
         const row: any = {
             user_id: user.id,
@@ -102,8 +109,13 @@ export default function SleepPage() {
         if (bedtime) row.sleep_bedtime = bedtime.length === 5 ? `${bedtime}:00` : bedtime;
         if (waketime) row.sleep_waketime = waketime.length === 5 ? `${waketime}:00` : waketime;
 
-        const { error } = await supabase.from('daily_logs').upsert(row, { onConflict: 'user_id,date' });
-        if (error) console.error("Error saving sleep to Supabase:", error);
+        const { error, data } = await supabase.from('daily_logs').upsert(row, { onConflict: 'user_id,date' }).select();
+        if (error) {
+            console.error("Error saving sleep to Supabase:", error);
+            alert("Database Error: " + error.message + (error.details ? "\n" + error.details : ""));
+        } else {
+            // Optional: alert("Saved successfully!");
+        }
     };
 
     const handleAdd = async (amount: number, type: string, details?: any) => {
