@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Sun, SunDim, Moon, Apple, Check, ChevronRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MealPlanCarouselProps {
     onOpenDetails?: () => void;
@@ -17,6 +18,7 @@ interface PlanItem {
 }
 
 export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProps) {
+    const { t } = useLanguage();
     const plans: PlanItem[] = [
         {
             id: '1',
@@ -52,13 +54,13 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
     return (
         <div className="bg-card-white rounded-3xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)] transition-all">
             <div className="flex items-center justify-between mb-2">
-                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Your Meal Plan</span>
+                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{t('diet.mealplan')}</span>
                 <button
                     id="tour-see-details"
                     onClick={onOpenDetails}
                     className="font-label-sm text-label-sm text-secondary hover:text-secondary-fixed-variant uppercase tracking-wider flex items-center gap-0.5 transition-colors group relative z-[110]"
                 >
-                    SEE DETAILS <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                    {t('diet.details')} <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
             </div>
             

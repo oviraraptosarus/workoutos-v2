@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Flame, Settings2, X, Check } from 'lucide-react';
 import { MacroGoals } from '../types';
 
@@ -25,6 +26,7 @@ export default function MacroRings({
     onUpdateGoals,
 }: MacroRingsProps) {
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
     
     const [isEditingGoals, setIsEditingGoals] = useState(false);
     const [tempGoals, setTempGoals] = useState<MacroGoals>(macroGoals);
@@ -33,10 +35,10 @@ export default function MacroRings({
     const caloriesLeft = Math.max(0, calorieGoal - totalCalories);
 
     const macros = [
-        { name: 'Protein', eaten: totalProtein, goal: macroGoals.protein || 140, color: 'from-blue-400 to-blue-500', unit: 'g' },
-        { name: 'Carbs', eaten: totalCarbs, goal: macroGoals.carbs || 220, color: 'from-orange-400 to-orange-500', unit: 'g' },
-        { name: 'Fat', eaten: totalFat, goal: macroGoals.fat || 65, color: 'from-rose-400 to-rose-500', unit: 'g' },
-        { name: 'Sugar', eaten: totalSugar, goal: macroGoals.sugar || 35, color: 'from-amber-400 to-amber-500', unit: 'g' },
+        { name: t('diet.macro.protein'), eaten: totalProtein, goal: macroGoals.protein || 140, color: 'from-blue-400 to-blue-500', unit: 'g' },
+        { name: t('diet.macro.carbs'), eaten: totalCarbs, goal: macroGoals.carbs || 220, color: 'from-orange-400 to-orange-500', unit: 'g' },
+        { name: t('diet.macro.fat'), eaten: totalFat, goal: macroGoals.fat || 65, color: 'from-rose-400 to-rose-500', unit: 'g' },
+        { name: t('diet.macro.sugar'), eaten: totalSugar, goal: macroGoals.sugar || 35, color: 'from-amber-400 to-amber-500', unit: 'g' },
     ];
 
     const progressPercentage = Math.min(100, (totalCalories / calorieGoal) * 100);
@@ -60,7 +62,7 @@ export default function MacroRings({
                         setIsEditingGoals(true);
                     }}
                     className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-surface-container/80 text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
-                    title="Customize Daily Macro Goals"
+                    title={t('diet.macro.customize')}
                 >
                     <Settings2 size={16} />
                 </button>
@@ -78,7 +80,7 @@ export default function MacroRings({
                     <div className="flex flex-col items-center">
                         <Flame size={24} className="text-activity-green mb-1" />
                         <span className="text-3xl font-bold text-on-surface drop-shadow-sm">{caloriesLeft}</span>
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Kcal Left</span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('diet.macro.kcalLeft')}</span>
                     </div>
                 </div>
             </div>
@@ -173,15 +175,17 @@ export default function MacroRings({
                                 <button
                                     type="button"
                                     onClick={() => setIsEditingGoals(false)}
-                                    className="px-4 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-surface-container dark:bg-surface-container-high"
+                                    className="flex-1 flex items-center justify-center gap-1 bg-surface-container-high hover:bg-surface-container text-on-surface-variant text-xs font-bold py-2 rounded-xl transition-colors btn-press"
                                 >
-                                    Cancel
+                                    <X size={14} />
+                                    {t('diet.macro.cancel')}
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-white hover:bg-zinc-200 text-black px-5 py-2 rounded-xl text-xs font-bold shadow-md"
+                                    className="flex-1 flex items-center justify-center gap-1 bg-primary hover:bg-primary/90 text-on-primary text-xs font-bold py-2 rounded-xl transition-colors shadow-sm btn-press"
                                 >
-                                    Save Goals
+                                    <Check size={14} />
+                                    {t('diet.macro.save')}
                                 </button>
                             </div>
                         </form>

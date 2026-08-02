@@ -15,6 +15,7 @@ import RecipeGroupBuilderModal from './components/RecipeGroupBuilderModal';
 import RawDataAITransformerModal from '@/app/components/RawDataAITransformerModal';
 import GeminiBarcodeScannerModal from '@/app/components/GeminiBarcodeScannerModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { MealItem, MealCategory, MacroGoals } from './types';
 import {
     formatDateKey,
@@ -53,6 +54,7 @@ export default function DietPage() {
     const [activityBurned, setActivityBurned] = useState(0);
 
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
 
     // Initial load of macro goals and listen for global settings changes
     useEffect(() => {

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Mic, ScanLine, Sparkles } from 'lucide-react';
 import DateNavigator from './DateNavigator';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DietGaugeSummaryProps {
     currentDateKey: string;
@@ -25,6 +26,7 @@ export default function DietGaugeSummary({
     onOpenAIMealModal,
     onOpenBarcodeScanner,
 }: DietGaugeSummaryProps) {
+    const { t } = useLanguage();
     const caloriesRemaining = calorieGoal - totalCalories;
     const isOverLimit = caloriesRemaining < 0;
     
@@ -66,8 +68,8 @@ export default function DietGaugeSummary({
                 {/* Left Metric: Activity */}
                 <div className="flex flex-col items-center justify-center pb-2">
                     <span className="text-2xl font-bold text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
-                    <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">ACTIVITY</span>
-                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal burned</span>
+                    <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">{t('diet.gauge.activity')}</span>
+                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">{t('diet.gauge.kcalBurned')}</span>
                 </div>
 
                 {/* Center Metric: Upward Arch Gauge */}
@@ -111,7 +113,7 @@ export default function DietGaugeSummary({
                     
                     {/* Gauge Label below the arch with ample spacing */}
                     <span className={`text-[10px] font-extrabold tracking-widest uppercase mt-2 ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
-                        {isOverLimit ? 'OVER LIMIT' : 'DAILY REMAINING'}
+                        {isOverLimit ? t('diet.gauge.overLimit') : t('diet.gauge.dailyRemaining')}
                     </span>
 
                     {/* Scale Anchors (0 and goal) */}
@@ -124,8 +126,8 @@ export default function DietGaugeSummary({
                 {/* Right Metric: Net calories left after activity */}
                 <div className="flex flex-col items-center justify-center pb-2">
                     <span className="text-2xl font-bold text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
-                    <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">NET LEFT</span>
-                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal today</span>
+                    <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">{t('diet.gauge.netLeft')}</span>
+                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">{t('diet.gauge.kcalToday')}</span>
                 </div>
             </div>
         </div>

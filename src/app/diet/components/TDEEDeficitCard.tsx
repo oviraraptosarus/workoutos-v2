@@ -3,6 +3,7 @@
 import React from 'react';
 import { TrendingDown, Flame, Zap, Award, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TDEEDeficitCardProps {
     totalCalories: number;
@@ -17,6 +18,7 @@ export default function TDEEDeficitCard({
     tdeeGoal = 2400,
     onOpenActivityModal,
 }: TDEEDeficitCardProps) {
+    const { t } = useLanguage();
     const netCaloriesIn = Math.max(0, totalCalories - activityBurned);
     const deficitOrSurplus = netCaloriesIn - tdeeGoal; // Negative = Deficit, Positive = Surplus
     const isDeficit = deficitOrSurplus <= 0;
@@ -51,18 +53,18 @@ export default function TDEEDeficitCard({
                     }`}
                 >
                     <Flame size={14} />
-                    <span>{isDeficit ? `-${absoluteDiff} kcal Deficit` : `+${absoluteDiff} kcal Surplus`}</span>
+                    <span>{isDeficit ? `-${absoluteDiff} kcal ${t('diet.deficit')}` : `+${absoluteDiff} kcal ${t('diet.surplus')}`}</span>
                 </div>
             </div>
 
             {/* Metrics Breakdown Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-3 gap-x-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
                 <div>
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Maintenance (TDEE)</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">{t('diet.maintenance')}</span>
                     <span className="text-sm font-bold text-on-surface dark:text-white">{tdeeGoal} kcal</span>
                 </div>
                 <div>
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Food Consumed</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">{t('diet.consumed')}</span>
                     <span className="text-sm font-bold text-on-surface">{totalCalories} kcal</span>
                 </div>
                 <div 
@@ -70,14 +72,14 @@ export default function TDEEDeficitCard({
                     onClick={onOpenActivityModal}
                     title="Click to log steps/activity"
                 >
-                    <span className="text-[10px] font-bold text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">Active Burn</span>
+                    <span className="text-[10px] font-bold text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">{t('diet.activeBurn')}</span>
                     <span className="text-sm font-bold text-activity-purple group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
                     <div className="absolute -top-1 -right-1 bg-purple-100 text-activity-purple rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Zap size={10} />
                     </div>
                 </div>
                 <div>
-                    <span className="text-[10px] font-bold text-activity-green uppercase tracking-wider block">Weekly Velocity</span>
+                    <span className="text-[10px] font-bold text-activity-green uppercase tracking-wider block">{t('diet.weeklyVel')}</span>
                     <span className="text-sm font-bold text-activity-green">
                         {isDeficit ? `-${weeklyPaceKg} kg/wk` : `+${weeklyPaceKg} kg/wk`}
                     </span>
@@ -87,8 +89,8 @@ export default function TDEEDeficitCard({
             {/* Visual Gauge Bar */}
             <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
-                    <span>Net Energy Intake ({netCaloriesIn} kcal)</span>
-                    <span>TDEE Limit ({tdeeGoal} kcal)</span>
+                    <span>{t('diet.netIntake')} ({netCaloriesIn} kcal)</span>
+                    <span>{t('diet.limit')} ({tdeeGoal} kcal)</span>
                 </div>
                 <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
                     <div

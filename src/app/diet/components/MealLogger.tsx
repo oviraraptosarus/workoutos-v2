@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat, Sparkles } from 'lucide-react';
 import { MealItem, MealCategory } from '../types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MealLoggerProps {
     meals: MealItem[];
@@ -42,6 +43,7 @@ export default function MealLogger({
     const [copiedNotice, setCopiedNotice] = useState(false);
     const [summaryCopied, setSummaryCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const { t } = useLanguage();
 
     const toggleCollapse = (catName: string) => {
         setCollapsed((prev) => ({ ...prev, [catName]: !prev[catName] }));
@@ -77,7 +79,7 @@ export default function MealLogger({
             
             {/* Top Toolbar / Filter & Action Buttons */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Daily Meal Log</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('diet.logger.title')}</span>
                 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Log Filter Input */}
@@ -87,7 +89,7 @@ export default function MealLogger({
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Filter logged foods..."
+                            placeholder={t("diet.logger.filter")}
                             className="bg-surface-container border border-surface-variant rounded-full pl-8 pr-3 py-1 text-xs font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-card-white focus:border-white/10 shadow-sm w-full sm:w-40"
                         />
                     </div>
@@ -96,7 +98,7 @@ export default function MealLogger({
                         <button
                             onClick={onOpenRecipeModal}
                             className="flex items-center gap-1.5 bg-white/5 hover:bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-white/10 shadow-sm btn-press"
-                            title="Saved Recipe & Meal Combos"
+                            title={t("diet.logger.savedRecipes")}
                         >
                             <ChefHat size={14} className="text-white" /> Saved Recipes
                         </button>
@@ -106,7 +108,7 @@ export default function MealLogger({
                         <button
                             onClick={handleExportClick}
                             className="flex items-center gap-1.5 bg-white/5 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-white/10/80 shadow-sm btn-press"
-                            title="Copy Day's Summary to Clipboard"
+                            title={t("diet.logger.exportSummary")}
                         >
                             {summaryCopied ? (
                                 <>
