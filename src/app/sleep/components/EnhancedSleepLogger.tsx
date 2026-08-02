@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react';
 import { Plus, Moon, Activity, Heart, Frown, Smile, Zap } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EnhancedSleepLoggerProps {
     onLogSaved: (data: any) => void;
 }
 
 export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerProps) {
+    const { t } = useLanguage();
     const [bedtime, setBedtime] = useState('23:00');
     const [waketime, setWaketime] = useState('07:00');
     const [hours, setHours] = useState('8');
@@ -70,14 +72,14 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
             {/* Bed & Wake times */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Bedtime</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.bedtime')}</label>
                     <input
                         type="time" value={bedtime} onChange={e => handleBed(e.target.value)}
                         className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-secondary transition-colors"
                     />
                 </div>
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Wake time</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.waketime')}</label>
                     <input
                         type="time" value={waketime} onChange={e => handleWake(e.target.value)}
                         className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-secondary transition-colors"
@@ -87,7 +89,7 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
 
             {/* Core Sleep — duration auto-computed from times, still editable */}
             <div>
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Sleep Duration (hrs)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.duration')}</label>
                 <input
                     type="number" step="0.5" value={hours} onChange={e => setHours(e.target.value)}
                     className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 font-black text-on-surface focus:outline-none focus:border-secondary transition-colors"
@@ -97,22 +99,22 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
             <div className="grid grid-cols-2 gap-4">
                 {/* Quality */}
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Quality</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.quality')}</label>
                     <select value={quality} onChange={e => setQuality(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
-                        <option value="excellent">Excellent</option>
-                        <option value="good">Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="poor">Poor</option>
+                        <option value="excellent">{t('sleep.logger.qualityExcellent')}</option>
+                        <option value="good">{t('sleep.logger.qualityGood')}</option>
+                        <option value="fair">{t('sleep.logger.qualityFair')}</option>
+                        <option value="poor">{t('sleep.logger.qualityPoor')}</option>
                     </select>
                 </div>
                 {/* Mood */}
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Waking Mood</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.wakingMood')}</label>
                     <select value={mood} onChange={e => setMood(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
-                        <option value="great">Great</option>
-                        <option value="good">Good</option>
-                        <option value="okay">Okay</option>
-                        <option value="groggy">Groggy</option>
+                        <option value="great">{t('sleep.logger.moodGreat')}</option>
+                        <option value="good">{t('sleep.logger.qualityGood')}</option>
+                        <option value="okay">{t('sleep.logger.moodOkay')}</option>
+                        <option value="groggy">{t('sleep.logger.moodGroggy')}</option>
                     </select>
                 </div>
             </div>
@@ -120,50 +122,50 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
             {/* Energy & Stress */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Energy</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.energy')}</label>
                     <select value={energy} onChange={e => setEnergy(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
+                        <option value="high">{t('sleep.logger.energyHigh')}</option>
+                        <option value="medium">{t('sleep.logger.energyMedium')}</option>
+                        <option value="low">{t('sleep.logger.energyLow')}</option>
                     </select>
                 </div>
                 <div>
-                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Stress</label>
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.stress')}</label>
                     <select value={stress} onChange={e => setStress(e.target.value)} className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-3 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-secondary appearance-none transition-colors">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="high">High</option>
+                        <option value="low">{t('sleep.logger.energyLow')}</option>
+                        <option value="moderate">{t('sleep.logger.stressModerate')}</option>
+                        <option value="high">{t('sleep.logger.energyHigh')}</option>
                     </select>
                 </div>
             </div>
 
             {/* Notes */}
             <div>
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Notes & Thoughts</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.notes')}</label>
                 <textarea 
                     rows={2} value={notes} onChange={e => setNotes(e.target.value)}
                     className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
-                    placeholder="How did you sleep?"
+                    placeholder={t('sleep.logger.notesPlaceholder')}
                 />
             </div>
             
             {/* Dreams */}
             <div>
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Dreams (Optional)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.dreams')}</label>
                 <input 
                     type="text" value={dreams} onChange={e => setDreams(e.target.value)}
                     className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
-                    placeholder="Any vivid dreams?"
+                    placeholder={t('sleep.logger.dreamsPlaceholder')}
                 />
             </div>
 
             {/* Tags */}
             <div>
-                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Tags (comma separated)</label>
+                <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.logger.tags')}</label>
                 <input 
                     type="text" value={tags} onChange={e => setTags(e.target.value)}
                     className="w-full mt-1.5 bg-surface-container-highest border border-transparent rounded-2xl px-4 py-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors"
-                    placeholder="e.g. late meal, hot room"
+                    placeholder={t('sleep.logger.tagsPlaceholder')}
                 />
             </div>
 

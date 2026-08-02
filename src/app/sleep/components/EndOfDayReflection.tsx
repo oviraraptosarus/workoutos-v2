@@ -5,6 +5,7 @@ import { BookOpen, Star, Target, CheckCircle2 } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ReflectionData {
     mood: string;
@@ -50,6 +51,7 @@ function screenTimeToMinutes(raw: string): number | null {
 }
 
 export default function EndOfDayReflection() {
+    const { t } = useLanguage();
     const { selectedDate } = useDate();
     const { user } = useAuth();
 
@@ -159,39 +161,39 @@ export default function EndOfDayReflection() {
                     disabled={isSaving}
                     className="bg-secondary hover:bg-secondary-fixed text-on-secondary px-4 py-2 rounded-full text-xs font-bold transition-colors btn-press shadow-sm disabled:opacity-50"
                 >
-                    {isSaving ? 'Saving…' : 'Save Reflection'}
+                    {isSaving ? t('sleep.reflection.saving') : t('sleep.reflection.saveBtn')}
                 </button>
             </div>
 
             {/* Core metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                    <label className={LABEL_CLS}>Overall Mood</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.overallMood')}</label>
                     <select value={reflection.mood} onChange={e => update('mood', e.target.value)} className={SELECT_CLS}>
-                        <option value="great">Great 😄</option>
-                        <option value="good">Good 🙂</option>
-                        <option value="okay">Okay 😐</option>
-                        <option value="bad">Bad 😞</option>
+                        <option value="great">{t('sleep.reflection.moodGreat')}</option>
+                        <option value="good">{t('sleep.reflection.moodGood')}</option>
+                        <option value="okay">{t('sleep.reflection.moodOkay')}</option>
+                        <option value="bad">{t('sleep.reflection.moodBad')}</option>
                     </select>
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Energy</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.energy')}</label>
                     <select value={reflection.energy} onChange={e => update('energy', e.target.value)} className={SELECT_CLS}>
-                        <option value="high">High ⚡</option>
-                        <option value="medium">Medium 🔋</option>
-                        <option value="low">Low 😴</option>
+                        <option value="high">{t('sleep.reflection.energyHigh')}</option>
+                        <option value="medium">{t('sleep.reflection.energyMedium')}</option>
+                        <option value="low">{t('sleep.reflection.energyLow')}</option>
                     </select>
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Stress</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.stress')}</label>
                     <select value={reflection.stress} onChange={e => update('stress', e.target.value)} className={SELECT_CLS}>
-                        <option value="low">Low 🧘</option>
-                        <option value="moderate">Moderate 😤</option>
-                        <option value="high">High 🔥</option>
+                        <option value="low">{t('sleep.reflection.stressLow')}</option>
+                        <option value="moderate">{t('sleep.reflection.stressModerate')}</option>
+                        <option value="high">{t('sleep.reflection.stressHigh')}</option>
                     </select>
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Productivity</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.productivity')}</label>
                     <select value={reflection.productivity} onChange={e => update('productivity', parseInt(e.target.value))} className={SELECT_CLS}>
                         {[1, 2, 3, 4, 5].map(v => <option key={v} value={v}>{v}/5</option>)}
                     </select>
@@ -201,27 +203,27 @@ export default function EndOfDayReflection() {
             {/* Water + Screen time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className={LABEL_CLS}>Water Intake</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.waterIntake')}</label>
                     <input
                         type="text"
-                        placeholder="e.g. 3L or 2500ml"
+                        placeholder={t("sleep.reflection.waterPlaceholder")}
                         value={reflection.waterIntake}
                         onChange={e => update('waterIntake', e.target.value)}
                         className={INPUT_CLS}
                     />
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Screen Time</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.screenTime')}</label>
                     <input
                         type="text"
-                        placeholder="e.g. 4h 30m or 2h"
+                        placeholder={t("sleep.reflection.screenPlaceholder")}
                         value={reflection.screenTime}
                         onChange={e => update('screenTime', e.target.value)}
                         className={INPUT_CLS}
                     />
                     {reflection.screenTime && screenTimeToMinutes(reflection.screenTime) !== null && (
                         <p className="text-[10px] text-secondary font-bold mt-1">
-                            {screenTimeToMinutes(reflection.screenTime)} min will be saved to your log
+                            {t('sleep.reflection.screenSaveMsg').replace('{mins}', screenTimeToMinutes(reflection.screenTime).toString())}
                         </p>
                     )}
                 </div>
@@ -230,30 +232,30 @@ export default function EndOfDayReflection() {
             {/* Text areas */}
             <div className="space-y-4">
                 <div>
-                    <label className={LABEL_CLS}>Journal / Thoughts</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.journal')}</label>
                     <textarea
                         rows={2}
-                        placeholder="How was your day?"
+                        placeholder={t("sleep.reflection.journalPlaceholder")}
                         value={reflection.journal}
                         onChange={e => update('journal', e.target.value)}
                         className={TEXTAREA_CLS}
                     />
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Highlights (Wins)</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.highlights')}</label>
                     <textarea
                         rows={2}
-                        placeholder="What went well today?"
+                        placeholder={t("sleep.reflection.highlightsPlaceholder")}
                         value={reflection.highlights}
                         onChange={e => update('highlights', e.target.value)}
                         className={TEXTAREA_CLS}
                     />
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>Gratitude</label>
+                    <label className={LABEL_CLS}>{t('sleep.reflection.gratitude')}</label>
                     <textarea
                         rows={2}
-                        placeholder="What are you grateful for today?"
+                        placeholder={t("sleep.reflection.gratitudePlaceholder")}
                         value={reflection.gratitude}
                         onChange={e => update('gratitude', e.target.value)}
                         className={TEXTAREA_CLS}
@@ -263,7 +265,7 @@ export default function EndOfDayReflection() {
 
             {/* Star rating */}
             <div className="pt-3 border-t border-surface-variant flex items-center justify-between">
-                <label className="text-sm font-bold text-on-surface uppercase tracking-wider">Overall Day Rating</label>
+                <label className="text-sm font-bold text-on-surface uppercase tracking-wider">{t('sleep.reflection.dayRating')}</label>
                 <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -282,7 +284,7 @@ export default function EndOfDayReflection() {
             <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${user ? 'bg-white' : 'bg-amber-400'}`} />
                 <span className="text-[10px] font-bold text-on-surface-variant">
-                    {user ? 'Synced to cloud (Supabase)' : 'Saved locally only — sign in to sync'}
+                    {user ? t('sleep.reflection.syncedCloud') : t('sleep.reflection.savedLocal')}
                 </span>
             </div>
         </div>

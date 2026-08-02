@@ -5,6 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import { Moon, ArrowLeft, History, Plus, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useDate } from '@/contexts/DateContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/lib/supabaseClient';
@@ -12,6 +13,7 @@ import EnhancedSleepLogger from './components/EnhancedSleepLogger';
 import EndOfDayReflection from './components/EndOfDayReflection';
 
 export default function SleepPage() {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
     const [currentSleep, setCurrentSleep] = useState(0);
@@ -173,31 +175,31 @@ export default function SleepPage() {
                                 <Moon className="text-secondary" /> Sleep Tracking
                             </h1>
                             <p className="text-sm text-on-surface-variant font-medium mt-0.5">
-                                {isToday ? "Today's Recovery" : `History for ${selectedDate}`}
+                                {isToday ? t('sleep.page.todayRecovery') : t('sleep.page.historyFor').replace('{date}', selectedDate)}
                             </p>
                         </div>
                     </div>
                     <div className="text-right hidden sm:block">
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">Daily Target</span>
-                        <span className="text-xl font-black text-on-surface">{targetSleep} <span className="text-sm text-secondary">hrs</span></span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">{t('sleep.page.dailyTarget')}</span>
+                        <span className="text-xl font-black text-on-surface">{targetSleep} <span className="text-sm text-secondary">{t('sleep.page.hrs')}</span></span>
                     </div>
                 </div>
 
                 {/* Top Metrics Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Logged {isToday ? 'Today' : selectedDate}</span>
-                        <div className="text-3xl font-black text-on-surface mt-1">{currentSleep} <span className="text-sm text-on-surface-variant">hrs</span></div>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.loggedToday').replace('{date}', isToday ? 'Today' : selectedDate)}</span>
+                        <div className="text-3xl font-black text-on-surface mt-1">{currentSleep} <span className="text-sm text-on-surface-variant">{t('sleep.page.hrs')}</span></div>
                     </div>
                     <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">7-Day Avg</span>
-                        <div className="text-3xl font-black text-secondary mt-1">{avgSleep.toFixed(1)} <span className="text-sm opacity-70">hrs</span></div>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.7dayAvg')}</span>
+                        <div className="text-3xl font-black text-secondary mt-1">{avgSleep.toFixed(1)} <span className="text-sm opacity-70">{t('sleep.page.hrs')}</span></div>
                     </div>
                     <div className="col-span-2 bg-secondary rounded-[2rem] p-5 text-on-secondary flex items-center justify-between shadow-md transition-colors">
                         <div>
-                            <span className="text-xs font-bold opacity-80 uppercase tracking-wider block mb-1">Status</span>
+                            <span className="text-xs font-bold opacity-80 uppercase tracking-wider block mb-1">{t('sleep.page.status')}</span>
                             <div className="text-xl font-black flex items-center gap-2">
-                                {currentSleep >= targetSleep ? "Optimal Recovery" : "Need more rest"}
+                                {currentSleep >= targetSleep ? t('sleep.page.optimalRecovery') : t('sleep.page.needRest')}
                                 {isTrendingUp ? <TrendingUp size={20} className="text-white" /> : <TrendingDown size={20} className="text-white/60" />}
                             </div>
                         </div>
@@ -267,7 +269,7 @@ export default function SleepPage() {
                             
                             <div className="space-y-3 overflow-y-auto max-h-40 custom-scrollbar pr-2">
                                 {logs.length === 0 ? (
-                                    <div className="text-center text-on-surface-variant text-sm font-medium py-4">No sleep logged.</div>
+                                    <div className="text-center text-on-surface-variant text-sm font-medium py-4">{t('sleep.page.noSleep')}</div>
                                 ) : (
                                     logs.map((log) => (
                                         <div key={log.id} className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-4 flex items-center justify-between shadow-sm group">
