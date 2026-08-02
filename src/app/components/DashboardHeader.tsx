@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, User } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -15,7 +16,8 @@ const GREETING_BY_HOUR = (h: number) => {
 export default function DashboardHeader() {
     const { userProfile } = useAuth();
     const { offsetDays, setOffsetDays, selectedDate, isToday } = useDate();
-    const [greeting, setGreeting] = useState('Good morning');
+    const { t } = useLanguage();
+    const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
     const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'Friend');
     const initial = displayName.charAt(0).toUpperCase();
@@ -31,8 +33,10 @@ export default function DashboardHeader() {
     useEffect(() => {
         const now = new Date();
         const h = now.getHours();
-        setGreeting(GREETING_BY_HOUR(h));
-    }, []);
+        if (h < 12) setGreeting(t('nav.greeting.morning'));
+        else if (h < 17) setGreeting(t('nav.greeting.afternoon'));
+        else setGreeting(t('nav.greeting.evening'));
+    }, [t]);
 
     return (
         <div className="space-y-4">
@@ -53,7 +57,7 @@ export default function DashboardHeader() {
                                 <ChevronLeft size={12} />
                             </button>
                             <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none">
-                                {isToday ? 'Today, ' : ''}{dateStr || 'Loading...'}
+                                {isToday ? t('nav.today') : ''}{dateStr || 'Loading...'}
                             </p>
                             <button 
                                 onClick={() => setOffsetDays(Math.min(offsetDays + 1, 0))}

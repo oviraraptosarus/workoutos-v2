@@ -4,7 +4,7 @@ import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { historicalData, userProfile } = body;
+        const { historicalData, userProfile, preferredLanguage } = body;
 
         const systemInstruction = `You are "Nova", an elite fitness and finance analyst AI for "Workout OS".
 Your task is to analyze the provided 14 days of historical data for the user and generate a comprehensive, highly insightful Bi-Weekly Report.
@@ -25,6 +25,9 @@ Output the report in crisp, beautiful Markdown with the following sections:
 2. **📈 Fitness & Health Trends**: Analyze their sleep patterns (specifically their most common sleep window based on bedtimes/waketimes), hydration timings, and nutrition (macros). Call out if they are consistently hitting targets or missing them.
 3. **💰 Financial Overview**: Analyze their spending vs income using the transaction types. Are they saving? Did they spend too much on a specific category?
 4. **🎯 Nova's Recommendations**: 3 actionable, highly specific tips to improve over the next 14 days based on the granular data.
+
+LANGUAGE PREFERENCE:
+The user has set their language preference to '${preferredLanguage || 'en'}'. If 'te', you MUST output the entire report in fluent, modern Telugu. Translate all technical fitness and financial terms naturally to Telugu, or use transliteration where it makes sense. If 'en', respond in English. Never deviate from this language preference.
 
 Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your report"). Just output the raw Markdown starting with a nice Title (e.g., "# 📊 Bi-Weekly Progress Report").`;
 

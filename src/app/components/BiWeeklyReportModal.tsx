@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, CalendarDays, Sparkles, TrendingUp, AlertCircle, Download, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 
 interface BiWeeklyReportModalProps {
@@ -18,6 +19,7 @@ const REPORT_DATE_KEY = 'workout_os_biweekly_report_date';
 export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportModalProps) {
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
+    const { language } = useLanguage();
     const [mounted, setMounted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [report, setReport] = useState<string | null>(null);
@@ -100,6 +102,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                 body: JSON.stringify({
                     historicalData,
                     userProfile,
+                    preferredLanguage: language,
                     apiKey: localStorage.getItem('workout_os_gemini_api_key') || undefined
                 })
             });

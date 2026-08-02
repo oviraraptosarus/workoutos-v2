@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { DateProvider } from '@/contexts/DateContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import '@/styles/index.css';
 
@@ -50,12 +51,14 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-body-md text-on-background min-h-screen relative overflow-x-hidden selection:bg-activity-green/20 overscroll-none">
         <ThemeProvider>
-          <AuthProvider>
-            <DateProvider>
-              <ServiceWorkerRegister />
-              {children}
-            </DateProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <DateProvider>
+                <ServiceWorkerRegister />
+                {children}
+              </DateProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

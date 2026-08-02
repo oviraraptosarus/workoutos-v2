@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Moon, Droplet, Dumbbell, Apple, Wallet, ArrowRight, Camera } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LogExpenseModal from './modals/LogExpenseModal';
 import LogWorkoutModal from './modals/LogWorkoutModal';
 import LogMealModal from './modals/LogMealModal';
@@ -13,6 +14,7 @@ export default function FloatingActionMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const [activeModal, setActiveModal] = useState<string | null>(null);
     const router = useRouter();
+    const { t } = useLanguage();
 
     const openModal = (modalName: string) => {
         setActiveModal(modalName);
@@ -29,7 +31,7 @@ export default function FloatingActionMenu() {
             >
                 {/* Details Button */}
                 <button className="bg-[#f3e8ff] hover:bg-[#e9d5ff] text-[#7e22ce] text-[13px] font-medium px-4 py-1.5 rounded-full shadow-sm flex items-center gap-1 transition-colors">
-                    Details <ArrowRight size={14} />
+                    {t('nav.details')} <ArrowRight size={14} />
                 </button>
 
                 {/* Sleep */}
@@ -40,7 +42,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#3b82f6] flex items-center justify-center">
                         <Moon size={16} />
                     </div>
-                    <span className="pr-2">Sleep</span>
+                    <span className="pr-2">{t('nav.sleep')}</span>
                 </button>
 
                 {/* Water */}
@@ -51,7 +53,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-[#f0fdfa] text-[#0ea5e9] flex items-center justify-center">
                         <Droplet size={16} />
                     </div>
-                    <span className="pr-2">Water</span>
+                    <span className="pr-2">{t('nav.water')}</span>
                 </button>
 
                 {/* Workout */}
@@ -62,7 +64,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-[#f0fdf4] text-[#16a34a] flex items-center justify-center">
                         <Dumbbell size={16} />
                     </div>
-                    <span className="pr-2">Workout</span>
+                    <span className="pr-2">{t('nav.workout')}</span>
                 </button>
 
                 {/* Meal */}
@@ -73,7 +75,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-[#fff7ed] text-[#f97316] flex items-center justify-center">
                         <Apple size={16} />
                     </div>
-                    <span className="pr-2">Meal</span>
+                    <span className="pr-2">{t('nav.meal')}</span>
                 </button>
 
                 {/* Expense */}
@@ -84,7 +86,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-[#f5f3ff] text-[#8b5cf6] flex items-center justify-center">
                         <Wallet size={16} />
                     </div>
-                    <span className="pr-2">Expense</span>
+                    <span className="pr-2">{t('nav.expense')}</span>
                 </button>
 
                 {/* Progress Photo */}
@@ -98,7 +100,7 @@ export default function FloatingActionMenu() {
                     <div className="w-8 h-8 rounded-full bg-surface-container text-stone-700 flex items-center justify-center">
                         <Camera size={16} />
                     </div>
-                    <span className="pr-2">Progress</span>
+                    <span className="pr-2">{t('nav.progressPhoto')}</span>
                 </button>
             </div>
 

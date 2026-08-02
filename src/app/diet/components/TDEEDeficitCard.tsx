@@ -56,7 +56,7 @@ export default function TDEEDeficitCard({
             </div>
 
             {/* Metrics Breakdown Bar */}
-            <div className="grid grid-cols-4 gap-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-3 gap-x-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
                 <div>
                     <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Maintenance (TDEE)</span>
                     <span className="text-sm font-bold text-on-surface dark:text-white">{tdeeGoal} kcal</span>

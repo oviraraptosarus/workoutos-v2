@@ -62,9 +62,9 @@ export default function DietGaugeSummary({
             </div>
 
             {/* Main Gauge & Metrics Grid */}
-            <div className="grid grid-cols-3 items-center text-center">
+            <div className="flex items-end justify-between text-center px-2 pb-2">
                 {/* Left Metric: Activity */}
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center pb-2">
                     <span className="text-2xl font-bold text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
                     <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">ACTIVITY</span>
                     <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal burned</span>
@@ -122,7 +122,7 @@ export default function DietGaugeSummary({
                 </div>
 
                 {/* Right Metric: Net calories left after activity */}
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center pb-2">
                     <span className="text-2xl font-bold text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
                     <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">NET LEFT</span>
                     <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal today</span>

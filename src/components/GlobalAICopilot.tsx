@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
@@ -46,6 +47,7 @@ export default function GlobalAICopilot() {
 
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
+    const { language } = useLanguage();
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -200,7 +202,7 @@ export default function GlobalAICopilot() {
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState }),
+                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language }),
             });
 
             const data = await res.json();

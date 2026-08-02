@@ -4,7 +4,7 @@ import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, userProfile, image, history, appState } = body;
+        const { prompt, userProfile, image, history, appState, preferredLanguage } = body;
 
         if (!prompt && !image) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
@@ -76,6 +76,9 @@ Sleek, direct, punchy, encouraging. Use emojis tastefully. Keep responses short 
 
 RULE 6 — AFTER SUCCESSFUL LOGGING:
 After calling a function to log data, confirm briefly. Example: "Logged! 2 chapatis + dal added to your lunch — about 420 kcal, 14g protein."
+
+RULE 7 — LANGUAGE:
+The user has set their language preference to '${preferredLanguage || 'en'}'. If 'te', you MUST respond entirely in fluent, modern Telugu. Translate all technical fitness and financial terms naturally to Telugu, or use transliteration where it makes sense. If 'en', respond in English. Never deviate from this language preference.
 
 === END RULES ===`;
 

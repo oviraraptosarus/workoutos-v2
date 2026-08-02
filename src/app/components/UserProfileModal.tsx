@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { X, User, Save, Trash2, Database, Settings, LogOut, CheckCircle2, Ruler, Download, Upload, FileJson, HelpCircle, Sparkles } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -15,6 +16,7 @@ interface UserProfileModalProps {
 export default function UserProfileModal({ isOpen, onClose, initialTab = 'profile' }: UserProfileModalProps) {
 
     const { userProfile, updateUserProfile, clearUserCache, signOut } = useAuth();
+    const { language, setLanguage } = useLanguage();
     const [formData, setFormData] = useState({ ...userProfile, units: userProfile.units || 'metric' });
     const [savedNotice, setSavedNotice] = useState(false);
     const [noticeText, setNoticeText] = useState('Settings saved to local cache!');
@@ -378,14 +380,12 @@ export default function UserProfileModal({ isOpen, onClose, initialTab = 'profil
                                             <p className="text-[11px] text-on-surface-variant font-medium">Preferred language for the interface and AI.</p>
                                         </div>
                                         <select
-                                            value={formData.preferredLanguage || 'en'}
-                                            onChange={(e) => setFormData({ ...formData, preferredLanguage: e.target.value })}
+                                            value={language}
+                                            onChange={(e) => setLanguage(e.target.value as 'en' | 'te')}
                                             className="bg-surface-container-low border border-surface-variant rounded-xl px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-secondary transition-colors"
                                         >
                                             <option value="en">English</option>
-                                            <option value="es">Spanish</option>
-                                            <option value="fr">French</option>
-                                            <option value="de">German</option>
+                                            <option value="te">తెలుగు (Telugu)</option>
                                         </select>
                                     </div>
 
