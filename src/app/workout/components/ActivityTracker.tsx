@@ -1,0 +1,136 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Footprints, Flame, Plus, Calculator } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useDate } from '@/contexts/DateContext';
+import { supabase } from '@/lib/supabaseClient';
+
+export default function ActivityTracker() {
+    const { userProfile } = useAuth();
+    const { selectedDate } = useDate();
+    const [steps, setSteps] = useState(0);
+    const [inputSteps, setInputSteps] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    
+    useEffect(() => {
+        const fetchSteps = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            
+            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            const { data } = await supabase
+                .from('daily_logs')
+                .select('steps')
+                .eq('user_id', user.id)
+                .eq('date', dateKey)
+                .maybeSingle();
+                
+            if (data && data.steps) {
+                setSteps(data.steps);
+            } else {
+                setSteps(0);
+            }
+        };
+        fetchSteps();
+    }, [selectedDate]);
+
+    // Calculate stride and calories based on height and weight
+    const heightCm = userProfile?.heightCm || 170;
+    const weightKg = userProfile?.currentWeight || 75;
+    // Stride length estimation: height * 0.414 for average
+    const strideLengthMeters = (heightCm * 0.414) / 100;
+    const distanceKm = (steps * strideLengthMeters) / 1000;
+    // Calories burned walking approx: Distance (km) * Weight (kg)
+    const caloriesBurned = Math.round(distanceKm * weightKg);
+
+    const handleAddSteps = async () => {
+        const stepsToAdd = parseInt(inputSteps);
+        if (isNaN(stepsToAdd) || stepsToAdd <= 0) return;
+        
+        setIsSaving(true);
+        const newTotal = steps + stepsToAdd;
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            
+            // Add to steps and also calculate how many calories to add to activity_burned
+            const addedDistance = (stepsToAdd * strideLengthMeters) / 1000;
+            const addedCals = Math.round(addedDistance * weightKg);
+
+            // Fetch current activity_burned
+            const { data: currentLog } = await supabase
+                .from('daily_logs')
+                .select('activity_burned')
+                .eq('user_id', user.id)
+                .eq('date', dateKey)
+                .maybeSingle();
+            
+            const currentBurned = currentLog?.activity_burned || 0;
+
+            await supabase
+                .from('daily_logs')
+                .upsert({
+                    user_id: user.id,
+                    date: dateKey,
+                    steps: newTotal,
+                    activity_burned: currentBurned + addedCals
+                }, { onConflict: 'user_id,date' });
+                
+            setSteps(newTotal);
+            setInputSteps('');
+            window.dispatchEvent(new Event('workout_os_activity_updated'));
+            window.dispatchEvent(new Event('storage')); // to sync any hooks listening to storage
+        }
+        setIsSaving(false);
+    };
+
+    return (
+        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+                        <Footprints size={20} />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-black text-on-surface">Daily Steps</h3>
+                        <p className="text-xs font-bold text-on-surface-variant flex items-center gap-1">
+                            <Calculator size={12} /> Stride: {(strideLengthMeters * 100).toFixed(0)}cm
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-5">
+                <div className="bg-surface-container rounded-2xl p-4 border border-surface-variant">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Total Steps</span>
+                    <span className="text-2xl font-black text-on-surface">{steps.toLocaleString()}</span>
+                </div>
+                <div className="bg-surface-container rounded-2xl p-4 border border-surface-variant">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Burned</span>
+                    <span className="text-2xl font-black text-tertiary flex items-center gap-1">
+                        {caloriesBurned} <Flame size={18} />
+                    </span>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <input
+                    type="number"
+                    value={inputSteps}
+                    onChange={(e) => setInputSteps(e.target.value)}
+                    placeholder="Add steps from tracker..."
+                    className="flex-1 bg-surface-container-highest border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-secondary transition-colors"
+                />
+                <button
+                    onClick={handleAddSteps}
+                    disabled={isSaving || !inputSteps}
+                    className="bg-secondary hover:bg-secondary-fixed disabled:opacity-50 text-on-secondary font-bold px-5 py-3 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+                >
+                    <Plus size={18} /> Add
+                </button>
+            </div>
+        </div>
+    );
+}

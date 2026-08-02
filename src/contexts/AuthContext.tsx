@@ -201,16 +201,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserProfile(next);
         
         if (user) {
+            const fallbackEmail = next.email || user.email || '';
+            const fallbackUsername = fallbackEmail 
+                ? fallbackEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Math.floor(Math.random() * 10000)
+                : `user_${Math.floor(Math.random() * 1000000)}`;
+
             const { error } = await supabase.from('profiles').upsert({
                 id: user.id,
-                email: next.email || user.email || '',
+                email: fallbackEmail,
                 full_name: next.fullName,
-                username: next.username,
+                username: next.username || fallbackUsername,
                 current_weight: next.currentWeight,
                 target_weight: next.targetWeight,
                 fitness_goal: next.fitnessGoal,
                 enable_financial_reminders: next.enableFinancialReminders,
-                dob: next.dob,
+                dob: next.dob || null,
                 height_cm: next.heightCm,
                 gender: next.gender,
                 calorie_goal: next.calorieGoal,

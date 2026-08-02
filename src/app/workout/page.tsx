@@ -6,12 +6,15 @@ import WorkoutHeader from './components/WorkoutHeader';
 import ActiveSplitCard from './components/ActiveSplitCard';
 import RecentWorkouts from './components/RecentWorkouts';
 import PresetWorkouts from './components/PresetWorkouts';
+import ActivityTracker from './components/ActivityTracker';
+import CardioActivityModal from './components/modals/CardioActivityModal';
 
 export default function WorkoutPage() {
     const [activePreset, setActivePreset] = useState<any>(null);
     const [isBuilderMode, setIsBuilderMode] = useState(false);
     const [isCountingDown, setIsCountingDown] = useState(false);
     const [countdown, setCountdown] = useState(3);
+    const [isCardioModalOpen, setIsCardioModalOpen] = useState(false);
 
     const handlePlayWorkout = (preset: any) => {
         setIsBuilderMode(false);
@@ -42,9 +45,17 @@ export default function WorkoutPage() {
                     </div>
                 </div>
             )}
+            
+            <CardioActivityModal isOpen={isCardioModalOpen} onClose={() => setIsCardioModalOpen(false)} />
 
             <div className="space-y-6">
-                <WorkoutHeader onStartEmpty={() => { setActivePreset(null); setIsBuilderMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+                <WorkoutHeader 
+                    onStartEmpty={() => { setActivePreset(null); setIsBuilderMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                    onLogActivity={() => setIsCardioModalOpen(true)}
+                />
+                
+                <ActivityTracker />
+                
                 <div id="tour-workout-active-split" className="relative z-[110]">
                     <ActiveSplitCard preset={activePreset} isBuilderMode={isBuilderMode} onExitBuilder={() => setIsBuilderMode(false)} />
                 </div>

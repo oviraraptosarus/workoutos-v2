@@ -1,10 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Dumbbell, Plus } from 'lucide-react';
+import { Dumbbell, Plus, Activity } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export default function WorkoutHeader({ onStartEmpty }: { onStartEmpty?: () => void }) {
+interface WorkoutHeaderProps {
+    onStartEmpty?: () => void;
+    onLogActivity?: () => void;
+}
+
+export default function WorkoutHeader({ onStartEmpty, onLogActivity }: WorkoutHeaderProps) {
     const { t } = useLanguage();
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-surface-variant">
@@ -14,12 +19,20 @@ export default function WorkoutHeader({ onStartEmpty }: { onStartEmpty?: () => v
                 </h1>
                 <p className="text-sm text-on-surface-variant font-bold mt-0.5">{t('workout.subtitle')}</p>
             </div>
-            <button 
-                onClick={onStartEmpty}
-                className="flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-fixed text-on-secondary px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm btn-press"
-            >
-                <Plus size={16} /> Start Empty Workout
-            </button>
+            <div className="flex items-center gap-2">
+                <button 
+                    onClick={onLogActivity}
+                    className="flex-1 sm:flex-none items-center justify-center gap-2 bg-tertiary-container hover:bg-tertiary text-on-tertiary-container hover:text-on-tertiary px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm btn-press flex"
+                >
+                    <Activity size={16} /> Log Activity
+                </button>
+                <button 
+                    onClick={onStartEmpty}
+                    className="flex-1 sm:flex-none items-center justify-center gap-2 bg-secondary hover:bg-secondary-fixed text-on-secondary px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm btn-press flex"
+                >
+                    <Plus size={16} /> Start Empty Workout
+                </button>
+            </div>
         </div>
     );
 }
