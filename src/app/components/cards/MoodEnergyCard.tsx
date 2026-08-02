@@ -127,7 +127,7 @@ export default function MoodEnergyCard() {
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
-                        <Smile size={14} />
+                        <Smile size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">Mood</span>
                     </div>
                     {renderSegments(mood, 'bg-[#f8b47b]', setMood, 'Mood')}
@@ -136,7 +136,7 @@ export default function MoodEnergyCard() {
 
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
-                        <Zap size={14} />
+                        <Zap size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">Energy</span>
                     </div>
                     {renderSegments(energy, 'bg-[#82a88e]', setEnergy, 'Energy')}
@@ -145,7 +145,7 @@ export default function MoodEnergyCard() {
 
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
-                        <Utensils size={14} />
+                        <Utensils size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">Hunger</span>
                     </div>
                     {renderSegments(hunger, 'bg-[#a78bfa]', setHunger, 'Hunger')}
@@ -155,7 +155,7 @@ export default function MoodEnergyCard() {
 
             <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-surface-variant">
                 <div className="flex items-center gap-2 min-w-0">
-                    <Coffee size={14} className="text-on-surface-variant shrink-0" />
+                    <Coffee size={14} className="text-primary shrink-0" />
                     <button
                         onClick={() => setCaffeine(Math.max(0, caffeine - 1))}
                         disabled={!isToday || caffeine === 0}
