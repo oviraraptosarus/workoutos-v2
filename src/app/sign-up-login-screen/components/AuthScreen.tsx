@@ -73,7 +73,7 @@ export default function AuthScreen() {
                         {HIGHLIGHTS.map((h) => (
                             <li key={h.icon} className="flex items-center gap-3 text-left">
                                 <span className="w-9 h-9 shrink-0 rounded-xl bg-surface-container flex items-center justify-center shadow-sm">
-                                    <span className="material-symbols-outlined text-secondary text-[19px]">{h.icon}</span>
+                                    <span className="material-symbols-outlined text-secondary" style={{ fontSize: 19 }}>{h.icon}</span>
                                 </span>
                                 <span className="font-label-md text-label-md text-on-surface-variant">{h.label}</span>
                             </li>
@@ -120,7 +120,7 @@ export default function AuthScreen() {
                 {view !== 'forgot_password' && (
                     <div className="mb-7 animate-in fade-in slide-in-from-left-4 duration-300">
                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary shadow-[0_8px_24px_rgba(0,0,0,0.16)] mb-5">
-                            <span className="material-symbols-outlined text-on-primary text-[28px]">vital_signs</span>
+                            <span className="material-symbols-outlined text-on-primary" style={{ fontSize: 28 }}>vital_signs</span>
                         </div>
                         <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
                             {view === 'login' ? 'Welcome back' : 'Create your account'}

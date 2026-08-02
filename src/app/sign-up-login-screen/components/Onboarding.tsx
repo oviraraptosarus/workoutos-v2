@@ -111,7 +111,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     {SLIDES.map((slide, i) => (
                         <div key={i} className="min-w-full h-full flex flex-col items-center justify-center px-8 text-center pt-12 pb-24">
                             <div className={`w-32 h-32 rounded-3xl ${slide.bg} flex items-center justify-center mb-8 shadow-sm`}>
-                                <span className={`material-symbols-outlined text-[64px] ${slide.color}`}>
+                                <span className={`material-symbols-outlined ${slide.color}`} style={{ fontSize: 64 }}>
                                     {slide.icon}
                                 </span>
                             </div>
