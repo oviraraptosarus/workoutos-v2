@@ -139,7 +139,7 @@ export default function RecipeGroupBuilderModal({
                             <ChefHat size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
+                            <h2 className="text-lg font-bold text-on-surface drop-shadow-sm">
                                 Saved Recipe & Meal Combos
                             </h2>
                             <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
@@ -161,7 +161,7 @@ export default function RecipeGroupBuilderModal({
                     {!isCreatingNew ? (
                         <>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
+                                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                                     Your Saved Recipes ({recipes.length})
                                 </span>
                                 <button
@@ -185,7 +185,7 @@ export default function RecipeGroupBuilderModal({
                                             <div className="flex items-center gap-3">
                                                 <span className="text-2xl">{recipe.icon}</span>
                                                 <div>
-                                                    <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
+                                                    <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">
                                                         {recipe.title}
                                                     </h3>
                                                     <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant">
@@ -221,7 +221,7 @@ export default function RecipeGroupBuilderModal({
                         /* New Recipe Form */
                         <form onSubmit={handleSaveNewRecipe} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">
+                                <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">
                                     Recipe Title
                                 </label>
                                 <input

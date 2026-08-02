@@ -365,7 +365,7 @@ export default function MealPlanDetailsModal({
                             <ShoppingBag size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
+                            <h2 className="text-lg font-bold text-on-surface drop-shadow-sm">
                                 5-Day Getting Started Plan
                             </h2>
                             <p className="text-xs font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
@@ -387,7 +387,7 @@ export default function MealPlanDetailsModal({
                         <button
                             key={dayNum}
                             onClick={() => setSelectedDay(dayNum)}
-                            className={`flex-1 py-2 px-4 rounded-2xl text-xs font-black transition-all border ${
+                            className={`flex-1 py-2 px-4 rounded-2xl text-xs font-bold transition-all border ${
                                 selectedDay === dayNum
                                     ? 'bg-white text-black border-white/20 shadow-md scale-[1.02]'
                                     : 'bg-card-white text-on-surface-variant border-surface-variant hover:bg-surface-container'
@@ -417,7 +417,7 @@ export default function MealPlanDetailsModal({
                                             alt={recipe.title}
                                             className="w-full h-full object-cover"
                                         />
-                                        <div className="absolute top-2 left-2 bg-card-white/90 backdrop-blur-sm px-2 py-1 rounded-xl text-xs font-black text-on-surface shadow-sm flex items-center gap-1">
+                                        <div className="absolute top-2 left-2 bg-card-white/90 backdrop-blur-sm px-2 py-1 rounded-xl text-xs font-bold text-on-surface shadow-sm flex items-center gap-1">
                                             <span>{recipe.icon}</span>
                                             <span>{recipe.category}</span>
                                         </div>
@@ -427,7 +427,7 @@ export default function MealPlanDetailsModal({
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div>
                                             <div className="flex items-start justify-between gap-2">
-                                                <h3 className="text-base font-black text-on-surface drop-shadow-sm">
+                                                <h3 className="text-base font-bold text-on-surface drop-shadow-sm">
                                                     {recipe.title}
                                                 </h3>
                                                 {onLogMeal && (
@@ -455,7 +455,7 @@ export default function MealPlanDetailsModal({
 
                                             {/* Macro Badges */}
                                             <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                <span className="bg-surface-container text-stone-800 text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                                                <span className="bg-surface-container text-stone-800 text-[11px] font-bold px-2.5 py-0.5 rounded-lg flex items-center gap-1">
                                                     <Flame size={12} className="text-white" /> {recipe.calories} kcal
                                                 </span>
                                                 <span className="bg-white/5 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
@@ -476,7 +476,7 @@ export default function MealPlanDetailsModal({
                                         {/* Ingredients & Instructions preview */}
                                         <div className="mt-3 pt-3 border-t border-surface-variant grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                             <div>
-                                                <h4 className="font-black text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Ingredients</h4>
+                                                <h4 className="font-bold text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Ingredients</h4>
                                                 <ul className="list-disc list-inside text-on-surface-variant space-y-0.5 font-medium">
                                                     {recipe.ingredients.slice(0, 3).map((ing, i) => (
                                                         <li key={i}>{ing}</li>
@@ -484,7 +484,7 @@ export default function MealPlanDetailsModal({
                                                 </ul>
                                             </div>
                                             <div>
-                                                <h4 className="font-black text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Prep Steps</h4>
+                                                <h4 className="font-bold text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Prep Steps</h4>
                                                 <ol className="list-decimal list-inside text-on-surface-variant space-y-0.5 font-medium">
                                                     {recipe.prepSteps.slice(0, 2).map((step, i) => (
                                                         <li key={i}>{step}</li>

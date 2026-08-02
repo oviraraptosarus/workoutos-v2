@@ -225,7 +225,7 @@ export default function DietPage() {
             <div className="space-y-6 pb-12">
                 <div className="pb-2 border-b border-surface-variant flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-black text-on-surface flex items-center gap-2 drop-shadow-sm">
+                        <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2 drop-shadow-sm">
                             Diet & Nutrition
                         </h1>
                         <p className="hidden sm:block text-sm text-on-surface-variant font-bold mt-0.5">

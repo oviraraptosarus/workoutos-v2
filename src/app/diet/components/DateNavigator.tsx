@@ -31,7 +31,7 @@ export default function DateNavigator({ currentDateKey, onDateChange }: DateNavi
             </button>
 
             <div className="flex items-center gap-2 relative">
-                <label className="flex items-center gap-1.5 text-xs font-black text-on-surface uppercase tracking-wider cursor-pointer hover:text-cyan-700 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant shadow-sm">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-on-surface uppercase tracking-wider cursor-pointer hover:text-cyan-700 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant shadow-sm">
                     <Calendar size={14} className="text-white" />
                     <span>{getDisplayDateString(currentDateKey)}</span>
                     <input
@@ -49,7 +49,7 @@ export default function DateNavigator({ currentDateKey, onDateChange }: DateNavi
                 {!isToday && (
                     <button
                         onClick={() => onDateChange(todayKey)}
-                        className="flex items-center gap-1 text-[10px] font-black text-cyan-700 bg-cyan-100/70 hover:bg-cyan-100 px-2.5 py-1 rounded-full border border-white/10 shadow-sm transition-all btn-press"
+                        className="flex items-center gap-1 text-[10px] font-bold text-cyan-700 bg-cyan-100/70 hover:bg-cyan-100 px-2.5 py-1 rounded-full border border-white/10 shadow-sm transition-all btn-press"
                         title="Jump to Today"
                     >
                         <RotateCcw size={10} /> Today

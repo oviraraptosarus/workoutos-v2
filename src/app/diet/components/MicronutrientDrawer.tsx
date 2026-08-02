@@ -36,7 +36,7 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
                         <HeartPulse size={18} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
+                        <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">
                             Micronutrients & Health Targets
                         </h3>
                         <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">

@@ -77,7 +77,7 @@ export default function MacroRings({
                     </div>
                     <div className="flex flex-col items-center">
                         <Flame size={24} className="text-activity-green mb-1" />
-                        <span className="text-3xl font-black text-on-surface drop-shadow-sm">{caloriesLeft}</span>
+                        <span className="text-3xl font-bold text-on-surface drop-shadow-sm">{caloriesLeft}</span>
                         <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Kcal Left</span>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ export default function MacroRings({
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-card-white rounded-3xl w-full max-w-sm p-6 shadow-2xl border border-surface-variant space-y-4">
                         <div className="flex items-center justify-between border-b border-surface-variant pb-3">
-                            <h3 className="text-base font-black text-on-surface dark:text-white">Set Target Goals</h3>
+                            <h3 className="text-base font-bold text-on-surface dark:text-white">Set Target Goals</h3>
                             <button
                                 onClick={() => setIsEditingGoals(false)}
                                 className="p-1 rounded-full hover:bg-surface-container text-on-surface-variant dark:text-on-surface-variant"

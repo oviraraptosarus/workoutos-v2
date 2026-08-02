@@ -184,7 +184,7 @@ export default function EditFoodModal({
                             {initialData ? <Edit2 size={16} /> : <Plus size={18} />}
                         </div>
                         <div>
-                            <h2 className="text-base font-black text-white leading-tight">
+                            <h2 className="text-base font-bold text-white leading-tight">
                                 {initialData ? 'Edit Food Item' : 'Add Food Item'}
                             </h2>
                             <p className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
@@ -226,7 +226,7 @@ export default function EditFoodModal({
                             style={{ background: 'rgb(36,36,38)', border: '1px solid rgba(255,255,255,0.1)' }}
                         >
                             <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                                <span className="text-[10px] font-black tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD PRESETS</span>
+                                <span className="text-[10px] font-bold tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD PRESETS</span>
                                 <button type="button" onClick={() => setShowPresets(false)} className="text-[11px] font-bold" style={{ color: activeColor }}>Close</button>
                             </div>
                             {filteredPresets.length > 0 ? filteredPresets.map((preset, idx) => (
@@ -264,7 +264,7 @@ export default function EditFoodModal({
 
                         {/* Category */}
                         <div>
-                            <label className="block text-[11px] font-black tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>CATEGORY</label>
+                            <label className="block text-[11px] font-bold tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>CATEGORY</label>
                             <div className="grid grid-cols-4 gap-2">
                                 {(Object.entries(CATEGORY_CONFIG) as [MealCategory, { emoji: string; color: string }][]).map(([cat, cfg]) => (
                                     <button
@@ -288,7 +288,7 @@ export default function EditFoodModal({
                         {/* Name + Icon */}
                         <div className="grid grid-cols-4 gap-3">
                             <div className="col-span-3">
-                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD NAME *</label>
+                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD NAME *</label>
                                 <input
                                     type="text"
                                     required
@@ -306,7 +306,7 @@ export default function EditFoodModal({
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ICON</label>
+                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ICON</label>
                                 <select
                                     value={icon}
                                     onChange={(e) => setIcon(e.target.value)}
@@ -327,7 +327,7 @@ export default function EditFoodModal({
                         {/* Portion + Bites */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>PORTION / SERVING</label>
+                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>PORTION / SERVING</label>
                                 <input
                                     type="text"
                                     value={portion}
@@ -340,7 +340,7 @@ export default function EditFoodModal({
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>BITES / POINTS</label>
+                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>BITES / POINTS</label>
                                 <input
                                     type="number"
                                     value={bites}
@@ -357,7 +357,7 @@ export default function EditFoodModal({
                         {/* Macros */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="text-[11px] font-black tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>NUTRIENT BREAKDOWN</label>
+                                <label className="text-[11px] font-bold tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>NUTRIENT BREAKDOWN</label>
                                 <span className="text-[10px] font-bold flex items-center gap-1" style={{ color: activeColor }}>
                                     <Sparkles size={10} /> Auto-calculates totals
                                 </span>
@@ -441,7 +441,7 @@ export default function EditFoodModal({
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-2.5 rounded-xl text-xs font-black text-white shadow-lg transition-all active:scale-95"
+                                className="px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-lg transition-all active:scale-95"
                                 style={{ background: activeColor, boxShadow: `0 4px 16px ${activeColor}44` }}
                             >
                                 {initialData ? 'Save Changes' : 'Add Food Item'}

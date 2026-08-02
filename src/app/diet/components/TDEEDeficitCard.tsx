@@ -33,7 +33,7 @@ export default function TDEEDeficitCard({
                         <TrendingDown size={18} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">
+                        <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">
                             TDEE & Net Energy Balance
                         </h3>
                         <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
@@ -44,7 +44,7 @@ export default function TDEEDeficitCard({
 
                 {/* Status Badge */}
                 <div
-                    className={`px-3 py-1 rounded-full text-xs font-black shadow-sm border flex items-center gap-1.5 ${
+                    className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm border flex items-center gap-1.5 ${
                         isDeficit
                             ? 'bg-white text-black border-white/20'
                             : 'bg-white text-black border-white/20'
@@ -58,27 +58,27 @@ export default function TDEEDeficitCard({
             {/* Metrics Breakdown Bar */}
             <div className="grid grid-cols-4 gap-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
                 <div>
-                    <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-wider block">Maintenance (TDEE)</span>
-                    <span className="text-sm font-black text-on-surface dark:text-white">{tdeeGoal} kcal</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Maintenance (TDEE)</span>
+                    <span className="text-sm font-bold text-on-surface dark:text-white">{tdeeGoal} kcal</span>
                 </div>
                 <div>
-                    <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-wider block">Food Consumed</span>
-                    <span className="text-sm font-black text-on-surface">{totalCalories} kcal</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Food Consumed</span>
+                    <span className="text-sm font-bold text-on-surface">{totalCalories} kcal</span>
                 </div>
                 <div 
                     className="cursor-pointer group relative"
                     onClick={onOpenActivityModal}
                     title="Click to log steps/activity"
                 >
-                    <span className="text-[10px] font-black text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">Active Burn</span>
-                    <span className="text-sm font-black text-activity-purple group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
+                    <span className="text-[10px] font-bold text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">Active Burn</span>
+                    <span className="text-sm font-bold text-activity-purple group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
                     <div className="absolute -top-1 -right-1 bg-purple-100 text-activity-purple rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Zap size={10} />
                     </div>
                 </div>
                 <div>
-                    <span className="text-[10px] font-black text-activity-green uppercase tracking-wider block">Weekly Velocity</span>
-                    <span className="text-sm font-black text-activity-green">
+                    <span className="text-[10px] font-bold text-activity-green uppercase tracking-wider block">Weekly Velocity</span>
+                    <span className="text-sm font-bold text-activity-green">
                         {isDeficit ? `-${weeklyPaceKg} kg/wk` : `+${weeklyPaceKg} kg/wk`}
                     </span>
                 </div>

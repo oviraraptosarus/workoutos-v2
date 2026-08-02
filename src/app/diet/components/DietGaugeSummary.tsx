@@ -65,7 +65,7 @@ export default function DietGaugeSummary({
             <div className="grid grid-cols-3 items-center text-center">
                 {/* Left Metric: Activity */}
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
+                    <span className="text-2xl font-bold text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
                     <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">ACTIVITY</span>
                     <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal burned</span>
                 </div>
@@ -103,7 +103,7 @@ export default function DietGaugeSummary({
                         </svg>
                         {/* Gauge Central Values (Centered inside the dome) */}
                         <div className="absolute top-10 flex flex-col items-center">
-                            <span className={`text-3xl font-black tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
+                            <span className={`text-3xl font-bold tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
                                 {Math.abs(caloriesRemaining)}
                             </span>
                         </div>
@@ -123,7 +123,7 @@ export default function DietGaugeSummary({
 
                 {/* Right Metric: Net calories left after activity */}
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-black text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
+                    <span className="text-2xl font-bold text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
                     <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">NET LEFT</span>
                     <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">kcal today</span>
                 </div>

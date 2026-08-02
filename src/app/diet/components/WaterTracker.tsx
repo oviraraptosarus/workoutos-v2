@@ -58,9 +58,9 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                 </div>
                 <div>
                     <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black text-on-surface drop-shadow-sm">Hydration Tracker</h3>
+                        <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">Hydration Tracker</h3>
                         {percentage >= 100 && (
-                            <span className="bg-white text-black text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                            <span className="bg-white text-black text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                 <Check size={12} strokeWidth={3} /> Goal Met!
                             </span>
                         )}

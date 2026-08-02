@@ -77,7 +77,7 @@ export default function MealLogger({
             
             {/* Top Toolbar / Filter & Action Buttons */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Daily Meal Log</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Daily Meal Log</span>
                 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Log Filter Input */}
@@ -162,7 +162,7 @@ export default function MealLogger({
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-black text-on-surface uppercase tracking-wider">
+                                        <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">
                                             {name}
                                         </h3>
                                         {isCollapsed ? <ChevronDown size={16} className="text-on-surface-variant dark:text-on-surface-variant" /> : <ChevronUp size={16} className="text-on-surface-variant dark:text-on-surface-variant" />}
@@ -176,7 +176,7 @@ export default function MealLogger({
                             {/* Section Subtotal & Add Button */}
                             <div className="flex items-center gap-3">
                                 {totalCategoryBites > 0 && (
-                                    <span className="text-xs font-black text-activity-blue tracking-wider">
+                                    <span className="text-xs font-bold text-activity-blue tracking-wider">
                                         {totalCategoryBites} BITES
                                     </span>
                                 )}
@@ -217,7 +217,7 @@ export default function MealLogger({
                                                     {item.icon || '🥗'}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-sm font-black text-on-surface drop-shadow-sm group-hover:text-emerald-700 transition-colors">
+                                                    <h4 className="text-sm font-bold text-on-surface drop-shadow-sm group-hover:text-emerald-700 transition-colors">
                                                         {item.name}
                                                     </h4>
                                                     <p className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-wider mt-0.5">

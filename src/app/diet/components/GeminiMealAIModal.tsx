@@ -160,7 +160,7 @@ export default function GeminiMealAIModal({
                             <Sparkles size={16} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
+                            <h2 className="text-lg font-bold text-on-surface drop-shadow-sm">
                                 AI Natural Meal Logger
                             </h2>
                             <p className="text-[11px] font-bold text-emerald-700">
@@ -182,7 +182,7 @@ export default function GeminiMealAIModal({
                     {/* Prompt Box */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <label className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
+                            <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                                 Describe What You Ate
                             </label>
                             <button
@@ -216,7 +216,7 @@ export default function GeminiMealAIModal({
                                 type="button"
                                 onClick={handleAnalyze}
                                 disabled={isAnalyzing || !promptText.trim()}
-                                className="bg-white hover:bg-zinc-200 disabled:bg-surface-container-high text-black font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-white hover:bg-zinc-200 disabled:bg-surface-container-high text-black font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isAnalyzing ? (
                                     <>
@@ -235,7 +235,7 @@ export default function GeminiMealAIModal({
                     {parsedFoods.length > 0 && (
                         <div className="space-y-3 pt-3 border-t border-surface-variant animate-in fade-in">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
+                                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
                                     Parsed Ingredients ({parsedFoods.length})
                                 </span>
                                 <span className="text-[10px] text-white font-bold">
@@ -259,7 +259,7 @@ export default function GeminiMealAIModal({
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-black text-on-surface dark:text-white">{item.calories} kcal</div>
+                                            <div className="font-bold text-on-surface dark:text-white">{item.calories} kcal</div>
                                             <div className="text-[10px] text-emerald-700 font-bold">
                                                 P:{item.protein}g C:{item.carbs}g F:{item.fat}g
                                             </div>
@@ -271,7 +271,7 @@ export default function GeminiMealAIModal({
                             <button
                                 type="button"
                                 onClick={handleConfirmLog}
-                                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg btn-press"
+                                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg btn-press"
                             >
                                 <Check size={16} strokeWidth={3} /> Log All {parsedFoods.length} Items to Daily Tracker
                             </button>
