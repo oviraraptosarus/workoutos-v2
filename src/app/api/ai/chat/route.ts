@@ -191,7 +191,7 @@ The user has set their language preference to '${preferredLanguage || 'en'}'. If
                                 },
                                 {
                                     name: "log_sleep",
-                                    description: "Log detailed sleep data. When the user mentions sleep (e.g. 'log sleep', 'I slept', 'log my night'), ask them for ALL of these details in one friendly message: bedtime, wake time, sleep quality (excellent/good/fair/poor), waking mood (great/good/okay/groggy), energy level (high/medium/low), stress level (low/moderate/high), and optionally notes or tags. Once you have at minimum bedtime + waketime OR hours, call this function with all collected info. Do NOT call with just hours if the user said 'log sleep' with no other details — ask first.",
+                                    description: "Log sleep data for the user. Use this immediately when the user tells you how long they slept (e.g. 'I slept 8 hours', 'log 7 hours of sleep') or gives a bedtime/waketime. Do NOT ask for additional details (like mood, energy, or quality) unless they provide it naturally. Log what you have.",
                                     parameters: {
                                         type: "OBJECT",
                                         properties: {
