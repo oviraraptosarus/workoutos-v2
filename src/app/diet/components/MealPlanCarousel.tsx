@@ -23,7 +23,7 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
             type: 'Morning',
             title: 'Eggs & Toast',
             imageUrl: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=300&auto=format&fit=crop&q=80',
-            icon: <Sun className="w-5 h-5 text-amber-500" />,
+            icon: <Sun className="w-5 h-5 text-white" />,
             completed: true,
         },
         {
@@ -31,21 +31,21 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
             type: 'Lunch',
             title: 'Quinoa & Edamame Bowl',
             imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&auto=format&fit=crop&q=80',
-            icon: <SunDim className="w-5 h-5 text-orange-500" />,
+            icon: <SunDim className="w-5 h-5 text-white" />,
         },
         {
             id: '3',
             type: 'Dinner',
             title: 'Broccoli & Curry Dish',
             imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&auto=format&fit=crop&q=80',
-            icon: <Moon className="w-5 h-5 text-indigo-500" />,
+            icon: <Moon className="w-5 h-5 text-white" />,
         },
         {
             id: '4',
             type: 'Snack',
             title: 'Protein Oat Bites',
             imageUrl: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=300&auto=format&fit=crop&q=80',
-            icon: <Apple className="w-5 h-5 text-emerald-500" />,
+            icon: <Apple className="w-5 h-5 text-white" />,
         },
     ];
 

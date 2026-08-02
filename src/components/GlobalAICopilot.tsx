@@ -413,7 +413,7 @@ export default function GlobalAICopilot() {
                                     onClick={clearChat}
                                     aria-label="Clear conversation"
                                     title="Clear conversation"
-                                    className="w-9 h-9 rounded-full bg-white/10 hover:bg-red-500/20 flex items-center justify-center text-white/50 hover:text-red-400 transition-colors"
+                                    className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors"
                                 >
                                     <Trash2 size={16} />
                                 </button>
@@ -479,12 +479,12 @@ export default function GlobalAICopilot() {
                                         </div>
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[11px] font-bold text-purple-400">Ava</span>
+                                                <span className="text-[11px] font-bold text-white">Ava</span>
                                                 <span className="text-[10px] text-white/30">{msg.timestamp}</span>
                                             </div>
                                             <div className="ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm text-white/85 leading-relaxed">
                                                 <div className="prose prose-invert prose-sm max-w-none
-                                                    prose-headings:text-purple-300 prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
+                                                    prose-headings:text-white prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
                                                     prose-p:text-white/80 prose-p:leading-relaxed prose-p:my-1
                                                     prose-li:text-white/80 prose-li:my-0.5
                                                     prose-strong:text-white prose-strong:font-semibold
@@ -505,7 +505,7 @@ export default function GlobalAICopilot() {
                                         </div>
                                         <div className="flex items-center gap-1.5 pr-1">
                                             <span className="text-[10px] text-white/30">{msg.timestamp}</span>
-                                            <svg width="14" height="10" viewBox="0 0 14 10" className="text-purple-400" fill="none">
+                                            <svg width="14" height="10" viewBox="0 0 14 10" className="text-white" fill="none">
                                                 <path d="M1 5l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                                 <path d="M5 5l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
@@ -538,9 +538,9 @@ export default function GlobalAICopilot() {
                                     onClick={() => handleSend(chip)}
                                     className="ava-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 border border-white/15 bg-white/5 hover:bg-white/10 transition-colors whitespace-nowrap"
                                 >
-                                    {chip.toLowerCase().includes('save') ? <BookmarkPlus size={12} className="text-purple-400" /> :
-                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') || chip.toLowerCase().includes('log') ? <Sparkles size={12} className="text-purple-400" /> :
-                                     <Settings2 size={12} className="text-purple-400" />}
+                                    {chip.toLowerCase().includes('save') ? <BookmarkPlus size={12} className="text-white" /> :
+                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') || chip.toLowerCase().includes('log') ? <Sparkles size={12} className="text-white" /> :
+                                     <Settings2 size={12} className="text-white" />}
                                     {chip}
                                 </button>
                             ))}
@@ -549,7 +549,7 @@ export default function GlobalAICopilot() {
 
                     {/* Input Bar */}
                     <div className="shrink-0 px-4 sm:px-6 pb-6 pt-2">
-                        <div className="flex items-end gap-3 bg-[#1e1e28] border border-white/10 rounded-2xl px-3 py-2 focus-within:border-purple-500/40 transition-colors">
+                        <div className="flex items-end gap-3 bg-[#1e1e28] border border-white/10 rounded-2xl px-3 py-2 focus-within:border-white/20/40 transition-colors">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -580,7 +580,7 @@ export default function GlobalAICopilot() {
                             {selectedImage && (
                                 <div className="relative shrink-0 mb-1">
                                     <img src={selectedImage} alt="preview" className="w-8 h-8 rounded-lg object-cover opacity-80" />
-                                    <button onClick={() => setSelectedImage(null)} className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full flex items-center justify-center">
+                                    <button onClick={() => setSelectedImage(null)} className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center">
                                         <X size={8} className="text-white" />
                                     </button>
                                 </div>
@@ -589,7 +589,7 @@ export default function GlobalAICopilot() {
                             <button
                                 onClick={() => handleSend()}
                                 disabled={(!prompt.trim() && !selectedImage) || loading}
-                                className="p-1.5 text-white/40 hover:text-purple-400 disabled:opacity-20 transition-colors shrink-0 mb-0.5"
+                                className="p-1.5 text-white/40 hover:text-white disabled:opacity-20 transition-colors shrink-0 mb-0.5"
                                 aria-label="Send message"
                             >
                                 <Send size={20} />
@@ -600,7 +600,7 @@ export default function GlobalAICopilot() {
                         <div className="flex items-center justify-between mt-4 px-1">
                             <button 
                                 onClick={() => setIsConversationMode(!isConversationMode)}
-                                className={`p-2 transition-colors flex items-center justify-center rounded-full ${isConversationMode ? 'text-purple-400 bg-purple-500/10 shadow-[0_0_12px_rgba(168,85,247,0.4)]' : 'text-white/40 hover:text-white/70'}`} 
+                                className={`p-2 transition-colors flex items-center justify-center rounded-full ${isConversationMode ? 'text-white bg-white/10 shadow-[0_0_12px_rgba(168,85,247,0.4)]' : 'text-white/40 hover:text-white/70'}`} 
                                 aria-label="Conversation Mode"
                                 title="Toggle Conversation Mode"
                             >
@@ -622,8 +622,8 @@ export default function GlobalAICopilot() {
                                 {/* Pulse rings when listening */}
                                 {isListening && (
                                     <>
-                                        <span className="absolute inset-0 rounded-full border border-purple-400/40 animate-ping" />
-                                        <span className="absolute inset-[-6px] rounded-full border border-purple-400/20 animate-ping [animation-delay:0.5s]" />
+                                        <span className="absolute inset-0 rounded-full border border-white/20/40 animate-ping" />
+                                        <span className="absolute inset-[-6px] rounded-full border border-white/20/20 animate-ping [animation-delay:0.5s]" />
                                     </>
                                 )}
                             </button>
@@ -631,7 +631,7 @@ export default function GlobalAICopilot() {
                             <button
                                 onClick={toggleListening}
                                 aria-label="Voice input"
-                                className={`p-2 transition-colors ${isListening ? 'text-purple-400' : 'text-white/40 hover:text-white/70'}`}
+                                className={`p-2 transition-colors ${isListening ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
                             >
                                 <Mic size={20} />
                             </button>
@@ -639,7 +639,7 @@ export default function GlobalAICopilot() {
 
                         {/* Listening status indicator */}
                         {isListening && (
-                            <p className="text-center text-xs text-purple-400/80 font-medium mt-2 animate-pulse">
+                            <p className="text-center text-xs text-white/80 font-medium mt-2 animate-pulse">
                                 Listening… speak now
                             </p>
                         )}

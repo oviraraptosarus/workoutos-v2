@@ -208,10 +208,10 @@ export default function PlannerPage() {
                 <div className="fixed bottom-6 right-6 z-[999] bg-[#0f172a] shadow-2xl rounded-[2rem] border border-slate-700 p-6 flex flex-col items-center justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 w-80">
                     <div className="text-center space-y-4">
                         <div className="flex items-center justify-center gap-2">
-                            <BrainCircuit size={24} className="text-emerald-500 animate-pulse" />
+                            <BrainCircuit size={24} className="text-white animate-pulse" />
                             <h2 className="text-sm font-black text-white tracking-widest uppercase">Deep Work</h2>
                         </div>
-                        <div className="text-4xl font-black text-emerald-400 tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
+                        <div className="text-4xl font-black text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
                             {formatFocusTime(focusTimeLeft)}
                         </div>
                         <p className="text-[11px] text-slate-400 font-medium px-4">All distractions are blocked. Focus on the task at hand.</p>
@@ -236,7 +236,7 @@ export default function PlannerPage() {
                         </Link>
                         <div>
                             <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
-                                <Target className="text-emerald-500" /> Planner
+                                <Target className="text-white" /> Planner
                             </h1>
                             <p className="text-sm text-on-surface-variant font-medium mt-0.5">Organize your action items</p>
                         </div>
@@ -249,20 +249,20 @@ export default function PlannerPage() {
                     <div className="lg:col-span-4 space-y-6">
                         <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant relative overflow-hidden group">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-6 flex items-center gap-2">
-                                <Plus size={18} className="text-emerald-500" /> New Task
+                                <Plus size={18} className="text-white" /> New Task
                             </h2>
                             <div className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Title</label>
-                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What needs to be done?" className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-emerald-400 shadow-sm" />
+                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What needs to be done?" className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-white/20 shadow-sm" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> Description</label>
-                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Add details..." className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-emerald-400 shadow-sm resize-none h-20" />
+                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Add details..." className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm resize-none h-20" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> Due Date</label>
-                                    <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-emerald-400 shadow-sm" />
+                                    <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Sub-tasks</label>
@@ -271,11 +271,11 @@ export default function PlannerPage() {
                                             <div key={st.id} className="flex items-center gap-2 bg-surface-container-low border border-surface-variant rounded-lg p-2">
                                                 <GripVertical size={14} className="text-on-surface-variant" />
                                                 <input type="text" value={st.title} onChange={(e) => { const copy = [...newSubTasks]; copy[i].title = e.target.value; setNewSubTasks(copy); }} className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface font-medium" placeholder="Sub-task title..." />
-                                                <button onClick={() => setNewSubTasks(newSubTasks.filter(s => s.id !== st.id))} className="text-on-surface-variant hover:text-rose-500"><Trash2 size={14} /></button>
+                                                <button onClick={() => setNewSubTasks(newSubTasks.filter(s => s.id !== st.id))} className="text-on-surface-variant hover:text-white"><Trash2 size={14} /></button>
                                             </div>
                                         ))}
                                     </div>
-                                    <button onClick={() => setNewSubTasks([...newSubTasks, { id: Date.now().toString(), title: '' }])} className="text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
+                                    <button onClick={() => setNewSubTasks([...newSubTasks, { id: Date.now().toString(), title: '' }])} className="text-xs font-bold text-white bg-white/5 hover:bg-emerald-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
                                         <Plus size={14} /> Add Sub-task
                                     </button>
                                 </div>
@@ -317,7 +317,7 @@ export default function PlannerPage() {
                                 {tasks.map((task) => (
                                     <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
                                         <div className="flex items-start gap-3">
-                                            <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-surface-variant text-transparent hover:border-emerald-400'}`}>
+                                            <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-white border-white/20 text-black' : 'border-surface-variant text-transparent hover:border-white/20'}`}>
                                                 <CheckCircle2 size={16} />
                                             </button>
                                             <div 
@@ -330,7 +330,7 @@ export default function PlannerPage() {
                                                         {task.priority && task.priority !== 'none' && (
                                                             <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
                                                                 task.priority === 'high' ? 'bg-error/15 text-error'
-                                                                : task.priority === 'medium' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                                                : task.priority === 'medium' ? 'bg-white/15 text-white dark:text-white'
                                                                 : 'bg-secondary/15 text-secondary'
                                                             }`}>
                                                                 {task.priority}
@@ -338,16 +338,16 @@ export default function PlannerPage() {
                                                         )}
                                                         <h3 className={`font-bold text-on-surface text-lg cursor-grab active:cursor-grabbing truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`}>{task.title}</h3>
                                                     </div>
-                                                    <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-rose-500 flex-shrink-0 p-1"><Trash2 size={16} /></button>
+                                                    <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-white flex-shrink-0 p-1"><Trash2 size={16} /></button>
                                                 </div>
-                                                {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2"><Calendar size={12} /> Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
+                                                {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-wider mb-2"><Calendar size={12} /> Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
                                                 {task.description && <p className="text-sm text-on-surface-variant mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
                                                 {task.subTasks && task.subTasks.length > 0 && (
                                                     <div className="space-y-2 mt-3 pt-3 border-t border-surface-variant">
                                                         {task.subTasks.map(st => (
                                                             <div key={st.id} className="flex items-start gap-2 group">
-                                                                <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-emerald-500 flex-shrink-0">
-                                                                    {st.completed ? <CheckCircle2 size={16} className="text-emerald-500" /> : <Circle size={16} />}
+                                                                <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-white flex-shrink-0">
+                                                                    {st.completed ? <CheckCircle2 size={16} className="text-white" /> : <Circle size={16} />}
                                                                 </button>
                                                                 <span className={`text-sm text-on-surface-variant font-medium ${st.completed ? 'line-through text-on-surface-variant' : ''}`}>{st.title}</span>
                                                             </div>
@@ -369,14 +369,14 @@ export default function PlannerPage() {
                     {/* Top Priorities — dynamic, drag into Tasks to promote */}
                     <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-emerald-500" /> Top Priorities</div>
+                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-white" /> Top Priorities</div>
                             <button
                                 onClick={() => {
                                     const p = [...priorities, ''];
                                     setPriorities(p);
                                     updateTargetConfig({ planner_priorities: p });
                                 }}
-                                className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded flex items-center gap-1 active:scale-95 transition-transform"
+                                className="text-[10px] bg-white/10 text-white dark:text-white px-2 py-1 rounded flex items-center gap-1 active:scale-95 transition-transform"
                             >
                                 <Plus size={10} /> Add
                             </button>
@@ -412,10 +412,10 @@ export default function PlannerPage() {
                                             updateTargetConfig({ planner_priorities: p });
                                         }
                                     }}
-                                    className="flex items-center gap-2 bg-surface-container p-2 rounded-xl border border-surface-variant cursor-move hover:border-emerald-400 hover:shadow-sm transition-all group"
+                                    className="flex items-center gap-2 bg-surface-container p-2 rounded-xl border border-surface-variant cursor-move hover:border-white/20 hover:shadow-sm transition-all group"
                                 >
-                                    <GripVertical size={14} className="text-on-surface-variant group-hover:text-emerald-500 transition-colors shrink-0" />
-                                    <div className="w-6 h-6 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-[10px] shrink-0">
+                                    <GripVertical size={14} className="text-on-surface-variant group-hover:text-white transition-colors shrink-0" />
+                                    <div className="w-6 h-6 rounded-lg bg-white/15 text-white dark:text-white flex items-center justify-center font-black text-[10px] shrink-0">
                                         {i + 1}
                                     </div>
                                     <input
@@ -435,7 +435,7 @@ export default function PlannerPage() {
                                         onClick={() => createTaskFromPriority(priorityText || `Priority ${i + 1}`, i === 0 ? 'high' : i === 1 ? 'medium' : 'low')}
                                         aria-label="Promote to task"
                                         title="Send to Tasks"
-                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-emerald-500 transition-all shrink-0 p-1"
+                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-white transition-all shrink-0 p-1"
                                     >
                                         <ArrowLeft size={13} className="rotate-[135deg]" />
                                     </button>
@@ -461,13 +461,13 @@ export default function PlannerPage() {
                     {/* Focus Sessions */}
                     <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
-                            <BrainCircuit size={14} className="text-emerald-500" /> Focus Sessions
+                            <BrainCircuit size={14} className="text-white" /> Focus Sessions
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-4">
                             {[1, 2, 3, 4].map((num, i) => (
                                 <div 
                                     key={i} 
-                                    className={clsx("border rounded-2xl p-3 flex justify-between items-center transition-colors cursor-pointer", focusSessions[i] ? "bg-emerald-50 border-emerald-200" : "bg-surface-container border-surface-variant hover:border-surface-variant")}
+                                    className={clsx("border rounded-2xl p-3 flex justify-between items-center transition-colors cursor-pointer", focusSessions[i] ? "bg-white/5 border-white/10" : "bg-surface-container border-surface-variant hover:border-surface-variant")}
                                     onClick={() => {
                                         const n = [...focusSessions];
                                         n[i] = !n[i];
@@ -483,7 +483,7 @@ export default function PlannerPage() {
                                         <div className="text-xs font-bold text-on-surface mb-0.5">SESSION {num}</div>
                                         <div className="text-[10px] text-on-surface-variant flex items-center gap-1"><Clock size={10} /> 25 MIN</div>
                                     </div>
-                                    <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-emerald-500 border-emerald-500 text-white" : "border-surface-variant")}>
+                                    <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-white border-white/20 text-white" : "border-surface-variant")}>
                                         {focusSessions[i] && <CheckCircle2 size={12} />}
                                     </div>
                                 </div>
@@ -494,7 +494,7 @@ export default function PlannerPage() {
                     {/* Habits to Build */}
                     <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Star size={14} className="text-emerald-500" /> Habits</div>
+                            <div className="flex items-center gap-2"><Star size={14} className="text-white" /> Habits</div>
                             <div className="flex items-center gap-2">
                                 <button 
                                     onClick={() => {
@@ -502,7 +502,7 @@ export default function PlannerPage() {
                                         setHabitsList(nh);
                                         updateTargetConfig({ planner_habits_list: nh });
                                     }}
-                                    className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded hover:bg-emerald-100 flex items-center gap-1"
+                                    className="text-[10px] bg-white/5 text-white px-2 py-1 rounded hover:bg-emerald-100 flex items-center gap-1"
                                 >
                                     <Plus size={10} /> Add
                                 </button>

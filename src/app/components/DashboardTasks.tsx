@@ -90,7 +90,7 @@ export default function DashboardTasks() {
                                     {task.priority && task.priority !== 'none' && (
                                         <span className={`shrink-0 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide ${
                                             task.priority === 'high' ? 'bg-error/15 text-error'
-                                            : task.priority === 'medium' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                            : task.priority === 'medium' ? 'bg-white/15 text-white dark:text-white'
                                             : 'bg-secondary/15 text-secondary'
                                         }`}>
                                             {task.priority}

@@ -96,7 +96,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant  bg-surface-container-low/50">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-white dark:text-white flex items-center justify-center">
                             <ScanLine size={16} />
                         </div>
                         <div>
@@ -116,8 +116,8 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                     
                     {!imagePreview && (
                         <div className="text-center w-full">
-                            <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-emerald-100 dark:border-emerald-800 border-dashed">
-                                <ScanLine size={32} className="text-emerald-500" />
+                            <div className="w-24 h-24 bg-white/5 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/10 dark:border-emerald-800 border-dashed">
+                                <ScanLine size={32} className="text-white" />
                             </div>
                             <h3 className="font-bold text-on-surface dark:text-white text-lg mb-2">Scan Label or Barcode</h3>
                             <p className="text-sm text-on-surface-variant dark:text-on-surface-variant mb-6">
@@ -159,7 +159,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                             </div>
 
                             {error && (
-                                <div className="p-3 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-xl flex items-start gap-2 border border-rose-100 dark:border-rose-800/50">
+                                <div className="p-3 bg-white/5 dark:bg-rose-900/30 text-white dark:text-white text-xs font-bold rounded-xl flex items-start gap-2 border border-white/10 dark:border-rose-800/50">
                                     <AlertCircle size={14} className="mt-0.5 shrink-0" />
                                     {error}
                                 </div>
@@ -167,8 +167,8 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
                             {parsedMeal && !isScanning && (
                                 <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-300">
-                                    <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/50 rounded-2xl p-4">
-                                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-emerald-100 dark:border-emerald-800/30">
+                                    <div className="bg-white/5/50 dark:bg-emerald-900/10 border border-white/10 dark:border-emerald-800/50 rounded-2xl p-4">
+                                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10 dark:border-emerald-800/30">
                                             <div className="text-2xl">{parsedMeal.icon}</div>
                                             <div>
                                                 <h4 className="font-bold text-on-surface dark:text-white leading-tight">{parsedMeal.name}</h4>
@@ -179,7 +179,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         <div className="grid grid-cols-4 gap-2 text-center">
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">KCAL</div>
-                                                <div className="text-sm font-bold text-emerald-600">{parsedMeal.calories}</div>
+                                                <div className="text-sm font-bold text-white">{parsedMeal.calories}</div>
                                             </div>
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">PRO</div>
@@ -220,7 +220,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         </button>
                                         <button 
                                             onClick={handleLogMeal}
-                                            className="flex-[2] py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-lg transition-colors flex items-center justify-center gap-1.5"
+                                            className="flex-[2] py-3 bg-white hover:bg-white text-black text-xs font-bold rounded-xl shadow-lg transition-colors flex items-center justify-center gap-1.5"
                                         >
                                             <CheckCircle2 size={16} /> Log Meal
                                         </button>

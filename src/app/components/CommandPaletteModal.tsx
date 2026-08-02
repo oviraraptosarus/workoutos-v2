@@ -75,7 +75,7 @@ export default function CommandPaletteModal() {
             title: 'Diet & Nutrition Tracker',
             description: 'Track meals, macros, calories, bites & hydration',
             category: 'Navigation',
-            icon: <Utensils className="w-5 h-5 text-emerald-500" />,
+            icon: <Utensils className="w-5 h-5 text-white" />,
             href: '/diet',
         },
         {
@@ -83,7 +83,7 @@ export default function CommandPaletteModal() {
             title: 'Workout Tracker & Today\'s Split',
             description: 'Log workout sets, reps, active timers & splits',
             category: 'Navigation',
-            icon: <Dumbbell className="w-5 h-5 text-blue-500" />,
+            icon: <Dumbbell className="w-5 h-5 text-white" />,
             href: '/workout',
         },
         {
@@ -91,7 +91,7 @@ export default function CommandPaletteModal() {
             title: 'Weekly Workout Planner',
             description: 'Customize weekly exercise schedules & routines',
             category: 'Navigation',
-            icon: <BookOpen className="w-5 h-5 text-purple-500" />,
+            icon: <BookOpen className="w-5 h-5 text-white" />,
             href: '/planner',
         },
         {
@@ -99,7 +99,7 @@ export default function CommandPaletteModal() {
             title: 'Budget & Expense Tracker',
             description: 'Track daily expenses and financial goals',
             category: 'Navigation',
-            icon: <DollarSign className="w-5 h-5 text-amber-500" />,
+            icon: <DollarSign className="w-5 h-5 text-white" />,
             href: '/budget-tracker',
         },
         {
@@ -107,7 +107,7 @@ export default function CommandPaletteModal() {
             title: 'Sleep Tracker',
             description: 'Log sleep duration and quality scores',
             category: 'Navigation',
-            icon: <Moon className="w-5 h-5 text-indigo-500" />,
+            icon: <Moon className="w-5 h-5 text-white" />,
             href: '/sleep',
         },
     ];

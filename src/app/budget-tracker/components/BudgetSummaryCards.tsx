@@ -61,7 +61,7 @@ export default function BudgetSummaryCards() {
             <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-inner">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <TrendingDown size={16} className="rotate-180" />
                         </div>
                         <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Total Income</span>
@@ -78,15 +78,15 @@ export default function BudgetSummaryCards() {
             <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
                 <div className="flex items-center justify-between mb-4 relative z-10">
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-inner">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <TrendingDown size={16} />
                         </div>
                         <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Total Expenses</span>
                     </div>
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${
                         onTrack
-                            ? 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-800/50'
-                            : 'bg-rose-100/50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200/50 dark:border-rose-800/50'
+                            ? 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-white border-white/10/50 dark:border-emerald-800/50'
+                            : 'bg-rose-100/50 dark:bg-rose-900/30 text-rose-700 dark:text-white border-white/10/50 dark:border-rose-800/50'
                     }`}>
                         {onTrack ? 'On track' : 'Over pace'}
                     </span>
@@ -116,7 +116,7 @@ export default function BudgetSummaryCards() {
             <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div>
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant mb-4">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
                             <Calculator size={16} />
                         </div>
                         <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">Net Savings</span>

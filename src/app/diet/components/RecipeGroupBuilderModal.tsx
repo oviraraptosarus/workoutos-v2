@@ -135,7 +135,7 @@ export default function RecipeGroupBuilderModal({
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-sm">
+                        <div className="w-8 h-8 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold text-sm">
                             <ChefHat size={18} />
                         </div>
                         <div>
@@ -166,7 +166,7 @@ export default function RecipeGroupBuilderModal({
                                 </span>
                                 <button
                                     onClick={() => setIsCreatingNew(true)}
-                                    className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-full border border-emerald-200 shadow-sm transition-all btn-press"
+                                    className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-white/5 hover:bg-emerald-100 px-3 py-1.5 rounded-full border border-white/10 shadow-sm transition-all btn-press"
                                 >
                                     <Plus size={14} /> Create Recipe
                                 </button>
@@ -197,7 +197,7 @@ export default function RecipeGroupBuilderModal({
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => handleLogSingleRecipe(recipe)}
-                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition-all btn-press flex items-center gap-1"
+                                                    className="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition-all btn-press flex items-center gap-1"
                                                 >
                                                     <Check size={14} /> Log Recipe
                                                 </button>
@@ -206,7 +206,7 @@ export default function RecipeGroupBuilderModal({
                                                         const updated = recipes.filter((r) => r.id !== recipe.id);
                                                         saveRecipesToStorage(updated);
                                                     }}
-                                                    className="p-2 text-on-surface-variant hover:text-red-600 rounded-xl hover:bg-red-50 transition-colors"
+                                                    className="p-2 text-on-surface-variant hover:text-white rounded-xl hover:bg-white/5 transition-colors"
                                                     title="Delete recipe"
                                                 >
                                                     <Trash2 size={16} />
@@ -244,7 +244,7 @@ export default function RecipeGroupBuilderModal({
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-xl text-xs shadow-md"
+                                    className="bg-white hover:bg-zinc-200 text-black font-bold px-5 py-2 rounded-xl text-xs shadow-md"
                                 >
                                     Save Recipe
                                 </button>

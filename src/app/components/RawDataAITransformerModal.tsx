@@ -286,8 +286,8 @@ export default function RawDataAITransformerModal({
                                 onClick={handleVoiceDictation}
                                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all border ${
                                     isListening
-                                        ? 'bg-rose-500 text-white border-rose-600 animate-pulse'
-                                        : 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100'
+                                        ? 'bg-white text-white border-white/20 animate-pulse'
+                                        : 'bg-white/5 text-cyan-700 border-white/10 hover:bg-cyan-100'
                                 }`}
                             >
                                 <Mic size={13} /> {isListening ? 'Listening...' : 'Voice Dictate'}
@@ -299,7 +299,7 @@ export default function RawDataAITransformerModal({
                             value={rawText}
                             onChange={(e) => setRawText(e.target.value)}
                             placeholder='Type or paste anything raw, e.g. "had 2 eggs n toast 8am, 500ml water, bought whey protein for 1500, earned 500 freelance, 1L water"'
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-cyan-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-white/20 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
                         />
 
                         <div className="flex justify-between items-center pt-1">
@@ -310,7 +310,7 @@ export default function RawDataAITransformerModal({
                                 type="button"
                                 onClick={handleTransformRawData}
                                 disabled={isProcessing || !rawText.trim()}
-                                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-surface-container-high text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-white hover:bg-zinc-200 disabled:bg-surface-container-high text-black font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isProcessing ? (
                                     <>
@@ -334,14 +334,14 @@ export default function RawDataAITransformerModal({
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* Food / Meals Card */}
-                                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/60 shadow-sm space-y-1.5">
+                                <div className="p-3.5 rounded-2xl bg-white/5/60 border border-white/10/60 shadow-sm space-y-1.5">
                                     <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
-                                        <Utensils size={14} className="text-emerald-600" />
+                                        <Utensils size={14} className="text-white" />
                                         <span>Diet Logs ({parsedResult.meals.length})</span>
                                     </div>
                                     {parsedResult.meals.length > 0 ? (
                                         parsedResult.meals.map((m, i) => (
-                                            <div key={i} className="text-[11px] font-bold text-on-surface-variant bg-card-white/70 p-2 rounded-xl border border-emerald-100">
+                                            <div key={i} className="text-[11px] font-bold text-on-surface-variant bg-card-white/70 p-2 rounded-xl border border-white/10">
                                                 {m.icon} [{m.category}] {m.name} • <span className="text-emerald-700">{m.calories} kcal</span>
                                             </div>
                                         ))
@@ -351,13 +351,13 @@ export default function RawDataAITransformerModal({
                                 </div>
 
                                 {/* Water Card */}
-                                <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/60 shadow-sm space-y-1.5">
+                                <div className="p-3.5 rounded-2xl bg-white/5/60 border border-white/10/60 shadow-sm space-y-1.5">
                                     <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800">
-                                        <Droplet size={14} className="text-blue-600" />
+                                        <Droplet size={14} className="text-white" />
                                         <span>Hydration Log</span>
                                     </div>
                                     {parsedResult.waterMl > 0 ? (
-                                        <div className="text-[11px] font-bold text-blue-900 bg-card-white/70 p-2 rounded-xl border border-blue-100">
+                                        <div className="text-[11px] font-bold text-blue-900 bg-card-white/70 p-2 rounded-xl border border-white/10">
                                             +{parsedResult.waterMl} ml water logged
                                         </div>
                                     ) : (
@@ -369,9 +369,9 @@ export default function RawDataAITransformerModal({
                             {/* Workout & Quick Notes Card */}
                             {(parsedResult.workoutNote || parsedResult.quickNote || (parsedResult.budget && parsedResult.budget.length > 0)) && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                                    <div className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200/60 shadow-sm space-y-1.5 text-xs font-bold text-purple-900">
+                                    <div className="p-3.5 rounded-2xl bg-white/5/60 border border-white/10/60 shadow-sm space-y-1.5 text-xs font-bold text-purple-900">
                                         <div className="flex items-center gap-1.5 font-bold text-purple-800">
-                                            <Dumbbell size={14} className="text-purple-600" />
+                                            <Dumbbell size={14} className="text-white" />
                                             <span>Workout & Notes Logs</span>
                                         </div>
                                         {parsedResult.workoutNote && (
@@ -385,9 +385,9 @@ export default function RawDataAITransformerModal({
                                         )}
                                     </div>
                                     
-                                    <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/60 shadow-sm space-y-1.5 text-xs font-bold text-amber-900">
+                                    <div className="p-3.5 rounded-2xl bg-white/5/60 border border-white/10/60 shadow-sm space-y-1.5 text-xs font-bold text-amber-900">
                                         <div className="flex items-center gap-1.5 font-bold text-amber-800">
-                                            <FileText size={14} className="text-amber-600" />
+                                            <FileText size={14} className="text-white" />
                                             <span>Budget Logs</span>
                                         </div>
                                         {parsedResult.budget && parsedResult.budget.length > 0 ? (
@@ -410,8 +410,8 @@ export default function RawDataAITransformerModal({
                                 disabled={appliedNotice}
                                 className={`w-full font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all btn-press ${
                                     appliedNotice
-                                        ? 'bg-emerald-600 text-white'
-                                        : 'bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-700 hover:to-emerald-700 text-white'
+                                        ? 'bg-white text-black'
+                                        : 'bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-700 hover:to-emerald-700 text-black'
                                 }`}
                             >
                                 {appliedNotice ? (

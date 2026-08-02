@@ -47,7 +47,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                     <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
                         <Sparkles size={20} /> Welcome to Workout OS
                     </h2>
-                    <p className="text-sm font-medium text-blue-100">Let's set up your profile to personalize your experience.</p>
+                    <p className="text-sm font-medium text-zinc-300">Let's set up your profile to personalize your experience.</p>
                 </div>
                 
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
@@ -61,7 +61,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             value={formData.fullName}
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             onKeyDown={(e) => focusNext(e, 'onboarding-dob')}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                         />
                     </div>
 
@@ -74,7 +74,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             value={formData.dob}
                             onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                             onKeyDown={(e) => focusNext(e, 'onboarding-gender')}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                         />
                     </div>
 
@@ -86,7 +86,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.gender}
                                 onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male'|'female'|'other' })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-height')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                             >
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -102,7 +102,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.heightCm || ''}
                                 onChange={(e) => setFormData({ ...formData, heightCm: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-currentwt')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                             />
                         </div>
                     </div>
@@ -117,7 +117,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.currentWeight || ''}
                                 onChange={(e) => setFormData({ ...formData, currentWeight: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-targetwt')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                             />
                         </div>
                         <div>
@@ -129,7 +129,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 value={formData.targetWeight || ''}
                                 onChange={(e) => setFormData({ ...formData, targetWeight: Number(e.target.value) })}
                                 onKeyDown={(e) => focusNext(e, 'onboarding-goal')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                             />
                         </div>
                     </div>
@@ -140,7 +140,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             id="onboarding-goal"
                             value={formData.fitnessGoal}
                             onChange={(e) => setFormData({ ...formData, fitnessGoal: e.target.value })}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                         >
                             <option value="Build Muscle & Stay Active">Build Muscle & Stay Active</option>
                             <option value="Weight Loss & Fat Burn">Weight Loss & Fat Burn</option>
@@ -152,7 +152,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                     <div className="pt-4">
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
+                            className="w-full bg-white hover:bg-zinc-200 text-black font-bold py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
                         >
                             Complete Setup <ArrowRight size={16} />
                         </button>

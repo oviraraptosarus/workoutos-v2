@@ -228,7 +228,7 @@ export default function ProgressPhotosRow({
                             {/* Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-1.5">
                                 {photo.weight_snapshot && (
-                                    <span className="text-[10px] font-black text-amber-300 tracking-tight leading-none mb-0.5">
+                                    <span className="text-[10px] font-black text-white tracking-tight leading-none mb-0.5">
                                         {photo.weight_snapshot} kg
                                     </span>
                                 )}
@@ -241,7 +241,7 @@ export default function ProgressPhotosRow({
                         {/* Delete Photo Button */}
                         <button
                             onClick={(e) => handleDeletePhoto(e, photo)}
-                            className="absolute top-1 right-1 p-1.5 rounded-xl bg-black/60 text-white hover:bg-rose-600 transition-colors shadow-sm"
+                            className="absolute top-1 right-1 p-1.5 rounded-xl bg-black/60 text-black hover:bg-white transition-colors shadow-sm"
                             title="Delete photo"
                         >
                             <Trash2 size={12} />

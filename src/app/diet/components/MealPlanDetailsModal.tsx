@@ -361,7 +361,7 @@ export default function MealPlanDetailsModal({
                 {/* Modal Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container dark:bg-surface-container-high">
                     <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center font-bold">
+                        <div className="w-9 h-9 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold">
                             <ShoppingBag size={18} />
                         </div>
                         <div>
@@ -389,7 +389,7 @@ export default function MealPlanDetailsModal({
                             onClick={() => setSelectedDay(dayNum)}
                             className={`flex-1 py-2 px-4 rounded-2xl text-xs font-black transition-all border ${
                                 selectedDay === dayNum
-                                    ? 'bg-cyan-600 text-white border-cyan-600 shadow-md scale-[1.02]'
+                                    ? 'bg-white text-black border-white/20 shadow-md scale-[1.02]'
                                     : 'bg-card-white text-on-surface-variant border-surface-variant hover:bg-surface-container'
                             }`}
                         >
@@ -436,8 +436,8 @@ export default function MealPlanDetailsModal({
                                                         disabled={isLogged}
                                                         className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition-all border btn-press ${
                                                             isLogged
-                                                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                                                                : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm'
+                                                                ? 'bg-emerald-100 text-emerald-800 border-white/10'
+                                                                : 'bg-white hover:bg-zinc-200 text-black border-white/20 shadow-sm'
                                                         }`}
                                                     >
                                                         {isLogged ? (
@@ -456,15 +456,15 @@ export default function MealPlanDetailsModal({
                                             {/* Macro Badges */}
                                             <div className="flex flex-wrap items-center gap-2 mt-2">
                                                 <span className="bg-surface-container text-stone-800 text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1">
-                                                    <Flame size={12} className="text-orange-500" /> {recipe.calories} kcal
+                                                    <Flame size={12} className="text-white" /> {recipe.calories} kcal
                                                 </span>
-                                                <span className="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
+                                                <span className="bg-white/5 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
                                                     P: {recipe.protein}g
                                                 </span>
-                                                <span className="bg-orange-50 text-orange-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
+                                                <span className="bg-white/5 text-orange-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
                                                     C: {recipe.carbs}g
                                                 </span>
-                                                <span className="bg-rose-50 text-rose-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
+                                                <span className="bg-white/5 text-rose-700 text-[11px] font-bold px-2 py-0.5 rounded-lg">
                                                     F: {recipe.fat}g
                                                 </span>
                                                 <span className="text-[11px] text-on-surface-variant font-bold flex items-center gap-1 ml-auto">

@@ -70,7 +70,7 @@ export default function RecentActivity() {
                 <h3 className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Recent Activity</h3>
                 <button 
                     onClick={handleClear}
-                    className="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant hover:text-rose-500 transition-colors"
+                    className="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant hover:text-white transition-colors"
                 >
                     <Trash2 size={12} /> Clear All
                 </button>

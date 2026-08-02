@@ -7,12 +7,12 @@ import { X, Sparkles, Dumbbell, Droplet, Apple, Moon, IndianRupee, Calendar, Che
 const ONBOARDING_KEY = 'workout_os_onboarding_completed_v1';
 
 const FEATURES = [
-    { icon: <Moon size={18} />, color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300', label: 'Sleep', desc: 'Log your nightly rest' },
-    { icon: <Droplet size={18} />, color: 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300', label: 'Water', desc: 'Track hydration' },
-    { icon: <Dumbbell size={18} />, color: 'bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-300', label: 'Workout', desc: 'Log sets & reps' },
-    { icon: <Apple size={18} />, color: 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-300', label: 'Diet', desc: 'Count calories with AI' },
-    { icon: <IndianRupee size={18} />, color: 'bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-300', label: 'Budget', desc: 'Track spending' },
-    { icon: <Calendar size={18} />, color: 'bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300', label: 'Planner', desc: 'Manage your day' },
+    { icon: <Moon size={18} />, color: 'bg-indigo-100 text-white dark:bg-white/20 dark:text-white', label: 'Sleep', desc: 'Log your nightly rest' },
+    { icon: <Droplet size={18} />, color: 'bg-blue-100 text-white dark:bg-white/20 dark:text-white', label: 'Water', desc: 'Track hydration' },
+    { icon: <Dumbbell size={18} />, color: 'bg-orange-100 text-white dark:bg-white/20 dark:text-white', label: 'Workout', desc: 'Log sets & reps' },
+    { icon: <Apple size={18} />, color: 'bg-green-100 text-white dark:bg-white/20 dark:text-white', label: 'Diet', desc: 'Count calories with AI' },
+    { icon: <IndianRupee size={18} />, color: 'bg-purple-100 text-white dark:bg-white/20 dark:text-white', label: 'Budget', desc: 'Track spending' },
+    { icon: <Calendar size={18} />, color: 'bg-rose-100 text-white dark:bg-white/20 dark:text-white', label: 'Planner', desc: 'Manage your day' },
 ];
 
 export default function OnboardingTourModal() {

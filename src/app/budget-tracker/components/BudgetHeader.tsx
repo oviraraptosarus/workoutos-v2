@@ -39,13 +39,13 @@ export default function BudgetHeader() {
                 <div className="flex items-center gap-2 ml-1">
                     <button 
                         onClick={() => setModalType('income')}
-                        className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(16,185,129,0.3)] active:scale-95 border border-emerald-400/20 whitespace-nowrap"
+                        className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(16,185,129,0.3)] active:scale-95 border border-white/20/20 whitespace-nowrap"
                     >
                         <Plus size={16} strokeWidth={3} className="shrink-0" /> Add income
                     </button>
                     <button 
                         onClick={() => setModalType('expense')}
-                        className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(225,29,72,0.3)] active:scale-95 border border-rose-400/20 whitespace-nowrap"
+                        className="flex items-center justify-center gap-1.5 bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shadow-[0_4px_12px_rgba(225,29,72,0.3)] active:scale-95 border border-white/20/20 whitespace-nowrap"
                     >
                         <Plus size={16} strokeWidth={3} className="shrink-0" /> Add expense
                     </button>

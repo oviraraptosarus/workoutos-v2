@@ -144,7 +144,7 @@ export default function EndOfDayReflection() {
 
             {/* Saved toast */}
             {savedNotice && (
-                <div className="absolute top-4 right-1/2 translate-x-1/2 bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-bold animate-in fade-in slide-in-from-top-2 shadow-lg z-10 flex items-center gap-2 whitespace-nowrap">
+                <div className="absolute top-4 right-1/2 translate-x-1/2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold animate-in fade-in slide-in-from-top-2 shadow-lg z-10 flex items-center gap-2 whitespace-nowrap">
                     <CheckCircle2 size={14} /> Reflection Saved!
                 </div>
             )}
@@ -270,7 +270,7 @@ export default function EndOfDayReflection() {
                             key={star}
                             type="button"
                             onClick={() => update('rating', star)}
-                            className={`p-1 transition-all ${reflection.rating >= star ? 'text-yellow-400 scale-110 drop-shadow-sm' : 'text-surface-container-highest hover:text-yellow-200'}`}
+                            className={`p-1 transition-all ${reflection.rating >= star ? 'text-white scale-110 drop-shadow-sm' : 'text-surface-container-highest hover:text-zinc-300'}`}
                         >
                             <Star size={24} fill={reflection.rating >= star ? 'currentColor' : 'none'} />
                         </button>
@@ -280,7 +280,7 @@ export default function EndOfDayReflection() {
 
             {/* Backend indicator */}
             <div className="flex items-center gap-1.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${user ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${user ? 'bg-white' : 'bg-amber-400'}`} />
                 <span className="text-[10px] font-bold text-on-surface-variant">
                     {user ? 'Synced to cloud (Supabase)' : 'Saved locally only — sign in to sync'}
                 </span>

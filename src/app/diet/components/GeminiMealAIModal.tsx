@@ -190,8 +190,8 @@ export default function GeminiMealAIModal({
                                 onClick={handleVoiceInput}
                                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all border ${
                                     isListening
-                                        ? 'bg-rose-500 text-white border-rose-600 animate-pulse'
-                                        : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                        ? 'bg-white text-white border-white/20 animate-pulse'
+                                        : 'bg-white/5 text-emerald-700 border-white/10 hover:bg-emerald-100'
                                 }`}
                             >
                                 <Mic size={13} /> {isListening ? 'Listening...' : 'Voice Input'}
@@ -204,7 +204,7 @@ export default function GeminiMealAIModal({
                                 value={promptText}
                                 onChange={(e) => setPromptText(e.target.value)}
                                 placeholder='e.g. "I had 2 eggs with avocado toast and a black coffee for breakfast"'
-                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
+                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl p-4 text-xs font-bold text-on-surface focus:outline-none focus:border-white/20 focus:bg-card-white transition-all placeholder:text-on-surface-variant resize-none shadow-inner"
                             />
                         </div>
 
@@ -216,7 +216,7 @@ export default function GeminiMealAIModal({
                                 type="button"
                                 onClick={handleAnalyze}
                                 disabled={isAnalyzing || !promptText.trim()}
-                                className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-surface-container-high text-white font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
+                                className="bg-white hover:bg-zinc-200 disabled:bg-surface-container-high text-black font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition-all btn-press"
                             >
                                 {isAnalyzing ? (
                                     <>
@@ -238,7 +238,7 @@ export default function GeminiMealAIModal({
                                 <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">
                                     Parsed Ingredients ({parsedFoods.length})
                                 </span>
-                                <span className="text-[10px] text-emerald-600 font-bold">
+                                <span className="text-[10px] text-white font-bold">
                                     Total: {parsedFoods.reduce((a, b) => a + b.calories, 0)} kcal
                                 </span>
                             </div>

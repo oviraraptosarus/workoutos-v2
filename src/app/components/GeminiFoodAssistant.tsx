@@ -290,7 +290,7 @@ export default function GeminiFoodAssistant() {
                     className="relative bg-card-white border border-surface-variant rounded-full h-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] cursor-text transition-all flex items-center pl-4 pr-2"
                 >
                     <div className="flex items-center gap-2 sm:gap-3 w-full">
-                        <div className="flex-shrink-0 text-blue-500">
+                        <div className="flex-shrink-0 text-white">
                             <Sparkles size={22} className="animate-pulse" />
                         </div>
                         
@@ -332,7 +332,7 @@ export default function GeminiFoodAssistant() {
                                     <h3 className="text-sm font-bold text-on-surface drop-shadow-sm flex items-center gap-2">
                                         Nova AI Copilot
                                     </h3>
-                                    <p className="text-[11px] text-on-surface-variant font-bold">Tailored to goal: <span className="text-blue-600 font-bold">{userProfile.fitnessGoal}</span></p>
+                                    <p className="text-[11px] text-on-surface-variant font-bold">Tailored to goal: <span className="text-white font-bold">{userProfile.fitnessGoal}</span></p>
                                 </div>
                             </div>
 
@@ -377,7 +377,7 @@ export default function GeminiFoodAssistant() {
                                     <div
                                         className={`max-w-[90%] sm:max-w-[80%] rounded-2xl p-4 text-xs leading-relaxed shadow-sm ${
                                             msg.sender === 'user'
-                                                ? 'bg-blue-500/90 text-white rounded-tr-xs font-bold border border-white/20 backdrop-blur-md'
+                                                ? 'bg-white/90 text-white rounded-tr-xs font-bold border border-white/20 backdrop-blur-md'
                                                 : 'bg-surface-container text-on-surface border border-surface-variant rounded-tl-xs font-medium whitespace-pre-wrap shadow-inner'
                                         }`}
                                     >
@@ -390,7 +390,7 @@ export default function GeminiFoodAssistant() {
                             ))}
 
                             {loading && (
-                                <div className="flex items-center gap-2 text-xs text-blue-700 font-bold bg-blue-50/50 border border-blue-200/50 px-4 py-3 rounded-2xl w-fit animate-pulse shadow-sm">
+                                <div className="flex items-center gap-2 text-xs text-blue-700 font-bold bg-white/5/50 border border-white/10/50 px-4 py-3 rounded-2xl w-fit animate-pulse shadow-sm">
                                     <Sparkles size={14} className="animate-spin" />
                                     <span>Nova is analyzing your query...</span>
                                 </div>
@@ -439,19 +439,19 @@ export default function GeminiFoodAssistant() {
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
                                     placeholder={selectedImage ? "Add details (optional)..." : "Can I eat 2 donuts before leg day?"}
-                                    className="flex-1 bg-surface-container border border-surface-variant rounded-2xl px-4 py-3 text-xs text-on-surface font-bold focus:outline-none focus:bg-card-white/90 focus:border-blue-400 placeholder:text-on-surface-variant shadow-inner"
+                                    className="flex-1 bg-surface-container border border-surface-variant rounded-2xl px-4 py-3 text-xs text-on-surface font-bold focus:outline-none focus:bg-card-white/90 focus:border-white/20 placeholder:text-on-surface-variant shadow-inner"
                                 />
                                 <button
                                     type="button"
                                     onClick={toggleListening}
-                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm border shrink-0 ${isListening ? 'bg-rose-500 text-white border-rose-600 animate-pulse' : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant border-surface-variant '}`}
+                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-colors shadow-sm border shrink-0 ${isListening ? 'bg-white text-black border-white/20 animate-pulse' : 'bg-surface-container hover:bg-surface-container-high text-on-surface-variant border-surface-variant '}`}
                                 >
                                     {isListening ? <MicOff size={18} /> : <Mic size={18} />}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={(!prompt.trim() && !selectedImage) || loading}
-                                    className="w-11 h-11 rounded-2xl bg-blue-500/90 hover:bg-blue-600 disabled:opacity-40 text-white flex items-center justify-center transition-colors shadow-sm border border-white/20 btn-press shrink-0"
+                                    className="w-11 h-11 rounded-2xl bg-white/90 hover:bg-white disabled:opacity-40 text-white flex items-center justify-center transition-colors shadow-sm border border-white/20 btn-press shrink-0"
                                 >
                                     <Send size={18} />
                                 </button>

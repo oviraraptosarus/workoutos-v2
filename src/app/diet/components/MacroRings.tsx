@@ -71,7 +71,7 @@ export default function MacroRings({
                 <div className="relative w-40 h-40 rounded-full border-8 border-surface-variant shadow-inner flex items-center justify-center">
                     <div className="absolute inset-0 rounded-full border-8 border-transparent" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' }}>
                         <div 
-                            className="absolute inset-0 rounded-full border-8 border-emerald-400 opacity-90 transition-all duration-1000"
+                            className="absolute inset-0 rounded-full border-8 border-white/20 opacity-90 transition-all duration-1000"
                             style={{ clipPath: `inset(${Math.max(0, 100 - progressPercentage)}% 0 0 0)` }}
                         />
                     </div>
@@ -130,41 +130,41 @@ export default function MacroRings({
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-blue-600 mb-1">Protein (g)</label>
+                                    <label className="block text-[11px] font-bold text-white mb-1">Protein (g)</label>
                                     <input
                                         type="number"
                                         value={tempGoals.protein}
                                         onChange={(e) => setTempGoals({ ...tempGoals, protein: Number(e.target.value) })}
-                                        className="w-full bg-blue-50/50 border border-blue-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                        className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-orange-600 mb-1">Carbs (g)</label>
+                                    <label className="block text-[11px] font-bold text-white mb-1">Carbs (g)</label>
                                     <input
                                         type="number"
                                         value={tempGoals.carbs}
                                         onChange={(e) => setTempGoals({ ...tempGoals, carbs: Number(e.target.value) })}
-                                        className="w-full bg-orange-50/50 border border-orange-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                        className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
                                     />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label className="block text-[11px] font-bold text-rose-600 mb-1">Fat (g)</label>
+                                    <label className="block text-[11px] font-bold text-white mb-1">Fat (g)</label>
                                     <input
                                         type="number"
                                         value={tempGoals.fat}
                                         onChange={(e) => setTempGoals({ ...tempGoals, fat: Number(e.target.value) })}
-                                        className="w-full bg-rose-50/50 border border-rose-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                        className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-bold text-amber-600 mb-1">Sugar (g)</label>
+                                    <label className="block text-[11px] font-bold text-white mb-1">Sugar (g)</label>
                                     <input
                                         type="number"
                                         value={tempGoals.sugar}
                                         onChange={(e) => setTempGoals({ ...tempGoals, sugar: Number(e.target.value) })}
-                                        className="w-full bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 text-xs font-bold"
+                                        className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
                                     />
                                 </div>
                             </div>
@@ -179,7 +179,7 @@ export default function MacroRings({
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md"
+                                    className="bg-white hover:bg-zinc-200 text-black px-5 py-2 rounded-xl text-xs font-bold shadow-md"
                                 >
                                     Save Goals
                                 </button>

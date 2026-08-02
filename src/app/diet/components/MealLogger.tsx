@@ -22,10 +22,10 @@ interface CategoryConfig {
 }
 
 const CATEGORIES: CategoryConfig[] = [
-    { name: 'Breakfast', icon: <Sun className="w-5 h-5 text-amber-500" />, color: 'text-amber-600 bg-amber-50' },
-    { name: 'Lunch', icon: <SunDim className="w-5 h-5 text-orange-500" />, color: 'text-orange-600 bg-orange-50' },
-    { name: 'Dinner', icon: <Moon className="w-5 h-5 text-indigo-500" />, color: 'text-indigo-600 bg-indigo-50' },
-    { name: 'Snacks', icon: <Apple className="w-5 h-5 text-emerald-500" />, color: 'text-emerald-600 bg-emerald-50' },
+    { name: 'Breakfast', icon: <Sun className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
+    { name: 'Lunch', icon: <SunDim className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
+    { name: 'Dinner', icon: <Moon className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
+    { name: 'Snacks', icon: <Apple className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
 ];
 
 export default function MealLogger({
@@ -88,29 +88,29 @@ export default function MealLogger({
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Filter logged foods..."
-                            className="bg-surface-container border border-surface-variant rounded-full pl-8 pr-3 py-1 text-xs font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-card-white focus:border-cyan-300 shadow-sm w-full sm:w-40"
+                            className="bg-surface-container border border-surface-variant rounded-full pl-8 pr-3 py-1 text-xs font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-card-white focus:border-white/10 shadow-sm w-full sm:w-40"
                         />
                     </div>
 
                     {onOpenRecipeModal && (
                         <button
                             onClick={onOpenRecipeModal}
-                            className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-amber-200 shadow-sm btn-press"
+                            className="flex items-center gap-1.5 bg-white/5 hover:bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-white/10 shadow-sm btn-press"
                             title="Saved Recipe & Meal Combos"
                         >
-                            <ChefHat size={14} className="text-amber-600" /> Saved Recipes
+                            <ChefHat size={14} className="text-white" /> Saved Recipes
                         </button>
                     )}
 
                     {onExportSummaryText && (
                         <button
                             onClick={handleExportClick}
-                            className="flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-emerald-200/80 shadow-sm btn-press"
+                            className="flex items-center gap-1.5 bg-white/5 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-white/10/80 shadow-sm btn-press"
                             title="Copy Day's Summary to Clipboard"
                         >
                             {summaryCopied ? (
                                 <>
-                                    <Check size={13} className="text-emerald-600" /> Copied!
+                                    <Check size={13} className="text-white" /> Copied!
                                 </>
                             ) : (
                                 <>
@@ -127,7 +127,7 @@ export default function MealLogger({
                         >
                             {copiedNotice ? (
                                 <>
-                                    <Check size={14} className="text-emerald-600" /> Copied!
+                                    <Check size={14} className="text-white" /> Copied!
                                 </>
                             ) : (
                                 <>
@@ -194,7 +194,7 @@ export default function MealLogger({
                                 <button
                                     id={name === 'Breakfast' ? 'tour-add-food' : undefined}
                                     onClick={() => onAddMealClick(name)}
-                                    className="p-1.5 rounded-full hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 transition-colors btn-press relative z-[110]"
+                                    className="p-1.5 rounded-full hover:bg-white/5 text-emerald-700 hover:text-emerald-800 transition-colors btn-press relative z-[110]"
                                     title={`Add item to ${name}`}
                                 >
                                     <Plus size={20} strokeWidth={2.5} />
@@ -236,7 +236,7 @@ export default function MealLogger({
                                                         e.stopPropagation();
                                                         onEditMealClick(item);
                                                     }}
-                                                    className="p-1.5 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-emerald-600 transition-colors btn-press"
+                                                    className="p-1.5 rounded-xl hover:bg-surface-container text-on-surface-variant hover:text-white transition-colors btn-press"
                                                     title="Modify nutrient contents"
                                                 >
                                                     <Edit3 size={15} />
@@ -249,7 +249,7 @@ export default function MealLogger({
                                                             onDeleteMeal(item.id);
                                                         }
                                                     }}
-                                                    className="p-1.5 rounded-xl hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors btn-press"
+                                                    className="p-1.5 rounded-xl hover:bg-white/5 text-on-surface-variant hover:text-white transition-colors btn-press"
                                                     title="Remove meal item"
                                                 >
                                                     <Trash2 size={15} />
@@ -260,7 +260,7 @@ export default function MealLogger({
                                 ) : (
                                     <div
                                         onClick={() => onAddMealClick(name)}
-                                        className="p-3 text-center rounded-2xl border border-dashed border-surface-variant text-xs font-bold text-on-surface-variant hover:border-emerald-400 hover:text-emerald-600 transition-all cursor-pointer bg-card-white/20"
+                                        className="p-3 text-center rounded-2xl border border-dashed border-surface-variant text-xs font-bold text-on-surface-variant hover:border-white/20 hover:text-white transition-all cursor-pointer bg-card-white/20"
                                     >
                                         + Tap to add food to {name.toLowerCase()}
                                     </div>

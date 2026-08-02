@@ -19,10 +19,10 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
     const estimatedIron = Math.round((totalCalories / 100) * 0.7); // ~0.7mg per 100 kcal
 
     const micros = [
-        { name: 'Dietary Fiber', current: estimatedFiber, goal: 30, unit: 'g', color: 'bg-emerald-500' },
-        { name: 'Sodium Intake', current: estimatedSodium, goal: 2300, unit: 'mg', color: 'bg-amber-500', isLimit: true },
-        { name: 'Potassium', current: estimatedPotassium, goal: 3500, unit: 'mg', color: 'bg-blue-500' },
-        { name: 'Iron', current: estimatedIron, goal: 18, unit: 'mg', color: 'bg-rose-500' },
+        { name: 'Dietary Fiber', current: estimatedFiber, goal: 30, unit: 'g', color: 'bg-white' },
+        { name: 'Sodium Intake', current: estimatedSodium, goal: 2300, unit: 'mg', color: 'bg-white', isLimit: true },
+        { name: 'Potassium', current: estimatedPotassium, goal: 3500, unit: 'mg', color: 'bg-white' },
+        { name: 'Iron', current: estimatedIron, goal: 18, unit: 'mg', color: 'bg-white' },
     ];
 
     return (
@@ -32,7 +32,7 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
                 className="flex items-center justify-between cursor-pointer select-none"
             >
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shadow-sm">
+                    <div className="p-2 rounded-2xl bg-white/10 text-white border border-white/20/20 shadow-sm">
                         <HeartPulse size={18} />
                     </div>
                     <div>

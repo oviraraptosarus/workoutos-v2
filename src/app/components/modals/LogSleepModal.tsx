@@ -106,7 +106,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                     
                     <div className="text-center py-2">
                         <span className="text-sm font-bold text-on-surface-variant">
-                            Total Sleep: <span className="text-emerald-600">{calculateHours(bedtime, waketime).toFixed(1)} hrs</span>
+                            Total Sleep: <span className="text-white">{calculateHours(bedtime, waketime).toFixed(1)} hrs</span>
                         </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">

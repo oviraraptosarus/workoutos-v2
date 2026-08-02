@@ -49,18 +49,18 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     return (
         <div className="bg-card-white border border-surface-variant rounded-3xl p-5 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm relative overflow-hidden flex-shrink-0">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20/20 shadow-sm relative overflow-hidden flex-shrink-0">
                     <div 
                         className="absolute bottom-0 left-0 right-0 bg-blue-400/30 transition-all duration-700 ease-out"
                         style={{ height: `${percentage}%` }}
                     />
-                    <Droplet size={26} className="text-blue-600 relative z-10 drop-shadow-sm" />
+                    <Droplet size={26} className="text-white relative z-10 drop-shadow-sm" />
                 </div>
                 <div>
                     <div className="flex items-center gap-2">
                         <h3 className="text-sm font-black text-on-surface drop-shadow-sm">Hydration Tracker</h3>
                         {percentage >= 100 && (
-                            <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                            <span className="bg-white text-black text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                 <Check size={12} strokeWidth={3} /> Goal Met!
                             </span>
                         )}
@@ -83,21 +83,21 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                     <button
                         id="tour-add-water"
                         onClick={() => addWater(250)}
-                        className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press relative z-[110]"
+                        className="flex items-center gap-1 bg-white hover:bg-white text-black px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press relative z-[110]"
                         title="Add 1 Glass (250 ml)"
                     >
                         <Plus size={14} /> 250ml
                     </button>
                     <button
                         onClick={() => addWater(500)}
-                        className="flex items-center gap-1 bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press"
+                        className="flex items-center gap-1 bg-white hover:bg-zinc-200 text-black px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press"
                         title="Add 1 Bottle (500 ml)"
                     >
                         <Plus size={14} /> 500ml
                     </button>
                     <button
                         onClick={resetWater}
-                        className="p-1.5 rounded-xl hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors btn-press"
+                        className="p-1.5 rounded-xl hover:bg-white/5 text-on-surface-variant hover:text-white transition-colors btn-press"
                         title="Reset water intake"
                     >
                         <RefreshCw size={14} />

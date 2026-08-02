@@ -30,7 +30,7 @@ export default function SessionTimer() {
     return (
         <div className="bg-card-white dark:bg-[#1c1c1e] border border-surface-variant dark:border-gray-800 rounded-3xl p-4 flex items-center justify-between shadow-sm transition-all">
             <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-orange-50 dark:bg-orange-500/10 text-orange-500">
+                <div className="p-2 rounded-xl bg-white/5 dark:bg-white/10 text-white">
                     <Timer size={20} />
                 </div>
                 <div>
@@ -41,7 +41,7 @@ export default function SessionTimer() {
             <div className="flex items-center gap-2">
                 <button
                     onClick={() => setIsActive(!isActive)}
-                    className="p-2.5 rounded-full bg-orange-500 text-white hover:bg-orange-600 transition-colors shadow-sm btn-press"
+                    className="p-2.5 rounded-full bg-white text-black hover:bg-white transition-colors shadow-sm btn-press"
                 >
                     {isActive ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
                 </button>

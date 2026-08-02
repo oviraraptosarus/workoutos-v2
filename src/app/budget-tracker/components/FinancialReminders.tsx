@@ -62,7 +62,7 @@ export default function FinancialReminders() {
         <div className="bg-card-white  border border-surface-variant  p-6 rounded-3xl shadow-sm transition-colors h-full flex flex-col">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-500 shadow-sm border border-surface-variant ">
+                    <div className="p-1.5 rounded-full bg-white/5 dark:bg-amber-900/30 text-white shadow-sm border border-surface-variant ">
                         <Bell size={16} />
                     </div>
                     <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight">Financial Reminders</h3>
@@ -82,7 +82,7 @@ export default function FinancialReminders() {
                         placeholder="e.g. Pay Rent"
                         value={newText}
                         onChange={(e) => setNewText(e.target.value)}
-                        className="w-full text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg mb-2 focus:outline-none focus:border-amber-400"
+                        className="w-full text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg mb-2 focus:outline-none focus:border-white/20"
                         autoFocus
                     />
                     <div className="flex gap-2">
@@ -90,9 +90,9 @@ export default function FinancialReminders() {
                             type="date"
                             value={newDate}
                             onChange={(e) => setNewDate(e.target.value)}
-                            className="flex-1 text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg focus:outline-none focus:border-amber-400"
+                            className="flex-1 text-sm bg-card-white  border border-surface-variant  px-3 py-2 rounded-lg focus:outline-none focus:border-white/20"
                         />
-                        <button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 rounded-lg text-xs transition-colors">
+                        <button type="submit" className="bg-white hover:bg-white text-black font-bold px-4 rounded-lg text-xs transition-colors">
                             Add
                         </button>
                     </div>
@@ -111,7 +111,7 @@ export default function FinancialReminders() {
                             <div className="flex items-center gap-3">
                                 <button 
                                     onClick={() => toggleComplete(r.id)}
-                                    className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${r.completed ? 'bg-amber-500 border-amber-500 text-white' : 'border-surface-variant dark:border-gray-600 text-transparent hover:border-amber-400'}`}
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${r.completed ? 'bg-white border-white/20 text-black' : 'border-surface-variant dark:border-gray-600 text-transparent hover:border-white/20'}`}
                                 >
                                     <CheckCircle2 size={12} strokeWidth={4} />
                                 </button>
@@ -128,7 +128,7 @@ export default function FinancialReminders() {
                             </div>
                             <button 
                                 onClick={() => deleteReminder(r.id)}
-                                className="text-on-surface-variant hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                className="text-on-surface-variant hover:text-white transition-colors opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 size={14} />
                             </button>

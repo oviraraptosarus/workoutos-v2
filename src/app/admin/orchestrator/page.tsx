@@ -91,7 +91,7 @@ export default function OrchestratorAdminPanel() {
                                 : 0;
 
                             const isUnconfigured = !model.isConfigured;
-                            const statusColor = isUnconfigured ? 'text-neutral-600 bg-neutral-800' : stats.isCooldown ? 'text-red-500 bg-red-500/10' : 'text-emerald-500 bg-emerald-500/10';
+                            const statusColor = isUnconfigured ? 'text-neutral-600 bg-neutral-800' : stats.isCooldown ? 'text-white bg-white/10' : 'text-white bg-white/10';
                             const StatusIcon = isUnconfigured ? AlertCircle : stats.isCooldown ? XCircle : CheckCircle;
 
                             return (
@@ -106,7 +106,7 @@ export default function OrchestratorAdminPanel() {
                                                 <h3 className={`text-lg font-bold ${isUnconfigured ? 'text-neutral-500' : ''}`}>{modelId}</h3>
                                             </div>
                                             <p className="text-sm text-neutral-400">
-                                                {isUnconfigured ? <span className="text-orange-400">Missing API Key</span> : stats.isCooldown ? 'Currently on Cooldown' : 'Healthy & Active'}
+                                                {isUnconfigured ? <span className="text-white">Missing API Key</span> : stats.isCooldown ? 'Currently on Cooldown' : 'Healthy & Active'}
                                             </p>
                                         </div>
                                     </div>
@@ -114,15 +114,15 @@ export default function OrchestratorAdminPanel() {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full md:w-auto text-center md:text-left">
                                         <div>
                                             <p className="text-xs text-neutral-500 uppercase font-bold">Success</p>
-                                            <p className="text-xl font-medium text-emerald-400">{stats.successes}</p>
+                                            <p className="text-xl font-medium text-white">{stats.successes}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-neutral-500 uppercase font-bold">429s</p>
-                                            <p className="text-xl font-medium text-orange-400">{stats.rateLimits}</p>
+                                            <p className="text-xl font-medium text-white">{stats.rateLimits}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-neutral-500 uppercase font-bold">Timeouts</p>
-                                            <p className="text-xl font-medium text-red-400">{stats.timeouts}</p>
+                                            <p className="text-xl font-medium text-white">{stats.timeouts}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-neutral-500 uppercase font-bold">Avg Latency</p>

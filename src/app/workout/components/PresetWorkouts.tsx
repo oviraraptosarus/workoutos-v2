@@ -11,7 +11,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'zap',
         duration: '20 min',
         intensity: 'High',
-        color: 'bg-amber-50 text-amber-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Burpees', sets: '8 sets x 20s (10s rest)', youtubeUrl: 'https://youtube.com/watch?v=qZWpbC6nZzI' },
             { name: 'Mountain Climbers', sets: '8 sets x 20s (10s rest)', youtubeUrl: 'https://youtube.com/watch?v=nmwgirgXLYM' },
@@ -25,7 +25,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'dumbbell',
         duration: '45 min',
         intensity: 'Medium',
-        color: 'bg-blue-50 text-blue-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Barbell Bench Press', sets: '4 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=rxD321l2svE' },
             { name: 'Incline Dumbbell Press', sets: '3 sets x 10-12 reps', youtubeUrl: 'https://youtube.com/watch?v=8iPEnn-ltC8' },
@@ -40,7 +40,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'anchor',
         duration: '45 min',
         intensity: 'Medium',
-        color: 'bg-indigo-50 text-indigo-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Deadlift', sets: '3 sets x 5 reps', youtubeUrl: 'https://youtube.com/watch?v=op9kVnSso6Q' },
             { name: 'Pull-ups', sets: '3 sets x 8-12 reps', youtubeUrl: 'https://youtube.com/watch?v=eGo4IYtlCvk' },
@@ -55,7 +55,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'shield',
         duration: '50 min',
         intensity: 'High',
-        color: 'bg-emerald-50 text-emerald-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Back Squats', sets: '4 sets x 6-8 reps', youtubeUrl: 'https://youtube.com/watch?v=SW_C1A-rejs' },
             { name: 'Romanian Deadlifts', sets: '3 sets x 8-10 reps', youtubeUrl: 'https://youtube.com/watch?v=JCXUYuzwNrM' },
@@ -70,7 +70,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'timer',
         duration: '35 min',
         intensity: 'High',
-        color: 'bg-rose-50 text-rose-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Warm-up Jog', sets: '1 set x 10 min', youtubeUrl: '' },
             { name: 'High Intensity Run (90% HR)', sets: '4 sets x 4 min', youtubeUrl: '' },
@@ -85,7 +85,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'crosshair',
         duration: '40 min',
         intensity: 'Medium',
-        color: 'bg-purple-50 text-purple-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Goblet Squats', sets: '3 sets x 10-12 reps', youtubeUrl: '' },
             { name: 'Push-ups', sets: '3 sets x 10-15 reps', youtubeUrl: '' },
@@ -100,7 +100,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'flame',
         duration: '40 min',
         intensity: 'High',
-        color: 'bg-orange-50 text-orange-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Plyometric Push-ups', sets: '4 sets x 5-8 reps', youtubeUrl: '' },
             { name: 'Medicine Ball Throws', sets: '4 sets x 8-10 reps', youtubeUrl: '' },
@@ -114,7 +114,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'heart',
         duration: '25 min',
         intensity: 'Low',
-        color: 'bg-pink-50 text-pink-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Cat-Cow Stretches', sets: '1 set x 2 min', youtubeUrl: '' },
             { name: 'World\'s Greatest Stretch', sets: '1 set x 2 min / side', youtubeUrl: '' },
@@ -129,7 +129,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'target',
         duration: '25 min',
         intensity: 'Medium',
-        color: 'bg-teal-50 text-teal-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Crunches', sets: '3 sets x 20 reps', youtubeUrl: 'https://youtube.com/watch?v=Xyd_fa5zoEU' },
             { name: 'Russian Twists', sets: '3 sets x 20 reps / side', youtubeUrl: 'https://youtube.com/watch?v=wkD8rjkodUI' },
@@ -158,7 +158,7 @@ export const PRESET_WORKOUTS = [
         iconType: 'wind',
         duration: '35 min',
         intensity: 'Medium',
-        color: 'bg-cyan-50 text-cyan-500',
+        color: 'bg-white/5 text-white',
         exercises: [
             { name: 'Pull-ups', sets: '4 sets x max reps', youtubeUrl: '' },
             { name: 'Dips', sets: '4 sets x 8-12 reps', youtubeUrl: '' },

@@ -159,7 +159,7 @@ export default function ProgressPhotoGalleryModal({
             <div className="h-16 px-4 flex items-center justify-between border-b border-white/10 shrink-0 bg-black/40 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                     <h2 className="font-headline-md text-lg font-bold flex items-center gap-2">
-                        <Sparkles className="text-amber-400" size={20} />
+                        <Sparkles className="text-white" size={20} />
                         {compareMode
                             ? 'Side-by-Side Comparison'
                             : activePhoto
@@ -181,7 +181,7 @@ export default function ProgressPhotoGalleryModal({
                             }}
                             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border ${
                                 compareMode
-                                    ? 'bg-amber-400 text-black border-amber-400'
+                                    ? 'bg-amber-400 text-black border-white/20'
                                     : 'bg-white/10 text-white border-white/10 hover:bg-white/20'
                             }`}
                         >
@@ -211,7 +211,7 @@ export default function ProgressPhotoGalleryModal({
                                 <select
                                     value={photoAId || ''}
                                     onChange={(e) => setPhotoAId(e.target.value)}
-                                    className="bg-black/60 border border-white/20 text-white rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-400 flex-1"
+                                    className="bg-black/60 border border-white/20 text-white rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-white/20 flex-1"
                                 >
                                     {photos.map((p) => (
                                         <option key={p.id} value={p.id}>
@@ -222,7 +222,7 @@ export default function ProgressPhotoGalleryModal({
                             </div>
 
                             {weightDelta !== null && (
-                                <div className="bg-amber-400/10 text-amber-300 border border-amber-400/30 px-4 py-1.5 rounded-full text-xs font-bold text-center">
+                                <div className="bg-amber-400/10 text-white border border-white/20/30 px-4 py-1.5 rounded-full text-xs font-bold text-center">
                                     Weight Change: {Number(weightDelta) > 0 ? `+${weightDelta}` : weightDelta} kg
                                 </div>
                             )}
@@ -232,7 +232,7 @@ export default function ProgressPhotoGalleryModal({
                                 <select
                                     value={photoBId || ''}
                                     onChange={(e) => setPhotoBId(e.target.value)}
-                                    className="bg-black/60 border border-white/20 text-white rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-amber-400 flex-1"
+                                    className="bg-black/60 border border-white/20 text-white rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-white/20 flex-1"
                                 >
                                     {photos.map((p) => (
                                         <option key={p.id} value={p.id}>
@@ -255,7 +255,7 @@ export default function ProgressPhotoGalleryModal({
                                     />
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+                                    <p className="text-white text-xs font-bold uppercase tracking-wider">
                                         BEFORE / START
                                     </p>
                                     <p className="text-sm font-bold mt-0.5">{photoA?.label}</p>
@@ -277,7 +277,7 @@ export default function ProgressPhotoGalleryModal({
                                     />
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                    <p className="text-white text-xs font-bold uppercase tracking-wider">
                                         CURRENT / LATER
                                     </p>
                                     <p className="text-sm font-bold mt-0.5">{photoB?.label}</p>
@@ -341,7 +341,7 @@ export default function ProgressPhotoGalleryModal({
                                         Upload Date
                                     </p>
                                     <p className="text-base font-bold text-white flex items-center gap-2 mt-0.5">
-                                        <Calendar size={16} className="text-amber-400" />
+                                        <Calendar size={16} className="text-white" />
                                         {activePhoto.label}
                                     </p>
                                 </div>
@@ -358,7 +358,7 @@ export default function ProgressPhotoGalleryModal({
                                         <button
                                             onClick={handleSaveEdits}
                                             disabled={isSavingEdit}
-                                            className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-colors flex items-center gap-1"
+                                            className="px-3 py-1.5 rounded-xl bg-white hover:bg-white text-black text-xs font-bold transition-colors flex items-center gap-1"
                                         >
                                             <Check size={14} /> {isSavingEdit ? 'Saving...' : 'Save'}
                                         </button>
@@ -366,7 +366,7 @@ export default function ProgressPhotoGalleryModal({
 
                                     <button
                                         onClick={() => handleDelete(activePhoto)}
-                                        className="p-2 rounded-xl bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 transition-colors"
+                                        className="p-2 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors"
                                         title="Delete photo"
                                     >
                                         <Trash2 size={16} />
@@ -386,7 +386,7 @@ export default function ProgressPhotoGalleryModal({
                                             value={editWeight}
                                             onChange={(e) => setEditWeight(e.target.value)}
                                             placeholder="e.g. 75.0"
-                                            className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-amber-400"
+                                            className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-white/20"
                                         />
                                     </div>
                                     <div>
@@ -398,7 +398,7 @@ export default function ProgressPhotoGalleryModal({
                                             onChange={(e) => setEditNotes(e.target.value)}
                                             placeholder="Write notes about your physique, pump, diet..."
                                             rows={2}
-                                            className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-sm text-white font-medium focus:outline-none focus:border-amber-400"
+                                            className="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-sm text-white font-medium focus:outline-none focus:border-white/20"
                                         />
                                     </div>
                                 </div>
@@ -406,7 +406,7 @@ export default function ProgressPhotoGalleryModal({
                                 <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
                                     <div className="bg-black/40 rounded-2xl p-3 border border-white/5">
                                         <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider flex items-center gap-1">
-                                            <Scale size={12} className="text-amber-400" /> Weight Snapshot
+                                            <Scale size={12} className="text-white" /> Weight Snapshot
                                         </p>
                                         <p className="text-sm font-bold text-white mt-1">
                                             {activePhoto.weight_snapshot
@@ -416,7 +416,7 @@ export default function ProgressPhotoGalleryModal({
                                     </div>
                                     <div className="bg-black/40 rounded-2xl p-3 border border-white/5">
                                         <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider flex items-center gap-1">
-                                            <FileText size={12} className="text-amber-400" /> Notes
+                                            <FileText size={12} className="text-white" /> Notes
                                         </p>
                                         <p className="text-xs text-white/80 mt-1 truncate">
                                             {activePhoto.notes || 'No notes added'}
@@ -439,7 +439,7 @@ export default function ProgressPhotoGalleryModal({
                     <div className="space-y-6">
                         {sortedMonthKeys.map((monthKey) => (
                             <div key={monthKey} className="space-y-3">
-                                <h3 className="text-xs font-bold uppercase tracking-widest text-amber-400 border-b border-white/10 pb-1">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-white border-b border-white/10 pb-1">
                                     {monthKey} ({groupedPhotos[monthKey].length})
                                 </h3>
 
@@ -447,7 +447,7 @@ export default function ProgressPhotoGalleryModal({
                                     {groupedPhotos[monthKey].map((photo) => (
                                         <div
                                             key={photo.id}
-                                            className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-amber-400 transition-all text-left"
+                                            className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/20 transition-all text-left"
                                         >
                                             <button
                                                 onClick={() => setSelectedPhotoId(photo.id)}
@@ -460,7 +460,7 @@ export default function ProgressPhotoGalleryModal({
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-2">
                                                     {photo.weight_snapshot && (
-                                                        <span className="text-[10px] font-black text-amber-300 leading-none mb-0.5">
+                                                        <span className="text-[10px] font-black text-white leading-none mb-0.5">
                                                             {photo.weight_snapshot} kg
                                                         </span>
                                                     )}
@@ -476,7 +476,7 @@ export default function ProgressPhotoGalleryModal({
                                                     e.stopPropagation();
                                                     handleDelete(photo);
                                                 }}
-                                                className="absolute top-1.5 right-1.5 p-1.5 rounded-xl bg-black/60 text-white hover:bg-rose-500 transition-colors backdrop-blur-sm"
+                                                className="absolute top-1.5 right-1.5 p-1.5 rounded-xl bg-black/60 text-black hover:bg-white transition-colors backdrop-blur-sm"
                                                 title="Delete photo"
                                             >
                                                 <Trash2 size={12} />

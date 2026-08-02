@@ -86,7 +86,7 @@ export default function TransactionModal({
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="e.g. 500"
-                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                             required
                         />
                     </div>
@@ -98,7 +98,7 @@ export default function TransactionModal({
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder={type === 'income' ? 'e.g. Freelance project' : 'e.g. Protein powder'}
-                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                             required
                         />
                     </div>
@@ -113,7 +113,7 @@ export default function TransactionModal({
                                 value={categorySource}
                                 onChange={(e) => setCategorySource(e.target.value)}
                                 placeholder="e.g. Salary, Side Hustle"
-                                className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                                 required
                             />
                         ) : (
@@ -129,7 +129,7 @@ export default function TransactionModal({
                                             setCategorySource(e.target.value);
                                         }
                                     }}
-                                    className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                    className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                                     required={!isOtherCategory}
                                 >
                                     <option value="" disabled>Select a category</option>
@@ -154,7 +154,7 @@ export default function TransactionModal({
                                         value={categorySource}
                                         onChange={(e) => setCategorySource(e.target.value)}
                                         placeholder="Please specify..."
-                                        className="w-full mt-2 bg-surface-container-low dark:bg-surface-container-high border border-surface-variant  rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none"
+                                        className="w-full mt-2 bg-surface-container-low dark:bg-surface-container-high border border-surface-variant  rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
                                         required
                                     />
                                 )}

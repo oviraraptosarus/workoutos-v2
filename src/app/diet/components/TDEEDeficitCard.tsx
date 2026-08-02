@@ -29,7 +29,7 @@ export default function TDEEDeficitCard({
         <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-2xl bg-purple-500/10 text-activity-purple border border-purple-500/20 shadow-sm">
+                    <div className="p-2 rounded-2xl bg-white/10 text-activity-purple border border-white/20/20 shadow-sm">
                         <TrendingDown size={18} />
                     </div>
                     <div>
@@ -46,8 +46,8 @@ export default function TDEEDeficitCard({
                 <div
                     className={`px-3 py-1 rounded-full text-xs font-black shadow-sm border flex items-center gap-1.5 ${
                         isDeficit
-                            ? 'bg-emerald-500 text-white border-emerald-400'
-                            : 'bg-amber-500 text-white border-amber-400'
+                            ? 'bg-white text-black border-white/20'
+                            : 'bg-white text-black border-white/20'
                     }`}
                 >
                     <Flame size={14} />

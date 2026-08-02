@@ -40,7 +40,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="e.g. Protein powder"
-                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-white/20 shadow-inner transition-colors"
                     />
                 </div>
                 <div>
@@ -52,7 +52,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="0.00"
-                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-white/20 shadow-inner transition-colors"
                     />
                 </div>
                 <div>
@@ -60,7 +60,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-blue-400 shadow-inner transition-colors"
+                        className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-on-surface focus:outline-none focus:bg-card-white/80 focus:border-white/20 shadow-inner transition-colors"
                     >
                         <option value="Groceries">Groceries & Meal Prep</option>
                         <option value="Supplements">Supplements & Protein</option>
@@ -79,7 +79,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 rounded-xl bg-blue-500/90 hover:bg-blue-600 text-white font-bold transition-colors shadow-sm border border-white/20"
+                        className="px-4 py-2 rounded-xl bg-white/90 hover:bg-white text-white font-bold transition-colors shadow-sm border border-white/20"
                     >
                         Save Expense
                     </button>

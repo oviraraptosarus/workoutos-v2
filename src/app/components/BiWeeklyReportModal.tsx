@@ -52,7 +52,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
 
     const parseMarkdown = (text: string) => {
         let html = text
-            .replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-6 mb-3 flex items-center gap-2 border-b border-surface-variant  pb-2">$1</h3>')
+            .replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-white dark:text-white mt-6 mb-3 flex items-center gap-2 border-b border-surface-variant  pb-2">$1</h3>')
             .replace(/^## (.*$)/gim, '<h2 class="text-base font-bold text-on-surface dark:text-white mt-6 mb-3">$1</h2>')
             .replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-on-surface dark:text-white mb-4">$1</h1>')
             .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-on-surface dark:text-white">$1</strong>')
@@ -185,8 +185,8 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                 <div className="p-6 overflow-y-auto flex-1">
                     {!report && !loading && !error && (
                         <div className="text-center py-10">
-                            <div className="w-20 h-20 mx-auto bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
-                                <Sparkles size={32} className="text-blue-500 dark:text-blue-400" />
+                            <div className="w-20 h-20 mx-auto bg-white/5 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
+                                <Sparkles size={32} className="text-white dark:text-white" />
                             </div>
                             <h3 className="text-xl font-bold text-on-surface dark:text-white mb-2">Ready to crunch the numbers?</h3>
                             <p className="text-sm text-on-surface-variant dark:text-on-surface-variant mb-8 max-w-sm mx-auto leading-relaxed">
@@ -204,15 +204,15 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
 
                     {loading && (
                         <div className="text-center py-16 space-y-4">
-                            <div className="w-12 h-12 border-4 border-blue-100 dark:border-blue-900 border-t-blue-500 dark:border-t-blue-400 rounded-full animate-spin mx-auto" />
-                            <p className="text-sm font-bold text-blue-600 dark:text-blue-400 animate-pulse">
+                            <div className="w-12 h-12 border-4 border-white/10 dark:border-blue-900 border-t-blue-500 dark:border-t-blue-400 rounded-full animate-spin mx-auto" />
+                            <p className="text-sm font-bold text-white dark:text-white animate-pulse">
                                 Nova is analyzing your progress...
                             </p>
                         </div>
                     )}
 
                     {error && (
-                        <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-2xl flex items-start gap-3 text-rose-800 dark:text-rose-300 text-sm">
+                        <div className="p-4 bg-white/5 dark:bg-rose-900/20 border border-white/10 dark:border-rose-800/50 rounded-2xl flex items-start gap-3 text-rose-800 dark:text-white text-sm">
                             <AlertCircle size={18} className="mt-0.5 shrink-0" />
                             <div>
                                 <strong className="font-bold block mb-1">Analysis Failed</strong>
@@ -226,19 +226,19 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                             {/* Toolbar */}
                             <div className="flex flex-wrap items-center justify-between gap-4 bg-surface-container-low dark:bg-surface-container-high/50 p-3 rounded-2xl border border-surface-variant ">
                                 <div className="text-xs font-bold text-on-surface-variant dark:text-on-surface-variant flex items-center gap-2">
-                                    <AlertCircle size={14} className="text-orange-500" /> 
+                                    <AlertCircle size={14} className="text-white" /> 
                                     Auto-deletes in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={deleteReportEarly}
-                                        className="px-3 py-1.5 hover:bg-rose-100 text-rose-600 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors"
+                                        className="px-3 py-1.5 hover:bg-rose-100 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors"
                                     >
                                         <Trash2 size={14} /> Delete
                                     </button>
                                     <button
                                         onClick={downloadReport}
-                                        className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                                        className="px-4 py-1.5 bg-white hover:bg-white text-black font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-sm"
                                     >
                                         <Download size={14} /> Download
                                     </button>
@@ -252,7 +252,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                             
                             <div className="mt-8 pt-6 border-t border-surface-variant  flex justify-between items-center">
                                 <span className="text-[10px] font-bold text-on-surface-variant dark:text-on-surface-variant uppercase tracking-wider flex items-center gap-1">
-                                    <Sparkles size={12} className="text-blue-500" /> Powered by Nova AI
+                                    <Sparkles size={12} className="text-white" /> Powered by Nova AI
                                 </span>
                                 <button
                                     onClick={onClose}
