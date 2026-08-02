@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
@@ -18,13 +19,14 @@ interface Point {
 }
 
 const RANGES = [
-    { key: '30', label: '30 days', days: 30 },
-    { key: '90', label: '3 months', days: 90 },
-    { key: '365', label: 'Year', days: 365 },
+    { key: '30', label: '30 days', days: 30, tk: 'progress.days30' },
+    { key: '90', label: '3 months', days: 90, tk: 'progress.months3' },
+    { key: '365', label: 'Year', days: 365, tk: 'progress.year' },
 ] as const;
 
 export default function ProgressPage() {
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
     const [points, setPoints] = useState<Point[]>([]);
     const [range, setRange] = useState<(typeof RANGES)[number]['key']>('30');
     const [loading, setLoading] = useState(true);
@@ -118,8 +120,8 @@ export default function ProgressPage() {
         <AppLayout>
             <div className="flex flex-col gap-4 animate-fade-in">
                 <div>
-                    <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Progress</h1>
-                    <p className="font-body-md text-on-surface-variant mt-0.5">Weight trend from your logs</p>
+                    <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{t('progress.title')}</h1>
+                    <p className="font-body-md text-on-surface-variant mt-0.5">{t('progress.subtitle')}</p>
                 </div>
 
                 {/* Range selector */}
@@ -141,14 +143,14 @@ export default function ProgressPage() {
                 {/* Summary */}
                 <div className="grid grid-cols-3 gap-3">
                     <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
-                        <p className="font-label-sm text-label-sm text-on-surface-variant">Current</p>
+                        <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.current')}</p>
                         <p className="font-headline-md text-headline-md font-bold text-on-surface tabular-nums mt-1">
                             {latest !== null ? latest.toFixed(1) : '—'}
                         </p>
                         <p className="font-label-sm text-label-sm text-on-surface-variant">kg</p>
                     </div>
                     <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
-                        <p className="font-label-sm text-label-sm text-on-surface-variant">Change</p>
+                        <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.change')}</p>
                         <p className={`font-headline-md text-headline-md font-bold tabular-nums mt-1 flex items-center gap-1 ${trendColor}`}>
                             <Trend size={16} />
                             {change !== null ? `${change > 0 ? '+' : ''}${change.toFixed(1)}` : '—'}
@@ -156,7 +158,7 @@ export default function ProgressPage() {
                         <p className="font-label-sm text-label-sm text-on-surface-variant">kg</p>
                     </div>
                     <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
-                        <p className="font-label-sm text-label-sm text-on-surface-variant">To goal</p>
+                        <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.toGoal')}</p>
                         <p className="font-headline-md text-headline-md font-bold text-on-surface tabular-nums mt-1">
                             {toGo !== null ? Math.abs(toGo).toFixed(1) : '—'}
                         </p>
@@ -179,14 +181,14 @@ export default function ProgressPage() {
 
                 {/* Chart */}
                 <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
-                    <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-4">Weight</h2>
+                    <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-4">{t('progress.weight')}</h2>
                     {loading ? (
                         <div className="h-56 flex items-center justify-center">
                             <div className="h-5 w-32 rounded-full bg-surface-container animate-pulse" />
                         </div>
                     ) : points.length === 0 ? (
                         <div className="h-56 flex flex-col items-center justify-center gap-2 text-center">
-                            <p className="font-body-md text-on-surface-variant">No weight logged in this range</p>
+                            <p className="font-body-md text-on-surface-variant">{t('progress.noWeight')}</p>
                             <Link href="/dashboard" className="font-label-md text-label-md text-on-primary bg-primary px-4 py-2 rounded-full">
                                 Log weight
                             </Link>
@@ -195,7 +197,7 @@ export default function ProgressPage() {
                         <div className="h-56 flex flex-col items-center justify-center gap-2 text-center">
                             <p className="font-display-lg text-display-lg font-bold text-on-surface tabular-nums">{points[0].weight.toFixed(1)}<span className="font-label-md text-label-md text-on-surface-variant ml-1">kg</span></p>
                             <p className="font-label-md text-label-md text-on-surface-variant">{points[0].label}</p>
-                            <p className="font-label-sm text-label-sm text-on-surface-variant max-w-[220px]">Log another day to see your trend line</p>
+                            <p className="font-label-sm text-label-sm text-on-surface-variant max-w-[220px]">{t('progress.logAnother')}</p>
                         </div>
                     ) : (
                         <div className="h-56 w-full">
@@ -227,7 +229,7 @@ export default function ProgressPage() {
                 {/* Entries */}
                 {points.length > 0 && (
                     <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
-                        <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-3">Entries</h2>
+                        <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-3">{t('progress.entries')}</h2>
                         <ul className="divide-y divide-surface-variant">
                             {[...points].reverse().slice(0, 10).map((p, i, arr) => {
                                 const prev = arr[i + 1];
@@ -254,7 +256,7 @@ export default function ProgressPage() {
                     href="/dashboard"
                     className="flex items-center justify-between bg-surface-container rounded-3xl px-5 py-4 active:scale-[0.98] transition-transform"
                 >
-                    <span className="font-label-md text-label-md text-on-surface">Back to dashboard</span>
+                    <span className="font-label-md text-label-md text-on-surface">{t('progress.back')}</span>
                     <ChevronRight size={18} className="text-on-surface-variant" />
                 </Link>
             </div>

@@ -17,6 +17,7 @@ import {
     Sparkles,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ProgressPhotoItem } from './ProgressPhotosRow';
 
 interface ProgressPhotoGalleryModalProps {
@@ -34,6 +35,7 @@ export default function ProgressPhotoGalleryModal({
     onClose,
     onPhotosUpdated,
 }: ProgressPhotoGalleryModalProps) {
+    const { t } = useLanguage();
     const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
 
     // Editing State inside Single View
