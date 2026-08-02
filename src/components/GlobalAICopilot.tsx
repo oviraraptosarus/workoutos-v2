@@ -110,14 +110,18 @@ export default function GlobalAICopilot() {
         }
     };
 
+    const isSendingRef = useRef(false);
+
     // Wrapped in useCallback so voice handler can reference stable function
     const handleSend = useCallback(async (overrideText?: string) => {
+        if (isSendingRef.current) return;
         window.speechSynthesis.cancel();
         if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
         const q = (overrideText ?? promptRef.current).trim();
         if (!q && !selectedImage) return;
 
+        isSendingRef.current = true;
         const currentImage = selectedImage;
         const now = formatTime(new Date());
 
@@ -323,6 +327,7 @@ export default function GlobalAICopilot() {
             setMessages(prev => [...prev, errMsg]);
         } finally {
             setLoading(false);
+            isSendingRef.current = false;
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDate, userProfile, apiHistory, selectedImage]);

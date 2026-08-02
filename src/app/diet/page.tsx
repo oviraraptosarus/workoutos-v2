@@ -97,11 +97,7 @@ export default function DietPage() {
     }, [currentDateKey]);
 
     // Save meals for selected currentDateKey whenever state updates
-    useEffect(() => {
-        if (isLoaded && currentDateKey) {
-            saveMealsForDate(currentDateKey, meals);
-        }
-    }, [meals, currentDateKey, isLoaded]);
+
 
     const handleUpdateGoals = async (newGoals: MacroGoals) => {
         setMacroGoals(newGoals);
@@ -120,26 +116,29 @@ export default function DietPage() {
         setIsModalOpen(true);
     };
 
-    const handleSaveMeal = (mealData: Omit<MealItem, 'id'> & { id?: string }) => {
+    const handleSaveMeal = async (mealData: Omit<MealItem, 'id'> & { id?: string }) => {
+        let newMeals;
         if (mealData.id) {
-            setMeals((prev) =>
-                prev.map((m) => (m.id === mealData.id ? ({ ...m, ...mealData } as MealItem) : m))
-            );
+            newMeals = meals.map((m) => (m.id === mealData.id ? ({ ...m, ...mealData } as MealItem) : m));
         } else {
             const newMeal: MealItem = {
                 ...mealData,
                 id: Date.now().toString() + Math.random().toString().slice(2, 5),
             };
-            setMeals((prev) => [...prev, newMeal]);
+            newMeals = [...meals, newMeal];
         }
+        setMeals(newMeals);
+        await saveMealsForDate(currentDateKey, newMeals);
     };
 
-    const handleAddBatchMeals = (batchMeals: Omit<MealItem, 'id'>[]) => {
+    const handleAddBatchMeals = async (batchMeals: Omit<MealItem, 'id'>[]) => {
         const newItems: MealItem[] = batchMeals.map((m, idx) => ({
             ...m,
             id: Date.now().toString() + idx.toString(),
         }));
-        setMeals((prev) => [...prev, ...newItems]);
+        const newMeals = [...meals, ...newItems];
+        setMeals(newMeals);
+        await saveMealsForDate(currentDateKey, newMeals);
     };
 
     const handleApplyWaterIntake = async (amountMl: number) => {
@@ -147,8 +146,10 @@ export default function DietPage() {
         saveWaterForDate(currentDateKey, currentWater + amountMl);
     };
 
-    const handleDeleteMeal = (id: string) => {
-        setMeals((prev) => prev.filter((m) => m.id !== id));
+    const handleDeleteMeal = async (id: string) => {
+        const newMeals = meals.filter((m) => m.id !== id);
+        setMeals(newMeals);
+        await saveMealsForDate(currentDateKey, newMeals);
     };
 
     const handleCopyYesterdayMeals = async () => {
@@ -162,7 +163,9 @@ export default function DietPage() {
             id: Date.now().toString() + Math.random().toString().slice(2, 6),
         }));
 
-        setMeals((prev) => [...prev, ...copied]);
+        const newMeals = [...meals, ...copied];
+        setMeals(newMeals);
+        await saveMealsForDate(currentDateKey, newMeals);
     };
 
     const handleExportSummaryText = async () => {
