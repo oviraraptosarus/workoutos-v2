@@ -99,10 +99,11 @@ export default function SleepPage() {
             sleep_logs: newLogs,
         };
         // Persist bed/wake so the dashboard SleepCard can show them.
-        if (bedtime) row.sleep_bedtime = bedtime;
-        if (waketime) row.sleep_waketime = waketime;
+        if (bedtime) row.sleep_bedtime = bedtime.length === 5 ? `${bedtime}:00` : bedtime;
+        if (waketime) row.sleep_waketime = waketime.length === 5 ? `${waketime}:00` : waketime;
 
-        await supabase.from('daily_logs').upsert(row, { onConflict: 'user_id,date' });
+        const { error } = await supabase.from('daily_logs').upsert(row, { onConflict: 'user_id,date' });
+        if (error) console.error("Error saving sleep to Supabase:", error);
     };
 
     const handleAdd = async (amount: number, type: string, details?: any) => {

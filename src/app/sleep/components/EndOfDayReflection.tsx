@@ -108,13 +108,15 @@ export default function EndOfDayReflection() {
                     // Structured columns that already exist
                     mood_rating: moodToRating(reflection.mood),
                     energy_rating: energyToRating(reflection.energy),
-                    // Full rich reflection stored as JSONB
-                    reflection,
+                    // Removed reflection object as it does not exist in daily_logs schema
                 };
 
                 // Map screen time string to minutes if provided
                 const screenMins = screenTimeToMinutes(reflection.screenTime);
                 if (screenMins !== null) row.screen_time_phone_minutes = screenMins;
+
+                if (reflection.bedtime) row.sleep_bedtime = reflection.bedtime.length === 5 ? `${reflection.bedtime}:00` : reflection.bedtime;
+                if (reflection.waketime) row.sleep_waketime = reflection.waketime.length === 5 ? `${reflection.waketime}:00` : reflection.waketime;
 
                 const { error } = await supabase
                     .from('daily_logs')

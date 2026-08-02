@@ -256,12 +256,13 @@ export default function GlobalAICopilot() {
                             sleep_hours: sleepHours,
                             sleep_logs: updatedSleepLogs,
                         };
-                        if (args.bedtime) sleepRow.sleep_bedtime = args.bedtime;
-                        if (args.waketime) sleepRow.sleep_waketime = args.waketime;
+                        if (args.bedtime) sleepRow.sleep_bedtime = args.bedtime.length === 5 ? `${args.bedtime}:00` : args.bedtime;
+                        if (args.waketime) sleepRow.sleep_waketime = args.waketime.length === 5 ? `${args.waketime}:00` : args.waketime;
 
-                        await supabase
+                        const { error } = await supabase
                             .from('daily_logs')
                             .upsert(sleepRow, { onConflict: 'user_id,date' });
+                        if (error) console.error("Error from AI sleep upsert:", error);
 
                         window.dispatchEvent(new Event('storage'));
                         window.dispatchEvent(new Event('workout_os_sleep_updated'));
