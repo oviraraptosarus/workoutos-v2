@@ -272,5 +272,18 @@
   "sleep.reflection.gratitudePlaceholder": "ఈరోజు మీరు దేనికి కృతజ్ఞతతో ఉన్నారు?",
   "sleep.reflection.dayRating": "మొత్తం రోజు రేటింగ్",
   "sleep.reflection.syncedCloud": "క్లౌడ్‌కి సింక్ చేయబడింది (Supabase)",
-  "sleep.reflection.savedLocal": "స్థానికంగా మాత్రమే సేవ్ చేయబడింది — సింక్ చేయడానికి సైన్ ఇన్ చేయండి"
+  "sleep.reflection.savedLocal": "స్థానికంగా మాత్రమే సేవ్ చేయబడింది — సింక్ చేయడానికి సైన్ ఇన్ చేయండి",
+  "water.page.title": "హైడ్రేషన్",
+  "water.page.subtitle": "మీ రోజువారీ నీటి వినియోగాన్ని ట్రాక్ చేయండి",
+  "water.page.dailyGoal": "రోజువారీ లక్ష్యం",
+  "water.page.ml": "మి.లీ",
+  "water.page.goalMet": "రోజువారీ లక్ష్యం చేరుకున్నారు!",
+  "water.page.quickAdd": "త్వరగా జోడించండి",
+  "water.page.glass": "గ్లాస్",
+  "water.page.bottle": "బాటిల్",
+  "water.page.customAmount": "అనుకూల మొత్తం (మి.లీ)",
+  "water.page.todayLog": "నేటి లాగ్",
+  "water.page.logDate": "{date} లాగ్",
+  "water.page.resetAll": "అన్నింటినీ రీసెట్ చేయండి",
+  "water.page.noWater": "ఇంకా నీరు లాగ్ చేయబడలేదు."
 }

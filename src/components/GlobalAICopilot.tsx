@@ -611,7 +611,7 @@ export default function GlobalAICopilot() {
 
                             {/* Glowing Siri-style orb */}
                             <button
-                                onClick={toggleListening}
+                                onClick={() => toggleListening()}
                                 aria-label={isListening ? 'Stop listening' : 'Start voice input'}
                                 className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-transform duration-300 active:scale-90 ${isListening ? 'scale-110' : ''}`}
                             >
@@ -631,7 +631,7 @@ export default function GlobalAICopilot() {
                             </button>
 
                             <button
-                                onClick={toggleListening}
+                                onClick={() => toggleListening()}
                                 aria-label="Voice input"
                                 className={`p-2 transition-colors ${isListening ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
                             >

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Droplet, Plus, RefreshCw, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getWaterForDate, saveWaterForDate } from '../services/dietStorage';
 
 interface WaterTrackerProps {
@@ -11,6 +12,7 @@ interface WaterTrackerProps {
 
 export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
     
     const goal = userProfile?.waterGoalMl || 3000;
     const dateKey = currentDateKey || new Date().toISOString().slice(0, 10);

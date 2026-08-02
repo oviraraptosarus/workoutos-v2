@@ -223,7 +223,7 @@ export default function EndOfDayReflection() {
                     />
                     {reflection.screenTime && screenTimeToMinutes(reflection.screenTime) !== null && (
                         <p className="text-[10px] text-secondary font-bold mt-1">
-                            {t('sleep.reflection.screenSaveMsg').replace('{mins}', screenTimeToMinutes(reflection.screenTime).toString())}
+                            {t('sleep.reflection.screenSaveMsg').replace('{mins}', screenTimeToMinutes(reflection.screenTime)!.toString())}
                         </p>
                     )}
                 </div>

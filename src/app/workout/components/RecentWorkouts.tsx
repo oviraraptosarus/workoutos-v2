@@ -3,6 +3,7 @@
 import React from 'react';
 import { Clock, TrendingUp } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RecentWorkouts() {
     const { t } = useLanguage();

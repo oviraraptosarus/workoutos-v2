@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Play, Dumbbell, Zap, Timer, Activity, Flame, Shield, Heart, Anchor, Crosshair, Target, Wind } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const PRESET_WORKOUTS = [
     {

@@ -272,5 +272,18 @@
   "sleep.reflection.gratitudePlaceholder": "What are you grateful for today?",
   "sleep.reflection.dayRating": "Overall Day Rating",
   "sleep.reflection.syncedCloud": "Synced to cloud (Supabase)",
-  "sleep.reflection.savedLocal": "Saved locally only — sign in to sync"
+  "sleep.reflection.savedLocal": "Saved locally only — sign in to sync",
+  "water.page.title": "Hydration",
+  "water.page.subtitle": "Track your daily water intake",
+  "water.page.dailyGoal": "Daily Goal",
+  "water.page.ml": "ml",
+  "water.page.goalMet": "Daily Goal Met!",
+  "water.page.quickAdd": "Quick Add",
+  "water.page.glass": "Glass",
+  "water.page.bottle": "Bottle",
+  "water.page.customAmount": "Custom Amount (ml)",
+  "water.page.todayLog": "Today's Log",
+  "water.page.logDate": "{date} Log",
+  "water.page.resetAll": "Reset All",
+  "water.page.noWater": "No water logged yet."
 }

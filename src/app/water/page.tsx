@@ -5,6 +5,7 @@ import AppLayout from '@/components/AppLayout';
 import { Droplet, ArrowLeft, Plus, History, Trash2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -19,6 +20,7 @@ const WATER_ML_PREFIX = 'workout_os_water_ml_';
 const WATER_LOGS_PREFIX = 'workout_os_water_logs_';
 
 export default function WaterPage() {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
     const goalMl = userProfile?.waterGoalMl || 3000;
@@ -91,12 +93,12 @@ export default function WaterPage() {
                             <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
                                 <Droplet className="text-white" /> Hydration
                             </h1>
-                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">Track your daily water intake</p>
+                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">{t('water.page.subtitle')}</p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">Daily Goal</span>
-                        <span className="text-xl font-black text-blue-900">{goalMl} <span className="text-sm text-white">ml</span></span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">{t('water.page.dailyGoal')}</span>
+                        <span className="text-xl font-black text-blue-900">{goalMl} <span className="text-sm text-white">{t('water.page.ml')}</span></span>
                     </div>
                 </div>
 
@@ -166,7 +168,7 @@ export default function WaterPage() {
                                 >
                                     <Droplet size={24} className="text-on-surface-variant group-hover:text-white" />
                                     <span className="font-black text-on-surface-variant group-hover:text-blue-700">+ 250ml</span>
-                                    <span className="text-[10px] font-bold text-on-surface-variant uppercase">Glass</span>
+                                    <span className="text-[10px] font-bold text-on-surface-variant uppercase">{t('water.page.glass')}</span>
                                 </button>
                                 <button 
                                     onClick={() => handleAdd(500, 'Bottle')}
@@ -174,11 +176,11 @@ export default function WaterPage() {
                                 >
                                     <Droplet size={28} className="text-on-surface-variant group-hover:text-white" />
                                     <span className="font-black text-on-surface-variant group-hover:text-blue-700">+ 500ml</span>
-                                    <span className="text-[10px] font-bold text-on-surface-variant uppercase">Bottle</span>
+                                    <span className="text-[10px] font-bold text-on-surface-variant uppercase">{t('water.page.bottle')}</span>
                                 </button>
                                 <div className="col-span-2 bg-card-white border-2 border-surface-variant rounded-2xl p-4 flex items-center justify-between gap-4">
                                     <div className="flex-1">
-                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Custom Amount (ml)</label>
+                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">{t('water.page.customAmount')}</label>
                                         <input 
                                             type="number" 
                                             value={customAmount} 
@@ -199,7 +201,7 @@ export default function WaterPage() {
                         <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant flex-1 flex flex-col">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                                    <History size={18} className="text-on-surface-variant" /> {isToday ? "Today's" : selectedDate} Log
+                                    <History size={18} className="text-on-surface-variant" /> {isToday ? t('water.page.todayLog') : t('water.page.logDate').replace('{date}', selectedDate)}
                                 </h2>
                                 {logs.length > 0 && (
                                     <button
@@ -213,7 +215,7 @@ export default function WaterPage() {
                             
                             <div className="space-y-3 overflow-y-auto max-h-48 custom-scrollbar pr-2">
                                 {logs.length === 0 ? (
-                                    <div className="text-center text-on-surface-variant text-sm font-medium py-4">No water logged yet.</div>
+                                    <div className="text-center text-on-surface-variant text-sm font-medium py-4">{t('water.page.noWater')}</div>
                                 ) : (
                                     logs.map((log, index) => (
                                         <div key={`${log.id}-${index}`} className="bg-surface-container border border-surface-variant rounded-2xl p-3 flex items-center justify-between shadow-sm">
