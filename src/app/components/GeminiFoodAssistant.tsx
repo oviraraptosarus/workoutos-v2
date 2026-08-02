@@ -146,7 +146,7 @@ export default function GeminiFoodAssistant() {
                 budgetExpenses: await getExpenses()
             };
 
-            const res = await fetch('/api/gemini', {
+            const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

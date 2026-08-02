@@ -225,7 +225,7 @@ export default function GlobalAICopilot() {
                 budgetIncome: await getIncome(), budgetExpenses: await getExpenses(),
             };
 
-            const res = await fetch('/api/gemini', {
+            const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState }),

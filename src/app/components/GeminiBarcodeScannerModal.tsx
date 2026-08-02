@@ -54,7 +54,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
     const scanImage = async (base64: string, mimeType: string) => {
         setIsScanning(true);
         try {
-            const res = await fetch('/api/gemini/vision', {
+            const res = await fetch('/api/ai/vision', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

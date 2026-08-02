@@ -4,8 +4,8 @@ export interface ModelConfig {
     id: string; // e.g. "openai:gpt-4o" or "gemini:gemini-2.0-flash"
     provider: ProviderId;
     modelName: string; // e.g. "gpt-4o"
-    apiKeyEnv: string;
     baseURL?: string; // useful for OpenRouter, AgentRouter, etc.
+    isConfigured: boolean;
 }
 
 export interface OrchestratorConfig {

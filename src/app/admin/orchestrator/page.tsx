@@ -80,7 +80,8 @@ export default function OrchestratorAdminPanel() {
                     </h2>
                     
                     <div className="space-y-4">
-                        {config.priorityModels.map((modelId: string, index: number) => {
+                        {config.priorityModels.map((model: any, index: number) => {
+                            const modelId = model.id;
                             const stats: HealthStats = health[modelId] || {
                                 successes: 0, failures: 0, rateLimits: 0, timeouts: 0, totalLatencyMs: 0, isCooldown: false
                             };
@@ -89,22 +90,23 @@ export default function OrchestratorAdminPanel() {
                                 ? Math.round(stats.totalLatencyMs / stats.successes) 
                                 : 0;
 
-                            const statusColor = stats.isCooldown ? 'text-red-500' : 'text-emerald-500';
-                            const StatusIcon = stats.isCooldown ? XCircle : CheckCircle;
+                            const isUnconfigured = !model.isConfigured;
+                            const statusColor = isUnconfigured ? 'text-neutral-600 bg-neutral-800' : stats.isCooldown ? 'text-red-500 bg-red-500/10' : 'text-emerald-500 bg-emerald-500/10';
+                            const StatusIcon = isUnconfigured ? AlertCircle : stats.isCooldown ? XCircle : CheckCircle;
 
                             return (
-                                <div key={modelId} className="bg-neutral-800/30 p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row gap-6 justify-between items-center">
+                                <div key={modelId} className={`p-6 rounded-2xl border flex flex-col md:flex-row gap-6 justify-between items-center ${isUnconfigured ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-800/30 border-white/5'}`}>
                                     <div className="flex items-center gap-4 w-full md:w-auto">
-                                        <div className={`p-3 rounded-full bg-neutral-900 ${statusColor}`}>
+                                        <div className={`p-3 rounded-full ${statusColor}`}>
                                             <StatusIcon className="w-6 h-6" />
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs font-bold text-neutral-500">#{index + 1}</span>
-                                                <h3 className="text-lg font-bold">{modelId}</h3>
+                                                <h3 className={`text-lg font-bold ${isUnconfigured ? 'text-neutral-500' : ''}`}>{modelId}</h3>
                                             </div>
                                             <p className="text-sm text-neutral-400">
-                                                {stats.isCooldown ? 'Currently on Cooldown' : 'Healthy & Active'}
+                                                {isUnconfigured ? <span className="text-orange-400">Missing API Key</span> : stats.isCooldown ? 'Currently on Cooldown' : 'Healthy & Active'}
                                             </p>
                                         </div>
                                     </div>

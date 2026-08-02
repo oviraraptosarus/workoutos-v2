@@ -1,4 +1,4 @@
-import { ConfigManager } from './ConfigManager';
+import { llmConfig } from '@/config/llm';
 import { HealthMonitor } from './HealthMonitor';
 import { CompletionRequest, CompletionResponse, ModelConfig } from './types';
 import { GeminiProvider } from './providers/GeminiProvider';
@@ -6,7 +6,7 @@ import { OpenAIProvider } from './providers/OpenAIProvider';
 import { AnthropicProvider } from './providers/AnthropicProvider';
 
 export class LLMOrchestrator {
-    private config = ConfigManager.getConfig();
+    private config = llmConfig;
     private health = new HealthMonitor();
     
     // Simple sleep utility for exponential backoff
@@ -15,9 +15,18 @@ export class LLMOrchestrator {
     }
 
     private getProviderInstance(model: ModelConfig) {
-        const apiKey = process.env[model.apiKeyEnv];
+        let apiKey = '';
+        switch (model.provider) {
+            case 'gemini': apiKey = process.env.GEMINI_API_KEY || ''; break;
+            case 'openai': apiKey = process.env.OPENAI_API_KEY || ''; break;
+            case 'anthropic': apiKey = process.env.ANTHROPIC_API_KEY || ''; break;
+            case 'openrouter': apiKey = process.env.OPENROUTER_API_KEY || ''; break;
+            case 'agentrouter': apiKey = process.env.AGENTROUTER_API_KEY || ''; break;
+            default: apiKey = process.env[`${model.provider.toUpperCase()}_API_KEY`] || ''; break;
+        }
+
         if (!apiKey) {
-            throw new Error(`Missing API Key: ${model.apiKeyEnv}`);
+            throw new Error(`Missing API Key for provider: ${model.provider}`);
         }
 
         switch (model.provider) {
@@ -39,6 +48,11 @@ export class LLMOrchestrator {
         let lastError: Error | null = null;
 
         for (const model of this.config.priorityModels) {
+            if (!model.isConfigured) {
+                console.info(`[Orchestrator] Skipping ${model.id} (Unconfigured API Key).`);
+                continue;
+            }
+
             if (!this.health.isHealthy(model.id, this.config.cooldownMs)) {
                 console.info(`[Orchestrator] Skipping ${model.id} (Cooldown).`);
                 continue;
@@ -96,7 +110,14 @@ export class LLMOrchestrator {
             }
         }
 
-        throw new Error(`[Orchestrator] All models failed. Last error: ${lastError?.message}`);
+        // If all models fail, return friendly fallback message
+        console.error(`[Orchestrator] All models exhausted or failed. Last error: ${lastError?.message}`);
+        return {
+            text: "AVA is temporarily busy. Please try again in a moment.",
+            sourceModel: "fallback",
+            latencyMs: 0,
+            retries: 0
+        };
     }
 }
 

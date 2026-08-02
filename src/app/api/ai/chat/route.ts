@@ -117,108 +117,106 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                     history: mappedHistory,
                     image: image,
                     tools: [
-                            {
-                                functionDeclarations: [
-                                    {
-                                        name: "add_task",
-                                        description: "Add a new task to the user's planner. Use this when the user asks to be reminded, add a task, or plan something.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                title: { type: "STRING", description: "The name of the task" },
-                                                dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format if specified." }
-                                            },
-                                            required: ["title"]
-                                        }
-                                    },
-                                    {
-                                        name: "append_quick_note",
-                                        description: "Append a quick note to the user's scratchpad. Use this when the user asks to jot something down or log unstructured text.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                note: { type: "STRING", description: "The content of the note to save." }
-                                            },
-                                            required: ["note"]
-                                        }
-                                    },
-                                    {
-                                        name: "navigate_to",
-                                        description: "Navigate the user to a different page in the app. Use this when the user asks to go to, open, or view a specific section.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                path: { type: "STRING", description: "The path to navigate to. Valid options: '/dashboard', '/planner', '/diet', '/workout', '/sleep', '/budget-tracker'" }
-                                            },
-                                            required: ["path"]
-                                        }
-                                    },
-                                    {
-                                        name: "log_water",
-                                        description: "Log water intake for the user. Use this when the user says they drank water.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                amountMl: { type: "INTEGER", description: "The amount of water in milliliters (ml)." }
-                                            },
-                                            required: ["amountMl"]
-                                        }
-                                    },
-                                    {
-                                        name: "log_sleep",
-                                        description: "Log sleep hours for the user.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                hours: { type: "NUMBER", description: "The amount of sleep in hours (e.g. 7.5)." }
-                                            },
-                                            required: ["hours"]
-                                        }
-                                    },
-                                    {
-                                        name: "log_nutrition",
-                                        description: "Log calories for a meal the user ate.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                calories: { type: "INTEGER", description: "The amount of calories." },
-                                                mealName: { type: "STRING", description: "The name of the meal." },
-                                                category: { type: "STRING", description: "The category of the meal. Valid options: 'Breakfast', 'Lunch', 'Snacks', 'Dinner'. Defaults to 'Snacks'." }
-                                            },
-                                            required: ["calories", "mealName"]
-                                        }
-                                    },
-                                    {
-                                        name: "add_expense",
-                                        description: "Log a financial expense for the user.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                amount: { type: "INTEGER", description: "The expense amount." },
-                                                category: { type: "STRING", description: "The category of the expense (e.g. Coffee, Groceries)." }
-                                            },
-                                            required: ["amount", "category"]
-                                        }
-                                    },
-                                    {
-                                        name: "add_income",
-                                        description: "Log a financial income for the user.",
-                                        parameters: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                amount: { type: "INTEGER", description: "The income amount." },
-                                                source: { type: "STRING", description: "The source of the income (e.g. Salary, Side Hustle)." }
-                                            },
-                                            required: ["amount", "source"]
-                                        }
+                        {
+                            functionDeclarations: [
+                                {
+                                    name: "add_task",
+                                    description: "Add a new task to the user's planner. Use this when the user asks to be reminded, add a task, or plan something.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            title: { type: "STRING", description: "The name of the task" },
+                                            dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format if specified." }
+                                        },
+                                        required: ["title"]
                                     }
-                                ]
-                            }
-                        ],
-                            }
-                        ],
-                        temperature: 0.7,
-                        maxOutputTokens: 800
+                                },
+                                {
+                                    name: "append_quick_note",
+                                    description: "Append a quick note to the user's scratchpad. Use this when the user asks to jot something down or log unstructured text.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            note: { type: "STRING", description: "The content of the note to save." }
+                                        },
+                                        required: ["note"]
+                                    }
+                                },
+                                {
+                                    name: "navigate_to",
+                                    description: "Navigate the user to a different page in the app. Use this when the user asks to go to, open, or view a specific section.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            path: { type: "STRING", description: "The path to navigate to. Valid options: '/dashboard', '/planner', '/diet', '/workout', '/sleep', '/budget-tracker'" }
+                                        },
+                                        required: ["path"]
+                                    }
+                                },
+                                {
+                                    name: "log_water",
+                                    description: "Log water intake for the user. Use this when the user says they drank water.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            amountMl: { type: "INTEGER", description: "The amount of water in milliliters (ml)." }
+                                        },
+                                        required: ["amountMl"]
+                                    }
+                                },
+                                {
+                                    name: "log_sleep",
+                                    description: "Log sleep hours for the user.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            hours: { type: "NUMBER", description: "The amount of sleep in hours (e.g. 7.5)." }
+                                        },
+                                        required: ["hours"]
+                                    }
+                                },
+                                {
+                                    name: "log_nutrition",
+                                    description: "Log calories for a meal the user ate.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            calories: { type: "INTEGER", description: "The amount of calories." },
+                                            mealName: { type: "STRING", description: "The name of the meal." },
+                                            category: { type: "STRING", description: "The category of the meal. Valid options: 'Breakfast', 'Lunch', 'Snacks', 'Dinner'. Defaults to 'Snacks'." }
+                                        },
+                                        required: ["calories", "mealName"]
+                                    }
+                                },
+                                {
+                                    name: "add_expense",
+                                    description: "Log a financial expense for the user.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            amount: { type: "INTEGER", description: "The expense amount." },
+                                            category: { type: "STRING", description: "The category of the expense (e.g. Coffee, Groceries)." }
+                                        },
+                                        required: ["amount", "category"]
+                                    }
+                                },
+                                {
+                                    name: "add_income",
+                                    description: "Log a financial income for the user.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            amount: { type: "INTEGER", description: "The income amount." },
+                                            source: { type: "STRING", description: "The source of the income (e.g. Salary, Side Hustle)." }
+                                        },
+                                        required: ["amount", "source"]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    temperature: 0.7,
+                    maxOutputTokens: 800
                 });
 
                 if (response.text || response.functionCall) {
@@ -230,9 +228,9 @@ CRITICAL RULES FOR RESPONDING (NO AI SLOP):
                 } else {
                     return NextResponse.json({ error: `LLM Returned Empty Content` }, { status: 500 });
                 }
-            } catch (err) {
-                console.error('Gemini API call failed:', err);
-                return NextResponse.json({ error: 'Network error connecting to Gemini.' }, { status: 500 });
+            } catch (err: any) {
+                console.error('Orchestrator API call failed:', err);
+                return NextResponse.json({ error: `Orchestrator error: ${err.message}` }, { status: 500 });
             }
         }
 
