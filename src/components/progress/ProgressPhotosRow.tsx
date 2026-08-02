@@ -152,7 +152,7 @@ export default function ProgressPhotosRow({
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-secondary text-[18px]">photo_camera</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">photo_camera</span>
                     <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">
                         Progress Photos
                     </span>

@@ -56,7 +56,7 @@ export default function DashboardTasks() {
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 h-full flex flex-col">
             <div className="flex items-center justify-between mb-3 px-1">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                    <Target size={20} className="text-activity-green" /> {t('dash.tasks')}
+                    <Target size={20} className="text-primary" /> {t('dash.tasks')}
                 </h2>
                 <Link href="/planner" className="font-label-sm text-[11px] text-on-surface-variant hover:text-secondary uppercase tracking-wider flex items-center transition-colors btn-press">
                     View All <ChevronRight size={14} />

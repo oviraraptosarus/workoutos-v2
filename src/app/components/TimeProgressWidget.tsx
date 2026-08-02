@@ -57,7 +57,7 @@ export default function TimeProgressWidget() {
     return (
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all h-full relative overflow-hidden hover:shadow-lg">
             <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-5 flex items-center gap-2">
-                <Hourglass size={16} className="text-secondary" />
+                <Hourglass size={16} className="text-primary" />
                 Time Progression
             </h3>
             
