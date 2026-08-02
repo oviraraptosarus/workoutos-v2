@@ -37,9 +37,21 @@ const FOOD_PRESETS: FoodPreset[] = [
     { name: 'Honeycrisp Apple', category: 'Snacks', portion: '1 medium', calories: 95, carbs: 25, protein: 1, fat: 0, sugar: 19, icon: '🍎' },
     { name: 'Plain Greek Yogurt', category: 'Snacks', portion: '1 cup', calories: 130, carbs: 8, protein: 22, fat: 0, sugar: 6, icon: '🥣' },
     { name: 'Turkey & Cheese Sandwich', category: 'Lunch', portion: '1 sandwich', calories: 380, carbs: 36, protein: 26, fat: 14, sugar: 4, icon: '🥪' },
+    { name: 'Dal & Chapati', category: 'Lunch', portion: '2 chapati + 1 bowl dal', calories: 420, carbs: 68, protein: 16, fat: 8, sugar: 3, icon: '🫓' },
+    { name: 'Rice & Sabzi', category: 'Dinner', portion: '1 plate', calories: 380, carbs: 72, protein: 10, fat: 6, sugar: 2, icon: '🍛' },
+    { name: 'Paneer Bhurji', category: 'Dinner', portion: '150g', calories: 320, carbs: 8, protein: 22, fat: 22, sugar: 2, icon: '🧀' },
+    { name: 'Banana', category: 'Snacks', portion: '1 medium', calories: 105, carbs: 27, protein: 1, fat: 0, sugar: 14, icon: '🍌' },
 ];
 
-const EMOJI_OPTIONS = ['☕', '🍞', '🥚', '🥗', '🍗', '🍎', '🥪', '🥑', '🥣', '🥤', '🥞', '🍕', '🥩', '🍌'];
+const EMOJI_OPTIONS = ['☕', '🍞', '🥚', '🥗', '🍗', '🍎', '🥪', '🥑', '🥣', '🥤', '🥞', '🍕', '🥩', '🍌', '🫓', '🍛', '🧀', '🥦', '🍜', '🍣'];
+
+const MACRO_FIELDS = [
+    { key: 'calories', label: 'Calories', unit: 'kcal', accent: '#0a84ff', placeholder: '250' },
+    { key: 'protein', label: 'Protein', unit: 'g', accent: '#30d158', placeholder: '15' },
+    { key: 'carbs', label: 'Carbs', unit: 'g', accent: '#ff9f0a', placeholder: '30' },
+    { key: 'fat', label: 'Fat', unit: 'g', accent: '#ff453a', placeholder: '8' },
+    { key: 'sugar', label: 'Sugar', unit: 'g', accent: '#bf5af2', placeholder: '4' },
+];
 
 export default function EditFoodModal({
     isOpen,
@@ -53,20 +65,18 @@ export default function EditFoodModal({
     const [category, setCategory] = useState<MealCategory>(defaultCategory);
     const [name, setName] = useState('');
     const [portion, setPortion] = useState('');
-    const [calories, setCalories] = useState<number | ''>(0);
-    const [carbs, setCarbs] = useState<number | ''>(0);
-    const [protein, setProtein] = useState<number | ''>(0);
-    const [fat, setFat] = useState<number | ''>(0);
-    const [sugar, setSugar] = useState<number | ''>(0);
+    const [calories, setCalories] = useState<number | ''>('');
+    const [carbs, setCarbs] = useState<number | ''>('');
+    const [protein, setProtein] = useState<number | ''>('');
+    const [fat, setFat] = useState<number | ''>('');
+    const [sugar, setSugar] = useState<number | ''>('');
     const [bites, setBites] = useState<number | ''>(2);
     const [icon, setIcon] = useState('🥗');
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showPresets, setShowPresets] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
         if (initialData) {
@@ -120,7 +130,6 @@ export default function EditFoodModal({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) return;
-
         onSave({
             ...(initialData?.id ? { id: initialData.id } : {}),
             category,
@@ -134,249 +143,290 @@ export default function EditFoodModal({
             bites: Number(bites) || Math.round((Number(calories) || 0) / 50),
             icon,
         });
-
         onClose();
     };
 
+    const CATEGORY_CONFIG: Record<MealCategory, { emoji: string; color: string }> = {
+        Breakfast: { emoji: '🌅', color: '#ff9f0a' },
+        Lunch:     { emoji: '☀️', color: '#30d158' },
+        Dinner:    { emoji: '🌙', color: '#0a84ff' },
+        Snacks:    { emoji: '⚡', color: '#bf5af2' },
+    };
+
+    const activeColor = CATEGORY_CONFIG[category]?.color ?? '#0a84ff';
+
+    const macroValues: Record<string, number | ''> = { calories, protein, carbs, fat, sugar };
+    const macroSetters: Record<string, (v: number | '') => void> = {
+        calories: setCalories, protein: setProtein, carbs: setCarbs, fat: setFat, sugar: setSugar,
+    };
+
     const modalContent = (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-lg shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
-                
+        <div
+            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        >
+            <div
+                className="w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-300"
+                style={{ background: 'rgb(28,28,30)', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '92vh' }}
+            >
+                {/* Drag pill (mobile) */}
+                <div className="flex justify-center pt-3 pb-1 sm:hidden">
+                    <div className="w-10 h-1 rounded-full bg-white/20" />
+                </div>
+
                 {/* Header */}
-                <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low dark:bg-surface-container-high">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                <div className="flex items-center justify-between px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="w-9 h-9 rounded-2xl flex items-center justify-center text-base font-bold"
+                            style={{ background: `${activeColor}22`, color: activeColor }}
+                        >
                             {initialData ? <Edit2 size={16} /> : <Plus size={18} />}
                         </div>
-                        <h2 className="text-lg font-black text-on-surface drop-shadow-sm">
-                            {initialData ? 'Modify Meal Item' : 'Add Food Item'}
-                        </h2>
+                        <div>
+                            <h2 className="text-base font-black text-white leading-tight">
+                                {initialData ? 'Edit Food Item' : 'Add Food Item'}
+                            </h2>
+                            <p className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                {initialData ? 'Modify and save changes' : 'Log what you ate'}
+                            </p>
+                        </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface-variant transition-colors btn-press"
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                        style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
                     >
-                        <X size={18} />
+                        <X size={16} />
                     </button>
                 </div>
 
-                {/* Quick Food Preset Search */}
-                <div className="px-6 pt-4 pb-2 bg-emerald-50/40 border-b border-emerald-100/60 relative">
+                {/* Search Bar */}
+                <div className="px-5 pt-3 pb-2 relative" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <div className="relative">
-                        <Search size={16} className="absolute left-3 top-3 text-emerald-600" />
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.3)' }} />
                         <input
                             type="text"
                             value={searchQuery}
                             onFocus={() => setShowPresets(true)}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                setShowPresets(true);
+                            onChange={(e) => { setSearchQuery(e.target.value); setShowPresets(true); }}
+                            placeholder="Search food presets…"
+                            className="w-full rounded-xl pl-8 pr-4 py-2.5 text-sm font-medium outline-none transition-all"
+                            style={{
+                                background: 'rgba(255,255,255,0.06)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: 'white',
                             }}
-                            placeholder="🔍 Quick Search Food Presets (e.g. Chicken, Oats, Eggs)..."
-                            className="w-full bg-card-white border border-emerald-200 rounded-2xl pl-9 pr-4 py-2 text-xs font-bold text-on-surface focus:outline-none focus:border-emerald-500 shadow-sm"
                         />
                     </div>
 
-                    {/* Presets Dropdown */}
                     {showPresets && (
-                        <div className="mt-2 bg-card-white border border-emerald-200 rounded-2xl p-2 shadow-lg max-h-48 overflow-y-auto z-20 space-y-1">
-                            <div className="flex justify-between items-center px-2 py-1 text-[10px] font-black text-on-surface-variant uppercase">
-                                <span>Common Food Presets</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPresets(false)}
-                                    className="text-emerald-600 hover:underline"
-                                >
-                                    Close
-                                </button>
+                        <div
+                            className="mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-44 overflow-y-auto"
+                            style={{ background: 'rgb(36,36,38)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        >
+                            <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                                <span className="text-[10px] font-black tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD PRESETS</span>
+                                <button type="button" onClick={() => setShowPresets(false)} className="text-[11px] font-bold" style={{ color: activeColor }}>Close</button>
                             </div>
-                            {filteredPresets.length > 0 ? (
-                                filteredPresets.map((preset, idx) => (
-                                    <div
-                                        key={idx}
-                                        onClick={() => applyPreset(preset)}
-                                        className="flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50 text-xs cursor-pointer transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-base">{preset.icon}</span>
-                                            <div>
-                                                <span className="font-bold text-on-surface dark:text-white">{preset.name}</span>
-                                                <span className="text-[10px] text-on-surface-variant font-medium ml-2">({preset.portion})</span>
-                                            </div>
-                                        </div>
-                                        <div className="text-[10px] font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-lg">
-                                            {preset.calories} kcal • {preset.protein}g P
+                            {filteredPresets.length > 0 ? filteredPresets.map((preset, idx) => (
+                                <div
+                                    key={idx}
+                                    onClick={() => applyPreset(preset)}
+                                    className="flex items-center justify-between px-3 py-2.5 cursor-pointer transition-colors"
+                                    style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                >
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-lg">{preset.icon}</span>
+                                        <div>
+                                            <p className="text-sm font-bold text-white leading-tight">{preset.name}</p>
+                                            <p className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>{preset.portion}</p>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <div className="p-2 text-center text-xs text-on-surface-variant font-bold">
-                                    No matching presets found. Type custom food below!
+                                    <div className="text-[11px] font-bold px-2 py-0.5 rounded-lg" style={{ background: `${activeColor}22`, color: activeColor }}>
+                                        {preset.calories} kcal
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="px-3 py-4 text-center text-xs font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    No matches — fill in manually below
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
 
-                {/* Form Body */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
-                    
-                    {/* Category Selector */}
-                    <div>
-                        <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-2">Category</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {(['Breakfast', 'Lunch', 'Dinner', 'Snacks'] as MealCategory[]).map((cat) => (
-                                <button
-                                    key={cat}
-                                    type="button"
-                                    onClick={() => setCategory(cat)}
-                                    className={`py-2 px-3 rounded-2xl text-xs font-bold transition-all border ${
-                                        category === cat
-                                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-md scale-[1.02]'
-                                            : 'bg-surface-container-low text-on-surface-variant border-surface-variant hover:bg-surface-container'
-                                    }`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                {/* Form body */}
+                <form onSubmit={handleSubmit} className="flex flex-col overflow-y-auto flex-1">
+                    <div className="px-5 py-4 space-y-4 flex-1">
 
-                    {/* Food Name & Icon */}
-                    <div className="grid grid-cols-4 gap-3">
-                        <div className="col-span-3">
-                            <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">Food Name *</label>
-                            <input
-                                type="text"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="e.g. Avocado Toast or Coffee"
-                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-4 py-2.5 text-sm font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant dark:text-on-surface-variant"
-                            />
-                        </div>
+                        {/* Category */}
                         <div>
-                            <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">Icon</label>
-                            <select
-                                value={icon}
-                                onChange={(e) => setIcon(e.target.value)}
-                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-3 py-2.5 text-lg text-center font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all cursor-pointer"
-                            >
-                                {EMOJI_OPTIONS.map((emoji) => (
-                                    <option key={emoji} value={emoji}>
-                                        {emoji}
-                                    </option>
+                            <label className="block text-[11px] font-black tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>CATEGORY</label>
+                            <div className="grid grid-cols-4 gap-2">
+                                {(Object.entries(CATEGORY_CONFIG) as [MealCategory, { emoji: string; color: string }][]).map(([cat, cfg]) => (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setCategory(cat)}
+                                        className="py-2 px-1 rounded-xl text-xs font-bold transition-all duration-200 flex flex-col items-center gap-0.5"
+                                        style={
+                                            category === cat
+                                                ? { background: `${cfg.color}22`, color: cfg.color, border: `1.5px solid ${cfg.color}55` }
+                                                : { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1.5px solid rgba(255,255,255,0.08)' }
+                                        }
+                                    >
+                                        <span className="text-base">{cfg.emoji}</span>
+                                        <span>{cat}</span>
+                                    </button>
                                 ))}
-                            </select>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Serving Portion & Bites */}
-                    <div className="grid grid-cols-2 gap-3">
+                        {/* Name + Icon */}
+                        <div className="grid grid-cols-4 gap-3">
+                            <div className="col-span-3">
+                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD NAME *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="e.g. Dal Chawal or Oats"
+                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        color: 'white',
+                                    }}
+                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
+                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ICON</label>
+                                <select
+                                    value={icon}
+                                    onChange={(e) => setIcon(e.target.value)}
+                                    className="w-full rounded-xl px-2 py-2.5 text-lg text-center font-bold outline-none transition-all cursor-pointer"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        color: 'white',
+                                    }}
+                                >
+                                    {EMOJI_OPTIONS.map((emoji) => (
+                                        <option key={emoji} value={emoji}>{emoji}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Portion + Bites */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>PORTION / SERVING</label>
+                                <input
+                                    type="text"
+                                    value={portion}
+                                    onChange={(e) => setPortion(e.target.value)}
+                                    placeholder="e.g. 1 cup or 200g"
+                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
+                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
+                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-black tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>BITES / POINTS</label>
+                                <input
+                                    type="number"
+                                    value={bites}
+                                    onChange={(e) => setBites(e.target.value === '' ? '' : Number(e.target.value))}
+                                    placeholder="2"
+                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
+                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
+                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Macros */}
                         <div>
-                            <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">Portion / Serving</label>
-                            <input
-                                type="text"
-                                value={portion}
-                                onChange={(e) => setPortion(e.target.value)}
-                                placeholder="e.g. 1 cup or 2 medium"
-                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-4 py-2.5 text-sm font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant dark:text-on-surface-variant"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-black text-on-surface-variant uppercase tracking-wider mb-1">Bites / Points</label>
-                            <input
-                                type="number"
-                                value={bites}
-                                onChange={(e) => setBites(e.target.value === '' ? '' : Number(e.target.value))}
-                                placeholder="2"
-                                className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-4 py-2.5 text-sm font-bold text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all placeholder:text-on-surface-variant dark:text-on-surface-variant"
-                            />
-                        </div>
-                    </div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-[11px] font-black tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>NUTRIENT BREAKDOWN</label>
+                                <span className="text-[10px] font-bold flex items-center gap-1" style={{ color: activeColor }}>
+                                    <Sparkles size={10} /> Auto-calculates totals
+                                </span>
+                            </div>
 
-                    {/* Nutrients Header */}
-                    <div className="pt-2 border-t border-surface-variant ">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-black text-on-surface-variant uppercase tracking-wider">Nutrient Breakdown</span>
-                            <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                                <Sparkles size={12} /> Auto-calculates totals
-                            </span>
-                        </div>
-
-                        {/* Calories & Carbs */}
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                            <div>
-                                <label className="block text-[11px] font-bold text-on-surface-variant mb-1">Calories (kcal)</label>
-                                <input
-                                    type="number"
-                                    value={calories}
-                                    onChange={(e) => setCalories(e.target.value === '' ? '' : Number(e.target.value))}
-                                    placeholder="250"
-                                    className="w-full bg-surface-container-low border border-stone-200 rounded-2xl px-4 py-2.5 text-sm font-black text-on-surface focus:outline-none focus:border-emerald-500 focus:bg-card-white transition-all"
-                                />
+                            <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                                {MACRO_FIELDS.slice(0, 2).map(({ key, label, unit, accent, placeholder }) => (
+                                    <div key={key}>
+                                        <label className="block text-[11px] font-bold mb-1" style={{ color: accent }}>
+                                            {label} ({unit})
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={macroValues[key]}
+                                            onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
+                                            placeholder={placeholder}
+                                            className="w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none transition-all"
+                                            style={{
+                                                background: `${accent}12`,
+                                                border: `1px solid ${accent}30`,
+                                                color: 'white',
+                                            }}
+                                            onFocus={e => (e.currentTarget.style.borderColor = accent + '70')}
+                                            onBlur={e => (e.currentTarget.style.borderColor = accent + '30')}
+                                        />
+                                    </div>
+                                ))}
                             </div>
-                            <div>
-                                <label className="block text-[11px] font-bold text-orange-600 mb-1">Carbs (g)</label>
-                                <input
-                                    type="number"
-                                    value={carbs}
-                                    onChange={(e) => setCarbs(e.target.value === '' ? '' : Number(e.target.value))}
-                                    placeholder="30"
-                                    className="w-full bg-orange-50/50 border border-orange-200 rounded-2xl px-4 py-2.5 text-sm font-bold text-orange-950 focus:outline-none focus:border-orange-500 focus:bg-card-white transition-all"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Protein, Fat, Sugar */}
-                        <div className="grid grid-cols-3 gap-2">
-                            <div>
-                                <label className="block text-[11px] font-bold text-blue-600 mb-1">Protein (g)</label>
-                                <input
-                                    type="number"
-                                    value={protein}
-                                    onChange={(e) => setProtein(e.target.value === '' ? '' : Number(e.target.value))}
-                                    placeholder="15"
-                                    className="w-full bg-blue-50/50 border border-blue-200 rounded-2xl px-3 py-2 text-xs font-bold text-blue-950 focus:outline-none focus:border-blue-500 focus:bg-card-white transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-bold text-rose-600 mb-1">Fat (g)</label>
-                                <input
-                                    type="number"
-                                    value={fat}
-                                    onChange={(e) => setFat(e.target.value === '' ? '' : Number(e.target.value))}
-                                    placeholder="8"
-                                    className="w-full bg-rose-50/50 border border-rose-200 rounded-2xl px-3 py-2 text-xs font-bold text-rose-950 focus:outline-none focus:border-rose-500 focus:bg-card-white transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-bold text-amber-600 mb-1">Sugar (g)</label>
-                                <input
-                                    type="number"
-                                    value={sugar}
-                                    onChange={(e) => setSugar(e.target.value === '' ? '' : Number(e.target.value))}
-                                    placeholder="4"
-                                    className="w-full bg-amber-50/50 border border-amber-200 rounded-2xl px-3 py-2 text-xs font-bold text-amber-950 focus:outline-none focus:border-amber-500 focus:bg-card-white transition-all"
-                                />
+                            <div className="grid grid-cols-3 gap-2">
+                                {MACRO_FIELDS.slice(2).map(({ key, label, unit, accent, placeholder }) => (
+                                    <div key={key}>
+                                        <label className="block text-[11px] font-bold mb-1" style={{ color: accent }}>
+                                            {label} ({unit})
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={macroValues[key]}
+                                            onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
+                                            placeholder={placeholder}
+                                            className="w-full rounded-xl px-2.5 py-2.5 text-sm font-bold outline-none transition-all"
+                                            style={{
+                                                background: `${accent}12`,
+                                                border: `1px solid ${accent}30`,
+                                                color: 'white',
+                                            }}
+                                            onFocus={e => (e.currentTarget.style.borderColor = accent + '70')}
+                                            onBlur={e => (e.currentTarget.style.borderColor = accent + '30')}
+                                        />
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="pt-4 flex items-center justify-between gap-3 border-t border-surface-variant ">
+                    {/* Footer actions */}
+                    <div
+                        className="flex items-center justify-between gap-3 px-5 py-4"
+                        style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgb(28,28,30)' }}
+                    >
                         {initialData && onDelete ? (
                             <button
                                 type="button"
                                 onClick={() => {
-                                    if (confirm('Are you sure you want to remove this meal item?')) {
-                                        onDelete(initialData.id);
-                                        onClose();
-                                    }
+                                    if (confirm('Remove this item?')) { onDelete(initialData.id); onClose(); }
                                 }}
-                                className="flex items-center gap-1.5 px-4 py-3 rounded-2xl text-xs font-bold text-red-600 hover:bg-red-50 border border-red-200 transition-colors btn-press"
+                                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors"
+                                style={{ background: 'rgba(255,69,58,0.12)', color: '#ff453a', border: '1px solid rgba(255,69,58,0.25)' }}
                             >
-                                <Trash2 size={16} /> Delete
+                                <Trash2 size={14} /> Delete
                             </button>
                         ) : <div />}
 
@@ -384,19 +434,20 @@ export default function EditFoodModal({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-5 py-3 rounded-2xl text-xs font-bold text-on-surface-variant hover:bg-surface-container transition-colors btn-press"
+                                className="px-5 py-2.5 rounded-xl text-xs font-bold transition-colors"
+                                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl text-xs font-black shadow-md transition-all btn-press"
+                                className="px-6 py-2.5 rounded-xl text-xs font-black text-white shadow-lg transition-all active:scale-95"
+                                style={{ background: activeColor, boxShadow: `0 4px 16px ${activeColor}44` }}
                             >
                                 {initialData ? 'Save Changes' : 'Add Food Item'}
                             </button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>

@@ -8,10 +8,22 @@ import '@/styles/index.css';
 export const metadata: Metadata = {
   title: 'Workout OS',
   description: 'Your personal health, fitness, and budget dashboard',
+  icons: {
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Workout OS',
+    startupImage: '/icon-512.png',
   },
   formatDetection: {
     telephone: false,

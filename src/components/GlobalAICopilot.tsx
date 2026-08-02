@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2 } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,7 @@ function deriveChips(text: string): string[] {
     if (lower.includes('workout') || lower.includes('exercise') || lower.includes('push') || lower.includes('pull'))
         suggestions.push('Add warm-up routine', 'Save this plan', 'Make it beginner-friendly');
     else if (lower.includes('meal') || lower.includes('food') || lower.includes('diet') || lower.includes('calorie'))
-        suggestions.push('Make it vegetarian', 'Show macros breakdown', 'Save this plan');
+        suggestions.push('Log this meal', 'Show macros breakdown', 'Save this plan');
     else if (lower.includes('sleep') || lower.includes('bed'))
         suggestions.push('Show my sleep trend', 'Set a sleep goal', 'Tips to sleep better');
     else if (lower.includes('water') || lower.includes('hydrat'))
@@ -54,10 +54,14 @@ export default function GlobalAICopilot() {
     const [isListening, setIsListening] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-    // Full conversation history displayed in the chat UI
+    // Conversation history — persists across open/close within the same session
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    // API context history (hidden from UI)
     const [apiHistory, setApiHistory] = useState<{ role: string; text: string }[]>([]);
+    const [isConversationMode, setIsConversationMode] = useState(false);
+    const isConversationModeRef = useRef(false);
+    isConversationModeRef.current = isConversationMode;
+    const isListeningRef = useRef(false);
+    isListeningRef.current = isListening;
 
     // Quick-action chips derived from the latest Ava response
     const [chips, setChips] = useState<string[]>([]);
@@ -67,6 +71,9 @@ export default function GlobalAICopilot() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    // Keep a ref to the latest prompt so the voice auto-send can access current value
+    const promptRef = useRef('');
+    promptRef.current = prompt;
 
     const displayName = userProfile?.fullName
         ? userProfile.fullName.split(' ')[0]
@@ -77,14 +84,9 @@ export default function GlobalAICopilot() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, loading]);
 
-    // Reset on open
+    // When closing — stop listening and TTS. Do NOT wipe messages.
     useEffect(() => {
-        if (isOpen) {
-            setMessages([]);
-            setApiHistory([]);
-            setChips([]);
-            setPrompt('');
-        } else {
+        if (!isOpen) {
             window.speechSynthesis.cancel();
             if (isListening && recognitionRef.current) {
                 recognitionRef.current.stop();
@@ -92,6 +94,13 @@ export default function GlobalAICopilot() {
             }
         }
     }, [isOpen]);
+
+    const clearChat = () => {
+        setMessages([]);
+        setApiHistory([]);
+        setChips([]);
+        setPrompt('');
+    };
 
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setPrompt(e.target.value);
@@ -101,53 +110,12 @@ export default function GlobalAICopilot() {
         }
     };
 
-    const toggleListening = () => {
-        window.speechSynthesis.cancel();
-        if (isListening) {
-            if (recognitionRef.current) recognitionRef.current.stop();
-            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-            setIsListening(false);
-            return;
-        }
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-        if (!SpeechRecognition) { alert('Speech recognition not supported in this browser.'); return; }
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-IN';
-        const existing = prompt ? prompt + ' ' : '';
-        recognition.onstart = () => setIsListening(true);
-        recognition.onresult = (event: any) => {
-            let transcript = '';
-            for (let i = 0; i < event.results.length; i++) transcript += event.results[i][0].transcript;
-            setPrompt(existing + transcript);
-            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-            debounceTimerRef.current = setTimeout(() => {
-                if (recognitionRef.current) recognitionRef.current.stop();
-                setIsListening(false);
-            }, 2000);
-        };
-        recognition.onerror = () => setIsListening(false);
-        recognition.onend = () => setIsListening(false);
-        recognition.start();
-    };
-
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setSelectedImage(reader.result as string);
-            reader.readAsDataURL(file);
-        }
-        if (fileInputRef.current) fileInputRef.current.value = '';
-    };
-
-    const handleSend = async (overrideText?: string) => {
+    // Wrapped in useCallback so voice handler can reference stable function
+    const handleSend = useCallback(async (overrideText?: string) => {
         window.speechSynthesis.cancel();
         if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
-        const q = (overrideText ?? prompt).trim();
+        const q = (overrideText ?? promptRef.current).trim();
         if (!q && !selectedImage) return;
 
         const currentImage = selectedImage;
@@ -250,14 +218,61 @@ export default function GlobalAICopilot() {
                     } else if (fn === 'log_water') {
                         const { addWaterLog } = await import('@/app/diet/services/dietStorage');
                         await addWaterLog(dateKey, Number(args.amount) || 0, 'Ava AI');
+                        window.dispatchEvent(new Event('workout_os_water_updated'));
                     } else if (fn === 'log_sleep') {
-                        const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
-                        if (existing) await supabase.from('daily_logs').update({ sleep_hours: Number(args.hours) || 0 }).eq('id', existing.id);
-                        else await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, sleep_hours: Number(args.hours) || 0 });
+                        const sleepHours = Number(args.hours) || 0;
+
+                        // Build the detailed log entry (matches EnhancedSleepLogger format)
+                        const sleepLogEntry = {
+                            id: Date.now(),
+                            amount: sleepHours,
+                            type: 'Night Sleep',
+                            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            details: {
+                                bedtime: args.bedtime || null,
+                                waketime: args.waketime || null,
+                                quality: args.quality || 'good',
+                                mood: args.mood || 'good',
+                                energy: args.energy || 'medium',
+                                stress: args.stress || 'low',
+                                notes: args.notes || '',
+                                dreams: args.dreams || '',
+                                tags: args.tags ? args.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+                            }
+                        };
+
+                        // Night sleep replaces the day's entry; nap would append
+                        const updatedSleepLogs = [sleepLogEntry];
+
+                        const sleepRow: any = {
+                            user_id: user.id,
+                            date: dateKey,
+                            sleep_hours: sleepHours,
+                            sleep_logs: updatedSleepLogs,
+                        };
+                        if (args.bedtime) sleepRow.sleep_bedtime = args.bedtime;
+                        if (args.waketime) sleepRow.sleep_waketime = args.waketime;
+
+                        await supabase
+                            .from('daily_logs')
+                            .upsert(sleepRow, { onConflict: 'user_id,date' });
+
                         window.dispatchEvent(new Event('storage'));
+                        window.dispatchEvent(new Event('workout_os_sleep_updated'));
                     } else if (fn === 'log_nutrition') {
                         const meals = await getMealsForDate(dateKey);
-                        meals.push({ id: Date.now().toString(), name: args.food_name || args.mealName || 'AI Logged Meal', category: args.category || 'Snacks', portion: '1 serving', calories: Number(args.calories) || 0, protein: Number(args.protein) || 0, carbs: Number(args.carbs) || 0, fat: Number(args.fat) || 0, sugar: 0, icon: '🤖' });
+                        meals.push({
+                            id: Date.now().toString(),
+                            name: args.mealName || 'AI Logged Meal',
+                            category: args.category || 'Snacks',
+                            portion: '1 serving',
+                            calories: Number(args.calories) || 0,
+                            protein: Number(args.protein) || 0,
+                            carbs: Number(args.carbs) || 0,
+                            fat: Number(args.fat) || 0,
+                            sugar: 0,
+                            icon: '🤖'
+                        });
                         await saveMealsForDate(dateKey, meals);
                         window.dispatchEvent(new Event('storage'));
                         window.dispatchEvent(new Event('workout_os_diet_updated'));
@@ -273,19 +288,27 @@ export default function GlobalAICopilot() {
                 const avaMsg: ChatMessage = {
                     id: `a-${Date.now()}`,
                     sender: 'ava',
-                    text: data.result || '✓ Done.',
+                    text: data.result || 'Done.',
                     timestamp: formatTime(new Date()),
                 };
                 setMessages(prev => [...prev, avaMsg]);
                 setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || '' }]);
                 setChips(deriveChips(data.result || ''));
 
-                if (data.result && data.result.length < 150) {
-                    const utterance = new SpeechSynthesisUtterance(data.result);
-                    utterance.lang = 'en-IN';
-                    const inVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'en-IN');
-                    if (inVoice) utterance.voice = inVoice;
-                    window.speechSynthesis.speak(utterance);
+                if (data.result && data.result.length < 200) {
+                    if (isConversationModeRef.current) {
+                        const utterance = new SpeechSynthesisUtterance(data.result.replace(/[#*•]/g, ''));
+                        utterance.lang = 'en-IN';
+                        const voices = window.speechSynthesis.getVoices();
+                        const inVoice = voices.find(v => v.lang === 'en-IN') || voices.find(v => v.lang.startsWith('en'));
+                        if (inVoice) utterance.voice = inVoice;
+                        utterance.onend = () => {
+                            if (isConversationModeRef.current && !isListeningRef.current) {
+                                toggleListening(true);
+                            }
+                        };
+                        window.speechSynthesis.speak(utterance);
+                    }
                 }
             } else {
                 throw new Error(data.error || 'No response');
@@ -301,13 +324,61 @@ export default function GlobalAICopilot() {
         } finally {
             setLoading(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate, userProfile, apiHistory, selectedImage]);
+
+    const toggleListening = (forceStart?: boolean) => {
+        window.speechSynthesis.cancel();
+        if (isListening && !forceStart) {
+            if (recognitionRef.current) recognitionRef.current.stop();
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+            setIsListening(false);
+            return;
+        }
+        if (isListening && forceStart) return;
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) { alert('Speech recognition is not supported in this browser.'); return; }
+        const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-IN';
+        const existing = promptRef.current ? promptRef.current + ' ' : '';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (event: any) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+            const full = (existing + transcript).trim();
+            setPrompt(full);
+            // Auto-send after 3.5 seconds of silence
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+            debounceTimerRef.current = setTimeout(() => {
+                if (recognitionRef.current) recognitionRef.current.stop();
+                setIsListening(false);
+                // Auto-send the captured speech
+                if (full) handleSend(full);
+            }, 3500);
+        };
+        recognition.onerror = () => setIsListening(false);
+        recognition.onend = () => setIsListening(false);
+        recognition.start();
+    };
+
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => setSelectedImage(reader.result as string);
+            reader.readAsDataURL(file);
+        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     const hasMessages = messages.length > 0;
 
     return (
         <>
-            {/* ── Floating Trigger Button ── */}
+            {/* Floating Trigger Button */}
             {!isOpen && (
                 <div className="fixed bottom-28 left-5 sm:bottom-8 sm:left-8 z-[9998] pointer-events-none">
                     <button
@@ -320,7 +391,7 @@ export default function GlobalAICopilot() {
                 </div>
             )}
 
-            {/* ── Full-Screen Chat Modal ── */}
+            {/* Full-Screen Chat Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-[10000] flex flex-col bg-[#0d0d12]/95 backdrop-blur-2xl animate-in fade-in duration-200">
 
@@ -330,15 +401,28 @@ export default function GlobalAICopilot() {
                             <div className="ava-orb-icon w-8 h-8 rounded-full shadow-[0_0_16px_rgba(130,60,255,0.7)]" />
                             <span className="text-white font-bold text-base tracking-tight">Ava</span>
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 transition-colors"
-                        >
-                            <X size={18} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* Clear chat button — only show when there are messages */}
+                            {hasMessages && (
+                                <button
+                                    onClick={clearChat}
+                                    aria-label="Clear conversation"
+                                    title="Clear conversation"
+                                    className="w-9 h-9 rounded-full bg-white/10 hover:bg-red-500/20 flex items-center justify-center text-white/50 hover:text-red-400 transition-colors"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 transition-colors"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* ── Chat Area ── */}
+                    {/* Chat Area */}
                     <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-5 scrollbar-hide">
 
                         {/* Welcome heading — only when no messages yet */}
@@ -347,7 +431,36 @@ export default function GlobalAICopilot() {
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white/90 leading-snug">
                                     Hi {displayName}. What can<br />I help you with?
                                 </h1>
-                                <p className="text-white/40 text-sm mt-3 font-medium">Ask anything about your health, fitness, or budget.</p>
+                                <p className="text-white/40 text-sm mt-3 font-medium">Ask anything or tap a quick action below</p>
+
+                                {/* Quick action grid */}
+                                <div className="mt-6 w-full max-w-sm grid grid-cols-2 gap-2.5">
+                                    {[
+                                        { emoji: '🍽️', label: 'Log Meal', prompt: 'log my meal' },
+                                        { emoji: '😴', label: 'Log Sleep', prompt: 'log my sleep' },
+                                        { emoji: '💧', label: 'Log Water', prompt: 'log water intake' },
+                                        { emoji: '📓', label: 'End of Day', prompt: 'log my end of day reflection' },
+                                        { emoji: '💪', label: 'Workout Plan', prompt: 'give me a workout plan for today' },
+                                        { emoji: '💸', label: 'Log Expense', prompt: 'log an expense' },
+                                        { emoji: '📊', label: 'My Progress', prompt: 'show me my progress this week' },
+                                        { emoji: '📸', label: 'Progress Pic', prompt: 'I want to log a progress picture' },
+                                    ].map(({ emoji, label, prompt: p }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() => handleSend(p)}
+                                            className="flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left text-sm font-semibold text-white/80 transition-all active:scale-95 hover:text-white"
+                                            style={{
+                                                background: 'rgba(255,255,255,0.07)',
+                                                border: '1px solid rgba(255,255,255,0.1)',
+                                            }}
+                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
+                                            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+                                        >
+                                            <span className="text-xl">{emoji}</span>
+                                            <span>{label}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
@@ -356,7 +469,6 @@ export default function GlobalAICopilot() {
                             <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-200`}>
                                 {msg.sender === 'ava' && (
                                     <div className="flex items-start gap-2.5 max-w-[88%] sm:max-w-[80%]">
-                                        {/* Ava avatar */}
                                         <div className="shrink-0 mt-1">
                                             <div className="ava-orb-icon w-7 h-7 rounded-full shadow-[0_0_10px_rgba(130,60,255,0.6)]" />
                                         </div>
@@ -412,7 +524,7 @@ export default function GlobalAICopilot() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* ── Quick-Action Chips ── */}
+                    {/* Quick-Action Chips */}
                     {chips.length > 0 && !loading && (
                         <div className="flex gap-2 px-4 sm:px-6 py-2 overflow-x-auto scrollbar-hide shrink-0 animate-in slide-in-from-bottom-4 duration-300">
                             {chips.map((chip) => (
@@ -422,7 +534,7 @@ export default function GlobalAICopilot() {
                                     className="ava-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 border border-white/15 bg-white/5 hover:bg-white/10 transition-colors whitespace-nowrap"
                                 >
                                     {chip.toLowerCase().includes('save') ? <BookmarkPlus size={12} className="text-purple-400" /> :
-                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') ? <Sparkles size={12} className="text-purple-400" /> :
+                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') || chip.toLowerCase().includes('log') ? <Sparkles size={12} className="text-purple-400" /> :
                                      <Settings2 size={12} className="text-purple-400" />}
                                     {chip}
                                 </button>
@@ -430,7 +542,7 @@ export default function GlobalAICopilot() {
                         </div>
                     )}
 
-                    {/* ── Input Bar ── */}
+                    {/* Input Bar */}
                     <div className="shrink-0 px-4 sm:px-6 pb-6 pt-2">
                         <div className="flex items-end gap-3 bg-[#1e1e28] border border-white/10 rounded-2xl px-3 py-2 focus-within:border-purple-500/40 transition-colors">
                             <input
@@ -481,8 +593,13 @@ export default function GlobalAICopilot() {
 
                         {/* Bottom row: controls + orb + mic */}
                         <div className="flex items-center justify-between mt-4 px-1">
-                            <button className="p-2 text-white/40 hover:text-white/70 transition-colors" aria-label="Settings">
-                                <SlidersHorizontal size={20} />
+                            <button 
+                                onClick={() => setIsConversationMode(!isConversationMode)}
+                                className={`p-2 transition-colors flex items-center justify-center rounded-full ${isConversationMode ? 'text-purple-400 bg-purple-500/10 shadow-[0_0_12px_rgba(168,85,247,0.4)]' : 'text-white/40 hover:text-white/70'}`} 
+                                aria-label="Conversation Mode"
+                                title="Toggle Conversation Mode"
+                            >
+                                {isConversationMode ? <MessageSquare size={20} /> : <VolumeX size={20} />}
                             </button>
 
                             {/* Glowing Siri-style orb */}
@@ -514,6 +631,13 @@ export default function GlobalAICopilot() {
                                 <Mic size={20} />
                             </button>
                         </div>
+
+                        {/* Listening status indicator */}
+                        {isListening && (
+                            <p className="text-center text-xs text-purple-400/80 font-medium mt-2 animate-pulse">
+                                Listening… speak now
+                            </p>
+                        )}
                     </div>
                 </div>
             )}

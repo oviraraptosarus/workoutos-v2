@@ -13,6 +13,7 @@ const TopNav = nextDynamic(() => import('@/components/TopNav').then(m => m.TopNa
 const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
 const CommandPaletteModal = nextDynamic(() => import('@/app/components/CommandPaletteModal'), { ssr: false });
 const GlobalAICopilot = nextDynamic(() => import('@/components/GlobalAICopilot'), { ssr: false });
+const EndOfDayBanner = nextDynamic(() => import('@/components/EndOfDayBanner'), { ssr: false });
 const OnboardingModal = nextDynamic(() => import('@/app/components/modals/OnboardingModal'), { ssr: false });
 
 interface AppLayoutProps {
@@ -43,6 +44,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <OnboardingTourModal />
             <CommandPaletteModal />
             <GlobalAICopilot />
+            <EndOfDayBanner />
             {session && <OnboardingModal isOpen={showOnboarding} onComplete={() => {}} />}
         </div>
     );

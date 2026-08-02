@@ -79,6 +79,11 @@ export default function SleepPage() {
         };
         
         loadSleepData();
+
+        // Re-fetch when Ava AI logs sleep data
+        const handleAvaSync = () => loadSleepData();
+        window.addEventListener('workout_os_sleep_updated', handleAvaSync);
+        return () => window.removeEventListener('workout_os_sleep_updated', handleAvaSync);
     }, [selectedDate]);
 
     const saveToSupabase = async (newTotal: number, newLogs: any[], bedtime?: string, waketime?: string) => {
