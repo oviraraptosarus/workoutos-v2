@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RecentActivity() {
+    const { t } = useLanguage();
     const [activities, setActivities] = useState<any[]>([]);
     const [isClearing, setIsClearing] = useState(false);
 
@@ -67,7 +69,7 @@ export default function RecentActivity() {
     return (
         <div className={`bg-card-white border border-surface-variant border-surface-variant rounded-3xl p-5 shadow-sm space-y-3 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${isClearing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
             <div className="flex items-center justify-between ml-1">
-                <h3 className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Recent Activity</h3>
+                <h3 className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">{t('dash.activity')}</h3>
                 <button 
                     onClick={handleClear}
                     className="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant hover:text-white transition-colors"

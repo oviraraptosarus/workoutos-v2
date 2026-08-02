@@ -5,10 +5,12 @@ import { Target, CheckCircle2, Circle, Calendar, ChevronRight } from 'lucide-rea
 import Link from 'next/link';
 import { Task } from '@/app/planner/page';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useTaskStore } from '@/store/useTaskStore';
 
 export default function DashboardTasks() {
     const { selectedDate } = useDate();
+    const { t } = useLanguage();
     const { tasks, fetchTasks, toggleTask } = useTaskStore();
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -54,7 +56,7 @@ export default function DashboardTasks() {
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 h-full flex flex-col">
             <div className="flex items-center justify-between mb-3 px-1">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                    <Target size={20} className="text-activity-green" /> Upcoming Tasks
+                    <Target size={20} className="text-activity-green" /> {t('dash.tasks')}
                 </h2>
                 <Link href="/planner" className="font-label-sm text-[11px] text-on-surface-variant hover:text-secondary uppercase tracking-wider flex items-center transition-colors btn-press">
                     View All <ChevronRight size={14} />

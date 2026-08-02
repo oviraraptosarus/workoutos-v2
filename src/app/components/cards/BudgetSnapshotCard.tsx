@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BudgetSnapshotCard() {
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
     const [spent, setSpent] = useState(0);
     const [income, setIncome] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -59,7 +61,7 @@ export default function BudgetSnapshotCard() {
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-on-surface-variant text-[20px]">payments</span>
-                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">This month</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.budget')}</span>
                 </div>
                 <ChevronRight size={18} className="text-on-surface-variant/50" />
             </div>
@@ -72,7 +74,7 @@ export default function BudgetSnapshotCard() {
                 <div className="flex items-center justify-between gap-3">
                     <p className="font-body-md text-on-surface-variant">Nothing logged</p>
                     <span className="font-label-md text-label-md text-on-primary bg-primary px-3.5 py-2 rounded-full shrink-0">
-                        Add
+                        {t('dash.add')}
                     </span>
                 </div>
             ) : (

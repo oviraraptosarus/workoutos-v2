@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Plus, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 
 interface Exercise {
@@ -16,6 +17,7 @@ const STORAGE_KEY = 'workout_os_workout_exercises';
 
 export default function WorkoutCard() {
     const { selectedDate, isToday } = useDate();
+    const { t } = useLanguage();
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [customExercise, setCustomExercise] = useState('');
     const [adding, setAdding] = useState(false);

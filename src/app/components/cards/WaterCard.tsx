@@ -5,6 +5,7 @@ import { ChevronRight, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const QUICK_ADD_ML = 250;
 
@@ -12,6 +13,7 @@ export default function WaterCard() {
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
     const router = useRouter();
+    const { t } = useLanguage();
     const [currentMl, setCurrentMl] = React.useState(0);
     const [loaded, setLoaded] = React.useState(false);
     const [saving, setSaving] = React.useState(false);
@@ -90,7 +92,7 @@ export default function WaterCard() {
             <div className="relative flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <span className="material-symbols-outlined text-activity-blue text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>water_drop</span>
-                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">Water</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">{t('dash.water')}</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
             </div>

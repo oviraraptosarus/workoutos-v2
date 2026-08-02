@@ -20,5 +20,8 @@
   "dash.left": "left",
   "dash.logged": "Logged",
   "dash.completed": "Completed",
-  "dash.add": "Add"
+  "dash.add": "Add",
+  "dash.weight": "Weight Trend",
+  "dash.weight.log": "Log Weight",
+  "dash.activity": "Recent Activity"
 }

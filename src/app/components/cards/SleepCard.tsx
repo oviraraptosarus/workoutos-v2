@@ -5,6 +5,7 @@ import { ChevronRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 
 /** Minutes since midnight, from a Postgres `time` value like "23:30:00". */
@@ -28,6 +29,7 @@ function fmtClock(t: string | null): string {
 export default function SleepCard() {
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
+    const { t } = useLanguage();
     const [currentSleep, setCurrentSleep] = React.useState(0);
     const [bedtime, setBedtime] = React.useState<string | null>(null);
     const [waketime, setWaketime] = React.useState<string | null>(null);
@@ -85,7 +87,7 @@ export default function SleepCard() {
             <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <span className="material-symbols-outlined text-secondary text-[18px]">dark_mode</span>
-                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">Sleep</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant truncate">{t('dash.sleep')}</span>
                 </div>
                 <ChevronRight size={16} className="text-on-surface-variant/50 shrink-0" />
             </div>

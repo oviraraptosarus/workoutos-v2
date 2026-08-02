@@ -20,5 +20,8 @@
   "dash.left": "మిగిలివున్నవి",
   "dash.logged": "నమోదు చేయబడింది",
   "dash.completed": "పూర్తయింది",
-  "dash.add": "జోడించు"
+  "dash.add": "జోడించు",
+  "dash.weight": "బరువు ప్రవృత్తి",
+  "dash.weight.log": "బరువును నమోదు చేయండి",
+  "dash.activity": "ఇటీవలి చర్యలు"
 }

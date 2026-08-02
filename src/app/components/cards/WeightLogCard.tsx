@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, ChevronRight, Camera } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
@@ -19,6 +20,7 @@ const WEIGHT_KEY = 'workout_os_weight_log';
 
 export default function WeightLogCard() {
     const { userProfile } = useAuth();
+    const { t } = useLanguage();
     const [weight, setWeight] = useState<number | string>(userProfile?.currentWeight || 75);
     const [isLogged, setIsLogged] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -194,7 +196,7 @@ export default function WeightLogCard() {
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-on-surface-variant">
                     <span className="material-symbols-outlined text-[20px]">monitor_weight</span>
-                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Weight</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.weight')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
