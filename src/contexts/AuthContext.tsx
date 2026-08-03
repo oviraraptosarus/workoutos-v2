@@ -171,7 +171,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                             streamingResponsesEnabled: data.target_config?.streaming_responses_enabled ?? DEFAULT_USER_PROFILE.streamingResponsesEnabled,
                             targetConfig: data.target_config || {},
                             createdAt: user.created_at || data.created_at || new Date().toISOString(),
-                            updatedAt: data.updated_at || new Date().toISOString()
+                            updatedAt: data.updated_at || new Date().toISOString(),
+                            accepted_terms: data.accepted_terms,
+                            accepted_privacy: data.accepted_privacy,
+                            terms_version: data.terms_version,
+                            privacy_version: data.privacy_version,
+                            accepted_at: data.accepted_at
                         });
 
                     } else {
@@ -233,7 +238,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     ...(next.targetConfig || {}),
                     streaming_responses_enabled: next.streamingResponsesEnabled
                 },
-                updated_at: next.updatedAt
+                updated_at: next.updatedAt,
+                accepted_terms: next.accepted_terms,
+                accepted_privacy: next.accepted_privacy,
+                terms_version: next.terms_version,
+                privacy_version: next.privacy_version,
+                accepted_at: next.accepted_at
             }, { onConflict: 'id' });
             
             if (error) {
