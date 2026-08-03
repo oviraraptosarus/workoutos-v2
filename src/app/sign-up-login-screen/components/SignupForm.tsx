@@ -5,9 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AtSign, Mail, Lock, ShieldCheck, User } from 'lucide-react';
+import { AtSign, Mail, Lock, ShieldCheck, User, Check } from 'lucide-react';
 
-export default function SignupForm() {
+interface SignupFormProps {
+    onSuccess?: () => void;
+}
+
+export default function SignupForm({ onSuccess }: SignupFormProps) {
     const router = useRouter();
     const { t } = useLanguage();
     const { signUp } = useAuth();
@@ -19,7 +23,7 @@ export default function SignupForm() {
     const [acceptTerms, setAcceptTerms] = useState(false);
     
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
+    const [successMode, setSuccessMode] = useState<'none' | 'email' | 'created'>('none');
     const [loading, setLoading] = useState(false);
 
     const focusNext = (e: React.KeyboardEvent<HTMLInputElement>, nextId?: string) => {
@@ -54,7 +58,7 @@ export default function SignupForm() {
 
         setLoading(true);
         setError('');
-        setSuccess(false);
+        setSuccessMode('none');
 
         try {
             const { supabase } = await import('@/lib/supabase/client');
@@ -76,9 +80,12 @@ export default function SignupForm() {
             });
 
             if (response?.session) {
-                window.location.href = '/dashboard';
+                // If auto-logged in, sign them out to force manual login
+                const { supabase } = await import('@/lib/supabase/client');
+                await supabase.auth.signOut();
+                setSuccessMode('created');
             } else {
-                setSuccess(true);
+                setSuccessMode('email');
             }
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : 'Signup failed. Please try again.');
@@ -90,7 +97,27 @@ export default function SignupForm() {
     const inputCls =
         'w-full bg-surface-container-low border border-surface-variant rounded-2xl pl-11 pr-3 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
 
-    if (success) {
+    if (successMode !== 'none') {
+        if (successMode === 'created') {
+            return (
+                <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in zoom-in duration-500">
+                    <div className="w-16 h-16 bg-activity-green/10 text-activity-green rounded-full flex items-center justify-center mb-6">
+                        <Check size={32} />
+                    </div>
+                    <h2 className="font-display-sm text-2xl font-bold text-on-surface mb-2">Account Created!</h2>
+                    <p className="font-body-md text-on-surface-variant mb-8 max-w-sm">
+                        Your account has been successfully created. Please log in to complete your profile setup.
+                    </p>
+                    <button
+                        onClick={onSuccess}
+                        className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98]"
+                    >
+                        Go to Login
+                    </button>
+                </div>
+            );
+        }
+
         return (
             <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in zoom-in duration-500">
                 <div className="w-16 h-16 bg-activity-green/10 text-activity-green rounded-full flex items-center justify-center mb-6">

@@ -134,7 +134,7 @@ export default function AuthScreen() {
                 )}
 
                 {view === 'login' && <LoginForm onForgotPassword={() => setView('forgot_password')} />}
-                {view === 'signup' && <SignupForm />}
+                {view === 'signup' && <SignupForm onSuccess={() => setView('login')} />}
                 {view === 'forgot_password' && <ForgotPassword onBack={() => setView('login')} />}
 
                 {view !== 'forgot_password' && (
