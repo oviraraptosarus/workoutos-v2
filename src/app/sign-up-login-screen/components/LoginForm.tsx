@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Mail, Lock } from 'lucide-react';
 
 interface LoginFormProps {
@@ -9,6 +10,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
+    const { t } = useLanguage();
     const { signIn } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -72,7 +74,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={(e) => focusNext(e, 'login-password')}
                         enterKeyHint="next"
-                        placeholder="you@email.com or username"
+                        placeholder={t('auth.login.emailPlaceholder') !== 'auth.login.emailPlaceholder' ? t('auth.login.emailPlaceholder') : 'you@email.com లేదా యూజర్‌నేమ్'}
                         className={inputCls}
                     />
                 </div>
@@ -124,7 +126,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                 disabled={loading}
                 className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98] disabled:opacity-50 mt-1"
             >
-                {loading ? 'Signing in…' : 'Sign In'}
+                {loading ? (t('auth.login.signingIn') !== 'auth.login.signingIn' ? t('auth.login.signingIn') : 'సైన్ ఇన్ అవుతోంది...') : (t('auth.login.signInButton') !== 'auth.login.signInButton' ? t('auth.login.signInButton') : 'సైన్ ఇన్ చేయండి')}
             </button>
         </form>
     );

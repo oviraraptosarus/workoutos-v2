@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AtSign, Mail, Lock, ShieldCheck, User } from 'lucide-react';
 
 export default function SignupForm() {
+    const { t } = useLanguage();
     const { signUp } = useAuth();
     const [fullName, setFullName] = useState('');
     const [username, setUsername] = useState('');
@@ -86,7 +88,7 @@ export default function SignupForm() {
             )}
 
             <div>
-                <label htmlFor="signup-fullname" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">Full Name</label>
+                <label htmlFor="signup-fullname" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">{t('auth.signup.name') !== 'auth.signup.name' ? t('auth.signup.name') : 'పూర్తి పేరు'}</label>
                 <div className="relative">
                     <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                     <input
@@ -122,7 +124,7 @@ export default function SignupForm() {
             </div>
 
             <div>
-                <label htmlFor="signup-email" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">Email Address</label>
+                <label htmlFor="signup-email" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">{t('auth.signup.email') !== 'auth.signup.email' ? t('auth.signup.email') : 'ఈమెయిల్ చిరునామా'}</label>
                 <div className="relative">
                     <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                     <input
@@ -194,7 +196,7 @@ export default function SignupForm() {
                 disabled={loading}
                 className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98] disabled:opacity-50 mt-3"
             >
-                {loading ? 'Creating account…' : 'Create Account'}
+                {loading ? (t('auth.signup.creating') !== 'auth.signup.creating' ? t('auth.signup.creating') : 'ఖాతాను సృష్టిస్తోంది...') : (t('auth.signup.createAccountButton') !== 'auth.signup.createAccountButton' ? t('auth.signup.createAccountButton') : 'ఖాతాను సృష్టించండి')}
             </button>
         </form>
     );

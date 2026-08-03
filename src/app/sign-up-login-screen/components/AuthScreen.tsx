@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import ForgotPassword from './ForgotPassword';
@@ -9,13 +10,14 @@ import Onboarding from './Onboarding';
 
 type View = 'splash' | 'decision' | 'welcome' | 'onboarding' | 'login' | 'signup' | 'forgot_password';
 
-const HIGHLIGHTS = [
-    { icon: 'monitoring', label: 'Workouts, diet, sleep & budget in one place' },
-    { icon: 'auto_awesome', label: 'Ava, your AI health companion' },
-    { icon: 'lock', label: 'Private by default' },
+const HIGHLIGHTS = (t: any) => [
+    { icon: 'monitoring', label: t('auth.highlight1') !== 'auth.highlight1' ? t('auth.highlight1') : 'వ్యాయామాలు, ఆహారం, నిద్ర & బడ్జెట్ అన్నీ ఒకే చోట' },
+    { icon: 'auto_awesome', label: t('auth.highlight2') !== 'auth.highlight2' ? t('auth.highlight2') : 'అవా, మీ AI ఆరోగ్య సహచరురాలు' },
+    { icon: 'lock', label: t('auth.highlight3') !== 'auth.highlight3' ? t('auth.highlight3') : 'పూర్తిగా ప్రైవేట్' },
 ];
 
 export default function AuthScreen() {
+    const { t } = useLanguage();
     const [view, setView] = useState<View>('splash');
     
     useEffect(() => {
@@ -43,7 +45,7 @@ export default function AuthScreen() {
                     <img src="/logo.png" alt="Logo" className="w-full h-full object-cover rounded-[2rem]" />
                 </div>
                 <h1 className="font-display-lg text-3xl font-bold tracking-tight">Workout OS</h1>
-                <p className="font-body-md text-on-surface-variant mt-2 tracking-wide opacity-80">Train smarter. Track everything.</p>
+                <p className="font-body-md text-on-surface-variant mt-2 tracking-wide opacity-80">{t('auth.splash.subtitle') !== 'auth.splash.subtitle' ? t('auth.splash.subtitle') : 'స్మార్ట్‌గా శిక్షణ పొందండి. ప్రతిదీ ట్రాక్ చేయండి.'}</p>
             </div>
         );
     }
@@ -63,14 +65,14 @@ export default function AuthScreen() {
                         <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                     </div>
                     <h1 className="font-display-lg text-display-lg font-bold text-on-surface tracking-tight leading-none">
-                        Your complete fitness OS.
+                        {t('auth.welcome.title') !== 'auth.welcome.title' ? t('auth.welcome.title') : 'మీ సంపూర్ణ ఫిట్‌నెస్ OS.'}
                     </h1>
                     <p className="font-body-lg text-on-surface-variant mt-3 max-w-[17rem]">
-                        Track workouts, nutrition, finances, habits, AI coaching, and progress—all in one place.
+                        {t('auth.welcome.desc') !== 'auth.welcome.desc' ? t('auth.welcome.desc') : 'వ్యాయామాలు, పోషకాహారం, ఆర్థిక విషయాలు, అలవాట్లు, AI కోచింగ్ మరియు పురోగతి - అన్నీ ఒకే చోట ట్రాక్ చేయండి.'}
                     </p>
 
                     <ul className="mt-8 space-y-3 w-full max-w-xs">
-                        {HIGHLIGHTS.map((h) => (
+                        {HIGHLIGHTS(t).map((h) => (
                             <li key={h.icon} className="flex items-center gap-3 text-left">
                                 <span className="w-9 h-9 shrink-0 rounded-xl bg-surface-container flex items-center justify-center shadow-sm">
                                     <span className="material-symbols-outlined text-secondary" style={{ fontSize: 19 }}>{h.icon}</span>
@@ -86,13 +88,13 @@ export default function AuthScreen() {
                         onClick={() => setView('signup')}
                         className="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-2xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
                     >
-                        Get Started <ArrowRight size={17} />
+                        {t('auth.getStarted') !== 'auth.getStarted' ? t('auth.getStarted') : 'ప్రారంభించండి'} <ArrowRight size={17} />
                     </button>
                     <button
                         onClick={() => setView('login')}
                         className="w-full bg-surface-container text-on-surface font-label-md text-label-md py-4 rounded-2xl transition-transform active:scale-[0.98]"
                     >
-                        I already have an account
+                        {t('auth.alreadyHaveAccount') !== 'auth.alreadyHaveAccount' ? t('auth.alreadyHaveAccount') : 'నాకు ఇప్పటికే ఖాతా ఉంది'}
                     </button>
                 </div>
             </div>
@@ -123,10 +125,10 @@ export default function AuthScreen() {
                             <span className="material-symbols-outlined text-on-primary" style={{ fontSize: 28 }}>vital_signs</span>
                         </div>
                         <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
-                            {view === 'login' ? 'Welcome back' : 'Create your account'}
+                            {view === 'login' ? (t('auth.welcomeBack') !== 'auth.welcomeBack' ? t('auth.welcomeBack') : 'తిరిగి స్వాగతం') : (t('auth.createAccount') !== 'auth.createAccount' ? t('auth.createAccount') : 'మీ ఖాతాను సృష్టించండి')}
                         </h1>
                         <p className="font-body-md text-on-surface-variant mt-1.5">
-                            {view === 'login' ? 'Sign in to pick up where you left off.' : 'Start tracking in under a minute.'}
+                            {view === 'login' ? (t('auth.loginDesc') !== 'auth.loginDesc' ? t('auth.loginDesc') : 'మీరు వదిలివేసిన చోట నుండి ప్రారంభించడానికి లాగిన్ చేయండి.') : (t('auth.signupDesc') !== 'auth.signupDesc' ? t('auth.signupDesc') : 'ఒక్క నిమిషం లోపు ట్రాకింగ్ ప్రారంభించండి.')}
                         </p>
                     </div>
                 )}
@@ -137,12 +139,12 @@ export default function AuthScreen() {
 
                 {view !== 'forgot_password' && (
                     <p className="text-center mt-6 font-label-sm text-label-sm text-on-surface-variant animate-in fade-in duration-500">
-                        {view === 'login' ? 'New here? ' : 'Already have an account? '}
+                        {view === 'login' ? (t('auth.newHere') !== 'auth.newHere' ? t('auth.newHere') : 'ఇక్కడ కొత్తా? ') : (t('auth.alreadyHaveAccount2') !== 'auth.alreadyHaveAccount2' ? t('auth.alreadyHaveAccount2') : 'ఇప్పటికే ఖాతా ఉందా? ')}
                         <button
                             onClick={() => setView(view === 'login' ? 'signup' : 'login')}
                             className="text-secondary hover:underline font-semibold"
                         >
-                            {view === 'login' ? 'Create an account' : 'Sign in'}
+                            {view === 'login' ? (t('auth.createAccountLink') !== 'auth.createAccountLink' ? t('auth.createAccountLink') : 'ఖాతా సృష్టించండి') : (t('auth.signInLink') !== 'auth.signInLink' ? t('auth.signInLink') : 'లాగిన్ చేయండి')}
                         </button>
                     </p>
                 )}

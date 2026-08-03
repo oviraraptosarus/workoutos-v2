@@ -21,11 +21,11 @@ export default function CategoryBreakdown() {
 
     // Calculate aggregated data
     const categoryLimits: Record<string, number> = {
-        'Groceries': 900,
-        'Supplements': 400,
-        'Gym & Equipment': 150,
-        'Eating out': 300,
-        'Transport': 250
+        [t('budget.groceries')]: 900,
+        [t('budget.supplements')]: 400,
+        [t('budget.gym')]: 150,
+        [t('budget.eatingOut')]: 300,
+        [t('budget.transport')]: 250
     };
 
     const categoryColors = [

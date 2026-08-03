@@ -275,25 +275,25 @@ The user has set their language preference to '${preferredLanguage || 'en'}'. If
 
         // Offline fallback
         const lower = prompt.toLowerCase();
-        let verdict = "Moderate / Fits in moderation";
-        let macros = "Est: 450 kcal | 20g Protein | 55g Carbs | 18g Fat";
-        let advice = `Fits fine if accounted for in your daily ${userProfile?.calorieGoal || 2400} kcal target. Pair with protein for optimal recovery!`;
+        let verdict = "మితమైన ఎంపిక / మితంగా తీసుకోవచ్చు";
+        let macros = "అంచనా: 450 kcal | 20g ప్రోటీన్ | 55g కార్బ్స్ | 18g కొవ్వు";
+        let advice = `మీ రోజువారీ ${userProfile?.calorieGoal || 2400} kcal లక్ష్యంలో భాగమైతే ఇది మంచిదే. మెరుగైన రికవరీ కోసం ప్రోటీన్‌తో కలిపి తీసుకోండి!`;
 
-        if (lower.includes('pizza')) {
-            verdict = "Enjoy 2 Slices (Post-Workout Choice)";
-            macros = "Est: 560 kcal | 24g Protein | 64g Carbs | 22g Fat";
-            advice = `Great for replenishing glycogen after an intense workout! To align with your goal (${userProfile?.fitnessGoal || 'Build Muscle'}), add a side protein shake or grilled chicken.`;
-        } else if (lower.includes('burger') || lower.includes('fast food')) {
-            verdict = "Moderate Choice";
-            macros = "Est: 650 kcal | 30g Protein | 48g Carbs | 35g Fat";
-            advice = `Double beef patty gives great protein, but watch out for heavy sodium and saturated fats. Skip the extra fries to stay on target!`;
-        } else if (lower.includes('chicken') || lower.includes('eggs') || lower.includes('protein') || lower.includes('salmon')) {
-            verdict = "Excellent Workout Choice";
-            macros = "Est: 320 kcal | 42g Protein | 0g Carbs | 12g Fat";
-            advice = `Optimal lean protein source! Perfect for muscle synthesis and keeping you full throughout the day.`;
+        if (lower.includes('pizza') || lower.includes('పిజ్జా')) {
+            verdict = "2 ముక్కలు ఆస్వాదించండి (వ్యాయామం తర్వాత మంచిది)";
+            macros = "అంచనా: 560 kcal | 24g ప్రోటీన్ | 64g కార్బ్స్ | 22g కొవ్వు";
+            advice = `తీవ్రమైన వ్యాయామం తర్వాత గ్లైకోజెన్‌ను తిరిగి నింపడానికి అద్భుతమైనది! మీ లక్ష్యానికి (${userProfile?.fitnessGoal || 'కండరాల నిర్మాణం'}) అనుగుణంగా ఉండటానికి, ప్రోటీన్ షేక్ లేదా గ్రిల్ చేసిన చికెన్‌ను జోడించండి.`;
+        } else if (lower.includes('burger') || lower.includes('fast food') || lower.includes('బర్గర్')) {
+            verdict = "మితమైన ఎంపిక";
+            macros = "అంచనా: 650 kcal | 30g ప్రోటీన్ | 48g కార్బ్స్ | 35g కొవ్వు";
+            advice = `డబుల్ బీఫ్ ప్యాటీ మంచి ప్రోటీన్‌ను ఇస్తుంది, కానీ అధిక సోడియం మరియు కొవ్వుల పట్ల జాగ్రత్తగా ఉండండి. మీ లక్ష్యంలో ఉండటానికి అదనపు ఫ్రైస్‌ను దాటవేయండి!`;
+        } else if (lower.includes('chicken') || lower.includes('eggs') || lower.includes('protein') || lower.includes('salmon') || lower.includes('చికెన్') || lower.includes('గుడ్లు')) {
+            verdict = "వ్యాయామానికి అద్భుతమైన ఎంపిక";
+            macros = "అంచనా: 320 kcal | 42g ప్రోటీన్ | 0g కార్బ్స్ | 12g కొవ్వు";
+            advice = `అత్యుత్తమ లీన్ ప్రోటీన్ మూలం! కండరాల నిర్మాణానికి మరియు రోజంతా కడుపు నిండినట్లు అనిపించడానికి పర్ఫెక్ట్.`;
         }
 
-        const fallbackResponse = `### ${verdict}\n\n**Nutritional Breakdown:**\n• ${macros}\n\n**Advisor Note:**\n${advice}`;
+        const fallbackResponse = `### ${verdict}\n\n**పోషకాల వివరాలు:**\n• ${macros}\n\n**సలహాదారు గమనిక:**\n${advice}`;
         return NextResponse.json({ result: fallbackResponse, source: 'gemini-fallback' });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });

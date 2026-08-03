@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { Footprints, Flame, Plus, Calculator } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +8,7 @@ import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function ActivityTracker() {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
     const [steps, setSteps] = useState(0);
@@ -94,7 +96,7 @@ export default function ActivityTracker() {
                         <Footprints size={20} />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black text-on-surface">Daily Steps</h3>
+                        <h3 className="text-lg font-black text-on-surface">{t('workout.dailySteps')}</h3>
                         <p className="text-xs font-bold text-on-surface-variant flex items-center gap-1">
                             <Calculator size={12} /> Stride: {(strideLengthMeters * 100).toFixed(0)}cm
                         </p>
@@ -120,7 +122,7 @@ export default function ActivityTracker() {
                     type="number"
                     value={inputSteps}
                     onChange={(e) => setInputSteps(e.target.value)}
-                    placeholder="Add steps from tracker..."
+                    placeholder={t('workout.addSteps')}
                     className="flex-1 bg-surface-container-highest border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-secondary transition-colors"
                 />
                 <button

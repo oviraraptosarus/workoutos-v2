@@ -139,11 +139,11 @@ export default function SleepCard() {
 
                     <div className="w-full space-y-1 mt-1">
                         <div className="flex items-center justify-between gap-1">
-                            <span className="font-label-sm text-label-sm text-on-surface-variant">Bed</span>
+                            <span className="font-label-sm text-label-sm text-on-surface-variant">{t('dash.bed')}</span>
                             <span className="font-label-sm text-label-sm text-on-surface tabular-nums">{fmtClock(bedtime)}</span>
                         </div>
                         <div className="flex items-center justify-between gap-1">
-                            <span className="font-label-sm text-label-sm text-on-surface-variant">Wake</span>
+                            <span className="font-label-sm text-label-sm text-on-surface-variant">{t('dash.wake')}</span>
                             <span className="font-label-sm text-label-sm text-on-surface tabular-nums">{fmtClock(waketime)}</span>
                         </div>
                         <div className={`w-full text-center px-2 py-0.5 rounded-full font-label-sm text-label-sm ${isOnTarget ? 'bg-activity-green/10 text-activity-green' : 'bg-error-container text-on-error-container'}`}>

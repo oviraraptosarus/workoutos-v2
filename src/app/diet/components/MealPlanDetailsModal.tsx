@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Clock, Flame, ShoppingBag, Plus, Check } from 'lucide-react';
@@ -324,6 +325,7 @@ export default function MealPlanDetailsModal({
     onClose,
     onLogMeal,
 }: MealPlanDetailsModalProps) {
+    const { t } = useLanguage();
     const [mounted, setMounted] = useState(false);
     const [selectedDay, setSelectedDay] = useState<number>(1);
     const [loggedRecipeIds, setLoggedRecipeIds] = useState<Record<string, boolean>>({});

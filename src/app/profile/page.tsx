@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useProfileStats } from '@/lib/hooks/useProfileStats';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabaseClient';
@@ -38,8 +39,10 @@ function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightConten
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ProfileHub() {
+    const { t } = useLanguage();
     const { userProfile, updateUserProfile, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { setLanguage } = useLanguage();
     const stats = useProfileStats();
     
     // View state
@@ -237,7 +240,7 @@ export default function ProfileHub() {
             <p className="text-on-surface-variant font-medium mt-1">@{formData.username || 'username'}</p>
             
             <div className="flex items-center gap-3 mt-3">
-                <span className="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">Level {stats.level}</span>
+                <span className="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">{t('profile.level').replace('{level}', String(stats.level))}</span>
                 <span className="px-3 py-1 bg-activity-red/10 text-activity-red rounded-full text-xs font-bold flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
                     {stats.currentStreak} Day Streak
@@ -249,19 +252,19 @@ export default function ProfileHub() {
     const renderQuickStats = () => (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-1 mb-8">
             <div className="bg-card-white p-4 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Weight</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t('profile.weight')}</span>
                 <span className="text-xl font-bold text-on-surface">{currentWeightVal ?? (formData.currentWeight || '—')} <span className="text-sm font-medium text-on-surface-variant">kg</span></span>
             </div>
             <div className="bg-card-white p-4 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Goal</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t('profile.goal')}</span>
                 <span className="text-xl font-bold text-on-surface">{formData.targetWeight || '—'} <span className="text-sm font-medium text-on-surface-variant">kg</span></span>
             </div>
             <div className="bg-card-white p-4 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Calories</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t('profile.calories')}</span>
                 <span className="text-xl font-bold text-activity-red">{formData.calorieGoal || '—'}</span>
             </div>
             <div className="bg-card-white p-4 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">Water</span>
+                <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1">{t('profile.water')}</span>
                 <span className="text-xl font-bold text-activity-blue">{formData.waterGoalMl ? `${(formData.waterGoalMl / 1000).toFixed(1)}L` : '—'}</span>
             </div>
         </div>
@@ -276,17 +279,17 @@ export default function ProfileHub() {
                     <button onClick={() => setActiveSection(null)} className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface mb-6 font-medium">
                         <ArrowLeft size={18} /> Back to Hub
                     </button>
-                    <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t('profile.settings')}</h2>
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         {[
-                            { label: 'Full Name', key: 'fullName', type: 'text' },
-                            { label: 'Username', key: 'username', type: 'text' },
-                            { label: 'Height (cm)', key: 'heightCm', type: 'number' },
-                            { label: 'Current Weight (kg)', key: 'currentWeight', type: 'number' },
-                            { label: 'Target Weight (kg)', key: 'targetWeight', type: 'number' },
-                            { label: 'Fitness Goal', key: 'fitnessGoal', type: 'text' },
-                            { label: 'Calorie Goal', key: 'calorieGoal', type: 'number' },
-                            { label: 'Water Goal (ml)', key: 'waterGoalMl', type: 'number' },
+                            { label: t('profile.fullName'), key: 'fullName', type: 'text' },
+                            { label: t('profile.username'), key: 'username', type: 'text' },
+                            { label: t('profile.height'), key: 'heightCm', type: 'number' },
+                            { label: t('profile.currentWeight'), key: 'currentWeight', type: 'number' },
+                            { label: t('profile.targetWeight'), key: 'targetWeight', type: 'number' },
+                            { label: t('profile.fitnessGoal'), key: 'fitnessGoal', type: 'text' },
+                            { label: t('profile.calorieGoal'), key: 'calorieGoal', type: 'number' },
+                            { label: t('profile.waterGoal'), key: 'waterGoalMl', type: 'number' },
                         ].map(f => (
                             <div key={f.key} className="p-4 flex items-center justify-between">
                                 <label className="font-medium text-sm text-on-surface w-1/3">{f.label}</label>
@@ -312,23 +315,23 @@ export default function ProfileHub() {
                     <button onClick={() => setActiveSection(null)} className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface mb-6 font-medium">
                         <ArrowLeft size={18} /> Back to Hub
                     </button>
-                    <h2 className="text-2xl font-bold mb-6">Preferences</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t('profile.preferences')}</h2>
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Theme</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.theme')}</label>
                             <div className="flex bg-surface-container-low p-1 rounded-xl">
-                                {['light', 'dark', 'system'].map(t => (
+                                {['light', 'dark', 'system'].map(themeOption => (
                                     <button
-                                        key={t}
+                                        key={themeOption}
                                         onClick={() => {
                                             setFormData({ ...formData, theme: t as any });
                                             if (t !== 'system') {
-                                                if (t === 'light' && theme === 'dark') toggleTheme();
-                                                if (t === 'dark' && theme === 'light') toggleTheme();
+                                                if (themeOption === 'light' && theme === 'dark') toggleTheme();
+                                                if (themeOption === 'dark' && theme === 'light') toggleTheme();
                                             }
                                             handleInputSave('theme', t);
                                         }}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${formData.theme === t ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant'}`}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${formData.theme === themeOption ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant'}`}
                                     >
                                         {t}
                                     </button>
@@ -336,35 +339,41 @@ export default function ProfileHub() {
                             </div>
                         </div>
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Units</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.units')}</label>
                             <div className="flex bg-surface-container-low p-1 rounded-xl">
-                                {['metric', 'imperial'].map(u => (
+                                {['metric', 'imperial'].map(unitOption => (
                                     <button
-                                        key={u}
-                                        onClick={() => handleInputSave('units', u)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${formData.units === u ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant'}`}
+                                        key={unitOption}
+                                        onClick={() => handleInputSave('units', unitOption)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${formData.units === unitOption ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant'}`}
                                     >
-                                        {u}
+                                        {t(`units.${unitOption}`)}
                                     </button>
                                 ))}
                             </div>
                         </div>
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Language</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.language')}</label>
                             <select 
                                 value={formData.preferredLanguage || 'en'}
-                                onChange={e => handleInputSave('preferredLanguage', e.target.value)}
+                                onChange={e => {
+                                    handleInputSave('preferredLanguage', e.target.value);
+                                    if (e.target.value === 'en' || e.target.value === 'te') {
+                                        setLanguage(e.target.value as 'en' | 'te');
+                                    }
+                                }}
                                 className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                             >
                                 <option value="en">English</option>
                                 <option value="es">Spanish</option>
                                 <option value="hi">Hindi</option>
+                                <option value="te">తెలుగు</option>
                             </select>
                         </div>
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">Notifications</label>
-                                <span className="text-xs text-on-surface-variant">Daily reminders & updates</span>
+                                <label className="font-medium text-sm text-on-surface">{t('profile.notifications')}</label>
+                                <span className="text-xs text-on-surface-variant">{t('profile.dailyReminders')}</span>
                             </div>
                             <button
                                 onClick={() => handleInputSave('notificationsEnabled', !formData.notificationsEnabled)}
@@ -375,8 +384,8 @@ export default function ProfileHub() {
                         </div>
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">Financial Reminders</label>
-                                <span className="text-xs text-on-surface-variant">Subscription & bill alerts</span>
+                                <label className="font-medium text-sm text-on-surface">{t('profile.financialReminders')}</label>
+                                <span className="text-xs text-on-surface-variant">{t('profile.subscriptionAlerts')}</span>
                             </div>
                             <button
                                 onClick={() => handleInputSave('enableFinancialReminders', !formData.enableFinancialReminders)}
@@ -404,8 +413,8 @@ export default function ProfileHub() {
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">Voice Input Enabled</label>
-                                <span className="text-xs text-on-surface-variant">Allow dictation in meal & text logs</span>
+                                <label className="font-medium text-sm text-on-surface">{t('profile.voiceInput')}</label>
+                                <span className="text-xs text-on-surface-variant">{t('profile.allowDictation')}</span>
                             </div>
                             <button
                                 onClick={() => handleInputSave('voiceEnabled', !formData.voiceEnabled)}
@@ -415,22 +424,22 @@ export default function ProfileHub() {
                             </button>
                         </div>
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Preferred AI Voice</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.preferredAiVoice')}</label>
                             <select 
                                 value={formData.preferredAiVoice || 'default'}
                                 onChange={e => handleInputSave('preferredAiVoice', e.target.value)}
                                 className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                             >
-                                <option value="default">System Default</option>
-                                <option value="alloy">Alloy (Neutral)</option>
-                                <option value="echo">Echo (Male)</option>
-                                <option value="nova">Nova (Female)</option>
+                                <option value="default">{t('profile.systemDefault')}</option>
+                                <option value="alloy">{t('profile.alloy')}</option>
+                                <option value="echo">{t('profile.echo')}</option>
+                                <option value="nova">{t('profile.nova')}</option>
                             </select>
                         </div>
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">AI Memory</label>
-                                <span className="text-xs text-on-surface-variant">Remember past conversations & context</span>
+                                <label className="font-medium text-sm text-on-surface">{t('profile.aiMemory')}</label>
+                                <span className="text-xs text-on-surface-variant">{t('profile.rememberPast')}</span>
                             </div>
                             <button
                                 onClick={() => handleInputSave('aiMemoryEnabled', !formData.aiMemoryEnabled)}
@@ -441,8 +450,8 @@ export default function ProfileHub() {
                         </div>
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">Streaming Responses</label>
-                                <span className="text-xs text-on-surface-variant">Show AI text as it generates</span>
+                                <label className="font-medium text-sm text-on-surface">{t('profile.streamingResponses')}</label>
+                                <span className="text-xs text-on-surface-variant">{t('profile.showAiText')}</span>
                             </div>
                             <button
                                 onClick={() => handleInputSave('streamingResponsesEnabled', !formData.streamingResponsesEnabled)}
@@ -470,34 +479,34 @@ export default function ProfileHub() {
                     
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Help Center</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.helpCenter')}</label>
                             <ExternalLink size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Keyboard Shortcuts</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.shortcuts')}</label>
                             <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Walkthrough Tutorial</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.walkthrough')}</label>
                             <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Report a Bug</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.reportBug')}</label>
                             <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                     </div>
 
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Privacy Policy</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.privacyPolicy')}</label>
                             <ExternalLink size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Terms of Service</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.termsOfService')}</label>
                             <ExternalLink size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">App Version</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.appVersion')}</label>
                             <span className="text-sm font-medium text-on-surface-variant">2.0.0 (Build 42)</span>
                         </div>
                     </div>
@@ -513,32 +522,32 @@ export default function ProfileHub() {
                     <button onClick={() => setActiveSection(null)} className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface mb-6 font-medium">
                         <ArrowLeft size={18} /> Back to Hub
                     </button>
-                    <h2 className="text-2xl font-bold mb-6">Account & Data</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t('profile.accountData')}</h2>
                     
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Email Address</label>
+                            <label className="font-medium text-sm text-on-surface">{t('profile.emailAddress')}</label>
                             <span className="text-sm font-medium text-on-surface-variant">{formData.email}</span>
                         </div>
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <label className="font-medium text-sm text-on-surface cursor-pointer">Change Password</label>
+                            <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.changePassword')}</label>
                             <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
                         </button>
                     </div>
 
-                    <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 px-2">Data Management</h3>
+                    <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 px-2">{t('profile.dataManagement')}</h3>
                     <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-8">
                         <button onClick={handleExport} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <div className="flex items-center gap-3">
                                 <Download size={18} className="text-secondary" />
-                                <label className="font-medium text-sm text-on-surface cursor-pointer">Export All Data (.json)</label>
+                                <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.exportData')}</label>
                             </div>
                         </button>
                         <input type="file" accept=".json" ref={importRef} onChange={handleImport} className="hidden" />
                         <button onClick={() => importRef.current?.click()} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <div className="flex items-center gap-3">
                                 <Upload size={18} className="text-on-surface-variant" />
-                                <label className="font-medium text-sm text-on-surface cursor-pointer">Import Backup</label>
+                                <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.importBackup')}</label>
                             </div>
                         </button>
                     </div>
@@ -574,7 +583,7 @@ export default function ProfileHub() {
                 <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 p-5 mb-2">
                     <div className="flex items-center gap-2 mb-4">
                         <Camera size={18} className="text-secondary" />
-                        <h3 className="font-headline-md text-lg text-on-surface">Progress Photos</h3>
+                        <h3 className="font-headline-md text-lg text-on-surface">{t('profile.progressPhotos')}</h3>
                     </div>
                     <ProgressPhotosRow
                         photos={photos}
@@ -591,20 +600,20 @@ export default function ProfileHub() {
                 <div className="rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden">
                     <SettingsRow 
                         icon="person" 
-                        label="Profile" 
+                        label={t('profile.profile')} 
                         value={formData.fullName} 
                         onClick={() => setActiveSection('profile')} 
                         isFirst 
                     />
                     <SettingsRow 
                         icon="tune" 
-                        label="Preferences" 
+                        label={t('profile.preferences')} 
                         value={formData.theme === 'dark' ? 'Dark Mode' : 'Light Mode'} 
                         onClick={() => setActiveSection('preferences')} 
                     />
                     <SettingsRow 
                         icon="memory" 
-                        label="AI Settings" 
+                        label={t('profile.aiSettings')} 
                         value={formData.voiceEnabled ? 'Voice On' : 'Voice Off'}
                         onClick={() => setActiveSection('ai_settings')} 
                         isLast
@@ -614,13 +623,13 @@ export default function ProfileHub() {
                 <div className="rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden mt-1">
                     <SettingsRow 
                         icon="help_outline" 
-                        label="Help & Support" 
+                        label={t('profile.helpSupport')} 
                         onClick={() => setActiveSection('help')} 
                         isFirst 
                     />
                     <SettingsRow 
                         icon="account_circle" 
-                        label="Account" 
+                        label={t('profile.account')} 
                         value={formData.email}
                         onClick={() => setActiveSection('account')} 
                         isLast

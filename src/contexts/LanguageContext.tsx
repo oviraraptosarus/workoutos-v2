@@ -26,20 +26,16 @@ const LanguageContext = createContext<LanguageContextType>({
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-    const [language, setLanguageState] = useState<Language>('en');
+    const [language, setLanguageState] = useState<Language>('te');
 
     useEffect(() => {
         const savedLang = localStorage.getItem('workoutos_lang') as Language;
-        if (savedLang === 'te' || savedLang === 'en') {
-            setLanguageState(savedLang);
+        if (savedLang === 'en') {
+            setLanguageState('en');
         } else {
-            // Check browser preference or default to English
-            const browserLang = navigator.language.toLowerCase();
-            if (browserLang.startsWith('te')) {
-                setLanguageState('te');
-            } else {
-                setLanguageState('en'); // Enforce English unless specified
-            }
+            // Default to Telugu for this localized version
+            setLanguageState('te');
+            localStorage.setItem('workoutos_lang', 'te');
         }
     }, []);
 

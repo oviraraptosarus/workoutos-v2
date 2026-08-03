@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect, useRef } from 'react';
 import { PenTool, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
@@ -7,6 +8,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function QuickNotes() {
+    const { t } = useLanguage();
     const { selectedDate, isToday } = useDate();
     const { user } = useAuth();
     const [note, setNote] = useState('');

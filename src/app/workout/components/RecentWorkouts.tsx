@@ -42,13 +42,13 @@ export default function RecentWorkouts() {
 
     return (
         <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm transition-colors">
-            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">Past Sessions</h3>
+            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.pastSessions')}</h3>
             
             <div className="space-y-3">
                 {pastWorkouts.length === 0 ? (
                     <div className="py-6 text-center text-on-surface-variant">
-                        <p className="text-xs font-medium">No recent sessions.</p>
-                        <p className="text-[10px] mt-1">Complete a workout to see your history here.</p>
+                        <p className="text-xs font-medium">{t('workout.noRecent')}</p>
+                        <p className="text-[10px] mt-1">{t('workout.completeToSee')}</p>
                     </div>
                 ) : (
                     pastWorkouts.map(workout => (

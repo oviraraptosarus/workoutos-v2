@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
@@ -28,6 +29,7 @@ export interface Task {
 }
 
 export default function PlannerPage() {
+    const { t } = useLanguage();
     // --- TASK MANAGER STATE (Synced with Dashboard) ---
     const TASKS_KEY = 'workout_os_tasks';
     const PRIORITIES_KEY = 'workout_os_planner_priorities';
@@ -262,7 +264,7 @@ export default function PlannerPage() {
                             <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
                                 <Target className="text-white" /> Planner
                             </h1>
-                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">Organize your action items</p>
+                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">{t('planner.desc')}</p>
                         </div>
                     </div>
                 </div>
@@ -277,20 +279,20 @@ export default function PlannerPage() {
                             </h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Title</label>
-                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="What needs to be done?" className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-white/20 shadow-sm" />
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">{t('planner.title')}</label>
+                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder={t('planner.whatNeedsToBeDone')} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-white/20 shadow-sm" />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> Description</label>
-                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Add details..." className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm resize-none h-20" />
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> {t('planner.descLabel')}</label>
+                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder={t('planner.addDetails')} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm resize-none h-20" />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> Due Date</label>
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> {t('planner.dueDate')}</label>
                                     <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Star size={10} /> Priority</label>
+                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Star size={10} /> {t('planner.priority')}</label>
                                         <select value={newPriority} onChange={(e) => setNewPriority(e.target.value as TaskPriority)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm appearance-none cursor-pointer">
                                             <option value="none">None</option>
                                             <option value="low">Low</option>
@@ -299,12 +301,12 @@ export default function PlannerPage() {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Clock size={10} /> Reminder</label>
+                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Clock size={10} /> {t('planner.reminder')}</label>
                                         <input type="datetime-local" value={newReminderTime} onChange={(e) => setNewReminderTime(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-2 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">Sub-tasks</label>
+                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">{t('planner.subTasks')}</label>
                                     <div className="space-y-2 mb-3">
                                         {newSubTasks.map((st, i) => (
                                             <div key={st.id} className="flex items-center gap-2 bg-surface-container-low border border-surface-variant rounded-lg p-2">
@@ -365,10 +367,10 @@ export default function PlannerPage() {
                                                     <input type="text" defaultValue={task.title} onBlur={(e) => updateTask(task.id, { title: e.target.value })} className="w-full bg-transparent border-b border-white/20 px-1 py-1 font-bold text-on-surface focus:outline-none" />
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <select defaultValue={task.priority} onChange={(e) => updateTask(task.id, { priority: e.target.value as TaskPriority })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none appearance-none">
-                                                            <option value="none">Priority: None</option>
-                                                            <option value="low">Priority: Low</option>
-                                                            <option value="medium">Priority: Medium</option>
-                                                            <option value="high">Priority: High</option>
+                                                            <option value="none">{t('planner.priorityNone')}</option>
+                                                            <option value="low">{t('planner.priorityLow')}</option>
+                                                            <option value="medium">{t('planner.priorityMedium')}</option>
+                                                            <option value="high">{t('planner.priorityHigh')}</option>
                                                         </select>
                                                         <input type="date" defaultValue={task.dueDate} onChange={(e) => updateTask(task.id, { dueDate: e.target.value })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none" />
                                                     </div>
@@ -435,7 +437,7 @@ export default function PlannerPage() {
                     {/* Top Priorities — dynamic, drag into Tasks to promote */}
                     <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-white" /> Top Priorities</div>
+                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-white" /> {t('planner.topPriorities')}</div>
                             <button
                                 onClick={() => {
                                     const p = [...priorities, ''];
@@ -447,7 +449,7 @@ export default function PlannerPage() {
                                 <Plus size={10} /> Add
                             </button>
                         </div>
-                        <p className="text-[10px] text-on-surface-variant mb-3 -mt-2">Drag a priority into Tasks to turn it into a tracked task.</p>
+                        <p className="text-[10px] text-on-surface-variant mb-3 -mt-2">{t('planner.dragPriority')}</p>
                         <div className="space-y-3">
                             {priorities.map((priorityText, i) => (
                                 <div
@@ -546,8 +548,8 @@ export default function PlannerPage() {
                                     }}
                                 >
                                     <div>
-                                        <div className="text-xs font-bold text-on-surface mb-0.5">SESSION {num}</div>
-                                        <div className="text-[10px] text-on-surface-variant flex items-center gap-1"><Clock size={10} /> 25 MIN</div>
+                                        <div className="text-xs font-bold text-on-surface mb-0.5">{t('planner.session').replace('{num}', String(num))}</div>
+                                        <div className="text-[10px] text-on-surface-variant flex items-center gap-1"><Clock size={10} /> 25 {t('planner.min')}</div>
                                     </div>
                                     <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-white border-white/20 text-white" : "border-surface-variant")}>
                                         {focusSessions[i] && <CheckCircle2 size={12} />}
@@ -560,7 +562,7 @@ export default function PlannerPage() {
                     {/* Habits to Build */}
                     <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Star size={14} className="text-white" /> Habits</div>
+                            <div className="flex items-center gap-2"><Star size={14} className="text-white" /> {t('planner.habits')}</div>
                             <div className="flex items-center gap-2">
                                 <button 
                                     onClick={() => {
@@ -573,7 +575,7 @@ export default function PlannerPage() {
                                     <Plus size={10} /> Add
                                 </button>
                                 <div className="flex gap-2 text-[9px] text-on-surface-variant w-40 justify-between px-1">
-                                    <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                                    <span>{t('days.m')}</span><span>{t('days.t')}</span><span>{t('days.w')}</span><span>{t('days.th')}</span><span>{t('days.f')}</span><span>{t('days.s')}</span><span>{t('days.su')}</span>
                                 </div>
                             </div>
                         </div>

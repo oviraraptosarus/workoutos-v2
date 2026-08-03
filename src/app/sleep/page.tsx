@@ -201,7 +201,7 @@ export default function SleepPage() {
                 {/* Top Metrics Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
-                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.loggedToday').replace('{date}', isToday ? 'Today' : selectedDate)}</span>
+                        <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.loggedToday').replace('{date}', isToday ? t('sleep.today') : selectedDate)}</span>
                         <div className="text-3xl font-black text-on-surface mt-1">{currentSleep} <span className="text-sm text-on-surface-variant">{t('sleep.page.hrs')}</span></div>
                     </div>
                     <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">

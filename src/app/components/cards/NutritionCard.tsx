@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState } from 'react';
 import { Plus, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -14,6 +15,7 @@ interface MacroGoal {
 }
 
 export default function NutritionCard() {
+    const { t } = useLanguage();
     const { userProfile } = useAuth();
     const { selectedDate, isToday } = useDate();
     const [currentCals, setCurrentCals] = useState(0);
@@ -174,7 +176,7 @@ export default function NutritionCard() {
                         <p className="font-label-md text-label-md text-on-surface mt-2">
                             {over
                                 ? `${(currentCals - goalCals).toLocaleString()} kcal over`
-                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} kcal left`}
+                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} {t('dash.kcalLeft')}`}
                         </p>
 
                         {isToday && (

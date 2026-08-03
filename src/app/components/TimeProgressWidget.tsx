@@ -1,9 +1,11 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { Hourglass } from 'lucide-react';
 
 export default function TimeProgressWidget() {
+    const { t } = useLanguage();
     const [progress, setProgress] = useState({
         year: 0,
         month: 0,
@@ -58,14 +60,14 @@ export default function TimeProgressWidget() {
         <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all h-full relative overflow-hidden hover:shadow-lg">
             <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-5 flex items-center gap-2">
                 <Hourglass size={16} className="text-primary" />
-                Time Progression
+                {t('dash.timeProgression')}
             </h3>
             
             <div className="space-y-4">
                 {/* Year */}
                 <div>
                     <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
-                        <span className="text-on-surface-variant">Year</span>
+                        <span className="text-on-surface-variant">{t('dash.year')}</span>
                         <span className="text-on-surface">{progress.year.toFixed(1)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
@@ -79,7 +81,7 @@ export default function TimeProgressWidget() {
                 {/* Month */}
                 <div>
                     <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
-                        <span className="text-on-surface-variant">Month</span>
+                        <span className="text-on-surface-variant">{t('dash.month')}</span>
                         <span className="text-on-surface">{progress.month.toFixed(1)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
@@ -93,7 +95,7 @@ export default function TimeProgressWidget() {
                 {/* Day */}
                 <div>
                     <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
-                        <span className="text-on-surface-variant">Today</span>
+                        <span className="text-on-surface-variant">{t('dash.today')}</span>
                         <span className="text-on-surface">{progress.day.toFixed(1)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">

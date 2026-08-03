@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useRef, useState } from 'react';
 import { Camera, Plus, ChevronRight, Loader2, Sparkles, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
@@ -28,6 +29,7 @@ export default function ProgressPhotosRow({
     onPhotosUpdated,
     onOpenGallery,
 }: ProgressPhotosRowProps) {
+    const { t } = useLanguage();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);

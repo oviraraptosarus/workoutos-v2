@@ -3,10 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function TopNav() {
   const { userProfile } = useAuth();
-  const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'User');
+  const { t } = useLanguage();
+  const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || (t('nav.top.user') !== 'nav.top.user' ? t('nav.top.user') : 'యూజర్'));
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -22,7 +24,7 @@ export function TopNav() {
             not a modal here and a page in the bottom nav. */}
         <Link
           href="/profile"
-          aria-label="Open profile"
+          aria-label={t('nav.top.openProfile') !== 'nav.top.openProfile' ? t('nav.top.openProfile') : 'ప్రొఫైల్ తెరవండి'}
           className="w-9 h-9 rounded-full bg-primary flex items-center justify-center active:scale-90 transition-transform"
         >
           {userProfile ? (

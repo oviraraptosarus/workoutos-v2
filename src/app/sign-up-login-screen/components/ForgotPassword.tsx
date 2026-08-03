@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface ForgotPasswordProps {
@@ -9,6 +10,7 @@ interface ForgotPasswordProps {
 }
 
 export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
+    const { t } = useLanguage();
     const { resetPassword } = useAuth();
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

@@ -47,7 +47,7 @@ export default function GlobalAICopilot() {
 
     const { userProfile } = useAuth();
     const { selectedDate } = useDate();
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -454,21 +454,21 @@ export default function GlobalAICopilot() {
                         {!hasMessages && (
                             <div className="flex flex-col items-center justify-center h-full min-h-[30vh] text-center px-4 animate-in fade-in duration-300">
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white/90 leading-snug">
-                                    Hi {displayName}. What can<br />I help you with?
+                                    {t('copilot.greeting', { name: displayName })}
                                 </h1>
-                                <p className="text-white/40 text-sm mt-3 font-medium">Ask anything or tap a quick action below</p>
+                                <p className="text-white/40 text-sm mt-3 font-medium">{t('copilot.subGreeting')}</p>
 
                                 {/* Quick action grid */}
                                 <div className="mt-6 w-full max-w-sm grid grid-cols-2 gap-2.5">
                                     {[
-                                        { emoji: '🍽️', label: 'Log Meal', prompt: 'log my meal' },
-                                        { emoji: '😴', label: 'Log Sleep', prompt: 'log my sleep' },
-                                        { emoji: '💧', label: 'Log Water', prompt: 'log water intake' },
-                                        { emoji: '📓', label: 'End of Day', prompt: 'log my end of day reflection' },
-                                        { emoji: '💪', label: 'Workout Plan', prompt: 'give me a workout plan for today' },
-                                        { emoji: '💸', label: 'Log Expense', prompt: 'log an expense' },
-                                        { emoji: '📊', label: 'My Progress', prompt: 'show me my progress this week' },
-                                        { emoji: '📸', label: 'Progress Pic', prompt: 'I want to log a progress picture' },
+                                        { emoji: '🍽️', label: t('copilot.logMeal'), prompt: 'log my meal' },
+                                        { emoji: '😴', label: t('copilot.logSleep'), prompt: 'log my sleep' },
+                                        { emoji: '💧', label: t('copilot.logWater'), prompt: 'log water intake' },
+                                        { emoji: '📓', label: t('copilot.endOfDay'), prompt: 'log my end of day reflection' },
+                                        { emoji: '💪', label: t('copilot.workoutPlan'), prompt: 'give me a workout plan for today' },
+                                        { emoji: '💸', label: t('copilot.logExpense'), prompt: 'log an expense' },
+                                        { emoji: '📊', label: t('copilot.myProgress'), prompt: 'show me my progress this week' },
+                                        { emoji: '📸', label: t('copilot.progressPic'), prompt: 'I want to log a progress picture' },
                                     ].map(({ emoji, label, prompt: p }) => (
                                         <button
                                             key={label}
@@ -593,7 +593,7 @@ export default function GlobalAICopilot() {
                                 value={prompt}
                                 onChange={handleInput}
                                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                                placeholder={selectedImage ? 'Image ready. Add a message…' : 'Message Ava…'}
+                                placeholder={selectedImage ? t('copilot.imageReady') : t('copilot.messagePlaceholder')}
                                 className="flex-1 max-h-[100px] bg-transparent py-2.5 text-sm text-white/85 font-medium focus:outline-none resize-none placeholder:text-white/30"
                             />
 
@@ -660,7 +660,7 @@ export default function GlobalAICopilot() {
                         {/* Listening status indicator */}
                         {isListening && (
                             <p className="text-center text-xs text-white/80 font-medium mt-2 animate-pulse">
-                                Listening… speak now
+                                {t('copilot.listening')}
                             </p>
                         )}
                     </div>

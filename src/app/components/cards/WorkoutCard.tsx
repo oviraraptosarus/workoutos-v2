@@ -131,7 +131,7 @@ export default function WorkoutCard() {
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-[20px]">fitness_center</span>
-                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Workout</span>
+                    <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.workout')}</span>
                     {isCompleted && (
                         <span className="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-activity-green/10 text-activity-green">
                             Done
@@ -150,8 +150,8 @@ export default function WorkoutCard() {
                         <span className="material-symbols-outlined text-[24px]">fitness_center</span>
                     </div>
                     <div className="text-center">
-                        <p className="font-label-md font-bold text-on-surface">No workouts yet</p>
-                        <p className="font-label-sm text-xs text-on-surface-variant mt-0.5 mb-3">Time to crush your goals.</p>
+                        <p className="font-label-md font-bold text-on-surface">{t('dash.noWorkouts')}</p>
+                        <p className="font-label-sm text-xs text-on-surface-variant mt-0.5 mb-3">{t('dash.timeToCrush')}</p>
                         <Link
                             href="/workout"
                             className="font-label-md text-xs font-bold text-on-primary bg-primary px-5 py-2.5 rounded-full active:scale-95 transition-transform shadow-sm"
@@ -193,7 +193,7 @@ export default function WorkoutCard() {
                 <form onSubmit={addCustomExercise} className="mt-auto flex items-center gap-2">
                     <input
                         type="text"
-                        placeholder="Add exercise..."
+                        placeholder={t('dash.addExercise')}
                         value={customExercise}
                         onChange={(e) => setCustomExercise(e.target.value)}
                         aria-label="Add an exercise"

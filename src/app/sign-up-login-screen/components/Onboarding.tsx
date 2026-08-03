@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState } from 'react';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
@@ -46,6 +47,7 @@ interface OnboardingProps {
 }
 
 export default function Onboarding({ onComplete }: OnboardingProps) {
+    const { t } = useLanguage();
     const [currentStep, setCurrentStep] = useState(0);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);

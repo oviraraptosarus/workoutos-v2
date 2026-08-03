@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { Smile, Zap, Coffee, Utensils } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
@@ -17,6 +18,7 @@ interface MoodState {
 const CUP_MG = 95; // caffeine_mg is stored in mg; ~95mg per cup of coffee.
 
 export default function MoodEnergyCard() {
+    const { t } = useLanguage();
     const { selectedDate, isToday } = useDate();
     const [caffeine, setCaffeine] = useState(0);
     const [mood, setMood] = useState(0);
@@ -128,7 +130,7 @@ export default function MoodEnergyCard() {
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Smile size={14} className="text-primary" />
-                        <span className="font-label-sm text-label-sm">Mood</span>
+                        <span className="font-label-sm text-label-sm">{t('dash.mood')}</span>
                     </div>
                     {renderSegments(mood, 'bg-[#f8b47b]', setMood, 'Mood')}
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{mood || '–'}</span>
@@ -137,7 +139,7 @@ export default function MoodEnergyCard() {
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Zap size={14} className="text-primary" />
-                        <span className="font-label-sm text-label-sm">Energy</span>
+                        <span className="font-label-sm text-label-sm">{t('dash.energy')}</span>
                     </div>
                     {renderSegments(energy, 'bg-[#82a88e]', setEnergy, 'Energy')}
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{energy || '–'}</span>
@@ -146,7 +148,7 @@ export default function MoodEnergyCard() {
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Utensils size={14} className="text-primary" />
-                        <span className="font-label-sm text-label-sm">Hunger</span>
+                        <span className="font-label-sm text-label-sm">{t('dash.hunger')}</span>
                     </div>
                     {renderSegments(hunger, 'bg-[#a78bfa]', setHunger, 'Hunger')}
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{hunger || '–'}</span>
@@ -173,7 +175,7 @@ export default function MoodEnergyCard() {
                     >
                         +
                     </button>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant truncate">cups</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant truncate">{t('dash.cups')}</span>
                 </div>
 
                 <button

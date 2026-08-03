@@ -191,7 +191,7 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
 
     return (
         <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
-            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">Preset Workouts</h3>
+            <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.presetTitle')}</h3>
             
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
                 {PRESET_WORKOUTS.map((preset, idx) => (
@@ -205,11 +205,11 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
                                 {renderIcon(preset.iconType, preset.color.split(' ')[1])}
                             </div>
                             <div>
-                                <h4 className="font-bold text-on-surface drop-shadow-sm leading-tight">{preset.title}</h4>
+                                <h4 className="font-bold text-on-surface drop-shadow-sm leading-tight">{t(`workout.preset.${preset.id}.title`) !== `workout.preset.${preset.id}.title` ? t(`workout.preset.${preset.id}.title`) : preset.title}</h4>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                    <span className="text-[11px] text-on-surface-variant font-medium">{preset.subtitle}</span>
+                                    <span className="text-[11px] text-on-surface-variant font-medium">{t(`workout.preset.${preset.id}.subtitle`) !== `workout.preset.${preset.id}.subtitle` ? t(`workout.preset.${preset.id}.subtitle`) : preset.subtitle}</span>
                                     <span className="text-[10px] opacity-40">•</span>
-                                    <span className="text-[11px] text-on-surface-variant font-bold">{preset.duration}</span>
+                                    <span className="text-[11px] text-on-surface-variant font-bold">{preset.duration.replace('min', t('workout.min'))}</span>
                                 </div>
                             </div>
                         </div>
