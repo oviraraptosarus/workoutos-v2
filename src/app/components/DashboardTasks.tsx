@@ -98,7 +98,9 @@ export default function DashboardTasks() {
                                             {task.priority}
                                         </span>
                                     )}
-                                    <h3 className="font-body-md text-sm text-on-surface truncate">{task.title}</h3>
+                                    <h3 className="font-body-md text-sm text-on-surface truncate" title={task.fullTitle || task.title}>
+                                        {task.title}
+                                    </h3>
                                 </div>
                                 {task.dueDate && (
                                     <div className="flex items-center gap-1 font-label-sm text-[10px] text-activity-green uppercase tracking-wider mt-1">

@@ -3,7 +3,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useRef, useState } from 'react';
 import { Camera, Plus, ChevronRight, Loader2, Sparkles, Image as ImageIcon, Trash2 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export interface ProgressPhotoItem {
     id: string;

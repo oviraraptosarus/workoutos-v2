@@ -176,7 +176,7 @@ export default function NutritionCard() {
                         <p className="font-label-md text-label-md text-on-surface mt-2">
                             {over
                                 ? `${(currentCals - goalCals).toLocaleString()} kcal over`
-                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} {t('dash.kcalLeft')}`}
+                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} ${t('dash.kcalLeft')}`}
                         </p>
 
                         {isToday && (

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { ArrowLeft, Target, BrainCircuit, Plus, Trash2, Play, Pause, GripVertical, CheckCircle2, AlignLeft, Calendar, Circle, Bookmark, Clock, Star } from 'lucide-react';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,8 +20,10 @@ export type TaskPriority = 'high' | 'medium' | 'low' | 'none';
 export interface Task {
     id: string;
     title: string;
+    fullTitle?: string;
     description: string;
     dueDate: string;
+    dueTime?: string;
     subTasks: SubTask[];
     completed: boolean;
     priority: TaskPriority;
@@ -67,8 +69,10 @@ export default function PlannerPage() {
                 setTasks(taskData.map(d => ({
                     id: d.id,
                     title: d.title,
+                    fullTitle: d.full_title || d.title,
                     description: d.description || '',
                     dueDate: d.due_date || '',
+                    dueTime: d.due_time || '',
                     subTasks: d.subtasks || [],
                     completed: d.completed || false,
                     priority: d.priority || 'none',
@@ -105,8 +109,10 @@ export default function PlannerPage() {
             user_id: user.id,
             date: new Date().toISOString().split('T')[0],
             title: newTitle,
+            full_title: newTitle,
             description: newDesc,
             due_date: newDate,
+            due_time: null,
             subtasks: newSubTasks.map(st => ({ id: st.id, title: st.title, completed: false })),
             completed: false,
             priority: newPriority,
@@ -124,8 +130,10 @@ export default function PlannerPage() {
             const newTask: Task = {
                 id: data.id,
                 title: data.title,
+                fullTitle: data.full_title || data.title,
                 description: data.description || '',
                 dueDate: data.due_date || '',
+                dueTime: data.due_time || '',
                 subTasks: data.subtasks || [],
                 completed: data.completed,
                 priority: data.priority || newPriority,
@@ -398,7 +406,7 @@ export default function PlannerPage() {
                                                                     {task.priority}
                                                                 </span>
                                                             )}
-                                                            <h3 className={`font-bold text-on-surface text-lg cursor-pointer hover:text-white truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`}>{task.title}</h3>
+                                                            <h3 className={`font-bold text-on-surface text-lg cursor-pointer hover:text-white truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`} title={task.fullTitle || task.title}>{task.title}</h3>
                                                         </div>
                                                         <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-white flex-shrink-0 p-1 opacity-0 group-hover/task:opacity-100 transition-opacity"><Trash2 size={16} /></button>
                                                     </div>

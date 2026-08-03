@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react';
 import { Camera, X, Sparkles, Scale } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface WeightWeighInPromptModalProps {
     isOpen: boolean;

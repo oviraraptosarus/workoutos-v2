@@ -549,5 +549,17 @@
   "workout.preset.strength-1.title": "5x5 బలం",
   "workout.preset.strength-1.subtitle": "పవర్ లిఫ్టింగ్",
   "workout.preset.calisthenics-1.title": "కాలిస్థెనిక్స్ బేసిక్స్",
-  "workout.preset.calisthenics-1.subtitle": "శరీర బరువు"
+  "workout.preset.calisthenics-1.subtitle": "శరీర బరువు",
+  "profile.timezone": "సమయ క్షేత్రం",
+  "profile.quietHours": "నిశ్శబ్ద గంటలు",
+  "profile.quietHoursStart": "ప్రారంభ సమయం",
+  "profile.quietHoursEnd": "ముగింపు సమయం",
+  "profile.legal": "చట్టపరమైన & అనుసరణ",
+  "profile.terms": "సేవా నిబంధనలు",
+  "profile.privacy": "గోప్యతా విధానం",
+  "profile.cookies": "కుకీ విధానం",
+  "profile.disclaimer": "వైద్య నిరాకరణ",
+  "auth.acceptTermsError": "మీరు సేవా నిబంధనలను అంగీకరించాలి.",
+  "auth.agreeTerms": "నేను అంగీకరిస్తున్నాను",
+  "auth.and": "మరియు"
 }

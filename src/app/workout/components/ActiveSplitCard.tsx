@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Play, CheckCircle2, Trophy, Flame, Video, Link as LinkIcon, Plus, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void }) {
     const { t } = useLanguage();
@@ -30,7 +30,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     // Sync state to LocalStorage when timer runs (for seconds)
     useEffect(() => {
         if (isTimerRunning && !isFinished) {
-            syncStateToStorage(exercises, isTimerRunning, elapsedSeconds, customTitle);
+            
         }
     }, [isTimerRunning, elapsedSeconds, customTitle, isFinished]);
 
@@ -47,7 +47,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         const syncFormat = exs.map((ex, i) => ({ id: i, name: ex.name, done: ex.completed }));
         localStorage.setItem(`workout_os_workout_exercises_${todayKey}`, JSON.stringify(syncFormat));
-        window.dispatchEvent(new Event('storage'));
+        
     };
 
     // Load state on mount if no preset
@@ -107,7 +107,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         const newEx = [...exercises];
         newEx[idx].completed = !newEx[idx].completed;
         setExercises(newEx);
-        syncStateToStorage(newEx, isTimerRunning, elapsedSeconds, customTitle);
+        
     };
 
     const handleStartCustom = () => {
@@ -147,7 +147,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
             });
         }
         
-        localStorage.removeItem('workout_os_active_session_state');
+        
         window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
     };
 

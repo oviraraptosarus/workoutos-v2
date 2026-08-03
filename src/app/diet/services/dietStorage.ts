@@ -1,5 +1,5 @@
 import { MealItem, MacroGoals, MealCategory } from '../types';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export const formatDateKey = (date: Date): string => {
     const year = date.getFullYear();

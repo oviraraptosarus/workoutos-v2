@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Footprints, Flame, Plus, Calculator } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export default function ActivityTracker() {
     const { t } = useLanguage();

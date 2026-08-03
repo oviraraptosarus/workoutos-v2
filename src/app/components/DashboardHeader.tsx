@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';

@@ -16,7 +16,7 @@ import {
     FileText,
     Sparkles,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ProgressPhotoItem } from './ProgressPhotosRow';
 

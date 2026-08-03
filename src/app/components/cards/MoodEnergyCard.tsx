@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { Smile, Zap, Coffee, Utensils } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 const MOOD_PREFIX = 'workout_os_mood_energy_';
 

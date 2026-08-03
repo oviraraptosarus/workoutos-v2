@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import en from '../i18n/en.json';
 import te from '../i18n/te.json';
 
@@ -26,30 +27,28 @@ const LanguageContext = createContext<LanguageContextType>({
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-    const [language, setLanguageState] = useState<Language>('te');
+    const { userProfile, updateUserProfile } = useAuth();
+    const [language, setLanguageState] = useState<Language>('en');
 
     useEffect(() => {
-        const savedLang = localStorage.getItem('workoutos_lang') as Language;
-        if (savedLang === 'en') {
-            setLanguageState('en');
-        } else {
-            // Default to Telugu for this localized version
-            setLanguageState('te');
-            localStorage.setItem('workoutos_lang', 'te');
+        if (userProfile?.preferredLanguage) {
+            setLanguageState(userProfile.preferredLanguage as Language);
         }
-    }, []);
+    }, [userProfile?.preferredLanguage]);
 
     const setLanguage = useCallback((lang: Language) => {
         setLanguageState(lang);
-        localStorage.setItem('workoutos_lang', lang);
-    }, []);
+        if (userProfile) {
+            updateUserProfile({ preferredLanguage: lang });
+        }
+    }, [userProfile, updateUserProfile]);
 
     const t = useCallback((key: string, values?: Record<string, string | number>) => {
         const dict = dictionaries[language] || dictionaries.en;
         let text = dict[key];
 
         if (text === undefined) {
-            // Fallback to English if key is missing in Telugu
+            // Fallback to English if key is missing
             text = dictionaries.en[key] || key;
         }
 

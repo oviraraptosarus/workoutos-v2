@@ -5,7 +5,7 @@ import { CheckCircle2, Circle, Plus, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface Exercise {
     id: number;
@@ -44,19 +44,13 @@ export default function WorkoutCard() {
                 }
             }
 
-            const saved = localStorage.getItem(`${STORAGE_KEY}_${selectedDate}`);
-            if (saved) {
-                try { setExercises(JSON.parse(saved)); } catch { setExercises([]); }
-            } else {
-                setExercises([]);
-            }
+            
         };
 
         load();
-        window.addEventListener('storage', load);
+        load();
         window.addEventListener('workout_os_recent_workouts_updated', load);
         return () => {
-            window.removeEventListener('storage', load);
             window.removeEventListener('workout_os_recent_workouts_updated', load);
         };
     }, [selectedDate]);
@@ -64,7 +58,6 @@ export default function WorkoutCard() {
     const save = async (updated: Exercise[]) => {
         if (!selectedDate) return;
         setExercises(updated);
-        localStorage.setItem(`${STORAGE_KEY}_${selectedDate}`, JSON.stringify(updated));
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;

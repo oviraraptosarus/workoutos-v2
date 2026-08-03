@@ -9,7 +9,7 @@ interface LogSleepModalProps {
 }
 
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { useDate } from '@/contexts/DateContext';
 
 export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {

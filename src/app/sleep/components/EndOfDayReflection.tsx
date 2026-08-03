@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BookOpen, Star, Target, CheckCircle2 } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -18,6 +18,8 @@ interface ReflectionData {
     highlights: string;
     gratitude: string;
     rating: number;
+    bedtime?: string;
+    waketime?: string;
 }
 
 const DEFAULT_REFLECTION: ReflectionData = {
@@ -80,13 +82,7 @@ export default function EndOfDayReflection() {
             }
         }
 
-        // Fall back to localStorage
-        const saved = localStorage.getItem(`workout_os_reflection_${selectedDate}`);
-        if (saved) {
-            try { setReflection({ ...DEFAULT_REFLECTION, ...JSON.parse(saved) }); } catch {}
-        } else {
-            setReflection(DEFAULT_REFLECTION);
-        }
+        setReflection(DEFAULT_REFLECTION);
         setIsLoaded(true);
     }, [selectedDate, user]);
 
@@ -96,10 +92,7 @@ export default function EndOfDayReflection() {
         if (!selectedDate) return;
         setIsSaving(true);
 
-        // Always persist locally first (offline resilience)
-        localStorage.setItem(`workout_os_reflection_${selectedDate}`, JSON.stringify(reflection));
-        window.dispatchEvent(new Event('storage'));
-
+        
         if (user) {
             try {
                 const row: any = {

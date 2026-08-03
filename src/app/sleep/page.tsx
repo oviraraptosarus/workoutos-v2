@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useDate } from '@/contexts/DateContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import EnhancedSleepLogger from './components/EnhancedSleepLogger';
 import EndOfDayReflection from './components/EndOfDayReflection';
 

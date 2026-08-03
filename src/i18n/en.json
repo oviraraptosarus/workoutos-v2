@@ -549,5 +549,17 @@
   "workout.preset.strength-1.title": "5x5 Strength",
   "workout.preset.strength-1.subtitle": "Powerlifting Base",
   "workout.preset.calisthenics-1.title": "Calisthenics Basics",
-  "workout.preset.calisthenics-1.subtitle": "Bodyweight Mastery"
+  "workout.preset.calisthenics-1.subtitle": "Bodyweight Mastery",
+  "profile.timezone": "Timezone",
+  "profile.quietHours": "Quiet Hours",
+  "profile.quietHoursStart": "Start Time",
+  "profile.quietHoursEnd": "End Time",
+  "profile.legal": "Legal & Compliance",
+  "profile.terms": "Terms of Service",
+  "profile.privacy": "Privacy Policy",
+  "profile.cookies": "Cookie Policy",
+  "profile.disclaimer": "Medical Disclaimer",
+  "auth.acceptTermsError": "You must accept the Terms and Conditions.",
+  "auth.agreeTerms": "I agree to the",
+  "auth.and": "and"
 }

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export interface UserMetadata {
     fullName?: string;
@@ -39,6 +39,14 @@ export interface UserProfile {
     targetConfig?: any;
     createdAt?: string;
     updatedAt: string;
+    timezone?: string;
+    quiet_hours_start?: string;
+    quiet_hours_end?: string;
+    accepted_terms?: boolean;
+    accepted_privacy?: boolean;
+    terms_version?: string;
+    privacy_version?: string;
+    accepted_at?: string;
 }
 
 export const DEFAULT_USER_PROFILE: UserProfile = {
@@ -73,8 +81,9 @@ interface AuthContextType {
     session: Session | null;
     loading: boolean;
     isLoading: boolean;
-    signUp: (email: string, password: string, metadata?: UserMetadata & Partial<UserProfile>) => Promise<unknown>;
+    signUp: (email: string, password: string, metadata?: UserMetadata & Partial<UserProfile>) => Promise<any>;
     signIn: (email?: string, password?: string) => Promise<unknown>;
+    signInWithGoogle: () => Promise<void>;
     login: (email?: string, password?: string) => Promise<unknown>;
     signOut: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
@@ -165,17 +174,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                             updatedAt: data.updated_at || new Date().toISOString()
                         });
 
-                        // Sync loaded theme with DOM and localStorage
-                        if (data.theme && typeof document !== 'undefined') {
-                            const root = document.documentElement;
-                            if (data.theme === 'dark') {
-                                root.classList.add('dark');
-                            } else {
-                                root.classList.remove('dark');
-                            }
-                            localStorage.setItem('workout_os_theme', data.theme);
-                            window.dispatchEvent(new Event('workout_os_theme_updated'));
-                        }
                     } else {
                         throw new Error('Profile not found');
                     }
@@ -257,29 +255,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             options: {
                 data: {
                     full_name: metadata?.fullName || email.split('@')[0],
-                    avatar_url: metadata?.avatarUrl || ''
+                    avatar_url: metadata?.avatarUrl || '',
+                    accepted_terms: metadata?.accepted_terms,
+                    accepted_privacy: metadata?.accepted_privacy,
+                    terms_version: metadata?.terms_version,
+                    privacy_version: metadata?.privacy_version,
+                    accepted_at: metadata?.accepted_at
                 }
             }
         });
         
         if (error) throw error;
         
-        // Profiles are ideally created via Postgres Triggers on auth.users insert,
-        // but as a fallback, we can insert it here.
-        if (data.user) {
-            await supabase.from('profiles').upsert({
-                id: data.user.id,
-                email: email,
-                full_name: metadata?.fullName || email.split('@')[0],
-                username: metadata?.username ? metadata.username.toLowerCase() : email.split('@')[0].toLowerCase().replace(/\s+/g, '_')
-            }).select().single();
-        }
-
         if (typeof window !== 'undefined' && metadata?.username) {
             localStorage.setItem('workoutos_remembered_username', metadata.username);
         }
 
         return data;
+    };
+
+    const signInWithGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/dashboard`,
+            },
+        });
+        if (error) throw error;
     };
 
     // Email/Password Sign In (Supports Username)
@@ -370,7 +372,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoading: loading,
         signUp,
         signIn,
-        login,
+        signInWithGoogle,
+        login: signIn,
         signOut,
         resetPassword,
         updateUserProfile,

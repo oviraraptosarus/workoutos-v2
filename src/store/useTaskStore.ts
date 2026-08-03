@@ -1,15 +1,16 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { Task, SubTask } from '@/app/planner/page';
 
 interface TaskState {
     tasks: Task[];
     isLoading: boolean;
     fetchTasks: (date: string) => Promise<void>;
-    addTask: (task: Omit<Task, 'id' | 'completed' | 'subTasks' | 'priority'> & { subtasks?: { title: string }[]; priority?: Task['priority'] }) => Promise<void>;
+    addTask: (task: Omit<Task, 'id' | 'completed' | 'subTasks'> & { subtasks?: { title: string }[] }) => Promise<void>;
     toggleTask: (id: string) => Promise<void>;
     toggleSubTask: (taskId: string, subTaskId: string) => Promise<void>;
     setPriority: (id: string, priority: Task['priority']) => Promise<void>;
+    setDueDate: (id: string, dueDate: string, dueTime?: string) => Promise<void>;
     deleteTask: (id: string) => Promise<void>;
 }
 
@@ -31,8 +32,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                 tasks: data.map(d => ({
                     id: d.id,
                     title: d.title,
+                    fullTitle: d.full_title || d.title,
                     description: d.description || '',
                     dueDate: d.due_date || '',
+                    dueTime: d.due_time || '',
                     subTasks: d.subtasks || [],
                     completed: d.completed || false,
                     priority: d.priority || 'none'
@@ -52,23 +55,30 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             user_id: user.id,
             date: new Date().toISOString().split('T')[0],
             title: taskData.title,
+            full_title: (taskData as any).fullTitle || taskData.title,
             description: taskData.description,
             due_date: taskData.dueDate,
+            due_time: (taskData as any).dueTime || null,
             subtasks: taskData.subtasks?.map(st => ({ id: Date.now().toString() + Math.random().toString(), title: st.title, completed: false })) || [],
-            completed: false
+            completed: false,
+            priority: taskData.priority || 'none'
         };
 
         // Insert with priority; if the column isn't migrated yet (400), retry without it.
-        let { data } = await supabase.from('tasks').insert({ ...base, priority: taskData.priority || 'none' }).select().single();
+        let { data } = await supabase.from('tasks').insert(base).select().single();
         if (!data) {
-            ({ data } = await supabase.from('tasks').insert(base).select().single());
+            const fallbackBase = { ...base };
+            delete (fallbackBase as any).priority;
+            ({ data } = await supabase.from('tasks').insert(fallbackBase).select().single());
         }
         if (data) {
             const newTask: Task = {
                 id: data.id,
                 title: data.title,
+                fullTitle: data.full_title || data.title,
                 description: data.description || '',
                 dueDate: data.due_date || '',
+                dueTime: data.due_time || '',
                 subTasks: data.subtasks || [],
                 completed: data.completed,
                 priority: data.priority || 'none'
@@ -106,14 +116,29 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     },
 
     setPriority: async (id: string, priority: Task['priority']) => {
-        // Optimistic update
         set(state => ({
             tasks: state.tasks.map(t => t.id === id ? { ...t, priority } : t)
         }));
-        // Ignore failure if the column isn't migrated yet — UI still reflects the change.
         try {
             await supabase.from('tasks').update({ priority }).eq('id', id);
-        } catch { /* pre-migration: column may not exist */ }
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        } catch { /* pre-migration */ }
+    },
+
+    setDueDate: async (id: string, dueDate: string, dueTime?: string) => {
+        set(state => ({
+            tasks: state.tasks.map(t => t.id === id ? { ...t, dueDate, dueTime: dueTime || t.dueTime } : t)
+        }));
+        
+        const updateData: any = { due_date: dueDate };
+        if (dueTime !== undefined) {
+            updateData.due_time = dueTime;
+        }
+        
+        try {
+            await supabase.from('tasks').update(updateData).eq('id', id);
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        } catch { }
     },
 
     deleteTask: async (id: string) => {

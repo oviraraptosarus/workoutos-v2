@@ -80,6 +80,9 @@ After calling a function to log data, confirm briefly. Example: "Logged! 2 chapa
 RULE 7 — LANGUAGE:
 The user has set their language preference to '${preferredLanguage || 'en'}'. If 'te', you MUST respond entirely in fluent, modern Telugu. Translate all technical fitness and financial terms naturally to Telugu, or use transliteration where it makes sense. If 'en', respond in English. Never deviate from this language preference.
 
+RULE 8 — IMAGE TASK EXTRACTION:
+If the user provides an image (e.g., a screenshot of a list, notes, or whiteboard), extract all actionable tasks. For each task, call the add_task function.
+
 === END RULES ===`;
 
         if (apiKey) {
@@ -146,16 +149,19 @@ The user has set their language preference to '${preferredLanguage || 'en'}'. If
                             functionDeclarations: [
                                 {
                                     name: "add_task",
-                                    description: "Add a new task to the user's planner. Use when the user asks to be reminded, add a task, or plan something.",
+                                    description: "Add a new task to the user's planner. Extract tasks from text or images.",
                                     parameters: {
                                         type: "OBJECT",
                                         properties: {
-                                            title: { type: "STRING", description: "The name of the task" },
-                                            dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format if specified." },
+                                            title: { type: "STRING", description: "A short, concise title for the task (max 3-5 words)." },
+                                            fullTitle: { type: "STRING", description: "The complete, detailed title or full text of the task." },
+                                            description: { type: "STRING", description: "Any additional details, notes, or context." },
+                                            dueDate: { type: "STRING", description: "Optional. Date in YYYY-MM-DD format." },
+                                            dueTime: { type: "STRING", description: "Optional. Time in HH:MM format." },
                                             priority: { type: "STRING", description: "Optional. 'high', 'medium', 'low', or 'none'. Defaults to 'none'." },
-                                            reminderTime: { type: "STRING", description: "Optional. ISO 8601 timestamp string for when to remind the user (e.g. '2026-08-02T22:00:00Z')." }
+                                            reminderTime: { type: "STRING", description: "Optional. ISO 8601 timestamp string for when to remind the user." }
                                         },
-                                        required: ["title"]
+                                        required: ["title", "fullTitle"]
                                     }
                                 },
                                 {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface OnboardingModalProps {
     isOpen: boolean;
@@ -14,12 +15,15 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
 
     const [formData, setFormData] = useState({
         fullName: userProfile?.fullName || '',
+        username: userProfile?.username || '',
         dob: userProfile?.dob || '',
         gender: userProfile?.gender || 'male',
         heightCm: userProfile?.heightCm || 170,
         currentWeight: userProfile?.currentWeight || 75,
         targetWeight: userProfile?.targetWeight || 70,
         fitnessGoal: userProfile?.fitnessGoal || 'Build Muscle & Stay Active',
+        accepted_terms: userProfile?.accepted_terms || false,
+        accepted_privacy: userProfile?.accepted_privacy || false,
     });
 
     if (!isOpen) return null;
@@ -29,6 +33,9 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
         await updateUserProfile({
             ...userProfile,
             ...formData,
+            terms_version: 'v1.0',
+            privacy_version: 'v1.0',
+            accepted_at: new Date().toISOString()
         });
         onComplete();
     };
@@ -60,6 +67,20 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             placeholder="Alex Morgan"
                             value={formData.fullName}
                             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                            onKeyDown={(e) => focusNext(e, 'onboarding-username')}
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="onboarding-username" className="block text-xs font-bold text-on-surface-variant mb-1">Username</label>
+                        <input
+                            id="onboarding-username"
+                            type="text"
+                            required
+                            placeholder="alex_m"
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
                             onKeyDown={(e) => focusNext(e, 'onboarding-dob')}
                             className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
                         />
@@ -149,7 +170,22 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                         </select>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-2 pb-2">
+                        <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                required
+                                checked={formData.accepted_terms && formData.accepted_privacy}
+                                onChange={(e) => setFormData({ ...formData, accepted_terms: e.target.checked, accepted_privacy: e.target.checked })}
+                                className="mt-1 w-4 h-4 rounded border-surface-variant text-blue-600 focus:ring-blue-500 bg-surface-container-low cursor-pointer"
+                            />
+                            <span className="text-xs text-on-surface-variant leading-snug">
+                                I agree to the <Link href="/terms" target="_blank" className="text-blue-500 hover:underline">Terms of Service</Link> and <Link href="/privacy" target="_blank" className="text-blue-500 hover:underline">Privacy Policy</Link>.
+                            </span>
+                        </label>
+                    </div>
+
+                    <div className="pt-2">
                         <button
                             type="submit"
                             className="w-full bg-white hover:bg-zinc-200 text-black font-bold py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"

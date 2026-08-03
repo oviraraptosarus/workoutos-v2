@@ -50,16 +50,16 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
       </head>
       <body className="bg-background font-body-md text-on-background min-h-screen relative overflow-x-hidden selection:bg-activity-green/20 overscroll-none">
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <LanguageProvider>
               <DateProvider>
                 <ServiceWorkerRegister />
                 {children}
               </DateProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

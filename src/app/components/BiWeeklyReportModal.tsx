@@ -6,7 +6,7 @@ import { X, CalendarDays, Sparkles, TrendingUp, AlertCircle, Download, Trash2 } 
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface BiWeeklyReportModalProps {
     isOpen: boolean;

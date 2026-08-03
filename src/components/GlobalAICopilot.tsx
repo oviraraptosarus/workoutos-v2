@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import ReactMarkdown from 'react-markdown';
 
 
@@ -195,7 +195,7 @@ export default function GlobalAICopilot() {
                 steps: dbState.steps ?? null,
                 nutritionKcal: dbState.nutritionKcal || 0, calorieGoal: userProfile?.calorieGoal ?? null,
                 meals: dbState.meals || [], workoutToday, tasks: dbTasks, last14Days: recentDays,
-                quickNotes: localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '',
+                quickNotes: userProfile?.targetConfig?.quickNotes?.[dateKey] || '',
                 budgetIncome: await getIncome(), budgetExpenses: await getExpenses(),
             };
 
@@ -215,18 +215,29 @@ export default function GlobalAICopilot() {
                         await supabase.from('tasks').insert({ 
                             user_id: user.id, 
                             date: dateKey, 
-                            title: args.title || 'New Task', 
-                            description: '', 
+                            title: args.title || 'New Task',
+                            full_title: args.fullTitle || args.title || 'New Task', 
+                            description: args.description || '', 
                             completed: false,
                             due_date: args.dueDate || '',
+                            due_time: args.dueTime || null,
                             priority: args.priority || 'none',
                             reminder_time: args.reminderTime || null
                         });
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
                     } else if (fn === 'append_quick_note') {
-                        const cur = localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '';
-                        localStorage.setItem(`workout_os_quick_note_${dateKey}`, cur + '\n' + (args.text || ''));
-                        window.dispatchEvent(new StorageEvent('storage', { key: `workout_os_quick_note_${dateKey}` }));
+                                                const { data: profile } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
+                        const currentConfig = profile?.target_config || {};
+                        const currentNote = currentConfig.quickNotes?.[dateKey] || '';
+                        const updatedConfig = {
+                            ...currentConfig,
+                            quickNotes: {
+                                ...(currentConfig.quickNotes || {}),
+                                [dateKey]: currentNote + '\\n' + (args.text || '')
+                            }
+                        };
+                        await supabase.from('profiles').update({ target_config: updatedConfig }).eq('id', user.id);
+
                     } else if (fn === 'navigate_to' && args.path) {
                         router.push(args.path);
                         setTimeout(() => setIsOpen(false), 1000);

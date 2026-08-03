@@ -78,9 +78,9 @@ export default function EndOfDayBanner() {
 
                 {/* Text */}
                 <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-black leading-tight">{t('banner.eod.title') !== 'banner.eod.title' ? t('banner.eod.title') : 'రోజు ముగింపు తనిఖీ'}</p>
+                    <p className="text-white text-sm font-black leading-tight">{t('banner.eod.title') !== 'banner.eod.title' ? t('banner.eod.title') : 'End of Day Reflection'}</p>
                     <p className="text-white/70 text-[11px] font-medium mt-0.5 truncate">
-                        {t('banner.eod.desc') !== 'banner.eod.desc' ? t('banner.eod.desc') : 'మీరు నిద్రపోయే ముందు మీ ప్రతిబింబాన్ని నమోదు చేయండి'}
+                        {t('banner.eod.desc') !== 'banner.eod.desc' ? t('banner.eod.desc') : 'Log your reflection before you sleep'}
                     </p>
                 </div>
 
@@ -90,7 +90,7 @@ export default function EndOfDayBanner() {
                     className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-black text-white transition-all active:scale-95"
                     style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.25)' }}
                 >
-                    {t('banner.eod.logIt') !== 'banner.eod.logIt' ? t('banner.eod.logIt') : 'నమోదు చేయండి'} <ArrowRight size={11} />
+                    {t('banner.eod.logIt') !== 'banner.eod.logIt' ? t('banner.eod.logIt') : 'Log It'} <ArrowRight size={11} />
                 </button>
 
                 {/* Dismiss */}

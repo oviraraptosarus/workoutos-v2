@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { Clock, TrendingUp } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RecentWorkouts() {
     const { t } = useLanguage();
     const [pastWorkouts, setPastWorkouts] = React.useState<any[]>([]);
+    const { user } = useAuth();
 
     React.useEffect(() => {
         const loadWorkouts = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
             
             const { data } = await supabase
@@ -38,7 +39,7 @@ export default function RecentWorkouts() {
         loadWorkouts();
         window.addEventListener('workout_os_recent_workouts_updated', loadWorkouts);
         return () => window.removeEventListener('workout_os_recent_workouts_updated', loadWorkouts);
-    }, []);
+    }, [user]);
 
     return (
         <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm transition-colors">

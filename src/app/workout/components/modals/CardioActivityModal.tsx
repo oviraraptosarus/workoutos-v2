@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Activity, Flame, X, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface CardioActivityModalProps {
     isOpen: boolean;

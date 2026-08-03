@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProfileStats } from '@/lib/hooks/useProfileStats';
 import AppLayout from '@/components/AppLayout';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone, Activity, Camera, ExternalLink, Moon, Settings, Zap, ArrowLeft, LogOut, FileText, User as UserIcon } from 'lucide-react';
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
@@ -129,9 +130,7 @@ export default function ProfileHub() {
     // ── Save ──
     const handleSave = useCallback(async () => {
         await updateUserProfile(formData);
-        if (formData.calorieGoal !== undefined) {
-            localStorage.setItem('workout_os_calorie_goal', String(formData.calorieGoal));
-        }
+
         window.dispatchEvent(new Event('storage'));
         window.dispatchEvent(new Event('workout_os_budget_updated'));
         setNoticeText('Settings saved!');
@@ -324,16 +323,16 @@ export default function ProfileHub() {
                                     <button
                                         key={themeOption}
                                         onClick={() => {
-                                            setFormData({ ...formData, theme: t as any });
-                                            if (t !== 'system') {
+                                            setFormData({ ...formData, theme: themeOption as any });
+                                            if (themeOption !== 'system') {
                                                 if (themeOption === 'light' && theme === 'dark') toggleTheme();
                                                 if (themeOption === 'dark' && theme === 'light') toggleTheme();
                                             }
-                                            handleInputSave('theme', t);
+                                            handleInputSave('theme', themeOption);
                                         }}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${formData.theme === themeOption ? 'bg-card-white shadow-sm text-secondary' : 'text-on-surface-variant'}`}
                                     >
-                                        {t}
+                                        {themeOption}
                                     </button>
                                 ))}
                             </div>
@@ -394,6 +393,68 @@ export default function ProfileHub() {
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.enableFinancialReminders ? 'right-1' : 'left-1'}`} />
                             </button>
                         </div>
+                        <div className="p-4 flex items-center justify-between">
+                            <label className="font-medium text-sm text-on-surface">{t('profile.timezone') !== 'profile.timezone' ? t('profile.timezone') : 'Timezone'}</label>
+                            <select 
+                                value={formData.timezone || 'UTC'}
+                                onChange={e => handleInputSave('timezone', e.target.value)}
+                                className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                            >
+                                <option value="UTC">UTC</option>
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                <option value="Europe/London">London (GMT)</option>
+                                <option value="Asia/Kolkata">India (IST)</option>
+                            </select>
+                        </div>
+                        <div className="p-4 flex flex-col gap-3">
+                            <div className="flex flex-col">
+                                <label className="font-medium text-sm text-on-surface">{t('profile.quietHours') !== 'profile.quietHours' ? t('profile.quietHours') : 'Quiet Hours'}</label>
+                                <span className="text-xs text-on-surface-variant">Prevent notifications during these hours</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="flex flex-col w-full">
+                                    <label className="text-xs text-on-surface-variant mb-1">{t('profile.quietHoursStart') !== 'profile.quietHoursStart' ? t('profile.quietHoursStart') : 'Start'}</label>
+                                    <input 
+                                        type="time" 
+                                        value={formData.quiet_hours_start || ''} 
+                                        onChange={e => handleInputSave('quiet_hours_start', e.target.value)}
+                                        className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full">
+                                    <label className="text-xs text-on-surface-variant mb-1">{t('profile.quietHoursEnd') !== 'profile.quietHoursEnd' ? t('profile.quietHoursEnd') : 'End'}</label>
+                                    <input 
+                                        type="time" 
+                                        value={formData.quiet_hours_end || ''} 
+                                        onChange={e => handleInputSave('quiet_hours_end', e.target.value)}
+                                        className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold mt-8 mb-4">{t('profile.legal') !== 'profile.legal' ? t('profile.legal') : 'Legal & Compliance'}</h3>
+                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
+                        <Link href="/terms" className="p-4 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+                            <span className="font-medium text-sm text-on-surface">{t('profile.terms') !== 'profile.terms' ? t('profile.terms') : 'Terms of Service'}</span>
+                            <ChevronRight size={16} className="text-on-surface-variant" />
+                        </Link>
+                        <Link href="/privacy" className="p-4 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+                            <span className="font-medium text-sm text-on-surface">{t('profile.privacy') !== 'profile.privacy' ? t('profile.privacy') : 'Privacy Policy'}</span>
+                            <ChevronRight size={16} className="text-on-surface-variant" />
+                        </Link>
+                        <Link href="/cookies" className="p-4 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+                            <span className="font-medium text-sm text-on-surface">{t('profile.cookies') !== 'profile.cookies' ? t('profile.cookies') : 'Cookie Policy'}</span>
+                            <ChevronRight size={16} className="text-on-surface-variant" />
+                        </Link>
+                        <Link href="/disclaimer" className="p-4 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+                            <span className="font-medium text-sm text-on-surface">{t('profile.disclaimer') !== 'profile.disclaimer' ? t('profile.disclaimer') : 'Medical Disclaimer'}</span>
+                            <ChevronRight size={16} className="text-on-surface-variant" />
+                        </Link>
                     </div>
                 </div>
             </AppLayout>

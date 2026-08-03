@@ -27,9 +27,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
     const isDashboard = pathname === '/dashboard';
     
     // Determine if onboarding should show. dob is a required field in onboarding,
-    // making it a reliable indicator of profile completion.
+    // making it a reliable indicator of profile completion. We also check accepted_terms for OAuth users.
     const showOnboarding = Boolean(
-        session && userProfile && !userProfile.dob
+        session && userProfile && (!userProfile.dob || !userProfile.accepted_terms)
     );
 
     return (

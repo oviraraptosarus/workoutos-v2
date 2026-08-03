@@ -7,7 +7,7 @@ import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface Message {
     id: string;
@@ -140,8 +140,8 @@ export default function GeminiFoodAssistant() {
                 waterMl: dbState.waterMl || 0,
                 sleepHrs: dbState.sleepHrs || 0,
                 nutritionKcal: dbState.nutritionKcal || 0,
-                tasks: JSON.parse(localStorage.getItem('workout_os_tasks') || '[]'),
-                quickNotes: localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '',
+                tasks: [], // tasks fetched from DB not needed in minimal context
+                quickNotes: userProfile?.targetConfig?.quickNotes?.[dateKey] || '',
                 budgetIncome: await getIncome(),
                 budgetExpenses: await getExpenses()
             };
@@ -166,20 +166,36 @@ export default function GeminiFoodAssistant() {
                     const args = data.functionCall.args;
                     
                     if (fn === 'add_task') {
-                        const tasks = JSON.parse(localStorage.getItem('workout_os_tasks') || '[]');
-                        tasks.push({
-                            id: Date.now().toString(),
+                        if (!user?.id) throw new Error('User not found');
+                        await supabase.from('tasks').insert({
+                            user_id: user.id, 
+                            date: dateKey,
                             title: args.title || 'New Task',
+                            full_title: args.fullTitle || args.title || 'New Task',
+                            description: args.description || '',
                             completed: false,
-                            dueDate: dateKey
+                            due_date: args.dueDate || '',
+                            due_time: args.dueTime || null,
+                            priority: args.priority || 'none',
+                            reminder_time: args.reminderTime || null
                         });
-                        localStorage.setItem('workout_os_tasks', JSON.stringify(tasks));
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
+
                         window.dispatchEvent(new CustomEvent('workout_os_highlight', { detail: { target: 'tasks' } }));
                     } else if (fn === 'append_quick_note') {
-                        const currentNote = localStorage.getItem(`workout_os_quick_note_${dateKey}`) || '';
-                        localStorage.setItem(`workout_os_quick_note_${dateKey}`, currentNote + '\n' + (args.text || ''));
-                        window.dispatchEvent(new StorageEvent('storage', { key: `workout_os_quick_note_${dateKey}` }));
+                        if (!user?.id) throw new Error('User not found');
+                        const { data: profile } = await supabase.from('profiles').select('target_config').eq('id', user?.id).single();
+                        const currentConfig = profile?.target_config || {};
+                        const currentNote = currentConfig.quickNotes?.[dateKey] || '';
+                        const updatedConfig = {
+                            ...currentConfig,
+                            quickNotes: {
+                                ...(currentConfig.quickNotes || {}),
+                                [dateKey]: currentNote + '\\n' + (args.text || '')
+                            }
+                        };
+                        await supabase.from('profiles').update({ target_config: updatedConfig }).eq('id', user.id);
+
                     } else if (fn === 'navigate_to') {
                         if (args.path) {
                             router.push(args.path);

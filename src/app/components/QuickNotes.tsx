@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState, useEffect, useRef } from 'react';
 import { PenTool, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function QuickNotes() {
@@ -16,22 +16,21 @@ export default function QuickNotes() {
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const loadNote = () => {
-        if (!selectedDate) return;
-        const saved = localStorage.getItem(`workout_os_quick_note_${selectedDate}`);
-        setNote(saved || '');
+    const loadNote = async () => {
+        if (!selectedDate || !user) return;
+        const { data } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
+        const note = data?.target_config?.quickNotes?.[selectedDate] || '';
+        setNote(note);
     };
 
     useEffect(() => {
         setIsClient(true);
         loadNote();
         
-        window.addEventListener('storage', loadNote);
         return () => {
-            window.removeEventListener('storage', loadNote);
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
         };
-    }, [selectedDate]);
+    }, [selectedDate, user]);
 
     const saveToBackend = async (noteText: string) => {
         if (!user || !selectedDate) return;
@@ -60,8 +59,6 @@ export default function QuickNotes() {
         setSaveStatus('saving');
         
         if (selectedDate) {
-            localStorage.setItem(`workout_os_quick_note_${selectedDate}`, val);
-            window.dispatchEvent(new Event('storage'));
             
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
@@ -73,8 +70,7 @@ export default function QuickNotes() {
     const clearNote = () => {
         setNote('');
         if (selectedDate) {
-            localStorage.removeItem(`workout_os_quick_note_${selectedDate}`);
-            window.dispatchEvent(new Event('storage'));
+            saveToBackend('');
         }
     };
 

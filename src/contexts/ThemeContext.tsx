@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Theme = 'light' | 'dark';
 
@@ -12,24 +13,19 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+    const { userProfile, updateUserProfile } = useAuth();
     const [theme, setTheme] = useState<Theme>('light');
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-        const loadTheme = () => {
-            const stored = localStorage.getItem('workout_os_theme');
-            if (stored === 'dark' || stored === 'light') {
-                setTheme(stored);
-            } else {
-                setTheme('light');
-            }
-        };
-        loadTheme();
-        
-        window.addEventListener('workout_os_theme_updated', loadTheme);
-        return () => window.removeEventListener('workout_os_theme_updated', loadTheme);
     }, []);
+
+    useEffect(() => {
+        if (userProfile?.theme) {
+            setTheme(userProfile.theme as Theme);
+        }
+    }, [userProfile?.theme]);
 
     useEffect(() => {
         if (!isMounted) return;
@@ -39,11 +35,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         } else {
             root.classList.remove('dark');
         }
-        localStorage.setItem('workout_os_theme', theme);
     }, [theme, isMounted]);
 
     const toggleTheme = () => {
-        setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        if (userProfile) {
+            updateUserProfile({ theme: newTheme });
+        }
     };
 
     return (
