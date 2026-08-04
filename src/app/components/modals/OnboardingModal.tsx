@@ -137,8 +137,8 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                     
                     {step === 0 && (
                         <div className="text-center animate-in zoom-in-95 fade-in duration-700 w-full flex flex-col items-center justify-center h-full">
-                            <div className="w-20 h-20 bg-primary rounded-3xl flex items-center justify-center mb-8 shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
-                                <Sparkles size={36} className="text-on-primary" />
+                            <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mb-8 shadow-[0_10px_40px_rgba(0,0,0,0.2)] overflow-hidden">
+                                <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                             </div>
                             <h1 className="font-display-lg text-3xl font-bold text-on-surface mb-4">Welcome to Workout OS</h1>
                             <p className="text-on-surface-variant text-lg">Let's personalize your experience.</p>
