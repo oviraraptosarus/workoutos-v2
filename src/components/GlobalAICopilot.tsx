@@ -195,7 +195,7 @@ export default function GlobalAICopilot() {
                 steps: dbState.steps ?? null,
                 nutritionKcal: dbState.nutritionKcal || 0, calorieGoal: userProfile?.calorieGoal ?? null,
                 meals: dbState.meals || [], workoutToday, tasks: dbTasks, last14Days: recentDays,
-                quickNotes: userProfile?.targetConfig?.quickNotes?.[dateKey] || '',
+                quickNotes: (userProfile?.targetConfig as any)?.quickNotes?.[dateKey] || '',
                 budgetIncome: await getIncome(), budgetExpenses: await getExpenses(),
             };
 

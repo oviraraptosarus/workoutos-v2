@@ -39,7 +39,7 @@ export default function GeminiFoodAssistant() {
         {
             id: '1',
             sender: 'gemini',
-            text: `👋 Hey ${userProfile.fullName ? userProfile.fullName.split(' ')[0] : 'there'}! I'm Nova, your AI Copilot. Ask me anything, tell me to log a workout, or jot down a quick note!`,
+            text: `👋 Hey ${userProfile?.fullName ? userProfile.fullName.split(' ')[0] : 'there'}! I'm Nova, your AI Copilot. Ask me anything, tell me to log a workout, or jot down a quick note!`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
     ]);
@@ -141,7 +141,7 @@ export default function GeminiFoodAssistant() {
                 sleepHrs: dbState.sleepHrs || 0,
                 nutritionKcal: dbState.nutritionKcal || 0,
                 tasks: [], // tasks fetched from DB not needed in minimal context
-                quickNotes: userProfile?.targetConfig?.quickNotes?.[dateKey] || '',
+                quickNotes: (userProfile?.targetConfig as any)?.quickNotes?.[dateKey] || '',
                 budgetIncome: await getIncome(),
                 budgetExpenses: await getExpenses()
             };
@@ -348,7 +348,7 @@ export default function GeminiFoodAssistant() {
                                     <h3 className="text-sm font-bold text-on-surface drop-shadow-sm flex items-center gap-2">
                                         Nova AI Copilot
                                     </h3>
-                                    <p className="text-[11px] text-on-surface-variant font-bold">Tailored to goal: <span className="text-white font-bold">{userProfile.fitnessGoal}</span></p>
+                                    <p className="text-[11px] text-on-surface-variant font-bold">Tailored to goal: <span className="text-white font-bold">{userProfile?.fitnessGoal}</span></p>
                                 </div>
                             </div>
 

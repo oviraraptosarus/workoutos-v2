@@ -81,7 +81,7 @@ export default function PlannerPage() {
             }
 
             // Load Widgets from target_config
-            const config = userProfile?.targetConfig || {};
+            const config = (userProfile?.targetConfig as any) || {};
             if (config.planner_priorities) setPriorities(config.planner_priorities);
             if (config.planner_focus) setFocusSessions(config.planner_focus);
             if (config.planner_habits_state) setHabitsState(config.planner_habits_state);

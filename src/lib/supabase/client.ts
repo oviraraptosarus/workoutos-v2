@@ -106,7 +106,7 @@ const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promis
         return response;
     } catch (error) {
         const executionTimeMs = Math.round(performance.now() - startTime);
-        returnedError = error;
+        let returnedError = error;
         
         if (typeof window !== 'undefined') {
             setTimeout(() => {
@@ -138,3 +138,16 @@ export const createClient = () => {
 };
 
 export const supabase = createClient();
+
+export const getURL = () => {
+    let url =
+        (typeof window !== 'undefined' ? window.location.origin : null) ??
+        process.env.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+        process.env.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+        'http://localhost:4028/';
+    // Make sure to include `https://` when not localhost.
+    url = url.includes('http') ? url : `https://${url}`;
+    // Make sure to include a trailing `/`.
+    url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+    return url;
+};

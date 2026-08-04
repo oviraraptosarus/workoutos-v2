@@ -59,8 +59,8 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                 onClick={async () => {
                     setLoading(true);
                     try {
-                        const { supabase } = await import('@/lib/supabase/client');
-                        await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/dashboard` }});
+                        const { supabase, getURL } = await import('@/lib/supabase/client');
+                        await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${getURL()}auth/callback` }});
                     } catch (err: any) {
                         setError(err.message);
                         setLoading(false);

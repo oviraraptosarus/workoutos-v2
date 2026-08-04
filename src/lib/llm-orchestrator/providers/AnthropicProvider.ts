@@ -1,6 +1,6 @@
 import { BaseProvider } from './BaseProvider';
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ModelProvider, CompletionRequest, CompletionResponse, ModelConfig } from '../types';
+import { CompletionRequest, CompletionResponse, ProviderInterface } from '../types';
 
 export class AnthropicProvider extends BaseProvider {
     async generateContent(model: string, request: CompletionRequest, signal?: AbortSignal): Promise<CompletionResponse> {

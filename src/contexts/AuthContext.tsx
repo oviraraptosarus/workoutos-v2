@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
+import { supabase, getURL } from '@/lib/supabase/client';
 
 export interface UserMetadata {
     fullName?: string;
@@ -51,7 +51,7 @@ export interface UserProfile {
     accepted_at?: string;
 }
 
-export type { UserProfile };
+
 
 interface AuthContextType {
     user: User | null;
@@ -286,7 +286,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/dashboard`,
+                redirectTo: `${getURL()}auth/callback`,
             },
         });
         if (error) throw error;

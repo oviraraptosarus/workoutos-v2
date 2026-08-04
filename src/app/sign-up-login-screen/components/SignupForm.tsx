@@ -79,7 +79,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                 accepted_at: new Date().toISOString()
             });
 
-            if (response?.session) {
+            if ((response as any)?.session) {
                 // If auto-logged in, sign them out to force manual login
                 const { supabase } = await import('@/lib/supabase/client');
                 await supabase.auth.signOut();
@@ -141,8 +141,8 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                 onClick={async () => {
                     setLoading(true);
                     try {
-                        const { supabase } = await import('@/lib/supabase/client');
-                        await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/dashboard` }});
+                        const { supabase, getURL } = await import('@/lib/supabase/client');
+                        await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${getURL()}auth/callback` }});
                     } catch (err: any) {
                         setError(err.message);
                         setLoading(false);

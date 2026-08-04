@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const walkSync = function(dir, filelist) {
-  files = fs.readdirSync(dir);
+  let files = fs.readdirSync(dir);
   filelist = filelist || [];
   files.forEach(function(file) {
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
