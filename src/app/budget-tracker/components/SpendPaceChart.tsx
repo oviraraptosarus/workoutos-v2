@@ -54,9 +54,8 @@ export default function SpendPaceChart() {
         last7Days.push(d);
     }
 
-    // Use userProfile.monthlyBudget as the source of truth (falls back to localStorage, then 5000)
-    const monthlyTarget = userProfile?.monthlyBudget
-        || (typeof window !== 'undefined' ? parseFloat(localStorage.getItem('workout_os_budget_target') || '0') || 5000 : 5000);
+    // Use userProfile.monthlyBudget as the source of truth
+    const monthlyTarget = userProfile?.monthlyBudget || 5000;
     const weeklyTarget = monthlyTarget / 4.33; // average weeks per month
 
     // Calculate daily cumulative spend over these 7 days

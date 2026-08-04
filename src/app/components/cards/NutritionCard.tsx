@@ -41,9 +41,7 @@ export default function NutritionCard() {
         };
 
         const loadGoal = () => {
-            const savedGoal = localStorage.getItem('workout_os_calorie_goal');
-            if (savedGoal) setGoalCals(parseInt(savedGoal, 10));
-            else if (userProfile?.calorieGoal) setGoalCals(userProfile.calorieGoal);
+            if (userProfile?.calorieGoal) setGoalCals(userProfile.calorieGoal);
         };
 
         loadNutrition();
@@ -51,11 +49,9 @@ export default function NutritionCard() {
 
         window.addEventListener('storage', loadNutrition);
         window.addEventListener('workout_os_diet_updated', loadNutrition);
-        window.addEventListener('storage', loadGoal);
         return () => {
             window.removeEventListener('storage', loadNutrition);
             window.removeEventListener('workout_os_diet_updated', loadNutrition);
-            window.removeEventListener('storage', loadGoal);
         };
     }, [selectedDate, isToday, userProfile]);
 

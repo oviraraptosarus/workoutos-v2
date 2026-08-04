@@ -4,7 +4,9 @@ import React from 'react';
 import nextDynamic from 'next/dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { usePathname } from 'next/navigation';
+import DevDebugPanel from '@/components/DevDebugPanel';
 
 
 // Dynamic imports with ssr:false to prevent prerender crashes
@@ -22,15 +24,30 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
 
-    const { userProfile, session } = useAuth();
+    const { userProfile, session, isLoading } = useAuth();
     const pathname = usePathname();
     const isDashboard = pathname === '/dashboard';
+    const { language } = useLanguage();
     
-    // Determine if onboarding should show. dob is a required field in onboarding,
-    // making it a reliable indicator of profile completion. We also check accepted_terms for OAuth users.
-    const showOnboarding = Boolean(
-        session && userProfile && (!userProfile.dob || !userProfile.accepted_terms)
-    );
+    // Sync context state to debug store for runtime verification
+    useEffect(() => {
+        if (process.env.NODE_ENV === 'development') {
+            import('@/store/useDebugStore').then(({ useDebugStore }) => {
+                useDebugStore.getState().updateContextState({
+                    userId: session?.user?.id || null,
+                    userEmail: session?.user?.email || null,
+                    onboardingCompleted: userProfile?.onboarding_completed || false,
+                    selectedLanguage: language,
+                    theme: userProfile?.theme || 'system',
+                    notificationPermission: 'unknown',
+                    activeAiProvider: 'google (gemini)'
+                });
+            });
+        }
+    }, [session, userProfile, language]);
+    
+    // Determine if onboarding should show based on the completed flag
+    const showOnboarding = Boolean(!isLoading && session && userProfile?.onboarding_completed === false);
 
     return (
         <div className="min-h-screen pb-44 sm:pb-28 bg-transparent relative z-10">
@@ -46,6 +63,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <GlobalAICopilot />
             <EndOfDayBanner />
             {session && <OnboardingModal isOpen={showOnboarding} onComplete={() => {}} />}
+            <DevDebugPanel />
         </div>
     );
 }

@@ -7,6 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase/client';
+import CommandCenterOverlay from '@/app/components/modals/CommandCenterOverlay';
+import { useCommandCenterEngine } from '@/hooks/useCommandCenterEngine';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -20,39 +22,13 @@ export default function DashboardHeader() {
     const { t } = useLanguage();
     const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
-    const [notifications, setNotifications] = useState<any[]>([]);
-    const [showNotifications, setShowNotifications] = useState(false);
+    const [showCommandCenter, setShowCommandCenter] = useState(false);
+    
+    // Initialize the engine to generate AI insights behind the scenes
+    useCommandCenterEngine();
     
     const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'Friend');
     const initial = displayName.charAt(0).toUpperCase();
-
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            
-            const now = new Date().toISOString();
-            const { data } = await supabase
-                .from('tasks')
-                .select('id, title, reminder_time')
-                .eq('user_id', user.id)
-                .eq('notification_sent', false)
-                .lte('reminder_time', now)
-                .order('reminder_time', { ascending: false });
-                
-            if (data) setNotifications(data);
-        };
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 30000); // Check every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    const markNotificationsRead = async () => {
-        if (notifications.length === 0) return;
-        const ids = notifications.map(n => n.id);
-        await supabase.from('tasks').update({ notification_sent: true }).in('id', ids);
-        setNotifications([]);
-    };
 
     useEffect(() => {
         if (!selectedDate) return;
@@ -105,36 +81,17 @@ export default function DashboardHeader() {
                 <div className="flex items-center gap-3 shrink-0">
                     <div className="relative">
                         <button
-                            onClick={() => {
-                                setShowNotifications(!showNotifications);
-                                if (!showNotifications && notifications.length > 0) {
-                                    markNotificationsRead();
-                                }
-                            }}
+                            onClick={() => setShowCommandCenter(true)}
                             className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors relative"
                         >
                             <Bell size={18} />
-                            {notifications.length > 0 && (
-                                <span className="absolute top-2 right-2.5 w-2 h-2 bg-error rounded-full animate-pulse"></span>
-                            )}
+                            {/* You could fetch a quick unread count here if needed */}
                         </button>
-                        {showNotifications && (
-                            <div className="absolute top-12 right-0 w-64 bg-card-white border border-surface-variant rounded-2xl shadow-xl p-4 z-[9999] animate-in slide-in-from-top-2">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Notifications</h3>
-                                {notifications.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {notifications.map(n => (
-                                            <div key={n.id} className="text-sm">
-                                                <p className="font-bold text-on-surface">{n.title}</p>
-                                                <p className="text-xs text-on-surface-variant">Reminder: {new Date(n.reminder_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-xs text-on-surface-variant text-center py-2">No new notifications</p>
-                                )}
-                            </div>
-                        )}
+                        
+                        <CommandCenterOverlay 
+                            isOpen={showCommandCenter} 
+                            onClose={() => setShowCommandCenter(false)} 
+                        />
                     </div>
                     
                     <Link

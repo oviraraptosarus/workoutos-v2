@@ -37,6 +37,7 @@ export interface UserProfile {
     notificationsEnabled: boolean;
     streamingResponsesEnabled: boolean;
     targetConfig?: any;
+    onboarding_completed?: boolean;
     createdAt?: string;
     updatedAt: string;
     timezone?: string;
@@ -49,35 +50,11 @@ export interface UserProfile {
     accepted_at?: string;
 }
 
-export const DEFAULT_USER_PROFILE: UserProfile = {
-    fullName: '',
-    username: '',
-    email: '',
-    fitnessGoal: 'Build Muscle & Hypertrophy',
-    currentWeight: 75,
-    targetWeight: 80,
-    waterGoalMl: 3000,
-    calorieGoal: 2600,
-    monthlyBudget: 1200,
-    monthlyIncome: 2000,
-    sleepGoal: 8,
-    enableFinancialReminders: true,
-    heightCm: 170,
-    gender: 'male',
-    units: 'metric',
-    theme: 'system',
-    voiceEnabled: true,
-    aiMemoryEnabled: true,
-    preferredLanguage: 'en',
-    notificationsEnabled: true,
-    streamingResponsesEnabled: true,
-    targetConfig: {},
-    updatedAt: new Date().toISOString()
-};
+export type { UserProfile };
 
 interface AuthContextType {
     user: User | null;
-    userProfile: UserProfile;
+    userProfile: UserProfile | null;
     session: Session | null;
     loading: boolean;
     isLoading: boolean;
@@ -92,6 +69,7 @@ interface AuthContextType {
     getCurrentUser: () => Promise<User | null>;
     isEmailVerified: () => boolean;
     getUserProfile: () => Promise<unknown>;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -106,7 +84,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -132,129 +110,146 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return () => subscription?.unsubscribe();
     }, []);
 
+    const refreshProfile = async () => {
+        if (user) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!error && data) {
+                    setUserProfile({
+                        fullName: data.full_name || '',
+                        username: data.username || '',
+                        email: data.email || user.email || '',
+                        fitnessGoal: data.fitness_goal || 'Build Muscle & Stay Active',
+                        currentWeight: Number(data.current_weight) || 75,
+                        targetWeight: Number(data.target_weight) || 70,
+                        waterGoalMl: data.water_goal_ml || 3000,
+                        calorieGoal: data.calorie_goal || 2200,
+                        sleepGoal: data.sleep_goal || 8,
+                        monthlyBudget: data.monthly_budget || 1000,
+                        monthlyIncome: data.monthly_income || 2000,
+                        enableFinancialReminders: data.enable_financial_reminders !== false,
+                        dob: data.dob,
+                        heightCm: Number(data.height_cm) || 170,
+                        gender: data.gender || 'male',
+                        units: data.units || 'metric',
+                        theme: data.theme || 'system',
+                        avatarPath: data.avatar_path,
+                        voiceEnabled: data.voice_enabled ?? true,
+                        aiMemoryEnabled: data.ai_memory_enabled ?? true,
+                        preferredAiVoice: data.preferred_ai_voice,
+                        preferredLanguage: data.preferred_language || 'en',
+                        notificationsEnabled: data.notifications_enabled ?? true,
+                        streamingResponsesEnabled: data.target_config?.streaming_responses_enabled ?? true,
+                        targetConfig: data.target_config || {},
+                        onboarding_completed: data.onboarding_completed ?? false,
+                        createdAt: user.created_at || data.created_at || new Date().toISOString(),
+                        updatedAt: data.updated_at || new Date().toISOString(),
+                        accepted_terms: data.accepted_terms,
+                        accepted_privacy: data.accepted_privacy,
+                        terms_version: data.terms_version,
+                        privacy_version: data.privacy_version,
+                        accepted_at: data.accepted_at
+                    });
+                } else {
+                    setUserProfile(null);
+                }
+            } catch (error) {
+                // If profile not found in DB, it's null (requires onboarding)
+                setUserProfile(null);
+            }
+        } else {
+            setUserProfile(null);
+        }
+    };
+
     // Load profile from Supabase when user changes
     useEffect(() => {
-        const fetchProfile = async () => {
-            if (user) {
-                try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', user.id)
-                        .single();
-
-                    if (!error && data) {
-                        setUserProfile({
-                            fullName: data.full_name || '',
-                            username: data.username || '',
-                            email: data.email || user.email || '',
-                            fitnessGoal: data.fitness_goal || DEFAULT_USER_PROFILE.fitnessGoal,
-                            currentWeight: Number(data.current_weight) || DEFAULT_USER_PROFILE.currentWeight,
-                            targetWeight: Number(data.target_weight) || DEFAULT_USER_PROFILE.targetWeight,
-                            waterGoalMl: data.water_goal_ml || DEFAULT_USER_PROFILE.waterGoalMl,
-                            calorieGoal: data.calorie_goal || DEFAULT_USER_PROFILE.calorieGoal,
-                            sleepGoal: data.sleep_goal || DEFAULT_USER_PROFILE.sleepGoal,
-                            monthlyBudget: data.monthly_budget || DEFAULT_USER_PROFILE.monthlyBudget,
-                            monthlyIncome: data.monthly_income || DEFAULT_USER_PROFILE.monthlyIncome,
-                            enableFinancialReminders: data.enable_financial_reminders !== false,
-                            dob: data.dob,
-                            heightCm: Number(data.height_cm) || DEFAULT_USER_PROFILE.heightCm,
-                            gender: data.gender || DEFAULT_USER_PROFILE.gender,
-                            units: data.units || DEFAULT_USER_PROFILE.units,
-                            theme: data.theme || DEFAULT_USER_PROFILE.theme,
-                            avatarPath: data.avatar_path,
-                            voiceEnabled: data.voice_enabled ?? DEFAULT_USER_PROFILE.voiceEnabled,
-                            aiMemoryEnabled: data.ai_memory_enabled ?? DEFAULT_USER_PROFILE.aiMemoryEnabled,
-                            preferredAiVoice: data.preferred_ai_voice,
-                            preferredLanguage: data.preferred_language || DEFAULT_USER_PROFILE.preferredLanguage,
-                            notificationsEnabled: data.notifications_enabled ?? DEFAULT_USER_PROFILE.notificationsEnabled,
-                            streamingResponsesEnabled: data.target_config?.streaming_responses_enabled ?? DEFAULT_USER_PROFILE.streamingResponsesEnabled,
-                            targetConfig: data.target_config || {},
-                            createdAt: user.created_at || data.created_at || new Date().toISOString(),
-                            updatedAt: data.updated_at || new Date().toISOString(),
-                            accepted_terms: data.accepted_terms,
-                            accepted_privacy: data.accepted_privacy,
-                            terms_version: data.terms_version,
-                            privacy_version: data.privacy_version,
-                            accepted_at: data.accepted_at
-                        });
-
-                    } else {
-                        throw new Error('Profile not found');
-                    }
-                } catch (error) {
-                    // Fallback to minimal profile if not found in DB yet
-                    setUserProfile(prev => ({
-                        ...prev,
-                        email: user.email || '',
-                        fullName: user.user_metadata?.full_name || '',
-                        createdAt: user.created_at || new Date().toISOString()
-                    }));
-                }
-            } else {
-                setUserProfile(DEFAULT_USER_PROFILE);
-            }
-        };
-
-        fetchProfile();
+        refreshProfile();
     }, [user]);
 
     const updateUserProfile = async (updates: Partial<UserProfile>): Promise<void> => {
-        const next = { ...userProfile, ...updates, updatedAt: new Date().toISOString() };
-        setUserProfile(next);
+        // Optimistic local update removed so that the UI waits for Supabase row.
         
         if (user) {
-            const fallbackEmail = next.email || user.email || '';
+            const fallbackEmail = updates.email || user.email || '';
             const fallbackUsername = fallbackEmail 
                 ? fallbackEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Math.floor(Math.random() * 10000)
                 : `user_${Math.floor(Math.random() * 1000000)}`;
 
-            const { error } = await supabase.from('profiles').upsert({
+            const payload = {
                 id: user.id,
                 email: fallbackEmail,
-                full_name: next.fullName,
-                username: next.username || fallbackUsername,
-                current_weight: next.currentWeight,
-                target_weight: next.targetWeight,
-                fitness_goal: next.fitnessGoal,
-                enable_financial_reminders: next.enableFinancialReminders,
-                dob: next.dob || null,
-                height_cm: next.heightCm,
-                gender: next.gender,
-                calorie_goal: next.calorieGoal,
-                sleep_goal: next.sleepGoal,
-                monthly_budget: next.monthlyBudget,
-                monthly_income: next.monthlyIncome,
-                water_goal_ml: next.waterGoalMl,
-                units: next.units,
-                theme: next.theme,
-                avatar_path: next.avatarPath,
-                voice_enabled: next.voiceEnabled,
-                ai_memory_enabled: next.aiMemoryEnabled,
-                preferred_ai_voice: next.preferredAiVoice,
-                preferred_language: next.preferredLanguage,
-                notifications_enabled: next.notificationsEnabled,
+                full_name: updates.fullName || (userProfile?.fullName || ''),
+                username: updates.username || (userProfile?.username || fallbackUsername),
+                current_weight: updates.currentWeight,
+                target_weight: updates.targetWeight,
+                fitness_goal: updates.fitnessGoal,
+                enable_financial_reminders: updates.enableFinancialReminders,
+                dob: updates.dob || null,
+                height_cm: updates.heightCm,
+                gender: updates.gender,
+                calorie_goal: updates.calorieGoal,
+                sleep_goal: updates.sleepGoal,
+                monthly_budget: updates.monthlyBudget,
+                monthly_income: updates.monthlyIncome,
+                water_goal_ml: updates.waterGoalMl,
+                units: updates.units || 'metric',
+                theme: updates.theme || 'system',
+                avatar_path: updates.avatarPath,
+                onboarding_completed: updates.onboarding_completed,
+                voice_enabled: updates.voiceEnabled,
+                ai_memory_enabled: updates.aiMemoryEnabled,
+                preferred_ai_voice: updates.preferredAiVoice,
+                preferred_language: updates.preferredLanguage || 'en',
+                notifications_enabled: updates.notificationsEnabled,
                 target_config: {
-                    ...(next.targetConfig || {}),
-                    streaming_responses_enabled: next.streamingResponsesEnabled
+                    ...(updates.targetConfig || {}),
+                    streaming_responses_enabled: updates.streamingResponsesEnabled
                 },
-                updated_at: next.updatedAt,
-                accepted_terms: next.accepted_terms,
-                accepted_privacy: next.accepted_privacy,
-                terms_version: next.terms_version,
-                privacy_version: next.privacy_version,
-                accepted_at: next.accepted_at
-            }, { onConflict: 'id' });
+                updated_at: new Date().toISOString(),
+                accepted_terms: updates.accepted_terms,
+                accepted_privacy: updates.accepted_privacy,
+                terms_version: updates.terms_version,
+                privacy_version: updates.privacy_version,
+                accepted_at: updates.accepted_at
+            };
+
+            // Remove undefined fields
+            Object.keys(payload).forEach(key => (payload as any)[key] === undefined && delete (payload as any)[key]);
+
+            console.log("================ DATABASE OPERATION LOG ================");
+            console.log("1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert)");
+            console.log("2. Payload:", JSON.stringify(payload, null, 2));
+
+            const response = await supabase.from('profiles').upsert(payload, { onConflict: 'id' }).select().single();
             
-            if (error) {
-                console.error("Failed to update profile in Supabase:", error);
-                throw error;
+            console.log("3. Returned data:", response.data);
+            console.log("4. Returned error:", response.error);
+            console.log("5. HTTP status:", response.status);
+            if (response.error) {
+                console.log("6. Supabase error object:", JSON.stringify(response.error, null, 2));
+            }
+            console.log("========================================================");
+            
+            if (response.error) {
+                console.error("Failed to update profile in Supabase:", response.error);
+                throw response.error;
+            }
+            
+            // Sync with backend immediately
+            if (response.data) {
+                await refreshProfile();
             }
         }
     };
 
     const clearUserCache = () => {
-        setUserProfile(DEFAULT_USER_PROFILE);
+        setUserProfile(null);
     };
 
     // Email/Password Sign Up
@@ -390,7 +385,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         clearUserCache,
         getCurrentUser,
         isEmailVerified,
-        getUserProfile
+        getUserProfile,
+        refreshProfile
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

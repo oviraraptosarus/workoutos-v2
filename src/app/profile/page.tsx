@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useProfileStats } from '@/lib/hooks/useProfileStats';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
-import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone, Activity, Camera, ExternalLink, Moon, Settings, Zap, ArrowLeft, LogOut, FileText, User as UserIcon } from 'lucide-react';
+import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone, Activity, Camera, ExternalLink, Moon, Settings, Zap, ArrowLeft, LogOut, FileText, User as UserIcon, Bell } from 'lucide-react';
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
@@ -53,6 +53,36 @@ export default function ProfileHub() {
     const [formData, setFormData] = useState({ ...userProfile });
     const [savedNotice, setSavedNotice] = useState(false);
     const [noticeText, setNoticeText] = useState('Settings saved!');
+
+    // Notification settings states
+    const [notifSettings, setNotifSettings] = useState({
+        planner_reminders: true,
+        habit_reminders: true,
+        budget_alerts: true,
+        weekly_reports: true,
+        ai_insights: true,
+        notification_sound: true,
+        vibration_enabled: true,
+        push_enabled: true,
+        email_enabled: false
+    });
+
+    useEffect(() => {
+        if (!user) return;
+        const fetchNotifSettings = async () => {
+            const { data } = await supabase.from('notification_settings').select('*').eq('user_id', user.id).single();
+            if (data) setNotifSettings(data);
+        };
+        fetchNotifSettings();
+    }, [user]);
+
+    const updateNotifSetting = async (key: string, value: boolean) => {
+        setNotifSettings(prev => ({ ...prev, [key]: value }));
+        if (user) {
+            await supabase.from('notification_settings').upsert({ user_id: user.id, [key]: value }, { onConflict: 'user_id' });
+            showNotice();
+        }
+    };
 
     // Weight trend
     const [currentWeightVal, setCurrentWeightVal] = useState<number | null>(null);
@@ -628,7 +658,43 @@ export default function ProfileHub() {
 
     return (
         <AppLayout>
-            {/* Toast */}
+            {/* Notifications & Alerts */}
+            {activeSection === 'notifications' && (
+                <div className="animate-in slide-in-from-right-4 duration-300 relative z-10 w-full h-full bg-background">
+                    <div className="flex items-center gap-4 mb-6 sticky top-0 bg-background/90 backdrop-blur-md z-10 py-2 border-b border-surface-variant/30">
+                        <button onClick={() => setActiveSection('main')} className="p-2 rounded-full hover:bg-surface-container active:scale-95 transition-all text-on-surface">
+                            <ArrowLeft size={24} />
+                        </button>
+                        <h2 className="text-xl font-bold flex items-center gap-2">
+                            <Bell size={20} className="text-primary" /> Notifications & Alerts
+                        </h2>
+                    </div>
+                    <div className="space-y-6 pb-20">
+                        <div>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Delivery Methods</h3>
+                            <div className="bg-surface-container-low rounded-3xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                                <ToggleRow icon="volume_up" label="Notification Sounds" value={notifSettings.notification_sound} onChange={(val) => updateNotifSetting('notification_sound', val)} />
+                                <ToggleRow icon="vibration" label="Vibration" value={notifSettings.vibration_enabled} onChange={(val) => updateNotifSetting('vibration_enabled', val)} />
+                                <ToggleRow icon="notifications_active" label="Push Notifications" value={notifSettings.push_enabled} onChange={(val) => updateNotifSetting('push_enabled', val)} />
+                                <ToggleRow icon="mail" label="Email Notifications" value={notifSettings.email_enabled} onChange={(val) => updateNotifSetting('email_enabled', val)} />
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Alert Types</h3>
+                            <div className="bg-surface-container-low rounded-3xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                                <ToggleRow icon="task_alt" label="Planner Reminders" value={notifSettings.planner_reminders} onChange={(val) => updateNotifSetting('planner_reminders', val)} />
+                                <ToggleRow icon="loop" label="Habit Reminders" value={notifSettings.habit_reminders} onChange={(val) => updateNotifSetting('habit_reminders', val)} />
+                                <ToggleRow icon="account_balance_wallet" label="Budget Alerts" value={notifSettings.budget_alerts} onChange={(val) => updateNotifSetting('budget_alerts', val)} />
+                                <ToggleRow icon="auto_awesome" label="AI Insights (Ava)" value={notifSettings.ai_insights} onChange={(val) => updateNotifSetting('ai_insights', val)} />
+                                <ToggleRow icon="summarize" label="Weekly Reports" value={notifSettings.weekly_reports} onChange={(val) => updateNotifSetting('weekly_reports', val)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Help & Support */}
             {savedNotice && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-activity-green text-white px-4 py-2 rounded-full shadow-lg animate-in fade-in slide-in-from-top-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap">
                     <span className="material-symbols-outlined text-[18px]">check_circle</span>
@@ -673,7 +739,12 @@ export default function ProfileHub() {
                         onClick={() => setActiveSection('preferences')} 
                     />
                     <SettingsRow 
-                        icon="memory" 
+                        icon="notifications" 
+                        label="Notifications & Alerts" 
+                        onClick={() => setActiveSection('notifications')} 
+                    />
+                    <SettingsRow 
+                        icon="memory"  
                         label={t('profile.aiSettings')} 
                         value={formData.voiceEnabled ? 'Voice On' : 'Voice Off'}
                         onClick={() => setActiveSection('ai_settings')} 

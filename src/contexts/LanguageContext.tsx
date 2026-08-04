@@ -54,7 +54,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
         if (values) {
             Object.keys(values).forEach(k => {
-                text = text.replace(`{{${k}}}`, String(values[k]));
+                text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(values[k]));
             });
         }
 

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sparkles, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowRight, ChevronLeft, Check, Sparkles } from 'lucide-react';
 
 interface OnboardingModalProps {
     isOpen: boolean;
@@ -11,189 +10,225 @@ interface OnboardingModalProps {
 }
 
 export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalProps) {
-    const { userProfile, updateUserProfile } = useAuth();
+    const { updateUserProfile } = useAuth();
+    
+    const [step, setStep] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [formData, setFormData] = useState({
-        fullName: userProfile?.fullName || '',
-        username: userProfile?.username || '',
-        dob: userProfile?.dob || '',
-        gender: userProfile?.gender || 'male',
-        heightCm: userProfile?.heightCm || 170,
-        currentWeight: userProfile?.currentWeight || 75,
-        targetWeight: userProfile?.targetWeight || 70,
-        fitnessGoal: userProfile?.fitnessGoal || 'Build Muscle & Stay Active',
-        accepted_terms: userProfile?.accepted_terms || false,
-        accepted_privacy: userProfile?.accepted_privacy || false,
-    });
+    const [goal, setGoal] = useState('Build Muscle');
+    const [currentWeight, setCurrentWeight] = useState<number | ''>(75);
+    const [targetWeight, setTargetWeight] = useState<number | ''>(70);
+    const [heightCm, setHeightCm] = useState<number | ''>(170);
+    const [age, setAge] = useState<number | ''>(25);
+    const [gender, setGender] = useState<'male'|'female'|'other'>('male');
+    const [activityLevel, setActivityLevel] = useState('sedentary');
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await updateUserProfile({
-            ...userProfile,
-            ...formData,
-            terms_version: 'v1.0',
-            privacy_version: 'v1.0',
-            accepted_at: new Date().toISOString()
-        });
-        onComplete();
-    };
+    const saveProfile = async () => {
+        setIsSubmitting(true);
+        try {
+            // Calculate an approximate DOB from age
+            const dob = new Date();
+            dob.setFullYear(dob.getFullYear() - (Number(age) || 25));
+            const dobString = dob.toISOString().split('T')[0];
 
-    const focusNext = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>, nextId?: string) => {
-        if (e.key === 'Enter' && nextId) {
-            e.preventDefault();
-            document.getElementById(nextId)?.focus();
+            await updateUserProfile({
+                fitnessGoal: goal,
+                currentWeight: Number(currentWeight) || 75,
+                targetWeight: Number(targetWeight) || 70,
+                heightCm: Number(heightCm) || 170,
+                dob: dobString,
+                gender: gender,
+                activityLevel: activityLevel,
+                accepted_terms: true,
+                accepted_privacy: true,
+                terms_version: 'v2.0',
+                privacy_version: 'v2.0',
+                onboarding_completed: true,
+                accepted_at: new Date().toISOString()
+            } as any);
+            
+            onComplete();
+        } catch (error) {
+            console.error("Failed to save profile", error);
+            setIsSubmitting(false);
+            setStep(0); // reset on error to let them try again
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-card-white border border-surface-variant rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                    <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
-                        <Sparkles size={20} /> Welcome to Workout OS
-                    </h2>
-                    <p className="text-sm font-medium text-zinc-300">Let's set up your profile to personalize your experience.</p>
-                </div>
-                
-                <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
-                    <div>
-                        <label htmlFor="onboarding-fullname" className="block text-xs font-bold text-on-surface-variant mb-1">Full Name</label>
-                        <input
-                            id="onboarding-fullname"
-                            type="text"
-                            required
-                            placeholder="Alex Morgan"
-                            value={formData.fullName}
-                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                            onKeyDown={(e) => focusNext(e, 'onboarding-username')}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                        />
-                    </div>
+    const nextStep = () => {
+        if (step === 7) {
+            setStep(8);
+            saveProfile();
+        } else {
+            setStep(prev => prev + 1);
+        }
+    };
 
-                    <div>
-                        <label htmlFor="onboarding-username" className="block text-xs font-bold text-on-surface-variant mb-1">Username</label>
-                        <input
-                            id="onboarding-username"
-                            type="text"
-                            required
-                            placeholder="alex_m"
-                            value={formData.username}
-                            onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
-                            onKeyDown={(e) => focusNext(e, 'onboarding-dob')}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                        />
-                    </div>
+    const prevStep = () => {
+        setStep(prev => Math.max(0, prev - 1));
+    };
 
-                    <div>
-                        <label htmlFor="onboarding-dob" className="block text-xs font-bold text-on-surface-variant mb-1">Date of Birth</label>
-                        <input
-                            id="onboarding-dob"
-                            type="date"
-                            required
-                            value={formData.dob}
-                            onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                            onKeyDown={(e) => focusNext(e, 'onboarding-gender')}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                        />
-                    </div>
+    // Generic large input rendering
+    const renderNumberInput = (value: number | '', setter: (v: number | '') => void, unit: string) => (
+        <div className="flex flex-col items-center justify-center flex-1 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-baseline gap-2">
+                <input
+                    type="number"
+                    autoFocus
+                    value={value}
+                    onChange={(e) => setter(e.target.value === '' ? '' : Number(e.target.value))}
+                    onKeyDown={(e) => e.key === 'Enter' && value !== '' && nextStep()}
+                    className="w-32 bg-transparent text-center font-display-lg text-6xl font-bold text-on-surface focus:outline-none placeholder:text-surface-variant"
+                    placeholder="0"
+                />
+                <span className="font-label-lg text-xl text-on-surface-variant">{unit}</span>
+            </div>
+        </div>
+    );
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label htmlFor="onboarding-gender" className="block text-xs font-bold text-on-surface-variant mb-1">Gender</label>
-                            <select
-                                id="onboarding-gender"
-                                value={formData.gender}
-                                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male'|'female'|'other' })}
-                                onKeyDown={(e) => focusNext(e, 'onboarding-height')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                            >
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="onboarding-height" className="block text-xs font-bold text-on-surface-variant mb-1">Height (cm)</label>
-                            <input
-                                id="onboarding-height"
-                                type="number"
-                                required
-                                value={formData.heightCm || ''}
-                                onChange={(e) => setFormData({ ...formData, heightCm: Number(e.target.value) })}
-                                onKeyDown={(e) => focusNext(e, 'onboarding-currentwt')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label htmlFor="onboarding-currentwt" className="block text-xs font-bold text-on-surface-variant mb-1">Current Wt (kg)</label>
-                            <input
-                                id="onboarding-currentwt"
-                                type="number"
-                                required
-                                value={formData.currentWeight || ''}
-                                onChange={(e) => setFormData({ ...formData, currentWeight: Number(e.target.value) })}
-                                onKeyDown={(e) => focusNext(e, 'onboarding-targetwt')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="onboarding-targetwt" className="block text-xs font-bold text-on-surface-variant mb-1">Target Wt (kg)</label>
-                            <input
-                                id="onboarding-targetwt"
-                                type="number"
-                                required
-                                value={formData.targetWeight || ''}
-                                onChange={(e) => setFormData({ ...formData, targetWeight: Number(e.target.value) })}
-                                onKeyDown={(e) => focusNext(e, 'onboarding-goal')}
-                                className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="onboarding-goal" className="block text-xs font-bold text-on-surface-variant mb-1">Fitness Primary Goal</label>
-                        <select
-                            id="onboarding-goal"
-                            value={formData.fitnessGoal}
-                            onChange={(e) => setFormData({ ...formData, fitnessGoal: e.target.value })}
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20"
-                        >
-                            <option value="Build Muscle & Stay Active">Build Muscle & Stay Active</option>
-                            <option value="Weight Loss & Fat Burn">Weight Loss & Fat Burn</option>
-                            <option value="General Health & Conditioning">General Health & Conditioning</option>
-                            <option value="Endurance & Athletic Prep">Endurance & Athletic Prep</option>
-                        </select>
-                    </div>
-
-                    <div className="pt-2 pb-2">
-                        <label className="flex items-start gap-3 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                required
-                                checked={formData.accepted_terms && formData.accepted_privacy}
-                                onChange={(e) => setFormData({ ...formData, accepted_terms: e.target.checked, accepted_privacy: e.target.checked })}
-                                className="mt-1 w-4 h-4 rounded border-surface-variant text-blue-600 focus:ring-blue-500 bg-surface-container-low cursor-pointer"
-                            />
-                            <span className="text-xs text-on-surface-variant leading-snug">
-                                I agree to the <Link href="/terms" target="_blank" className="text-blue-500 hover:underline">Terms of Service</Link> and <Link href="/privacy" target="_blank" className="text-blue-500 hover:underline">Privacy Policy</Link>.
+    // Generic list selection rendering
+    const renderList = (options: {id: string, label: string}[], currentVal: string, setter: (v: string) => void) => (
+        <div className="w-full flex flex-col gap-3 mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {options.map(opt => {
+                const active = currentVal === opt.id;
+                return (
+                    <button
+                        key={opt.id}
+                        onClick={() => {
+                            setter(opt.id);
+                            setTimeout(nextStep, 150); // Auto advance for premium feel
+                        }}
+                        className={`relative w-full p-5 text-left rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
+                            active 
+                            ? 'border-primary bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
+                            : 'border-surface-variant hover:border-on-surface-variant/30 bg-surface-container-lowest'
+                        }`}
+                    >
+                        <div className="flex justify-between items-center relative z-10">
+                            <span className={`font-bold text-lg ${active ? 'text-primary' : 'text-on-surface'}`}>
+                                {opt.label}
                             </span>
-                        </label>
-                    </div>
+                            {active && <Check className="text-primary" size={20} />}
+                        </div>
+                    </button>
+                )
+            })}
+        </div>
+    );
 
-                    <div className="pt-2">
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-xl transition-all duration-300">
+            <div className="w-full max-w-md h-full sm:h-[80vh] flex flex-col px-6 py-8 relative">
+                
+                {/* Header / Back Button */}
+                {step > 0 && step < 8 && (
+                    <button 
+                        onClick={prevStep}
+                        className="absolute top-8 left-6 p-2 rounded-full hover:bg-surface-container text-on-surface-variant transition-colors"
+                    >
+                        <ChevronLeft size={24} />
+                    </button>
+                )}
+
+                <div className="flex-1 flex flex-col items-center justify-center pt-12 pb-24 w-full">
+                    
+                    {step === 0 && (
+                        <div className="text-center animate-in zoom-in-95 fade-in duration-700 w-full flex flex-col items-center justify-center h-full">
+                            <div className="w-20 h-20 bg-primary rounded-3xl flex items-center justify-center mb-8 shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
+                                <Sparkles size={36} className="text-on-primary" />
+                            </div>
+                            <h1 className="font-display-lg text-3xl font-bold text-on-surface mb-4">Welcome to Workout OS</h1>
+                            <p className="text-on-surface-variant text-lg">Let's personalize your experience.</p>
+                        </div>
+                    )}
+
+                    {step === 1 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center mb-2">What's your goal?</h2>
+                            {renderList([
+                                { id: 'Lose Fat', label: 'Lose Fat' },
+                                { id: 'Build Muscle', label: 'Build Muscle' },
+                                { id: 'Recomposition', label: 'Recomposition' },
+                                { id: 'Maintain', label: 'Maintain' },
+                                { id: 'Athletic Performance', label: 'Athletic Performance' }
+                            ], goal, setGoal)}
+                        </>
+                    )}
+
+                    {step === 2 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center">What's your current weight?</h2>
+                            {renderNumberInput(currentWeight, setCurrentWeight, 'kg')}
+                        </>
+                    )}
+
+                    {step === 3 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center">Target weight?</h2>
+                            {renderNumberInput(targetWeight, setTargetWeight, 'kg')}
+                        </>
+                    )}
+
+                    {step === 4 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center">Height?</h2>
+                            {renderNumberInput(heightCm, setHeightCm, 'cm')}
+                        </>
+                    )}
+
+                    {step === 5 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center">Age?</h2>
+                            {renderNumberInput(age, setAge, 'years')}
+                        </>
+                    )}
+
+                    {step === 6 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center mb-2">Gender?</h2>
+                            {renderList([
+                                { id: 'male', label: 'Male' },
+                                { id: 'female', label: 'Female' },
+                                { id: 'other', label: 'Other' }
+                            ], gender, (v) => setGender(v as any))}
+                        </>
+                    )}
+
+                    {step === 7 && (
+                        <>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface w-full text-center mb-2">Activity Level</h2>
+                            {renderList([
+                                { id: 'sedentary', label: 'Sedentary (Office job, little exercise)' },
+                                { id: 'light', label: 'Light (Light exercise 1-3 days/week)' },
+                                { id: 'moderate', label: 'Moderate (Moderate exercise 3-5 days/week)' },
+                                { id: 'active', label: 'Active (Hard exercise 6-7 days/week)' },
+                                { id: 'athlete', label: 'Athlete (Very hard exercise & physical job)' }
+                            ], activityLevel, setActivityLevel)}
+                        </>
+                    )}
+
+                    {step === 8 && (
+                        <div className="text-center animate-pulse w-full flex flex-col items-center justify-center h-full">
+                            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-8"></div>
+                            <h2 className="font-display-lg text-2xl font-bold text-on-surface">Done.</h2>
+                            <p className="text-on-surface-variant mt-2">Building your Fitness Engine...</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Sticky Bottom Next Button for numeric inputs or Welcome */}
+                {((step === 0) || (step >= 2 && step <= 5)) && (
+                    <div className="absolute bottom-8 left-0 right-0 px-6">
                         <button
-                            type="submit"
-                            className="w-full bg-white hover:bg-zinc-200 text-black font-bold py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
+                            onClick={nextStep}
+                            className="w-full bg-primary hover:bg-primary/90 text-on-primary font-bold py-4 rounded-2xl transition-all shadow-[0_8px_20px_rgba(var(--primary-rgb),0.3)] flex items-center justify-center gap-2 active:scale-95 text-lg"
                         >
-                            Complete Setup <ArrowRight size={16} />
+                            {step === 0 ? 'Continue' : 'Next'} <ArrowRight size={20} />
                         </button>
                     </div>
-                </form>
+                )}
             </div>
         </div>
     );
