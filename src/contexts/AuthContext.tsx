@@ -23,6 +23,7 @@ export interface UserProfile {
     monthlyBudget: number;
     monthlyIncome?: number;
     enableFinancialReminders: boolean;
+    activityLevel?: string;
     dob?: string;
     heightCm: number;
     gender: 'male' | 'female' | 'other';
@@ -202,6 +203,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 theme: updates.theme || 'system',
                 avatar_path: updates.avatarPath,
                 onboarding_completed: updates.onboarding_completed,
+                activity_level: updates.activityLevel,
                 voice_enabled: updates.voiceEnabled,
                 ai_memory_enabled: updates.aiMemoryEnabled,
                 preferred_ai_voice: updates.preferredAiVoice,

@@ -51,8 +51,6 @@ const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promis
         }
     }
 
-    let returnedError = null;
-    let returnedData = null;
     let httpStatus = 0;
     let responseClone: Response | null = null;
 
@@ -61,35 +59,37 @@ const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promis
         httpStatus = response.status;
         responseClone = response.clone();
         
-        if (!response.ok) {
-            try {
-                returnedError = await responseClone.json();
-            } catch(e) {
-                returnedError = await responseClone.text();
-            }
-        } else {
-            // Only try to parse JSON if it has content
-            if (response.status !== 204) {
-                try {
-                    returnedData = await responseClone.json();
-                } catch(e) {
-                    returnedData = '<Non-JSON response>';
-                }
-            }
-        }
-        
         const executionTimeMs = Math.round(performance.now() - startTime);
         
         // Push log asynchronously to avoid blocking the return
         if (typeof window !== 'undefined') {
-            setTimeout(() => {
+            setTimeout(async () => {
+                let rError = null;
+                let rData = null;
+                
+                if (!responseClone!.ok) {
+                    try {
+                        rError = await responseClone!.json();
+                    } catch(e) {
+                        rError = await responseClone!.text();
+                    }
+                } else {
+                    if (httpStatus !== 204) {
+                        try {
+                            rData = await responseClone!.json();
+                        } catch(e) {
+                            rData = '<Non-JSON response>';
+                        }
+                    }
+                }
+
                 const state = useDebugStore.getState();
                 state.addLog({
                     table,
                     operation,
                     payload,
-                    returnedData,
-                    returnedError,
+                    returnedData: rData,
+                    returnedError: rError,
                     httpStatus,
                     executionTimeMs,
                     authenticatedUserId: state.contextState.userId,

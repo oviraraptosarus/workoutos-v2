@@ -50,8 +50,9 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
             } as any);
             
             onComplete();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to save profile", error);
+            if (typeof window !== 'undefined') alert("Failed to save profile: " + (error.message || JSON.stringify(error)));
             setIsSubmitting(false);
             setStep(0); // reset on error to let them try again
         }
