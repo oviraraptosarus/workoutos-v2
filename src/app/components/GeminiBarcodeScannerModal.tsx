@@ -35,20 +35,28 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
     if (!isOpen || !mounted) return null;
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         setError(null);
         setParsedMeal(null);
 
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-            const base64String = reader.result as string;
-            setImagePreview(base64String);
-            await scanImage(base64String, file.type);
-        };
-        reader.readAsDataURL(file);
+        try {
+            const { compressImage } = await import('@/utils/imageCompression');
+            const compressedDataUrl = await compressImage(file, 800, 800, 0.7);
+            setImagePreview(compressedDataUrl);
+            await scanImage(compressedDataUrl, file.type);
+        } catch (err) {
+            console.error('Failed to compress image:', err);
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64String = reader.result as string;
+                setImagePreview(base64String);
+                await scanImage(base64String, file.type);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const scanImage = async (base64: string, mimeType: string) => {

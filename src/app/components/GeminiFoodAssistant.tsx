@@ -81,14 +81,20 @@ export default function GeminiFoodAssistant() {
         recognition.start();
     };
 
-    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setSelectedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            try {
+                const { compressImage } = await import('@/utils/imageCompression');
+                const compressedDataUrl = await compressImage(file, 800, 800, 0.7);
+                setSelectedImage(compressedDataUrl);
+            } catch (err) {
+                console.error('Failed to compress image:', err);
+                // Fallback to uncompressed
+                const reader = new FileReader();
+                reader.onloadend = () => setSelectedImage(reader.result as string);
+                reader.readAsDataURL(file);
+            }
         }
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
