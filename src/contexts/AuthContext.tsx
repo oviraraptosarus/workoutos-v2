@@ -240,7 +240,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             
             if (response.error) {
                 console.error("Failed to update profile in Supabase:", response.error);
-                throw response.error;
+                throw new Error(`Supabase Error (${response.status}): ` + JSON.stringify(response.error) + " | Data: " + JSON.stringify(response.data));
             }
             
             // Sync with backend immediately
