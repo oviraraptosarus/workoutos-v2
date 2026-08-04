@@ -205,7 +205,7 @@ export default function GeminiFoodAssistant() {
                         const added = Number(args.amount) || 0;
                         const newWater = currentAppState.waterMl + added;
                         if (user) {
-                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
+                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
                             if (existing) {
                                 await supabase.from('daily_logs').update({ water_ml_total: newWater }).eq('id', existing.id);
                             } else {
@@ -216,7 +216,7 @@ export default function GeminiFoodAssistant() {
                     } else if (fn === 'log_sleep') {
                         const hours = Number(args.hours) || 0;
                         if (user) {
-                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).single();
+                            const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
                             if (existing) {
                                 await supabase.from('daily_logs').update({ sleep_hours: hours }).eq('id', existing.id);
                             } else {

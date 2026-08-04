@@ -46,8 +46,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
         }
     }, [session, userProfile, language]);
     
-    // Determine if onboarding should show based on the completed flag
-    const showOnboarding = Boolean(!isLoading && session && userProfile?.onboarding_completed === false);
+    // Determine if onboarding should show based on the completed flag or if profile doesn't exist yet (new OAuth users)
+    const showOnboarding = Boolean(!isLoading && session && (!userProfile || userProfile.onboarding_completed === false));
 
     return (
         <div className="min-h-screen pb-44 sm:pb-28 bg-transparent relative z-10">

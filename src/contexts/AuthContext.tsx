@@ -37,7 +37,7 @@ export interface UserProfile {
     preferredLanguage: string;
     notificationsEnabled: boolean;
     streamingResponsesEnabled: boolean;
-    targetConfig?: any;
+    targetConfig?: unknown;
     onboarding_completed?: boolean;
     createdAt?: string;
     updatedAt: string;
@@ -59,7 +59,7 @@ interface AuthContextType {
     session: Session | null;
     loading: boolean;
     isLoading: boolean;
-    signUp: (email: string, password: string, metadata?: UserMetadata & Partial<UserProfile>) => Promise<any>;
+    signUp: (email: string, password: string, metadata?: UserMetadata & Partial<UserProfile>) => Promise<unknown>;
     signIn: (email?: string, password?: string) => Promise<unknown>;
     signInWithGoogle: () => Promise<void>;
     login: (email?: string, password?: string) => Promise<unknown>;
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 } else {
                     setUserProfile(null);
                 }
-            } catch (error) {
+            } catch {
                 // If profile not found in DB, it's null (requires onboarding)
                 setUserProfile(null);
             }
@@ -170,6 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Load profile from Supabase when user changes
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         refreshProfile();
     }, [user]);
 
@@ -222,7 +223,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             };
 
             // Remove undefined fields
-            Object.keys(payload).forEach(key => (payload as any)[key] === undefined && delete (payload as any)[key]);
+            Object.keys(payload).forEach(key => (payload as Record<string, unknown>)[key] === undefined && delete (payload as Record<string, unknown>)[key]);
 
             console.log("================ DATABASE OPERATION LOG ================");
             console.log("1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert)");
@@ -327,9 +328,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return data;
     };
 
-    const login = async (email?: string, password?: string) => {
-        return signIn(email, password);
-    };
 
     // Sign Out
     const signOut = async () => {
@@ -337,6 +335,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
         setSession(null);
         clearUserCache();
+        if (typeof window !== 'undefined') {
+            window.location.href = '/sign-up-login-screen';
+        }
     };
 
     // Reset Password

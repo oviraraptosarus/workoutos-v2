@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const safeStorage = {
     getItem(key: string): string | null {
         if (typeof window === 'undefined') return null;

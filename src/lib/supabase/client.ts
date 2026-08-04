@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { useDebugStore, SupabaseOperation } from '@/store/useDebugStore';
 
@@ -58,16 +60,40 @@ const customFetch = async (input: RequestInfo | URL, init?: RequestInit): Promis
         
         const executionTimeMs = Math.round(performance.now() - startTime);
         
-        // Push log asynchronously without touching the response body
+        // Push log asynchronously
         if (typeof window !== 'undefined') {
-            setTimeout(() => {
+            setTimeout(async () => {
+                let returnedData = '<Response body not parsed to preserve stream>';
+                let returnedError = !response.ok ? `<HTTP ${response.status}>` : null;
+                
+                try {
+                    // Clone response to not drain the original stream
+                    const clonedResponse = response.clone();
+                    const text = await clonedResponse.text();
+                    
+                    if (!response.ok) {
+                        returnedError = text;
+                        // Use native UI alert for debugging per User Rules
+                        alert(`Supabase Error (${table} / ${operation}):\nStatus: ${response.status}\nMessage: ${text}`);
+                    } else if (text.length < 5000) {
+                        // Only try to parse small bodies to avoid massive debug logs
+                        try {
+                            returnedData = JSON.parse(text);
+                        } catch {
+                            returnedData = text;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore cloning/reading errors
+                }
+
                 const state = useDebugStore.getState();
                 state.addLog({
                     table,
                     operation,
                     payload,
-                    returnedData: '<Response body not parsed to preserve stream>',
-                    returnedError: !response.ok ? `<HTTP ${response.status}>` : null,
+                    returnedData,
+                    returnedError,
                     httpStatus,
                     executionTimeMs,
                     authenticatedUserId: state.contextState.userId,

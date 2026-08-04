@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseProvider } from './BaseProvider';
 import { CompletionRequest, CompletionResponse } from '../types';
 

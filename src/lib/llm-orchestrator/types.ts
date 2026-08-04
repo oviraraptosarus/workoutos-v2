@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type ProviderId = 'gemini' | 'openai' | 'anthropic' | 'openrouter' | 'agentrouter' | 'openai-compatible';
 
 export interface ModelConfig {

@@ -146,7 +146,7 @@ export default function WeightLogCard() {
                     .select('id')
                     .eq('user_id', user.id)
                     .eq('date', todayKey)
-                    .single();
+                    .maybeSingle();
 
                 if (existing) {
                     const { error } = await supabase.from('daily_logs').update({ weight_kg: newWeight }).eq('id', existing.id);

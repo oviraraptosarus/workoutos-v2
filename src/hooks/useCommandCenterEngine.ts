@@ -18,7 +18,7 @@ export function useCommandCenterEngine() {
                     .from('notification_settings')
                     .select('ai_insights')
                     .eq('user_id', user.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (settings?.ai_insights === false) return; // User disabled insights
 
@@ -34,7 +34,7 @@ export function useCommandCenterEngine() {
                     .gte('date', dateStr)
                     .order('date', { ascending: false });
 
-                const newInsights: any[] = [];
+                const newInsights: Record<string, unknown>[] = [];
 
                 if (recentLogs && recentLogs.length > 0) {
                     // Check for inconsistent sleep (e.g., < 6 hours on multiple days)

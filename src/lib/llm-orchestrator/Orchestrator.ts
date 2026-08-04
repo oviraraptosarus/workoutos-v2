@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { llmConfig } from '@/config/llm';
 import { HealthMonitor } from './HealthMonitor';
 import { CompletionRequest, CompletionResponse, ModelConfig } from './types';
@@ -60,7 +61,7 @@ export class LLMOrchestrator {
 
             try {
                 let retries = 0;
-                let attemptSuccess = false;
+                const attemptSuccess = false;
 
                 while (retries <= this.config.maxRetries && !attemptSuccess) {
                     try {

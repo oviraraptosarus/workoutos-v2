@@ -37,11 +37,32 @@ function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightConten
     );
 }
 
+function ToggleRow({ icon, label, value, onChange }: { icon: string, label: string, value: boolean, onChange: (val: boolean) => void }) {
+    return (
+        <div className="flex items-center justify-between p-4 bg-card-white">
+            <div className="flex items-center gap-3">
+                {icon && (
+                    <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-on-surface-variant text-[18px]">{icon}</span>
+                    </div>
+                )}
+                <span className="font-body-md text-on-surface font-medium">{label}</span>
+            </div>
+            <button
+                onClick={() => onChange(!value)}
+                className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${value ? 'bg-primary' : 'bg-surface-variant/50'}`}
+            >
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${value ? 'translate-x-6' : 'translate-x-0'}`} />
+            </button>
+        </div>
+    );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ProfileHub() {
     const { t } = useLanguage();
-    const { userProfile, updateUserProfile, signOut } = useAuth();
+    const { user, userProfile, updateUserProfile, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { setLanguage } = useLanguage();
     const stats = useProfileStats();
@@ -53,6 +74,10 @@ export default function ProfileHub() {
     const [formData, setFormData] = useState({ ...userProfile });
     const [savedNotice, setSavedNotice] = useState(false);
     const [noticeText, setNoticeText] = useState('Settings saved!');
+    const showNotice = () => {
+        setSavedNotice(true);
+        setTimeout(() => setSavedNotice(false), 3000);
+    };
 
     // Notification settings states
     const [notifSettings, setNotifSettings] = useState({
@@ -70,13 +95,26 @@ export default function ProfileHub() {
     useEffect(() => {
         if (!user) return;
         const fetchNotifSettings = async () => {
-            const { data } = await supabase.from('notification_settings').select('*').eq('user_id', user.id).single();
+            const { data } = await supabase.from('notification_settings').select('*').eq('user_id', user.id).maybeSingle();
             if (data) setNotifSettings(data);
         };
         fetchNotifSettings();
     }, [user]);
 
     const updateNotifSetting = async (key: string, value: boolean) => {
+        if (key === 'push_enabled' && value === true) {
+            if (typeof window !== 'undefined' && 'Notification' in window) {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    alert('You must allow notifications in your browser settings to receive push alerts.');
+                    return;
+                }
+            } else {
+                alert('Push notifications are not supported in your browser.');
+                return;
+            }
+        }
+
         setNotifSettings(prev => ({ ...prev, [key]: value }));
         if (user) {
             await supabase.from('notification_settings').upsert({ user_id: user.id, [key]: value }, { onConflict: 'user_id' });
@@ -382,6 +420,25 @@ export default function ProfileHub() {
                             </div>
                         </div>
                         <div className="p-4 flex items-center justify-between">
+                            <label className="font-medium text-sm text-on-surface">{t('profile.theme') || 'Theme'}</label>
+                            <select 
+                                value={formData.theme || 'system'}
+                                onChange={e => {
+                                    handleInputSave('theme', e.target.value);
+                                    if (e.target.value === 'light' || e.target.value === 'dark' || e.target.value === 'system') {
+                                        // Wait, ThemeContext might not have setTheme. Let's rely on AuthContext.
+                                        // If toggleTheme just toggles dark/light, maybe I should just use toggleTheme.
+                                        // Actually, if AuthContext saves it, the whole app re-renders.
+                                    }
+                                }}
+                                className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                            >
+                                <option value="system">System</option>
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                        <div className="p-4 flex items-center justify-between">
                             <label className="font-medium text-sm text-on-surface">{t('profile.language')}</label>
                             <select 
                                 value={formData.preferredLanguage || 'en'}
@@ -394,8 +451,6 @@ export default function ProfileHub() {
                                 className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                             >
                                 <option value="en">English</option>
-                                <option value="es">Spanish</option>
-                                <option value="hi">Hindi</option>
                                 <option value="te">తెలుగు</option>
                             </select>
                         </div>

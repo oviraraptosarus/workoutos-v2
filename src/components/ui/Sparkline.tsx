@@ -7,7 +7,7 @@ interface SparklineProps {
   points?: { x: number; y: number }[];
 }
 
-export function Sparkline({ color = "#3B82F6", className, points }: SparklineProps) {
+export function Sparkline({ color = "#3B82F6", className }: SparklineProps) {
   // If points are not provided, we draw a generic curve as placeholder
   return (
     <div className={clsx("w-full h-32 pt-2", className)}>

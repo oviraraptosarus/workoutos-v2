@@ -1,8 +1,9 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useRef, useState } from 'react';
-import { Camera, Plus, ChevronRight, Loader2, Sparkles, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Plus, ChevronRight, Loader2, Sparkles, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export interface ProgressPhotoItem {
@@ -29,12 +30,12 @@ export default function ProgressPhotosRow({
     onPhotosUpdated,
     onOpenGallery,
 }: ProgressPhotosRowProps) {
-    const { t } = useLanguage();
+    const languageContext = useLanguage();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
     const [successFlash, setSuccessFlash] = useState(false);
-    const [statusMsg, setStatusMsg] = useState('');
+    const [, setStatusMsg] = useState('');
 
     const handleDeletePhoto = async (e: React.MouseEvent, photo: ProgressPhotoItem) => {
         e.stopPropagation();
@@ -106,9 +107,9 @@ export default function ProgressPhotosRow({
             setStatusMsg('Photo saved!');
             setTimeout(() => setSuccessFlash(false), 2000);
             onPhotosUpdated();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Progress photo upload failed:', err);
-            alert(err.message || 'Failed to upload progress photo');
+            alert(err instanceof Error ? err.message : 'Failed to upload progress photo');
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

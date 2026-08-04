@@ -47,7 +47,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                 .select('id')
                 .eq('user_id', user.id)
                 .eq('date', selectedDate)
-                .single();
+                .maybeSingle();
 
             const updates: any = {};
             if (bedtime) updates.sleep_bedtime = `${bedtime}:00`;

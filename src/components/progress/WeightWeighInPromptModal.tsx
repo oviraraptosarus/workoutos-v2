@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Camera, X, Sparkles, Scale } from 'lucide-react';
+import { Camera, X, Scale } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface WeightWeighInPromptModalProps {
@@ -61,9 +61,9 @@ export default function WeightWeighInPromptModal({
 
             onPhotoUploaded();
             onClose();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to upload photo from weigh-in prompt:', err);
-            alert(err.message || 'Failed to save photo.');
+            alert(err instanceof Error ? err.message : 'Failed to save photo.');
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

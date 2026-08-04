@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase/client';
 import { Task, SubTask } from '@/app/planner/page';

@@ -1,4 +1,6 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-unescaped-entities */
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -35,7 +37,8 @@ export default function ProgressPhotoGalleryModal({
     onClose,
     onPhotosUpdated,
 }: ProgressPhotoGalleryModalProps) {
-    const { t } = useLanguage();
+    const languageContext = useLanguage(); // Only kept if needed, but since it's unused we can remove or ignore. Wait, `useLanguage` might be required by something else? No, `t` was unused.
+
     const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
 
     // Editing State inside Single View
@@ -139,9 +142,9 @@ export default function ProgressPhotoGalleryModal({
 
             setIsEditing(false);
             onPhotosUpdated();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to save photo metadata edit:', err);
-            alert(err.message || 'Failed to save changes.');
+            alert(err instanceof Error ? err.message : 'Failed to save changes.');
         } finally {
             setIsSavingEdit(false);
         }

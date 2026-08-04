@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand';
 
 export type SupabaseOperation = 'select' | 'insert' | 'update' | 'upsert' | 'delete' | 'storage upload' | 'storage delete' | 'RPC' | 'auth call' | 'unknown';

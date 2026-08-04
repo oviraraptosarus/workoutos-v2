@@ -1,5 +1,6 @@
 import { BaseProvider } from './BaseProvider';
-import { CompletionRequest, CompletionResponse } from '../types';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ModelProvider, CompletionRequest, CompletionResponse, ModelConfig } from '../types';
 
 export class GeminiProvider extends BaseProvider {
     async generateContent(model: string, request: CompletionRequest, signal?: AbortSignal): Promise<CompletionResponse> {

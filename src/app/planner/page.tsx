@@ -88,6 +88,9 @@ export default function PlannerPage() {
             if (config.planner_habits_list) setHabitsList(config.planner_habits_list);
         };
         loadData();
+
+        window.addEventListener('workout_os_tasks_updated', loadData);
+        return () => window.removeEventListener('workout_os_tasks_updated', loadData);
     }, [userProfile?.targetConfig]);
 
     const updateTargetConfig = async (updates: any) => {

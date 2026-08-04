@@ -46,7 +46,7 @@ export default function SleepCard() {
                 .select('sleep_hours, sleep_bedtime, sleep_waketime')
                 .eq('user_id', user.id)
                 .eq('date', selectedDate)
-                .single();
+                .maybeSingle();
 
             if (data && data.sleep_hours > 0) {
                 setCurrentSleep(data.sleep_hours);
