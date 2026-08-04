@@ -48,8 +48,8 @@ export default function OnboardingTourModal() {
                     >
                         <X size={16} />
                     </button>
-                    <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-3 shadow-[0_8px_24px_rgba(0,0,0,0.16)]">
-                        <span className="material-symbols-outlined text-on-primary text-[28px]">vital_signs</span>
+                    <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center mx-auto mb-3 overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.16)]">
+                        <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
                     </div>
                     <h2 className="text-xl font-bold tracking-tight text-on-surface">Welcome to Workout OS</h2>
                     <p className="text-on-surface-variant text-xs font-medium mt-1">Your all-in-one fitness &amp; life tracker</p>

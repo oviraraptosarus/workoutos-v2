@@ -19,8 +19,8 @@ export default function SignUpLoginScreen() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-on-surface-variant">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-primary flex items-center justify-center animate-pulse">
-            <span className="material-symbols-outlined text-on-primary" style={{ fontSize: 32 }}>vital_signs</span>
+          <div className="w-11 h-11 rounded-2xl bg-black flex items-center justify-center overflow-hidden animate-pulse shadow-md">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-label-md text-label-md">Loading…</span>
         </div>

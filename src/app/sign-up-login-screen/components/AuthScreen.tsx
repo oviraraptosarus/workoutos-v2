@@ -121,8 +121,8 @@ export default function AuthScreen() {
             <div className="relative flex-1 flex flex-col justify-center max-w-md mx-auto w-full pb-[max(2rem,env(safe-area-inset-bottom))] z-10">
                 {view !== 'forgot_password' && (
                     <div className="mb-7 animate-in fade-in slide-in-from-left-4 duration-300">
-                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary shadow-[0_8px_24px_rgba(0,0,0,0.16)] mb-5">
-                            <span className="material-symbols-outlined text-on-primary" style={{ fontSize: 28 }}>vital_signs</span>
+                        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.16)] mb-5">
+                            <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                         </div>
                         <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">
                             {view === 'login' ? (t('auth.welcomeBack') !== 'auth.welcomeBack' ? t('auth.welcomeBack') : 'Welcome back') : (t('auth.createAccount') !== 'auth.createAccount' ? t('auth.createAccount') : 'Create your account')}
