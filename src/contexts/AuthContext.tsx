@@ -183,47 +183,55 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 ? fallbackEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Math.floor(Math.random() * 10000)
                 : `user_${Math.floor(Math.random() * 1000000)}`;
 
-            const payload = {
+            const payload: Record<string, any> = {
                 id: user.id,
-                email: fallbackEmail,
-                full_name: updates.fullName || (userProfile?.fullName || ''),
-                username: updates.username || (userProfile?.username || fallbackUsername),
-                current_weight: updates.currentWeight,
-                target_weight: updates.targetWeight,
-                fitness_goal: updates.fitnessGoal,
-                enable_financial_reminders: updates.enableFinancialReminders,
-                dob: updates.dob || null,
-                height_cm: updates.heightCm,
-                gender: updates.gender,
-                calorie_goal: updates.calorieGoal,
-                sleep_goal: updates.sleepGoal,
-                monthly_budget: updates.monthlyBudget,
-                monthly_income: updates.monthlyIncome,
-                water_goal_ml: updates.waterGoalMl,
-                units: updates.units || 'metric',
-                theme: updates.theme || 'system',
-                avatar_path: updates.avatarPath,
-                onboarding_completed: updates.onboarding_completed,
-                activity_level: updates.activityLevel,
-                voice_enabled: updates.voiceEnabled,
-                ai_memory_enabled: updates.aiMemoryEnabled,
-                preferred_ai_voice: updates.preferredAiVoice,
-                preferred_language: updates.preferredLanguage || 'en',
-                notifications_enabled: updates.notificationsEnabled,
-                target_config: {
-                    ...(updates.targetConfig || {}),
-                    streaming_responses_enabled: updates.streamingResponsesEnabled
-                },
                 updated_at: new Date().toISOString(),
-                accepted_terms: updates.accepted_terms,
-                accepted_privacy: updates.accepted_privacy,
-                terms_version: updates.terms_version,
-                privacy_version: updates.privacy_version,
-                accepted_at: updates.accepted_at
             };
 
-            // Remove undefined fields
-            Object.keys(payload).forEach(key => (payload as Record<string, unknown>)[key] === undefined && delete (payload as Record<string, unknown>)[key]);
+            if (fallbackEmail) payload.email = fallbackEmail;
+            
+            // For full_name and username, preserve existing logic of falling back to userProfile or generated username if missing
+            payload.full_name = updates.fullName !== undefined ? updates.fullName : (userProfile?.fullName || '');
+            payload.username = updates.username !== undefined ? updates.username : (userProfile?.username || fallbackUsername);
+
+            if (updates.currentWeight !== undefined) payload.current_weight = updates.currentWeight;
+            if (updates.targetWeight !== undefined) payload.target_weight = updates.targetWeight;
+            if (updates.fitnessGoal !== undefined) payload.fitness_goal = updates.fitnessGoal;
+            if (updates.enableFinancialReminders !== undefined) payload.enable_financial_reminders = updates.enableFinancialReminders;
+            if (updates.dob !== undefined) payload.dob = updates.dob;
+            if (updates.heightCm !== undefined) payload.height_cm = updates.heightCm;
+            if (updates.gender !== undefined) payload.gender = updates.gender;
+            if (updates.calorieGoal !== undefined) payload.calorie_goal = updates.calorieGoal;
+            if (updates.sleepGoal !== undefined) payload.sleep_goal = updates.sleepGoal;
+            if (updates.monthlyBudget !== undefined) payload.monthly_budget = updates.monthlyBudget;
+            if (updates.monthlyIncome !== undefined) payload.monthly_income = updates.monthlyIncome;
+            if (updates.waterGoalMl !== undefined) payload.water_goal_ml = updates.waterGoalMl;
+            if (updates.units !== undefined) payload.units = updates.units;
+            if (updates.theme !== undefined) payload.theme = updates.theme;
+            if (updates.avatarPath !== undefined) payload.avatar_path = updates.avatarPath;
+            if (updates.onboarding_completed !== undefined) payload.onboarding_completed = updates.onboarding_completed;
+            if (updates.activityLevel !== undefined) payload.activity_level = updates.activityLevel;
+            if (updates.voiceEnabled !== undefined) payload.voice_enabled = updates.voiceEnabled;
+            if (updates.aiMemoryEnabled !== undefined) payload.ai_memory_enabled = updates.aiMemoryEnabled;
+            if (updates.preferredAiVoice !== undefined) payload.preferred_ai_voice = updates.preferredAiVoice;
+            if (updates.preferredLanguage !== undefined) payload.preferred_language = updates.preferredLanguage;
+            if (updates.notificationsEnabled !== undefined) payload.notifications_enabled = updates.notificationsEnabled;
+            
+            if (updates.targetConfig !== undefined || updates.streamingResponsesEnabled !== undefined) {
+                payload.target_config = {
+                    ...(typeof userProfile?.targetConfig === 'object' ? userProfile.targetConfig : {}),
+                    ...(typeof updates.targetConfig === 'object' ? updates.targetConfig : {}),
+                };
+                if (updates.streamingResponsesEnabled !== undefined) {
+                    payload.target_config.streaming_responses_enabled = updates.streamingResponsesEnabled;
+                }
+            }
+
+            if (updates.accepted_terms !== undefined) payload.accepted_terms = updates.accepted_terms;
+            if (updates.accepted_privacy !== undefined) payload.accepted_privacy = updates.accepted_privacy;
+            if (updates.terms_version !== undefined) payload.terms_version = updates.terms_version;
+            if (updates.privacy_version !== undefined) payload.privacy_version = updates.privacy_version;
+            if (updates.accepted_at !== undefined) payload.accepted_at = updates.accepted_at;
 
             console.log("================ DATABASE OPERATION LOG ================");
             console.log("1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert)");
