@@ -69,7 +69,7 @@ export default function TransactionModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white  rounded-3xl w-full max-w-md shadow-xl border border-surface-variant  overflow-hidden">
+            <div className="bg-card-white  rounded-2xl w-full max-w-md shadow-xl border border-surface-variant  overflow-hidden">
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant ">
                     <h2 className="text-lg font-bold text-on-surface dark:text-white capitalize">
                         {type === 'income' ? t('budget.modal.addIncome') : t('budget.modal.addExpense')}
@@ -79,7 +79,7 @@ export default function TransactionModal({
                     </button>
                 </div>
 
-                <form onSubmit={handleSave} className="p-6 space-y-4">
+                <form onSubmit={handleSave} className="p-4 sm:p-5 space-y-4">
                     <div>
                         <label className="block text-xs font-bold text-on-surface-variant dark:text-on-surface-variant mb-1">{t('budget.modal.amount')}</label>
                         <input

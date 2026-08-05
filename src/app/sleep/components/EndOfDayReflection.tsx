@@ -137,7 +137,7 @@ export default function EndOfDayReflection() {
     const LABEL_CLS = "text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1";
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm space-y-6 transition-colors relative">
+        <div className="bg-surface-container-low border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm space-y-4 transition-colors relative">
 
             {/* Saved toast */}
             {savedNotice && (

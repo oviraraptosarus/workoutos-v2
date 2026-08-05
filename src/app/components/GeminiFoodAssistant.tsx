@@ -342,7 +342,7 @@ export default function GeminiFoodAssistant() {
             {/* iOS Apple Sheet Popup Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/20 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-card-white border border-surface-variant border-surface-variant w-full max-w-2xl sm:rounded-3xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[75vh] sm:h-[550px]">
+                    <div className="bg-card-white border border-surface-variant border-surface-variant w-full max-w-2xl sm:rounded-2xl rounded-t-3xl shadow-lg overflow-hidden flex flex-col h-[75vh] sm:h-[550px]">
                         
                         {/* iOS Sheet Handlebar & Top Bar */}
                         <div className="px-6 py-4 border-b border-surface-variant flex items-center justify-between bg-card-white/20 backdrop-blur-md">

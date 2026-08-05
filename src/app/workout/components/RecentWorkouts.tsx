@@ -42,7 +42,7 @@ export default function RecentWorkouts() {
     }, [user]);
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm transition-colors">
+        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm transition-colors">
             <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.pastSessions')}</h3>
             
             <div className="space-y-3">

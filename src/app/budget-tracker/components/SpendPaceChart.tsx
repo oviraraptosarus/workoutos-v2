@@ -59,25 +59,53 @@ export default function SpendPaceChart() {
     const weeklyTarget = monthlyTarget / 4.33; // average weeks per month
 
     // Calculate daily cumulative spend over these 7 days
+    const realToday = new Date();
+    realToday.setHours(23, 59, 59, 999);
+
     let weeklyTotal = 0;
     let runningTotal = 0;
+
+    let daysPassed = 0;
+    let spendToDate = 0;
+
+    // First pass: calculate spend to date to find average
+    last7Days.forEach(dateObj => {
+        if (dateObj <= realToday) {
+            daysPassed++;
+            const isoKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            const dayExpenses = expenses.filter(e => e.date === isoKey);
+            spendToDate += dayExpenses.reduce((sum, item) => sum + item.amount, 0);
+        }
+    });
+
+    const averageDailySpend = daysPassed > 0 ? spendToDate / daysPassed : 0;
     
     const chartData = last7Days.map((dateObj, index) => {
-        // getExpenses() returns dates as ISO (YYYY-MM-DD). Build the same key to
-        // match — the old code compared against "Aug 1"-style labels, so the
-        // filter never matched and the chart was always empty.
+        const isFuture = dateObj > realToday;
         const isoKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         const label = `${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getDate()}`;
-        const dayExpenses = expenses.filter(e => e.date === isoKey);
-        const daySpend = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
-        weeklyTotal += daySpend;
-        runningTotal += daySpend;
+        
+        let actualSpend: number | null = null;
+        let projectedSpend: number | null = null;
 
+        if (!isFuture) {
+            const dayExpenses = expenses.filter(e => e.date === isoKey);
+            const daySpend = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
+            runningTotal += daySpend;
+            actualSpend = runningTotal;
+            projectedSpend = runningTotal; // Connects the lines
+        } else {
+            runningTotal += averageDailySpend;
+            projectedSpend = runningTotal;
+        }
+
+        weeklyTotal = runningTotal;
         const budgetPace = (weeklyTarget / 6) * index;
 
         return {
             date: label,
-            spend: runningTotal,
+            spend: actualSpend,
+            projection: projectedSpend,
             budgetPace: budgetPace
         };
     });
@@ -85,7 +113,7 @@ export default function SpendPaceChart() {
     const maxY = Math.max(weeklyTarget * 1.2, weeklyTotal * 1.2, 100);
 
     return (
-        <div className="bg-card-white  border border-surface-variant  p-6 h-full flex flex-col justify-between rounded-3xl shadow-sm transition-colors">
+        <div className="bg-card-white  border border-surface-variant  p-4 sm:p-5 h-full flex flex-col justify-between rounded-2xl shadow-sm transition-colors">
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight mb-1">{t('budget.chart.title')}</h3>
@@ -99,6 +127,10 @@ export default function SpendPaceChart() {
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-0 border-t border-dashed border-gray-400 dark:border-gray-500" />
                         <span>{t('budget.chart.budgetPace')}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 hidden sm:flex">
+                        <div className="w-3 h-0 border-t border-dashed border-[#8b5cf6] dark:border-purple-400" />
+                        <span>Projected</span>
                     </div>
                 </div>
             </div>
@@ -134,6 +166,7 @@ export default function SpendPaceChart() {
                             formatter={(value: number, name: string) => {
                                 if (name === 'spend') return [`₹${Math.round(value)}`, t('budget.chart.tooltipCumulative')];
                                 if (name === 'budgetPace') return [`₹${Math.round(value)}`, t('budget.chart.tooltipPace')];
+                                if (name === 'projection') return [`₹${Math.round(value)}`, 'Projected Spend'];
                                 return [value, name];
                             }}
                         />
@@ -155,6 +188,16 @@ export default function SpendPaceChart() {
                             dot={false}
                             activeDot={false}
                             name="budgetPace"
+                        />
+                        <Line 
+                            type="monotone" 
+                            dataKey="projection" 
+                            stroke="#8b5cf6" 
+                            strokeWidth={2}
+                            strokeDasharray="4 4"
+                            dot={false}
+                            activeDot={{ r: 4, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }}
+                            name="projection"
                         />
                     </ComposedChart>
                 </ResponsiveContainer>

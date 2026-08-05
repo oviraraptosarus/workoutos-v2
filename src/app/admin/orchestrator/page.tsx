@@ -59,15 +59,15 @@ export default function OrchestratorAdminPanel() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-neutral-800/50 p-6 rounded-2xl border border-white/5">
+                    <div className="bg-neutral-800/50 p-4 sm:p-5 rounded-2xl border border-white/5">
                         <h3 className="text-sm text-neutral-400 font-medium">Max Retries</h3>
                         <p className="text-2xl font-bold mt-2">{config.maxRetries}</p>
                     </div>
-                    <div className="bg-neutral-800/50 p-6 rounded-2xl border border-white/5">
+                    <div className="bg-neutral-800/50 p-4 sm:p-5 rounded-2xl border border-white/5">
                         <h3 className="text-sm text-neutral-400 font-medium">Cooldown Period</h3>
                         <p className="text-2xl font-bold mt-2">{config.cooldownMs / 1000}s</p>
                     </div>
-                    <div className="bg-neutral-800/50 p-6 rounded-2xl border border-white/5">
+                    <div className="bg-neutral-800/50 p-4 sm:p-5 rounded-2xl border border-white/5">
                         <h3 className="text-sm text-neutral-400 font-medium">Timeout</h3>
                         <p className="text-2xl font-bold mt-2">{config.timeoutMs / 1000}s</p>
                     </div>
@@ -95,7 +95,7 @@ export default function OrchestratorAdminPanel() {
                             const StatusIcon = isUnconfigured ? AlertCircle : stats.isCooldown ? XCircle : CheckCircle;
 
                             return (
-                                <div key={modelId} className={`p-6 rounded-2xl border flex flex-col md:flex-row gap-6 justify-between items-center ${isUnconfigured ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-800/30 border-white/5'}`}>
+                                <div key={modelId} className={`p-4 sm:p-5 rounded-2xl border flex flex-col md:flex-row gap-6 justify-between items-center ${isUnconfigured ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-800/30 border-white/5'}`}>
                                     <div className="flex items-center gap-4 w-full md:w-auto">
                                         <div className={`p-3 rounded-full ${statusColor}`}>
                                             <StatusIcon className="w-6 h-6" />

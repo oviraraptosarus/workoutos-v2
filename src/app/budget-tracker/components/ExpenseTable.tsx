@@ -74,7 +74,7 @@ export default function ExpenseTable() {
                 highlight
                     ? 'border-activity-red shadow-[0_0_15px_rgba(239,68,68,0.5)]'
                     : 'border-surface-variant'
-            } p-5 sm:p-6 rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] transition-all duration-500`}
+            } p-4 sm:p-5 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] transition-all duration-500`}
         >
             <div className="mb-5">
                 <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1">

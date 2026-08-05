@@ -63,7 +63,7 @@ export default function DashboardTasks() {
                 </Link>
             </div>
 
-            <div className={`bg-card-white dark:bg-surface-container-lowest border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-black/5 dark:border-white/5'} p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] space-y-3 flex-1 transition-all duration-500 relative overflow-hidden hover:shadow-lg`}>
+            <div className={`bg-card-white dark:bg-surface-container-lowest border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-black/5 dark:border-white/5'} p-4 sm:p-5 rounded-2xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] space-y-3 flex-1 transition-all duration-500 relative overflow-hidden hover:shadow-lg`}>
                 {pendingTasks.length === 0 ? (
                     <div className="flex flex-col items-center justify-center gap-3 py-6">
                         <div className="w-12 h-12 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-activity-green shadow-inner">

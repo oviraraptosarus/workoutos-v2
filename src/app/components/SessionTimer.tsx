@@ -28,7 +28,7 @@ export default function SessionTimer() {
     };
 
     return (
-        <div className="bg-card-white dark:bg-[#1c1c1e] border border-surface-variant dark:border-gray-800 rounded-3xl p-4 flex items-center justify-between shadow-sm transition-all">
+        <div className="bg-card-white dark:bg-[#1c1c1e] border border-surface-variant dark:border-gray-800 rounded-2xl p-4 flex items-center justify-between shadow-sm transition-all">
             <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-white/5 dark:bg-white/10 text-white">
                     <Timer size={20} />

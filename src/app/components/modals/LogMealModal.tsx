@@ -13,7 +13,7 @@ export default function LogMealModal({ isOpen, onClose }: LogMealModalProps) {
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white rounded-3xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
+            <div className="bg-card-white rounded-2xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant ">
@@ -33,7 +33,7 @@ export default function LogMealModal({ isOpen, onClose }: LogMealModalProps) {
                         <input
                             type="text"
                             placeholder="e.g. Oatmeal with berries"
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
                         />
                     </div>
 
@@ -43,7 +43,7 @@ export default function LogMealModal({ isOpen, onClose }: LogMealModalProps) {
                             <input
                                 type="number"
                                 placeholder="350"
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
                             />
                         </div>
                         <div>
@@ -51,7 +51,7 @@ export default function LogMealModal({ isOpen, onClose }: LogMealModalProps) {
                             <input
                                 type="number"
                                 placeholder="25"
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
                             />
                         </div>
                     </div>
@@ -59,7 +59,7 @@ export default function LogMealModal({ isOpen, onClose }: LogMealModalProps) {
                     <div className="pt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold py-3.5 rounded-2xl transition-colors text-[15px] shadow-sm btn-press"
+                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold h-12 rounded-xl transition-colors text-[15px] shadow-sm btn-press"
                         >
                             Log meal
                         </button>

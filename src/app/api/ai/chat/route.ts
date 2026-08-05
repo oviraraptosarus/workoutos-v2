@@ -4,7 +4,7 @@ import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, userProfile, image, history, appState, preferredLanguage } = body;
+        const { prompt, userProfile, image, history, appState, preferredLanguage, aiMemories } = body;
 
         if (!prompt && !image) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
@@ -23,6 +23,9 @@ Goal: ${userProfile?.fitnessGoal || 'General Health'}
 Calorie Target: ${userProfile?.calorieGoal || 'Not set'} kcal/day
 Sleep Goal: ${userProfile?.sleepGoal || 7.5} hrs/night
 Water Goal: ${userProfile?.waterGoalMl || 2500} ml/day
+
+LONG-TERM MEMORY (Crucial details about this user. Incorporate these into your recommendations and tone):
+${aiMemories && aiMemories.length > 0 ? aiMemories.map((m: any) => `- [${m.category}] ${m.memory_text}`).join('\n') : 'No long-term memories saved yet.'}
 
 LIVE DASHBOARD STATE (today's data — use this to answer progress questions):
 ${appState ? JSON.stringify(appState, null, 2) : 'No live state provided.'}
@@ -82,6 +85,9 @@ The user has set their language preference to '${preferredLanguage || 'en'}'. If
 
 RULE 8 — IMAGE TASK EXTRACTION:
 If the user provides an image (e.g., a screenshot of a list, notes, or whiteboard), extract all actionable tasks. For each task, call the add_task function.
+
+RULE 9 — LONG-TERM MEMORY:
+Whenever the user tells you a permanent fact about themselves (e.g., fitness goals, diet preferences, sleep schedule, allergies, language, medical limitations, budget habits, favorite exercises), you MUST call the save_ai_memory function to store it. Do not ask the user twice in future conversations.
 
 === END RULES ===`;
 
@@ -255,6 +261,18 @@ If the user provides an image (e.g., a screenshot of a list, notes, or whiteboar
                                             source: { type: "STRING", description: "Source of the income (e.g. Salary, Freelance, Side Hustle)." }
                                         },
                                         required: ["amount", "source"]
+                                    }
+                                },
+                                {
+                                    name: "save_ai_memory",
+                                    description: "Save a permanent fact about the user for true long-term memory (e.g., fitness goals, diet, allergies, habits).",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            category: { type: "STRING", description: "Category of the memory (e.g. 'Fitness Goals', 'Diet Preferences', 'Medical Limitations', 'Sleep Schedule', 'General Profile')." },
+                                            memory_text: { type: "STRING", description: "The specific fact to remember (e.g. 'User is allergic to peanuts', 'User prefers to workout in the morning')." }
+                                        },
+                                        required: ["category", "memory_text"]
                                     }
                                 }
                             ]

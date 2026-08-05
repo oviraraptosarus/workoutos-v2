@@ -138,7 +138,7 @@ export default function CommandPaletteModal() {
             {/* Modal Overlay */}
             {isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[85vh]">
+                    <div className="bg-card-white/95 backdrop-blur-md rounded-2xl w-full max-w-xl shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[85vh]">
                         
                         {/* Search Input Bar */}
                         <div className="px-5 py-4 border-b border-surface-variant flex items-center gap-3 bg-surface-container-low/80">

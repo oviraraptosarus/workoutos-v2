@@ -112,15 +112,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 >
                     {SLIDES.map((slide, i) => (
                         <div key={i} className="min-w-full h-full flex flex-col items-center justify-center px-8 text-center pt-12 pb-24">
-                            <div className={`w-32 h-32 rounded-3xl ${slide.bg} flex items-center justify-center mb-8 shadow-sm`}>
-                                <span className={`material-symbols-outlined ${slide.color}`} style={{ fontSize: 64 }}>
+                            <div className={`w-24 h-24 rounded-[1.5rem] ${slide.bg} flex items-center justify-center mb-6 shadow-sm`}>
+                                <span className={`material-symbols-outlined ${slide.color}`} style={{ fontSize: 48 }}>
                                     {slide.icon}
                                 </span>
                             </div>
-                            <h2 className="font-display-sm text-display-sm font-bold text-on-surface mb-4">
+                            <h2 className="font-display-sm text-2xl font-bold text-on-surface mb-3">
                                 {slide.title}
                             </h2>
-                            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-xs">
+                            <p className="font-body-md text-on-surface-variant max-w-xs">
                                 {slide.description}
                             </p>
                         </div>
@@ -141,7 +141,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 <div className="w-full flex items-center justify-between max-w-md mx-auto">
                     <button 
                         onClick={prevStep}
-                        className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-opacity ${currentStep === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100 bg-surface-container hover:bg-surface-container-high'}`}
+                        className={`w-12 h-12 flex items-center justify-center rounded-xl transition-opacity ${currentStep === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100 bg-surface-container hover:bg-surface-container-high'}`}
                         aria-label="Previous step"
                     >
                         <ArrowLeft size={20} className="text-on-surface" />
@@ -149,7 +149,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
                     <button 
                         onClick={nextStep}
-                        className="flex-1 ml-4 bg-primary text-on-primary font-label-md text-label-md h-14 rounded-2xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+                        className="flex-1 ml-4 bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
                     >
                         {currentStep === SLIDES.length - 1 ? 'Get Started' : 'Next'}
                         {currentStep === SLIDES.length - 1 ? null : <ArrowRight size={18} />}

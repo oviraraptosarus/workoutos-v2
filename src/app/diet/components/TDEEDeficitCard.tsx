@@ -26,81 +26,108 @@ export default function TDEEDeficitCard({
 
     // 1 kg of fat ≈ 7700 kcal -> Weekly pace calculation
     const weeklyPaceKg = ((absoluteDiff * 7) / 7700).toFixed(2);
+    
+    // Calculate progress for the multi-segment bar
+    const maxBarValue = Math.max(tdeeGoal, totalCalories);
+    const consumedPercent = (totalCalories / maxBarValue) * 100;
+    const netPercent = (netCaloriesIn / maxBarValue) * 100;
 
     return (
-        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-2xl bg-white/10 text-activity-purple border border-white/20/20 shadow-sm">
-                        <TrendingDown size={18} />
+        <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 p-6 rounded-[32px] shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.3)] transition-all hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] relative overflow-hidden">
+            
+            {/* Header */}
+            <div className="flex items-start justify-between mb-8">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
+                        <TrendingDown size={20} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">
-                            TDEE & Net Energy Balance
+                        <h3 className="text-base font-semibold text-on-surface tracking-tight">
+                            Metabolic Velocity
                         </h3>
-                        <p className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant dark:text-on-surface-variant">
-                            Real-time caloric deficit & weekly weight velocity
+                        <p className="text-xs font-medium text-on-surface-variant">
+                            Real-time energy balance & weekly projection
                         </p>
                     </div>
                 </div>
 
                 {/* Status Badge */}
                 <div
-                    className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm border flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 ${
                         isDeficit
-                            ? 'bg-white text-black border-white/20'
-                            : 'bg-white text-black border-white/20'
+                            ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                            : 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
                     }`}
                 >
                     <Flame size={14} />
-                    <span>{isDeficit ? `-${absoluteDiff} kcal ${t('diet.deficit')}` : `+${absoluteDiff} kcal ${t('diet.surplus')}`}</span>
+                    <span>{isDeficit ? `Deficit` : `Surplus`}</span>
                 </div>
             </div>
 
-            {/* Metrics Breakdown Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-3 gap-x-2 text-center p-3 rounded-2xl bg-surface-container border border-surface-variant shadow-inner mb-4">
-                <div>
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">{t('diet.maintenance')}</span>
-                    <span className="text-sm font-bold text-on-surface dark:text-white">{tdeeGoal} kcal</span>
+            {/* Hero Stat: Weekly Velocity */}
+            <div className="mb-8">
+                <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-semibold tracking-tighter text-on-surface tabular-nums">
+                        {isDeficit ? `-${weeklyPaceKg}` : `+${weeklyPaceKg}`}
+                    </span>
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">kg/wk</span>
                 </div>
-                <div>
-                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">{t('diet.consumed')}</span>
-                    <span className="text-sm font-bold text-on-surface">{totalCalories} kcal</span>
+                <p className="text-sm text-on-surface-variant font-medium mt-1">
+                    Projected weekly weight {isDeficit ? 'loss' : 'gain'} based on today's deficit of <strong className="text-on-surface">{absoluteDiff} kcal</strong>.
+                </p>
+            </div>
+
+            {/* Segmented Energy Bar */}
+            <div className="space-y-3 mb-8">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                    <span>Net Intake: <span className="text-on-surface">{netCaloriesIn}</span></span>
+                    <span>TDEE: <span className="text-on-surface">{tdeeGoal}</span></span>
+                </div>
+                
+                <div className="relative w-full h-4 bg-surface-container-high rounded-full overflow-hidden border border-white/5">
+                    {/* Consumed Bar (Background) */}
+                    <div
+                        className="absolute top-0 left-0 h-full bg-surface-variant/80 transition-all duration-1000 ease-out"
+                        style={{ width: `${Math.min(100, consumedPercent)}%` }}
+                    />
+                    
+                    {/* Net Bar (Foreground - Overlaps Consumed, showing active burn diff) */}
+                    <div
+                        className={`absolute top-0 left-0 h-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(0,0,0,0.2)] ${isDeficit ? 'bg-primary' : 'bg-red-500'}`}
+                        style={{ width: `${Math.min(100, netPercent)}%` }}
+                    />
+                    
+                    {/* TDEE Goal Marker */}
+                    <div 
+                        className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_4px_rgba(255,255,255,0.8)] z-10"
+                        style={{ left: `${(tdeeGoal / maxBarValue) * 100}%` }}
+                    />
+                </div>
+                <div className="flex justify-between text-[10px] font-medium text-on-surface-variant">
+                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-primary" /> Net Energy</span>
+                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-surface-variant" /> Active Burn Offset</span>
+                </div>
+            </div>
+
+            {/* Metrics Breakdown Grid */}
+            <div className="grid grid-cols-3 gap-2">
+                <div className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center">
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Consumed</span>
+                    <span className="text-lg font-semibold text-on-surface tabular-nums">{totalCalories}</span>
                 </div>
                 <div 
-                    className="cursor-pointer group relative"
+                    className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center cursor-pointer hover:bg-surface-container transition-colors group relative"
                     onClick={onOpenActivityModal}
-                    title="Click to log steps/activity"
                 >
-                    <span className="text-[10px] font-bold text-activity-purple group-hover:text-activity-purple uppercase tracking-wider block transition-colors">{t('diet.activeBurn')}</span>
-                    <span className="text-sm font-bold text-activity-purple group-hover:text-purple-800 transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'} kcal</span>
-                    <div className="absolute -top-1 -right-1 bg-purple-100 text-activity-purple rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Zap size={10} />
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1 group-hover:text-primary transition-colors">Burned</span>
+                    <span className="text-lg font-semibold text-on-surface tabular-nums group-hover:text-primary transition-colors">{activityBurned > 0 ? `-${activityBurned}` : '0'}</span>
+                    <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg scale-75">
+                        <Zap size={14} />
                     </div>
                 </div>
-                <div>
-                    <span className="text-[10px] font-bold text-activity-green uppercase tracking-wider block">{t('diet.weeklyVel')}</span>
-                    <span className="text-sm font-bold text-activity-green">
-                        {isDeficit ? `-${weeklyPaceKg} kg/wk` : `+${weeklyPaceKg} kg/wk`}
-                    </span>
-                </div>
-            </div>
-
-            {/* Visual Gauge Bar */}
-            <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold text-on-surface-variant dark:text-on-surface-variant">
-                    <span>{t('diet.netIntake')} ({netCaloriesIn} kcal)</span>
-                    <span>{t('diet.limit')} ({tdeeGoal} kcal)</span>
-                </div>
-                <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
-                    <div
-                        className={`h-full rounded-full transition-all duration-700 ease-out shadow-sm ${
-                            isDeficit
-                                ? 'bg-gradient-to-r from-emerald-400 to-teal-500'
-                                : 'bg-gradient-to-r from-amber-400 to-rose-500'
-                        }`}
-                        style={{ width: `${Math.min(100, (netCaloriesIn / tdeeGoal) * 100)}%` }}
-                    />
+                <div className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center">
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Deficit</span>
+                    <span className="text-lg font-semibold text-on-surface tabular-nums">{absoluteDiff}</span>
                 </div>
             </div>
         </div>

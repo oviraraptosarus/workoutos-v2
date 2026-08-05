@@ -52,47 +52,59 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
     ];
 
     return (
-        <div className="bg-card-white rounded-3xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.04)] transition-all">
-            <div className="flex items-center justify-between mb-2">
-                <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{t('diet.mealplan')}</span>
+        <div className="space-y-4">
+            <div className="flex items-end justify-between px-2">
+                <div>
+                    <h2 className="text-xl font-semibold tracking-tight text-on-surface">5-Day Nutrition Programs</h2>
+                    <span className="text-xs font-medium text-on-surface-variant uppercase tracking-widest">{t('diet.mealplan')}</span>
+                </div>
                 <button
                     id="tour-see-details"
                     onClick={onOpenDetails}
-                    className="font-label-sm text-label-sm text-secondary hover:text-secondary-fixed-variant uppercase tracking-wider flex items-center gap-0.5 transition-colors group relative z-[110]"
+                    className="text-xs font-semibold text-primary hover:text-primary-fixed-variant uppercase tracking-widest flex items-center gap-1 transition-colors group relative z-[110]"
                 >
-                    {t('diet.details')} <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                    {t('diet.details')} <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </button>
             </div>
-            
-            <h2 className="font-headline-md text-headline-md text-on-surface mb-4">5-Day Getting Started</h2>
 
-            <div className="grid grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {plans.map((item) => (
                     <div
                         key={item.id}
                         onClick={onOpenDetails}
-                        className="flex flex-col items-center group cursor-pointer"
+                        className="group cursor-pointer relative w-full aspect-[4/5] rounded-[32px] overflow-hidden bg-surface-container shadow-[0_12px_24px_rgba(0,0,0,0.1)] hover:shadow-[0_24px_48px_rgba(0,0,0,0.2)] transition-all duration-500 transform hover:-translate-y-1"
                         title="Click to view complete 5-day recipe plan"
                     >
-                        {/* Icon above image */}
-                        <div className="mb-2 p-1.5 rounded-full bg-surface-container-low group-hover:scale-110 transition-transform flex items-center justify-center">
+                        {/* Background Image with Zoom on Hover */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                        />
+                        
+                        {/* Dark Gradient Overlay for Text Legibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                        {/* Top Icon Area */}
+                        <div className="absolute top-4 left-4 p-2 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
                             {item.icon}
                         </div>
-                        {/* Thumbnail image container */}
-                        <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={item.imageUrl}
-                                alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                            {item.completed && (
-                                <div className="absolute inset-0 bg-secondary-container/30 backdrop-blur-[1px] flex items-center justify-center">
-                                    <div className="w-6 h-6 rounded-full bg-activity-green text-white flex items-center justify-center shadow-md">
-                                        <Check size={14} strokeWidth={3} />
-                                    </div>
-                                </div>
-                            )}
+
+                        {item.completed && (
+                            <div className="absolute top-4 right-4 p-1.5 rounded-full bg-emerald-500 text-white shadow-lg">
+                                <Check size={14} strokeWidth={3} />
+                            </div>
+                        )}
+
+                        {/* Bottom Text Area */}
+                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                            <h3 className="text-white font-semibold text-base leading-tight mb-1 drop-shadow-md">
+                                {item.title}
+                            </h3>
+                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest drop-shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                {item.type}
+                            </span>
                         </div>
                     </div>
                 ))}

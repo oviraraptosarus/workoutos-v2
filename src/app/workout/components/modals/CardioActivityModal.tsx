@@ -91,7 +91,7 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-surface-container-low border border-surface-variant rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
                 <div className="flex items-center justify-between p-5 border-b border-surface-variant">
                     <h2 className="text-lg font-black text-on-surface flex items-center gap-2">
                         <Activity size={20} className="text-tertiary" /> Log Activity

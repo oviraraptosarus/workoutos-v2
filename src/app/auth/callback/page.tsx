@@ -61,7 +61,7 @@ export default function AuthCallbackPage() {
     if (error) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-background">
-                <div className="text-center p-6 bg-surface-container rounded-2xl max-w-md w-full">
+                <div className="text-center p-4 sm:p-5 bg-surface-container rounded-2xl max-w-md w-full">
                     <h2 className="text-title-lg font-title-lg text-error mb-4">Authentication Error</h2>
                     <p className="text-body-md text-on-surface-variant mb-6">{error}</p>
                     <button 

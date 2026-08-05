@@ -47,7 +47,7 @@ export default function TouchGrassNudge() {
     if (dismissed || !showNudge) return null;
 
     return (
-        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 flex items-start justify-between gap-3.5 animate-slide-up transition-all relative overflow-hidden hover:shadow-lg">
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 flex items-start justify-between gap-3.5 animate-slide-up transition-all relative overflow-hidden hover:shadow-lg">
             <div className="flex items-start gap-3.5">
                 <div className="w-11 h-11 rounded-full bg-activity-green text-on-primary flex-shrink-0 flex items-center justify-center shadow-[0_4px_10px_rgba(34,197,94,0.3)] mt-0.5">
                     <Trees size={20} />

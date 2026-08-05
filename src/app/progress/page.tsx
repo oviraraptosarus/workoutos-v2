@@ -142,14 +142,14 @@ export default function ProgressPage() {
 
                 {/* Summary */}
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                         <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.current')}</p>
                         <p className="font-headline-md text-headline-md font-bold text-on-surface tabular-nums mt-1">
                             {latest !== null ? latest.toFixed(1) : '—'}
                         </p>
                         <p className="font-label-sm text-label-sm text-on-surface-variant">kg</p>
                     </div>
-                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                         <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.change')}</p>
                         <p className={`font-headline-md text-headline-md font-bold tabular-nums mt-1 flex items-center gap-1 ${trendColor}`}>
                             <Trend size={16} />
@@ -157,7 +157,7 @@ export default function ProgressPage() {
                         </p>
                         <p className="font-label-sm text-label-sm text-on-surface-variant">kg</p>
                     </div>
-                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                         <p className="font-label-sm text-label-sm text-on-surface-variant">{t('progress.toGoal')}</p>
                         <p className="font-headline-md text-headline-md font-bold text-on-surface tabular-nums mt-1">
                             {toGo !== null ? Math.abs(toGo).toFixed(1) : '—'}
@@ -167,7 +167,7 @@ export default function ProgressPage() {
                 </div>
 
                 {/* Integrated Progress Photos Row */}
-                <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                     <ProgressPhotosRow
                         photos={photos}
                         currentWeight={latest}
@@ -180,7 +180,7 @@ export default function ProgressPage() {
                 </div>
 
                 {/* Chart */}
-                <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                     <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-4">{t('progress.weight')}</h2>
                     {loading ? (
                         <div className="h-56 flex items-center justify-center">
@@ -228,7 +228,7 @@ export default function ProgressPage() {
 
                 {/* Entries */}
                 {points.length > 0 && (
-                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
+                    <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5">
                         <h2 className="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-3">{t('progress.entries')}</h2>
                         <ul className="divide-y divide-surface-variant">
                             {[...points].reverse().slice(0, 10).map((p, i, arr) => {
@@ -254,7 +254,7 @@ export default function ProgressPage() {
 
                 <Link
                     href="/dashboard"
-                    className="flex items-center justify-between bg-surface-container rounded-3xl px-5 py-4 active:scale-[0.98] transition-transform"
+                    className="flex items-center justify-between bg-surface-container rounded-2xl px-5 py-4 active:scale-[0.98] transition-transform"
                 >
                     <span className="font-label-md text-label-md text-on-surface">{t('progress.back')}</span>
                     <ChevronRight size={18} className="text-on-surface-variant" />

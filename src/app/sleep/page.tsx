@@ -175,7 +175,7 @@ export default function SleepPage() {
 
     return (
         <AppLayout>
-            <div className="max-w-4xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-4xl mx-auto space-y-4 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -200,15 +200,15 @@ export default function SleepPage() {
 
                 {/* Top Metrics Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
+                    <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-5 shadow-sm transition-colors">
                         <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.loggedToday').replace('{date}', isToday ? t('sleep.today') : selectedDate)}</span>
                         <div className="text-3xl font-black text-on-surface mt-1">{currentSleep} <span className="text-sm text-on-surface-variant">{t('sleep.page.hrs')}</span></div>
                     </div>
-                    <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-5 shadow-sm transition-colors">
+                    <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-5 shadow-sm transition-colors">
                         <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">{t('sleep.page.7dayAvg')}</span>
                         <div className="text-3xl font-black text-secondary mt-1">{avgSleep.toFixed(1)} <span className="text-sm opacity-70">{t('sleep.page.hrs')}</span></div>
                     </div>
-                    <div className="col-span-2 bg-secondary rounded-[2rem] p-5 text-on-secondary flex items-center justify-between shadow-md transition-colors">
+                    <div className="col-span-2 bg-secondary rounded-2xl p-5 text-on-secondary flex items-center justify-between shadow-md transition-colors">
                         <div>
                             <span className="text-xs font-bold opacity-80 uppercase tracking-wider block mb-1">{t('sleep.page.status')}</span>
                             <div className="text-xl font-black flex items-center gap-2">
@@ -225,7 +225,7 @@ export default function SleepPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     {/* Graph Section */}
-                    <div className="md:col-span-2 bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm transition-colors">
+                    <div className="md:col-span-2 bg-surface-container-low border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm transition-colors">
                         <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2 mb-6">
                             <History size={18} className="text-secondary" /> 7-Day Sleep Trends
                         </h2>
@@ -270,12 +270,12 @@ export default function SleepPage() {
                     </div>
 
                     {/* Quick Add & History */}
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         
                         <EnhancedSleepLogger onLogSaved={(data) => handleAdd(data.amount, data.type, data.details)} />
 
 
-                        <div className="bg-surface-container-low border border-surface-variant p-6 rounded-[2rem] shadow-sm transition-colors">
+                        <div className="bg-surface-container-low border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm transition-colors">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface mb-4 flex items-center gap-2">
                                 <History size={18} className="text-on-surface-variant" /> Recent Logs
                             </h2>

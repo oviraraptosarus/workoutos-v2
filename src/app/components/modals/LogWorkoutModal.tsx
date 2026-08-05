@@ -13,7 +13,7 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white/95 /95 backdrop-blur-2xl border border-surface-variant dark:border-white/10 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-card-white/95 backdrop-blur-2xl border border-surface-variant dark:border-white/10 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant ">
@@ -31,7 +31,7 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
                     <div>
                         <label className="block text-[13px] font-semibold text-on-surface mb-1.5">Session type</label>
                         <select
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium font-sans appearance-none"
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium font-sans appearance-none"
                             defaultValue=""
                         >
                             <option value="" disabled>Select activity...</option>
@@ -61,14 +61,14 @@ export default function LogWorkoutModal({ isOpen, onClose }: LogWorkoutModalProp
                         <input
                             type="number"
                             placeholder="45"
-                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors placeholder:text-on-surface-variant font-medium"
                         />
                     </div>
 
                     <div className="pt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold py-3.5 rounded-2xl transition-colors text-[15px] shadow-sm btn-press"
+                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold h-12 rounded-xl transition-colors text-[15px] shadow-sm btn-press"
                         >
                             Log workout
                         </button>

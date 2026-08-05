@@ -151,7 +151,7 @@ export default function GeminiMealAIModal({
 
     return (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-lg shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-2xl w-full max-w-lg shadow-[0_20px_60px_0_rgba(0,0,0,0.25)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
@@ -177,7 +177,7 @@ export default function GeminiMealAIModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-6 space-y-4 overflow-y-auto">
+                <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
                     
                     {/* Prompt Box */}
                     <div className="space-y-2">

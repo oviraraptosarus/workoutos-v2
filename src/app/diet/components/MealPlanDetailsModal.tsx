@@ -358,7 +358,7 @@ export default function MealPlanDetailsModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-2xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Modal Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container dark:bg-surface-container-high">
@@ -401,14 +401,14 @@ export default function MealPlanDetailsModal({
                 </div>
 
                 {/* Recipes List Body */}
-                <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                <div className="p-4 sm:p-5 space-y-4 overflow-y-auto max-h-[70vh] custom-scrollbar">
                     {recipes.map((recipe) => {
                         const isLogged = loggedRecipeIds[recipe.id];
 
                         return (
                             <div
                                 key={recipe.id}
-                                className="bg-card-white border border-surface-variant border-surface-variant rounded-3xl p-5 shadow-sm hover:shadow-md transition-all bg-card-white/70 relative overflow-hidden"
+                                className="bg-card-white border border-surface-variant border-surface-variant rounded-2xl p-5 shadow-sm hover:shadow-md transition-all bg-card-white/70 relative overflow-hidden"
                             >
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     {/* Image Thumbnail */}

@@ -48,7 +48,7 @@ export default function WorkoutPage() {
             
             <CardioActivityModal isOpen={isCardioModalOpen} onClose={() => setIsCardioModalOpen(false)} />
 
-            <div className="space-y-6">
+            <div className="space-y-4">
                 <WorkoutHeader 
                     onStartEmpty={() => { setActivePreset(null); setIsBuilderMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
                     onLogActivity={() => setIsCardioModalOpen(true)}

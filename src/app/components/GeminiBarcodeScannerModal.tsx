@@ -99,7 +99,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white  border border-surface-variant  rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-card-white  border border-surface-variant  rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant  bg-surface-container-low/50">
@@ -120,7 +120,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                 </div>
 
                 {/* Body */}
-                <div className="p-6 flex flex-col items-center">
+                <div className="p-4 sm:p-5 flex flex-col items-center">
                     
                     {!imagePreview && (
                         <div className="text-center w-full">

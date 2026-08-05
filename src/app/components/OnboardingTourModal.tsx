@@ -38,9 +38,9 @@ export default function OnboardingTourModal() {
 
     const modal = (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-card-white rounded-3xl w-full max-w-sm shadow-2xl border border-surface-variant overflow-hidden">
+            <div className="bg-card-white rounded-2xl w-full max-w-sm shadow-2xl border border-surface-variant overflow-hidden">
                 {/* Header */}
-                <div className="p-6 text-center relative border-b border-surface-variant">
+                <div className="p-4 sm:p-5 text-center relative border-b border-surface-variant">
                     <button
                         onClick={handleClose}
                         aria-label="Close"

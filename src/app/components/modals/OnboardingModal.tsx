@@ -75,15 +75,15 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
     const renderNumberInput = (value: number | '', setter: (v: number | '') => void, unit: string) => (
         <div className="flex flex-col items-center justify-center flex-1 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex items-baseline gap-2">
-                <input
-                    type="number"
-                    autoFocus
-                    value={value}
-                    onChange={(e) => setter(e.target.value === '' ? '' : Number(e.target.value))}
-                    onKeyDown={(e) => e.key === 'Enter' && value !== '' && nextStep()}
-                    className="w-32 bg-transparent text-center font-display-lg text-6xl font-bold text-on-surface focus:outline-none placeholder:text-surface-variant"
-                    placeholder="0"
-                />
+                    <input
+                        type="number"
+                        autoFocus
+                        value={value}
+                        onChange={(e) => setter(e.target.value === '' ? '' : Number(e.target.value))}
+                        onKeyDown={(e) => e.key === 'Enter' && value !== '' && nextStep()}
+                        className="w-24 bg-transparent text-center font-display-md text-4xl font-bold text-on-surface focus:outline-none placeholder:text-surface-variant"
+                        placeholder="0"
+                    />
                 <span className="font-label-lg text-xl text-on-surface-variant">{unit}</span>
             </div>
         </div>
@@ -91,7 +91,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
 
     // Generic list selection rendering
     const renderList = (options: {id: string, label: string}[], currentVal: string, setter: (v: string) => void) => (
-        <div className="w-full flex flex-col gap-3 mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-full flex flex-col gap-2 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {options.map(opt => {
                 const active = currentVal === opt.id;
                 return (
@@ -101,17 +101,17 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                             setter(opt.id);
                             setTimeout(nextStep, 150); // Auto advance for premium feel
                         }}
-                        className={`relative w-full p-5 text-left rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
+                        className={`relative w-full p-4 text-left rounded-xl border-2 transition-all duration-200 overflow-hidden ${
                             active 
                             ? 'border-primary bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.2)]' 
                             : 'border-surface-variant hover:border-on-surface-variant/30 bg-surface-container-lowest'
                         }`}
                     >
                         <div className="flex justify-between items-center relative z-10">
-                            <span className={`font-bold text-lg ${active ? 'text-primary' : 'text-on-surface'}`}>
+                            <span className={`font-bold text-base ${active ? 'text-primary' : 'text-on-surface'}`}>
                                 {opt.label}
                             </span>
-                            {active && <Check className="text-primary" size={20} />}
+                            {active && <Check className="text-primary" size={18} />}
                         </div>
                     </button>
                 )
@@ -120,8 +120,8 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
     );
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-xl transition-all duration-300">
-            <div className="w-full max-w-md h-full sm:h-[80vh] flex flex-col px-6 py-8 relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-xl transition-all duration-300 px-4">
+            <div className="w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col py-6 relative no-scrollbar">
                 
                 {/* Header / Back Button */}
                 {step > 0 && step < 8 && (
@@ -133,15 +133,15 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                     </button>
                 )}
 
-                <div className="flex-1 flex flex-col items-center justify-center pt-12 pb-24 w-full">
+                <div className="flex-1 flex flex-col items-center justify-center pt-8 pb-16 w-full">
                     
                     {step === 0 && (
                         <div className="text-center animate-in zoom-in-95 fade-in duration-700 w-full flex flex-col items-center justify-center h-full">
-                            <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mb-8 shadow-[0_10px_40px_rgba(0,0,0,0.2)] overflow-hidden">
+                            <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-6 shadow-[0_10px_40px_rgba(0,0,0,0.2)] overflow-hidden">
                                 <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                             </div>
-                            <h1 className="font-display-lg text-3xl font-bold text-on-surface mb-4">Welcome to Workout OS</h1>
-                            <p className="text-on-surface-variant text-lg">Let's personalize your experience.</p>
+                            <h1 className="font-display-md text-2xl font-bold text-on-surface mb-3">Welcome to Workout OS</h1>
+                            <p className="text-on-surface-variant text-base">Let's personalize your experience.</p>
                         </div>
                     )}
 

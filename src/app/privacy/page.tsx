@@ -8,8 +8,8 @@ export default function PrivacyPage() {
     const { t } = useLanguage();
     
     return (
-        <div className="min-h-screen bg-background text-on-surface p-6 md:p-12 font-sans">
-            <div className="max-w-3xl mx-auto bg-surface-container rounded-3xl shadow-sm border border-surface-variant/30 p-8">
+        <div className="min-h-screen bg-background text-on-surface p-4 sm:p-5 md:p-12 font-sans">
+            <div className="max-w-3xl mx-auto bg-surface-container rounded-2xl shadow-sm border border-surface-variant/30 p-8">
                 <Link href="/" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8 font-medium">
                     <ArrowLeft size={18} /> Back
                 </Link>
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
                 <h1 className="text-3xl font-black text-on-surface mb-2">Privacy Policy</h1>
                 <p className="text-sm text-on-surface-variant mb-8">Last Updated: August 2026 (v1.0)</p>
 
-                <div className="space-y-6 text-on-surface leading-relaxed">
+                <div className="space-y-4 text-on-surface leading-relaxed">
                     <section>
                         <h2 className="text-xl font-bold mb-3">1. Information We Collect</h2>
                         <p>We collect information you provide directly to us, including: Account details (name, email), Health and fitness data (weight, workouts, macros), Financial data (budgets, expenses), and Media (progress photos). We may also collect metadata such as IP addresses and device information.</p>

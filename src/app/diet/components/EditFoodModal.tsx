@@ -147,13 +147,13 @@ export default function EditFoodModal({
     };
 
     const CATEGORY_CONFIG: Record<MealCategory, { emoji: string; color: string }> = {
-        Breakfast: { emoji: '🌅', color: '#ff9f0a' },
-        Lunch:     { emoji: '☀️', color: '#30d158' },
-        Dinner:    { emoji: '🌙', color: '#0a84ff' },
-        Snacks:    { emoji: '⚡', color: '#bf5af2' },
+        Breakfast: { emoji: '🌅', color: '#ffffff' },
+        Lunch:     { emoji: '☀️', color: '#ffffff' },
+        Dinner:    { emoji: '🌙', color: '#ffffff' },
+        Snacks:    { emoji: '⚡', color: '#ffffff' },
     };
 
-    const activeColor = CATEGORY_CONFIG[category]?.color ?? '#0a84ff';
+    const activeColor = '#ffffff';
 
     const macroValues: Record<string, number | ''> = { calories, protein, carbs, fat, sugar };
     const macroSetters: Record<string, (v: number | '') => void> = {
@@ -162,95 +162,84 @@ export default function EditFoodModal({
 
     const modalContent = (
         <div
-            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300"
             onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <div
-                className="w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-300"
-                style={{ background: 'rgb(28,28,30)', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '92vh' }}
+                className="w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_40px_80px_rgba(0,0,0,0.5)] bg-surface-container border border-white/10"
+                style={{ maxHeight: '92vh' }}
             >
                 {/* Drag pill (mobile) */}
-                <div className="flex justify-center pt-3 pb-1 sm:hidden">
-                    <div className="w-10 h-1 rounded-full bg-white/20" />
+                <div className="flex justify-center pt-4 pb-2 sm:hidden">
+                    <div className="w-12 h-1.5 rounded-full bg-white/20" />
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/5">
+                    <div className="flex items-center gap-4">
                         <div
-                            className="w-9 h-9 rounded-2xl flex items-center justify-center text-base font-bold"
-                            style={{ background: `${activeColor}22`, color: activeColor }}
+                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg bg-white/5 border border-white/10 text-on-surface"
                         >
-                            {initialData ? <Edit2 size={16} /> : <Plus size={18} />}
+                            {initialData ? <Edit2 size={18} /> : <Plus size={20} />}
                         </div>
                         <div>
-                            <h2 className="text-base font-bold text-white leading-tight">
+                            <h2 className="text-lg font-semibold tracking-tight text-on-surface leading-tight">
                                 {initialData ? 'Edit Food Item' : 'Add Food Item'}
                             </h2>
-                            <p className="text-[11px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                            <p className="text-xs font-medium text-on-surface-variant mt-0.5">
                                 {initialData ? 'Modify and save changes' : 'Log what you ate'}
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                        style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-on-surface active:scale-95 border border-white/10"
                     >
                         <X size={16} />
                     </button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="px-5 pt-3 pb-2 relative" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="px-6 pt-4 pb-3 relative border-b border-white/5">
                     <div className="relative">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
                         <input
                             type="text"
                             value={searchQuery}
                             onFocus={() => setShowPresets(true)}
                             onChange={(e) => { setSearchQuery(e.target.value); setShowPresets(true); }}
                             placeholder="Search food presets…"
-                            className="w-full rounded-xl pl-8 pr-4 py-2.5 text-sm font-medium outline-none transition-all"
-                            style={{
-                                background: 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: 'white',
-                            }}
+                            className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
                         />
                     </div>
 
                     {showPresets && (
-                        <div
-                            className="mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-44 overflow-y-auto"
-                            style={{ background: 'rgb(36,36,38)', border: '1px solid rgba(255,255,255,0.1)' }}
-                        >
-                            <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                                <span className="text-[10px] font-bold tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD PRESETS</span>
-                                <button type="button" onClick={() => setShowPresets(false)} className="text-[11px] font-bold" style={{ color: activeColor }}>Close</button>
+                        <div className="absolute top-full left-6 right-6 mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-48 overflow-y-auto bg-surface-container-high border border-white/10 backdrop-blur-xl">
+                            <div className="flex justify-between items-center px-4 py-2.5 border-b border-white/5 bg-white/5">
+                                <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Presets</span>
+                                <button type="button" onClick={() => setShowPresets(false)} className="text-[10px] font-bold text-on-surface hover:text-white uppercase tracking-widest">Close</button>
                             </div>
                             {filteredPresets.length > 0 ? filteredPresets.map((preset, idx) => (
                                 <div
                                     key={idx}
                                     onClick={() => applyPreset(preset)}
-                                    className="flex items-center justify-between px-3 py-2.5 cursor-pointer transition-colors"
-                                    style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                    className="flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5 last:border-0 hover:bg-white/5"
                                 >
-                                    <div className="flex items-center gap-2.5">
-                                        <span className="text-lg">{preset.icon}</span>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-lg border border-white/5">
+                                            {preset.icon}
+                                        </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white leading-tight">{preset.name}</p>
-                                            <p className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>{preset.portion}</p>
+                                            <p className="text-sm font-semibold tracking-tight text-on-surface leading-tight">{preset.name}</p>
+                                            <p className="text-[11px] font-medium text-on-surface-variant mt-0.5">{preset.portion}</p>
                                         </div>
                                     </div>
-                                    <div className="text-[11px] font-bold px-2 py-0.5 rounded-lg" style={{ background: `${activeColor}22`, color: activeColor }}>
+                                    <div className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-white/10 text-on-surface border border-white/10">
                                         {preset.calories} kcal
                                     </div>
                                 </div>
                             )) : (
-                                <div className="px-3 py-4 text-center text-xs font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                <div className="px-4 py-6 text-center text-xs font-medium text-on-surface-variant">
                                     No matches — fill in manually below
                                 </div>
                             )}
@@ -260,25 +249,24 @@ export default function EditFoodModal({
 
                 {/* Form body */}
                 <form onSubmit={handleSubmit} className="flex flex-col overflow-y-auto flex-1">
-                    <div className="px-5 py-4 space-y-4 flex-1">
+                    <div className="px-6 py-5 space-y-5 flex-1">
 
                         {/* Category */}
                         <div>
-                            <label className="block text-[11px] font-bold tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>CATEGORY</label>
+                            <label className="block text-[10px] font-bold tracking-widest uppercase mb-2.5 text-on-surface-variant">Category</label>
                             <div className="grid grid-cols-4 gap-2">
                                 {(Object.entries(CATEGORY_CONFIG) as [MealCategory, { emoji: string; color: string }][]).map(([cat, cfg]) => (
                                     <button
                                         key={cat}
                                         type="button"
                                         onClick={() => setCategory(cat)}
-                                        className="py-2 px-1 rounded-xl text-xs font-bold transition-all duration-200 flex flex-col items-center gap-0.5"
-                                        style={
+                                        className={`py-2.5 px-1 rounded-2xl text-xs font-semibold transition-all duration-300 flex flex-col items-center gap-1.5 border ${
                                             category === cat
-                                                ? { background: `${cfg.color}22`, color: cfg.color, border: `1.5px solid ${cfg.color}55` }
-                                                : { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1.5px solid rgba(255,255,255,0.08)' }
-                                        }
+                                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                                : 'bg-white/5 text-on-surface-variant border-white/10 hover:bg-white/10 hover:text-on-surface'
+                                        }`}
                                     >
-                                        <span className="text-base">{cfg.emoji}</span>
+                                        <span className="text-lg opacity-90">{cfg.emoji}</span>
                                         <span>{cat}</span>
                                     </button>
                                 ))}
@@ -288,37 +276,25 @@ export default function EditFoodModal({
                         {/* Name + Icon */}
                         <div className="grid grid-cols-4 gap-3">
                             <div className="col-span-3">
-                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>FOOD NAME *</label>
+                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Food Name *</label>
                                 <input
                                     type="text"
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="e.g. Dal Chawal or Oats"
-                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
-                                    style={{
-                                        background: 'rgba(255,255,255,0.06)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        color: 'white',
-                                    }}
-                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
-                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ICON</label>
+                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Icon</label>
                                 <select
                                     value={icon}
                                     onChange={(e) => setIcon(e.target.value)}
-                                    className="w-full rounded-xl px-2 py-2.5 text-lg text-center font-bold outline-none transition-all cursor-pointer"
-                                    style={{
-                                        background: 'rgba(255,255,255,0.06)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        color: 'white',
-                                    }}
+                                    className="w-full rounded-2xl px-2 py-3.5 text-xl text-center font-bold outline-none transition-all cursor-pointer bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/20 appearance-none"
                                 >
                                     {EMOJI_OPTIONS.map((emoji) => (
-                                        <option key={emoji} value={emoji}>{emoji}</option>
+                                        <option key={emoji} value={emoji} className="bg-surface-container text-xl">{emoji}</option>
                                     ))}
                                 </select>
                             </div>
@@ -327,84 +303,64 @@ export default function EditFoodModal({
                         {/* Portion + Bites */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>PORTION / SERVING</label>
+                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Portion / Serving</label>
                                 <input
                                     type="text"
                                     value={portion}
                                     onChange={(e) => setPortion(e.target.value)}
-                                    placeholder="e.g. 1 cup or 200g"
-                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
-                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
-                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
-                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                    placeholder="e.g. 1 cup"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-bold tracking-wider mb-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>BITES / POINTS</label>
+                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Bites / Points</label>
                                 <input
                                     type="number"
                                     value={bites}
                                     onChange={(e) => setBites(e.target.value === '' ? '' : Number(e.target.value))}
                                     placeholder="2"
-                                    className="w-full rounded-xl px-4 py-2.5 text-sm font-semibold outline-none transition-all"
-                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
-                                    onFocus={e => (e.currentTarget.style.borderColor = activeColor + '80')}
-                                    onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
                                 />
                             </div>
                         </div>
 
                         {/* Macros */}
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="text-[11px] font-bold tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>NUTRIENT BREAKDOWN</label>
-                                <span className="text-[10px] font-bold flex items-center gap-1" style={{ color: activeColor }}>
-                                    <Sparkles size={10} /> Auto-calculates totals
+                            <div className="flex items-center justify-between mb-3">
+                                <label className="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Nutrient Breakdown</label>
+                                <span className="text-[10px] font-bold flex items-center gap-1 text-on-surface-variant uppercase tracking-widest">
+                                    <Sparkles size={12} className="text-on-surface opacity-70" /> Auto-calculates
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2.5 mb-2.5">
-                                {MACRO_FIELDS.slice(0, 2).map(({ key, label, unit, accent, placeholder }) => (
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                {MACRO_FIELDS.slice(0, 2).map(({ key, label, unit, placeholder }) => (
                                     <div key={key}>
-                                        <label className="block text-[11px] font-bold mb-1" style={{ color: accent }}>
-                                            {label} ({unit})
+                                        <label className="block text-[10px] font-bold tracking-widest uppercase mb-1.5 text-on-surface">
+                                            {label} <span className="text-on-surface-variant">({unit})</span>
                                         </label>
                                         <input
                                             type="number"
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none transition-all"
-                                            style={{
-                                                background: `${accent}12`,
-                                                border: `1px solid ${accent}30`,
-                                                color: 'white',
-                                            }}
-                                            onFocus={e => (e.currentTarget.style.borderColor = accent + '70')}
-                                            onBlur={e => (e.currentTarget.style.borderColor = accent + '30')}
+                                            className="w-full rounded-2xl px-4 py-3 text-sm font-bold outline-none transition-all bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/30"
                                         />
                                     </div>
                                 ))}
                             </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                {MACRO_FIELDS.slice(2).map(({ key, label, unit, accent, placeholder }) => (
+                            <div className="grid grid-cols-3 gap-3">
+                                {MACRO_FIELDS.slice(2).map(({ key, label, unit, placeholder }) => (
                                     <div key={key}>
-                                        <label className="block text-[11px] font-bold mb-1" style={{ color: accent }}>
-                                            {label} ({unit})
+                                        <label className="block text-[10px] font-bold tracking-widest uppercase mb-1.5 text-on-surface">
+                                            {label}
                                         </label>
                                         <input
                                             type="number"
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-xl px-2.5 py-2.5 text-sm font-bold outline-none transition-all"
-                                            style={{
-                                                background: `${accent}12`,
-                                                border: `1px solid ${accent}30`,
-                                                color: 'white',
-                                            }}
-                                            onFocus={e => (e.currentTarget.style.borderColor = accent + '70')}
-                                            onBlur={e => (e.currentTarget.style.borderColor = accent + '30')}
+                                            className="w-full rounded-2xl px-3 py-3 text-sm font-bold outline-none transition-all bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/30"
                                         />
                                     </div>
                                 ))}
@@ -413,36 +369,30 @@ export default function EditFoodModal({
                     </div>
 
                     {/* Footer actions */}
-                    <div
-                        className="flex items-center justify-between gap-3 px-5 py-4"
-                        style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgb(28,28,30)' }}
-                    >
+                    <div className="flex items-center justify-between gap-3 px-6 py-5 border-t border-white/5 bg-surface-container">
                         {initialData && onDelete ? (
                             <button
                                 type="button"
                                 onClick={() => {
                                     if (confirm('Remove this item?')) { onDelete(initialData.id); onClose(); }
                                 }}
-                                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors"
-                                style={{ background: 'rgba(255,69,58,0.12)', color: '#ff453a', border: '1px solid rgba(255,69,58,0.25)' }}
+                                className="flex items-center gap-1.5 px-4 py-3 rounded-2xl text-xs font-semibold transition-colors bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 active:scale-95"
                             >
                                 <Trash2 size={14} /> Delete
                             </button>
                         ) : <div />}
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-5 py-2.5 rounded-xl text-xs font-bold transition-colors"
-                                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}
+                                className="px-5 py-3 rounded-2xl text-xs font-semibold transition-colors bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-on-surface border border-white/10 active:scale-95"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-lg transition-all active:scale-95"
-                                style={{ background: activeColor, boxShadow: `0 4px 16px ${activeColor}44` }}
+                                className="px-6 py-3 rounded-2xl text-xs font-bold text-black bg-white hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all active:scale-95"
                             >
                                 {initialData ? 'Save Changes' : 'Add Food Item'}
                             </button>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -61,6 +62,7 @@ function ToggleRow({ icon, label, value, onChange }: { icon: string, label: stri
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ProfileHub() {
+    const router = useRouter();
     const { t } = useLanguage();
     const { user, userProfile, updateUserProfile, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
@@ -347,7 +349,7 @@ export default function ProfileHub() {
                         <ArrowLeft size={18} /> Back to Hub
                     </button>
                     <h2 className="text-2xl font-bold mb-6">{t('profile.settings')}</h2>
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         {[
                             { label: t('profile.fullName'), key: 'fullName', type: 'text' },
                             { label: t('profile.username'), key: 'username', type: 'text' },
@@ -383,7 +385,7 @@ export default function ProfileHub() {
                         <ArrowLeft size={18} /> Back to Hub
                     </button>
                     <h2 className="text-2xl font-bold mb-6">{t('profile.preferences')}</h2>
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         <div className="p-4 flex items-center justify-between">
                             <label className="font-medium text-sm text-on-surface">{t('profile.theme')}</label>
                             <div className="flex bg-surface-container-low p-1 rounded-xl">
@@ -523,7 +525,7 @@ export default function ProfileHub() {
                     </div>
                     
                     <h3 className="text-lg font-bold mt-8 mb-4">{t('profile.legal') !== 'profile.legal' ? t('profile.legal') : 'Legal & Compliance'}</h3>
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         <Link href="/terms" className="p-4 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
                             <span className="font-medium text-sm text-on-surface">{t('profile.terms') !== 'profile.terms' ? t('profile.terms') : 'Terms of Service'}</span>
                             <ChevronRight size={16} className="text-on-surface-variant" />
@@ -556,7 +558,7 @@ export default function ProfileHub() {
                     <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                         <span className="material-symbols-outlined text-secondary">memory</span> AI Settings
                     </h2>
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
                                 <label className="font-medium text-sm text-on-surface">{t('profile.voiceInput')}</label>
@@ -582,17 +584,12 @@ export default function ProfileHub() {
                                 <option value="nova">{t('profile.nova')}</option>
                             </select>
                         </div>
-                        <div className="p-4 flex items-center justify-between">
+                        <div className="p-4 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low transition-colors" onClick={() => router.push('/settings/ai-memory')}>
                             <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">{t('profile.aiMemory')}</label>
+                                <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.aiMemory')}</label>
                                 <span className="text-xs text-on-surface-variant">{t('profile.rememberPast')}</span>
                             </div>
-                            <button
-                                onClick={() => handleInputSave('aiMemoryEnabled', !formData.aiMemoryEnabled)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.aiMemoryEnabled ? 'bg-secondary' : 'bg-surface-container-high'}`}
-                            >
-                                <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.aiMemoryEnabled ? 'right-1' : 'left-1'}`} />
-                            </button>
+                            <ChevronRight size={18} className="text-on-surface-variant group-hover:text-primary transition-colors" />
                         </div>
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
@@ -623,7 +620,7 @@ export default function ProfileHub() {
                         <span className="material-symbols-outlined text-activity-blue">help</span> Help & Support
                     </h2>
                     
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.helpCenter')}</label>
                             <ExternalLink size={16} className="text-on-surface-variant shrink-0" />
@@ -642,7 +639,7 @@ export default function ProfileHub() {
                         </button>
                     </div>
 
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.privacyPolicy')}</label>
                             <ExternalLink size={16} className="text-on-surface-variant shrink-0" />
@@ -670,7 +667,7 @@ export default function ProfileHub() {
                     </button>
                     <h2 className="text-2xl font-bold mb-6">{t('profile.accountData')}</h2>
                     
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-6">
                         <div className="p-4 flex items-center justify-between">
                             <label className="font-medium text-sm text-on-surface">{t('profile.emailAddress')}</label>
                             <span className="text-sm font-medium text-on-surface-variant">{formData.email}</span>
@@ -682,7 +679,7 @@ export default function ProfileHub() {
                     </div>
 
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 px-2">{t('profile.dataManagement')}</h3>
-                    <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-8">
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-8">
                         <button onClick={handleExport} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <div className="flex items-center gap-3">
                                 <Download size={18} className="text-secondary" />
@@ -698,7 +695,7 @@ export default function ProfileHub() {
                         </button>
                     </div>
 
-                    <div className="bg-error/5 rounded-3xl overflow-hidden divide-y divide-error/10 border border-error/20">
+                    <div className="bg-error/5 rounded-2xl overflow-hidden divide-y divide-error/10 border border-error/20">
                         <button onClick={handleSignOut} className="w-full p-4 flex items-center gap-3 hover:bg-error/10 transition-colors text-left text-error font-medium">
                             <LogOut size={18} /> Sign Out
                         </button>
@@ -724,10 +721,10 @@ export default function ProfileHub() {
                             <Bell size={20} className="text-primary" /> Notifications & Alerts
                         </h2>
                     </div>
-                    <div className="space-y-6 pb-20">
+                    <div className="space-y-4 pb-20">
                         <div>
                             <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Delivery Methods</h3>
-                            <div className="bg-surface-container-low rounded-3xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                            <div className="bg-surface-container-low rounded-2xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
                                 <ToggleRow icon="volume_up" label="Notification Sounds" value={notifSettings.notification_sound} onChange={(val) => updateNotifSetting('notification_sound', val)} />
                                 <ToggleRow icon="vibration" label="Vibration" value={notifSettings.vibration_enabled} onChange={(val) => updateNotifSetting('vibration_enabled', val)} />
                                 <ToggleRow icon="notifications_active" label="Push Notifications" value={notifSettings.push_enabled} onChange={(val) => updateNotifSetting('push_enabled', val)} />
@@ -737,7 +734,7 @@ export default function ProfileHub() {
 
                         <div>
                             <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Alert Types</h3>
-                            <div className="bg-surface-container-low rounded-3xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                            <div className="bg-surface-container-low rounded-2xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
                                 <ToggleRow icon="task_alt" label="Planner Reminders" value={notifSettings.planner_reminders} onChange={(val) => updateNotifSetting('planner_reminders', val)} />
                                 <ToggleRow icon="loop" label="Habit Reminders" value={notifSettings.habit_reminders} onChange={(val) => updateNotifSetting('habit_reminders', val)} />
                                 <ToggleRow icon="account_balance_wallet" label="Budget Alerts" value={notifSettings.budget_alerts} onChange={(val) => updateNotifSetting('budget_alerts', val)} />
@@ -762,7 +759,7 @@ export default function ProfileHub() {
                 {renderQuickStats()}
 
                 {/* Progress Photos Row in Hub */}
-                <div className="bg-card-white rounded-3xl shadow-sm border border-surface-variant/30 p-5 mb-2">
+                <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 p-5 mb-2">
                     <div className="flex items-center gap-2 mb-4">
                         <Camera size={18} className="text-secondary" />
                         <h3 className="font-headline-md text-lg text-on-surface">{t('profile.progressPhotos')}</h3>
@@ -779,7 +776,7 @@ export default function ProfileHub() {
                 </div>
 
                 {/* Main Settings List */}
-                <div className="rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden">
+                <div className="rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden">
                     <SettingsRow 
                         icon="person" 
                         label={t('profile.profile')} 
@@ -807,7 +804,7 @@ export default function ProfileHub() {
                     />
                 </div>
 
-                <div className="rounded-3xl shadow-sm border border-surface-variant/30 overflow-hidden mt-1">
+                <div className="rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden mt-1">
                     <SettingsRow 
                         icon="help_outline" 
                         label={t('profile.helpSupport')} 

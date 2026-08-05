@@ -26,7 +26,7 @@ export default function MicronutrientDrawer({ meals }: MicronutrientDrawerProps)
     ];
 
     return (
-        <div className="bg-card-white border border-surface-variant rounded-3xl p-5 shadow-sm transition-all">
+        <div className="bg-card-white border border-surface-variant rounded-2xl p-5 shadow-sm transition-all">
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center justify-between cursor-pointer select-none"

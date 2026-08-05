@@ -81,7 +81,7 @@ export default function WaterPage() {
 
     return (
         <AppLayout>
-            <div className="max-w-3xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-3xl mx-auto space-y-4 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-2">
@@ -105,7 +105,7 @@ export default function WaterPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     {/* Progress Visual */}
-                    <div className="bg-card-white border border-surface-variant p-8 rounded-3xl shadow-sm border-t border-surface-variant flex flex-col items-center justify-center">
+                    <div className="bg-card-white border border-surface-variant p-8 rounded-2xl shadow-sm border-t border-surface-variant flex flex-col items-center justify-center">
                         
                         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
                             {/* SVG Ring */}
@@ -154,9 +154,9 @@ export default function WaterPage() {
                     </div>
 
                     {/* Quick Add & History */}
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         
-                        <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant">
+                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-2">
                                 <Plus size={18} className="text-white" /> Quick Add
                             </h2>
@@ -198,7 +198,7 @@ export default function WaterPage() {
                             </div>
                         </div>
 
-                        <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant flex-1 flex flex-col">
+                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant flex-1 flex flex-col">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                                     <History size={18} className="text-on-surface-variant" /> {isToday ? t('water.page.todayLog') : t('water.page.logDate').replace('{date}', selectedDate)}

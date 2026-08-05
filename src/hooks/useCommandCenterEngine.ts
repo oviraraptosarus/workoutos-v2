@@ -80,6 +80,32 @@ export function useCommandCenterEngine() {
                     });
                 }
 
+                // Daily Coach / Evening Wrap-up
+                const hour = new Date().getHours();
+                if (hour < 12) {
+                    newInsights.push({
+                        user_id: user.id,
+                        title: 'Morning Briefing',
+                        description: `Good morning! Let's conquer the day. Remember your primary goal: ${userProfile.fitnessGoal}. Have you planned your workout yet?`,
+                        category: 'AI Insight',
+                        priority: 'medium',
+                        icon: 'rocket',
+                        source_module: 'Planner',
+                        action_type: 'OPEN_PLANNER',
+                    });
+                } else if (hour >= 18) {
+                    newInsights.push({
+                        user_id: user.id,
+                        title: 'Evening Wrap-Up',
+                        description: 'How did today go? Log your final meals and reflect on your progress. Consistency is key.',
+                        category: 'AI Insight',
+                        priority: 'medium',
+                        icon: 'moon',
+                        source_module: 'Reflection',
+                        action_type: 'OPEN_PLANNER',
+                    });
+                }
+
                 if (newInsights.length > 0) {
                     // Check if similar insights already exist to avoid spamming
                     const { data: existing } = await supabase

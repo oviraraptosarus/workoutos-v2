@@ -242,7 +242,7 @@ export default function PlannerPage() {
     return (
         <AppLayout>
             {isFocusModeActive && (
-                <div className="fixed bottom-6 right-6 z-[999] bg-[#0f172a] shadow-2xl rounded-[2rem] border border-slate-700 p-6 flex flex-col items-center justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 w-80">
+                <div className="fixed bottom-6 right-6 z-[999] bg-[#0f172a] shadow-2xl rounded-2xl border border-slate-700 p-4 sm:p-5 flex flex-col items-center justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 w-80">
                     <div className="text-center space-y-4">
                         <div className="flex items-center justify-center gap-2">
                             <BrainCircuit size={24} className="text-white animate-pulse" />
@@ -263,7 +263,7 @@ export default function PlannerPage() {
                 </div>
             )}
 
-            <div className="max-w-5xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="max-w-5xl mx-auto space-y-4 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -283,8 +283,8 @@ export default function PlannerPage() {
                 {/* ROW 1: TASK MANAGER */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Add Task Section */}
-                    <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-card-white border border-surface-variant p-6 rounded-3xl shadow-sm border-t border-surface-variant relative overflow-hidden group">
+                    <div className="lg:col-span-4 space-y-4">
+                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant relative overflow-hidden group">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-6 flex items-center gap-2">
                                 <Plus size={18} className="text-white" /> New Task
                             </h2>
@@ -359,7 +359,7 @@ export default function PlannerPage() {
                         }}
                     >
                         {isClient && tasks.length === 0 ? (
-                            <div className="bg-card-white border border-surface-variant p-10 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[300px]">
+                            <div className="bg-card-white border border-surface-variant p-10 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[300px]">
                                 <div className="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant mb-4"><Target size={32} /></div>
                                 <h3 className="font-bold text-on-surface mb-1">No tasks yet</h3>
                                 <p className="text-sm text-on-surface-variant">Add a task on the left, or drag a priority here.</p>
@@ -367,7 +367,7 @@ export default function PlannerPage() {
                         ) : (
                             isClient && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {tasks.map((task) => (
-                                    <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
+                                    <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
                                         <div className="flex items-start gap-3 w-full">
                                             <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-white border-white/20 text-black' : 'border-surface-variant text-transparent hover:border-white/20'}`}>
                                                 <CheckCircle2 size={16} />
@@ -446,7 +446,7 @@ export default function PlannerPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-surface-variant">
                     
                     {/* Top Priorities — dynamic, drag into Tasks to promote */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm">
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
                             <div className="flex items-center gap-2"><Bookmark size={14} className="text-white" /> {t('planner.topPriorities')}</div>
                             <button
@@ -538,7 +538,7 @@ export default function PlannerPage() {
                     </div>
 
                     {/* Focus Sessions */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
                             <BrainCircuit size={14} className="text-white" /> Focus Sessions
                         </div>
@@ -571,7 +571,7 @@ export default function PlannerPage() {
                     </div>
 
                     {/* Habits to Build */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-3xl shadow-sm border-t border-surface-variant">
+                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant">
                         <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
                             <div className="flex items-center gap-2"><Star size={14} className="text-white" /> {t('planner.habits')}</div>
                             <div className="flex items-center gap-2">

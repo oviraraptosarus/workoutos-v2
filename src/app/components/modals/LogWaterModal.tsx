@@ -35,7 +35,7 @@ export default function LogWaterModal({ isOpen, onClose }: LogWaterModalProps) {
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white dark:bg-surface-container-lowest rounded-3xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
+            <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant">
@@ -59,7 +59,7 @@ export default function LogWaterModal({ isOpen, onClose }: LogWaterModalProps) {
                             placeholder="250"
                             required
                             min="1"
-                            className="w-full bg-surface-container-low border border-surface-variant rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-secondary transition-colors font-medium"
+                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-secondary transition-colors font-medium"
                         />
                     </div>
 
@@ -84,7 +84,7 @@ export default function LogWaterModal({ isOpen, onClose }: LogWaterModalProps) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-3.5 rounded-2xl transition-colors text-[15px] shadow-sm btn-press disabled:opacity-50"
+                            className="w-full bg-secondary hover:bg-secondary/90 text-white font-bold h-12 rounded-xl transition-colors text-[15px] shadow-sm btn-press disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : 'Log Water'}
                         </button>

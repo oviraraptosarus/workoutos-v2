@@ -27,6 +27,11 @@ export default function BudgetSummaryCards() {
     const savingsRate = totalIncome > 0 ? ((netSavings / totalIncome) * 100).toFixed(0) : 0;
 
     const expenseRatio = totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(0) : 0;
+    
+    // We'll also calculate a projected ratio for the progress bar
+    const projectedRatio = totalIncome > 0 
+        ? (( (totalExpenses / (new Date().getDate() || 1)) * (new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()) ) / totalIncome * 100).toFixed(0) 
+        : 0;
 
     // Real month pace, replacing a hardcoded "84% of month".
     const today = new Date();
@@ -60,7 +65,7 @@ export default function BudgetSummaryCards() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Card 1: Total Income */}
-            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-4 sm:p-5 flex flex-col justify-between rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
@@ -77,7 +82,7 @@ export default function BudgetSummaryCards() {
             </div>
 
             {/* Card 2: Total Expenses */}
-            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
+            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-4 sm:p-5 flex flex-col justify-between rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
                 <div className="flex items-center justify-between mb-4 relative z-10">
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">
@@ -101,8 +106,13 @@ export default function BudgetSummaryCards() {
                         <span>{expenseRatio}{t('budget.cards.ofIncome')}</span>
                         <span>{monthPct}{t('budget.cards.ofMonth')}</span>
                     </div>
-                    <div className="w-full bg-surface-container dark:bg-surface-container-high/50 h-2 rounded-full overflow-hidden mb-3 shadow-inner">
-                        <div className="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${expenseRatio}%` }} />
+                    <div className="w-full bg-surface-container dark:bg-surface-container-high/50 h-2 rounded-full overflow-hidden mb-3 shadow-inner relative">
+                        {/* Projected spend ghost bar */}
+                        {projectionReliable && (
+                            <div className="bg-rose-200 dark:bg-rose-900/60 h-full rounded-full transition-all duration-1000 ease-out absolute left-0 top-0 z-0" style={{ width: `${Math.min(Number(projectedRatio), 100)}%` }} />
+                        )}
+                        {/* Actual spend solid bar */}
+                        <div className="bg-gradient-to-r from-rose-400 to-rose-500 h-full rounded-full transition-all duration-1000 ease-out absolute left-0 top-0 z-10" style={{ width: `${Math.min(Number(expenseRatio), 100)}%` }} />
                     </div>
                     <div className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">
                         {projectionReliable ? (
@@ -115,7 +125,7 @@ export default function BudgetSummaryCards() {
             </div>
 
             {/* Card 3: Net Savings */}
-            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+            <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-4 sm:p-5 flex flex-col justify-between rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                 <div>
                     <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant mb-4">
                         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-white dark:text-white shadow-inner">

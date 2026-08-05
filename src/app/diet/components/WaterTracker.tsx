@@ -49,60 +49,61 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const percentage = Math.min(100, Math.round((waterMl / goal) * 100));
 
     return (
-        <div className="bg-card-white border border-surface-variant rounded-3xl p-5 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20/20 shadow-sm relative overflow-hidden flex-shrink-0">
+        <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 rounded-[32px] p-6 shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.3)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] group/water">
+            <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative overflow-hidden flex-shrink-0 shadow-inner group-hover/water:border-blue-400/40 transition-colors">
                     <div 
-                        className="absolute bottom-0 left-0 right-0 bg-blue-400/30 transition-all duration-700 ease-out"
+                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-600 to-cyan-400 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-80"
                         style={{ height: `${percentage}%` }}
                     />
-                    <Droplet size={26} className="text-white relative z-10 drop-shadow-sm" />
+                    <Droplet size={28} strokeWidth={2.5} className="text-white relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
                 </div>
                 <div>
-                    <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-bold text-on-surface drop-shadow-sm">{t('diet.water.title')}</h3>
+                    <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-base font-semibold tracking-tight text-on-surface">Hydration Matrix</h3>
                         {percentage >= 100 && (
-                            <span className="bg-white text-black text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                                <Check size={12} strokeWidth={3} /> Goal Met!
+                            <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <Check size={12} strokeWidth={3} /> Optimal
                             </span>
                         )}
                     </div>
-                    <p className="text-xs text-on-surface-variant font-bold mt-0.5">
-                        {waterMl} ml / {goal} ml consumed ({percentage}%)
-                    </p>
+                    <div className="flex items-baseline gap-1.5">
+                        <span className="text-2xl font-semibold tracking-tighter text-on-surface tabular-nums">{waterMl}</span>
+                        <span className="text-xs font-medium text-on-surface-variant">/ {goal} ml</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full md:w-auto">
-                <div className="flex-1 md:w-36 bg-surface-container h-2.5 rounded-full overflow-hidden shadow-inner border border-surface-variant ">
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div className="w-full md:w-48 bg-surface-container-high h-2 rounded-full overflow-hidden border border-white/5 relative">
                     <div 
-                        className="bg-gradient-to-r from-blue-400 to-cyan-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(96,165,250,0.6)]" 
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_0_12px_rgba(56,189,248,0.5)]" 
                         style={{ width: `${percentage}%` }} 
                     />
                 </div>
 
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0 w-full md:w-auto justify-between md:justify-start">
                     <button
                         id="tour-add-water"
                         onClick={() => addWater(250)}
-                        className="flex items-center gap-1 bg-white hover:bg-white text-black px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press relative z-[110]"
+                        className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-on-surface px-4 py-2 rounded-2xl text-xs font-semibold transition-all border border-white/10 active:scale-95"
                         title="Add 1 Glass (250 ml)"
                     >
-                        <Plus size={14} /> 250ml
+                        <Plus size={16} /> 250ml
                     </button>
                     <button
                         onClick={() => addWater(500)}
-                        className="flex items-center gap-1 bg-white hover:bg-zinc-200 text-black px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-white/20 btn-press"
+                        className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-on-surface px-4 py-2 rounded-2xl text-xs font-semibold transition-all border border-white/10 active:scale-95"
                         title="Add 1 Bottle (500 ml)"
                     >
-                        <Plus size={14} /> 500ml
+                        <Plus size={16} /> 500ml
                     </button>
                     <button
                         onClick={resetWater}
-                        className="p-1.5 rounded-xl hover:bg-white/5 text-on-surface-variant hover:text-white transition-colors btn-press"
+                        className="p-2.5 rounded-2xl hover:bg-red-500/10 text-on-surface-variant hover:text-red-400 border border-transparent hover:border-red-500/20 transition-colors"
                         title="Reset water intake"
                     >
-                        <RefreshCw size={14} />
+                        <RefreshCw size={16} />
                     </button>
                 </div>
             </div>

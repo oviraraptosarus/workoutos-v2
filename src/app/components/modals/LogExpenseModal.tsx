@@ -43,7 +43,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white/95 /95 backdrop-blur-2xl border border-surface-variant dark:border-white/10 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div className="bg-card-white/95 backdrop-blur-2xl border border-surface-variant dark:border-white/10 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant ">
@@ -66,7 +66,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="e.g. Protein powder"
-                            className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-2xl px-4 py-3 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
+                            className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-xl px-4 h-12 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
                         />
                     </div>
 
@@ -80,7 +80,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                                 placeholder="0.00"
-                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-2xl px-4 py-3 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
+                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-xl px-4 h-12 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
                             />
                         </div>
                         <div>
@@ -97,7 +97,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
                                         setCategory(e.target.value);
                                     }
                                 }}
-                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-2xl px-4 py-3 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors font-medium appearance-none"
+                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-xl px-4 h-12 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors font-medium appearance-none"
                             >
                                 <option value="" disabled>Select...</option>
                                 <option value="Groceries">Groceries</option>
@@ -126,7 +126,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                                 placeholder="Please specify category..."
-                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-2xl px-4 py-3 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
+                                className="w-full bg-[#f5ebd7]/40 dark:bg-surface-container-high border border-transparent  rounded-xl px-4 h-12 text-sm text-on-surface dark:text-white focus:outline-none focus:border-surface-variant dark:focus:border-slate-500 focus:bg-[#f5ebd7]/60 dark:focus:bg-slate-700 transition-colors placeholder:text-on-surface-variant font-medium"
                             />
                         </div>
                     )}
@@ -134,7 +134,7 @@ export default function LogExpenseModal({ isOpen, onClose }: LogExpenseModalProp
                     <div className="pt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold py-3.5 rounded-2xl transition-colors text-[15px] shadow-sm btn-press"
+                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold h-12 rounded-xl transition-colors text-[15px] shadow-sm btn-press"
                         >
                             Log expense
                         </button>

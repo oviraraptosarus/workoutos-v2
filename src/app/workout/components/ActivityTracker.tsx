@@ -14,7 +14,15 @@ export default function ActivityTracker() {
     const [steps, setSteps] = useState(0);
     const [inputSteps, setInputSteps] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [customStrideCm, setCustomStrideCm] = useState<number | null>(null);
     
+    useEffect(() => {
+        const stored = localStorage.getItem('workout_os_custom_stride_cm');
+        if (stored && !isNaN(Number(stored))) {
+            setCustomStrideCm(Number(stored));
+        }
+    }, []);
+
     useEffect(() => {
         const fetchSteps = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -40,8 +48,8 @@ export default function ActivityTracker() {
     // Calculate stride and calories based on height and weight
     const heightCm = userProfile?.heightCm || 170;
     const weightKg = userProfile?.currentWeight || 75;
-    // Stride length estimation: height * 0.414 for average
-    const strideLengthMeters = (heightCm * 0.414) / 100;
+    // Stride length estimation: custom or height * 0.414 for average
+    const strideLengthMeters = customStrideCm ? customStrideCm / 100 : (heightCm * 0.414) / 100;
     const distanceKm = (steps * strideLengthMeters) / 1000;
     // Calories burned walking approx: Distance (km) * Weight (kg)
     const caloriesBurned = Math.round(distanceKm * weightKg);
@@ -88,8 +96,28 @@ export default function ActivityTracker() {
         setIsSaving(false);
     };
 
+    const handleEditStride = () => {
+        const current = customStrideCm || Math.round(heightCm * 0.414);
+        const res = prompt('Enter custom stride length in cm (leave blank to auto-calculate from height):', current.toString());
+        if (res === null) return; // user cancelled
+        
+        if (res.trim() === '') {
+            localStorage.removeItem('workout_os_custom_stride_cm');
+            setCustomStrideCm(null);
+            return;
+        }
+        
+        const val = Number(res);
+        if (!isNaN(val) && val > 0 && val < 300) {
+            localStorage.setItem('workout_os_custom_stride_cm', val.toString());
+            setCustomStrideCm(val);
+        } else {
+            alert('Please enter a valid stride length in cm.');
+        }
+    };
+
     return (
-        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
@@ -97,7 +125,11 @@ export default function ActivityTracker() {
                     </div>
                     <div>
                         <h3 className="text-lg font-black text-on-surface">{t('workout.dailySteps')}</h3>
-                        <p className="text-xs font-bold text-on-surface-variant flex items-center gap-1">
+                        <p 
+                            onClick={handleEditStride}
+                            className="text-xs font-bold text-on-surface-variant flex items-center gap-1 cursor-pointer hover:text-on-surface transition-colors hover:underline"
+                            title="Click to edit stride length"
+                        >
                             <Calculator size={12} /> Stride: {(strideLengthMeters * 100).toFixed(0)}cm
                         </p>
                     </div>
@@ -117,13 +149,13 @@ export default function ActivityTracker() {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full">
                 <input
                     type="number"
                     value={inputSteps}
                     onChange={(e) => setInputSteps(e.target.value)}
                     placeholder={t('workout.addSteps')}
-                    className="flex-1 bg-surface-container-highest border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-secondary transition-colors"
+                    className="flex-1 min-w-0 bg-surface-container-highest border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-secondary transition-colors"
                 />
                 <button
                     onClick={handleAddSteps}

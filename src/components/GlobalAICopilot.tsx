@@ -2,9 +2,11 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getAIMemories } from '@/services/aiMemoryService';
 import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
@@ -199,10 +201,15 @@ export default function GlobalAICopilot() {
                 budgetIncome: await getIncome(), budgetExpenses: await getExpenses(),
             };
 
+            let aiMemories: any[] = [];
+            if (userProfile?.aiMemoryEnabled !== false) {
+                aiMemories = await getAIMemories();
+            }
+
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language }),
+                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories }),
             });
 
             const data = await res.json();
@@ -309,6 +316,9 @@ export default function GlobalAICopilot() {
                     } else if (fn === 'add_income') {
                         await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.source || 'Income', source: args.source || 'Other', amount: Number(args.amount) || 0, type: 'one-time' }, 'income');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
+                    } else if (fn === 'save_ai_memory') {
+                        const { addAIMemory } = await import('@/services/aiMemoryService');
+                        await addAIMemory(args.category || 'General', args.memory_text || '');
                     }
                 }
 

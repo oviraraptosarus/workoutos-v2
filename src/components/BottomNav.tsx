@@ -24,14 +24,14 @@ export default function BottomNav() {
   return (
     <>
       <nav className="fixed bottom-0 w-full z-50 pb-safe glass border-t border-surface-variant/30" data-active-classes="text-secondary">
-        <div className="flex justify-between items-center min-h-[5rem] py-2 px-4 max-w-5xl mx-auto">
+        <div className="flex justify-between items-center min-h-[4rem] py-1 px-4 max-w-5xl mx-auto">
           {navItems.map((item) => {
             const isActive = item.matchRoot 
                 ? (pathname === item.href || pathname === '/') 
                 : pathname === item.href;
             
             const commonClasses = clsx(
-              "flex flex-col items-center justify-center gap-1 w-[60px] h-[60px] transition-colors duration-200",
+              "flex flex-col items-center justify-center gap-1 w-[48px] h-[48px] transition-colors duration-200",
               isActive ? "text-secondary" : "text-on-surface-variant hover:bg-surface-container/50 rounded-xl"
             );
 
@@ -42,8 +42,8 @@ export default function BottomNav() {
                 className={commonClasses}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                <span className="font-label-sm text-label-sm">{item.name}</span>
+                <span className="material-symbols-outlined text-[24px] leading-none">{item.icon}</span>
+                <span className="font-label-sm text-[10px] leading-none">{item.name}</span>
               </Link>
             );
           })}

@@ -63,7 +63,7 @@ export default function CategoryBreakdown() {
     const displayedCategories = showAll ? categories : categories.slice(0, 5);
 
     return (
-        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-6 h-full flex flex-col justify-between rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-4 sm:p-5 h-full flex flex-col justify-between rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <h3 className="text-lg font-black text-on-surface dark:text-white tracking-tight mb-0.5 drop-shadow-sm">{t('budget.category.title')}</h3>
@@ -74,7 +74,7 @@ export default function CategoryBreakdown() {
                 </span>
             </div>
 
-            <div className="space-y-6 flex-1">
+            <div className="space-y-4 flex-1">
                 {displayedCategories.length > 0 ? displayedCategories.map((cat) => {
                     const percentage = Math.min((cat.actual / cat.limit) * 100, 100);
                     return (

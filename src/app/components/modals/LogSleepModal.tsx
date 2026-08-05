@@ -17,6 +17,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
     const { selectedDate } = useDate();
     const [bedtime, setBedtime] = React.useState('22:00');
     const [waketime, setWaketime] = React.useState('06:00');
+    const [sessionType, setSessionType] = React.useState('Night Sleep');
     const [mood, setMood] = React.useState('5');
     const [energy, setEnergy] = React.useState('5');
 
@@ -44,15 +45,36 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
         if (user && selectedDate) {
             const { data: existing } = await supabase
                 .from('daily_logs')
-                .select('id')
+                .select('id, sleep_hours, sleep_logs')
                 .eq('user_id', user.id)
                 .eq('date', selectedDate)
                 .maybeSingle();
 
+            const isNightSleep = sessionType === 'Night Sleep';
+            const currentTotal = existing?.sleep_hours || 0;
+            const currentLogs = existing?.sleep_logs || [];
+            
+            const newTotal = isNightSleep ? hrs : currentTotal + hrs;
+            
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const logEntry = {
+                id: Date.now(),
+                amount: hrs,
+                time: timeStr,
+                type: sessionType,
+                details: { bedtime, waketime }
+            };
+            
+            const newLogs = isNightSleep ? [logEntry] : [logEntry, ...currentLogs];
+
             const updates: any = {};
-            if (bedtime) updates.sleep_bedtime = `${bedtime}:00`;
-            if (waketime) updates.sleep_waketime = `${waketime}:00`;
-            updates.sleep_hours = hrs;
+            // Only update the main bedtime/waketime if it's a Night Sleep
+            if (isNightSleep) {
+                if (bedtime) updates.sleep_bedtime = `${bedtime}:00`;
+                if (waketime) updates.sleep_waketime = `${waketime}:00`;
+            }
+            updates.sleep_hours = newTotal;
+            updates.sleep_logs = newLogs;
             if (!isNaN(m)) updates.mood_rating = m;
             if (!isNaN(en)) updates.energy_rating = en;
 
@@ -68,7 +90,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-card-white rounded-3xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
+            <div className="bg-card-white rounded-2xl w-full max-w-sm shadow-lg overflow-hidden flex flex-col">
                 
                 {/* Header */}
                 <div className="px-5 py-4 flex items-center justify-between border-b border-surface-variant ">
@@ -83,6 +105,17 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
 
                 {/* Body Form */}
                 <form className="p-5 space-y-4" onSubmit={handleSave}>
+                    <div>
+                        <label className="block text-[13px] font-semibold text-on-surface mb-1.5">Session Type</label>
+                        <select
+                            value={sessionType}
+                            onChange={(e) => setSessionType(e.target.value)}
+                            className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                        >
+                            <option value="Night Sleep">Night Sleep (Overwrites)</option>
+                            <option value="Nap">Nap (Adds to total)</option>
+                        </select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-[13px] font-semibold text-on-surface mb-1.5">Bedtime</label>
@@ -90,7 +123,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                                 type="time"
                                 value={bedtime}
                                 onChange={(e) => setBedtime(e.target.value)}
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
                             />
                         </div>
                         <div>
@@ -99,7 +132,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                                 type="time"
                                 value={waketime}
                                 onChange={(e) => setWaketime(e.target.value)}
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
                             />
                         </div>
                     </div>
@@ -117,7 +150,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                                 min="1" max="10"
                                 value={mood}
                                 onChange={(e) => setMood(e.target.value)}
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
                             />
                         </div>
                         <div>
@@ -127,7 +160,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                                 min="1" max="10"
                                 value={energy}
                                 onChange={(e) => setEnergy(e.target.value)}
-                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-2xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
+                                className="w-full bg-[#f5ebd7]/40 border border-transparent rounded-xl px-4 h-12 text-sm text-on-surface focus:outline-none focus:border-surface-variant focus:bg-[#f5ebd7]/60 transition-colors font-medium"
                             />
                         </div>
                     </div>
@@ -135,7 +168,7 @@ export default function LogSleepModal({ isOpen, onClose }: LogSleepModalProps) {
                     <div className="pt-2">
                         <button
                             type="submit"
-                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold py-3.5 rounded-2xl transition-colors text-[15px] shadow-sm btn-press"
+                            className="w-full bg-[#1f4e38] hover:bg-[#163a2a] text-white font-bold h-12 rounded-xl transition-colors text-[15px] shadow-sm btn-press"
                         >
                             Log sleep
                         </button>

@@ -8,8 +8,8 @@ export default function DisclaimerPage() {
     const { t } = useLanguage();
     
     return (
-        <div className="min-h-screen bg-background text-on-surface p-6 md:p-12 font-sans">
-            <div className="max-w-3xl mx-auto bg-surface-container rounded-3xl shadow-sm border border-surface-variant/30 p-8">
+        <div className="min-h-screen bg-background text-on-surface p-4 sm:p-5 md:p-12 font-sans">
+            <div className="max-w-3xl mx-auto bg-surface-container rounded-2xl shadow-sm border border-surface-variant/30 p-8">
                 <Link href="/" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8 font-medium">
                     <ArrowLeft size={18} /> Back
                 </Link>
@@ -17,7 +17,7 @@ export default function DisclaimerPage() {
                 <h1 className="text-3xl font-black text-on-surface mb-2">Medical & Financial Disclaimer</h1>
                 <p className="text-sm text-on-surface-variant mb-8">Last Updated: August 2026 (v1.0)</p>
 
-                <div className="space-y-6 text-on-surface leading-relaxed">
+                <div className="space-y-4 text-on-surface leading-relaxed">
                     <section>
                         <h2 className="text-xl font-bold mb-3">1. Medical Disclaimer</h2>
                         <p className="mb-3"><strong>Not Medical Advice:</strong> Workout OS is designed for informational and self-tracking purposes only. The application, including its AI Copilot features, is not intended to be a substitute for professional medical advice, diagnosis, or treatment.</p>

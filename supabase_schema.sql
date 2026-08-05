@@ -588,8 +588,48 @@ BEGIN
     EXECUTE format('DROP POLICY IF EXISTS "Users can update own %I" ON storage.objects;', b);
     EXECUTE format('CREATE POLICY "Users can update own %I" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = ''%I'' AND auth.uid() = (storage.foldername(name))[1]::uuid);', b, b);
     
-    EXECUTE format('DROP POLICY IF EXISTS "Users can delete own %I" ON storage.objects;', b);
     EXECUTE format('CREATE POLICY "Users can delete own %I" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = ''%I'' AND auth.uid() = (storage.foldername(name))[1]::uuid);', b, b);
   END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ----------------------------------------------------------------------------
+-- 14. AI MEMORY & REMINDER PREFERENCES (Premium Evolution)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.ai_memories (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  category text NOT NULL,
+  memory_text text NOT NULL,
+  confidence_score numeric DEFAULT 1.0,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
+);
+
+CREATE TRIGGER update_ai_memories_updated_at BEFORE UPDATE ON public.ai_memories FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+ALTER TABLE public.ai_memories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own ai_memories" ON public.ai_memories FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own ai_memories" ON public.ai_memories FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own ai_memories" ON public.ai_memories FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own ai_memories" ON public.ai_memories FOR DELETE USING (auth.uid() = user_id);
+
+
+CREATE TABLE IF NOT EXISTS public.reminder_preferences (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  type text NOT NULL,
+  is_enabled boolean DEFAULT true,
+  config jsonb DEFAULT '{}'::jsonb,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  UNIQUE(user_id, type)
+);
+
+CREATE TRIGGER update_reminder_preferences_updated_at BEFORE UPDATE ON public.reminder_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+ALTER TABLE public.reminder_preferences ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own reminder_preferences" ON public.reminder_preferences FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own reminder_preferences" ON public.reminder_preferences FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own reminder_preferences" ON public.reminder_preferences FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own reminder_preferences" ON public.reminder_preferences FOR DELETE USING (auth.uid() = user_id);

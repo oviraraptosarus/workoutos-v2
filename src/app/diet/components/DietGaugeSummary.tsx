@@ -30,105 +30,110 @@ export default function DietGaugeSummary({
     const caloriesRemaining = calorieGoal - totalCalories;
     const isOverLimit = caloriesRemaining < 0;
     
-    // Gauge calculations
-    const radius = 90;
-    const circumference = Math.PI * radius; // half circle
+    // Circular Gauge calculations
+    const radius = 64;
+    const circumference = 2 * Math.PI * radius;
     const progressPercent = calorieGoal > 0 ? Math.min(100, Math.max(0, (totalCalories / calorieGoal) * 100)) : (totalCalories > 0 ? 100 : 0);
     const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
     
     // Determine gauge color based on progress
-    let strokeColor = "url(#gaugeGradient)";
+    let strokeColor = "url(#primaryGradient)";
     if (isOverLimit) {
         strokeColor = "#ef4444"; // Red for over limit
-    } else if (progressPercent > 85) {
-        strokeColor = "#f59e0b"; // Amber if close
     }
 
     return (
-        <div className="bg-card-white backdrop-blur-xl border border-surface-variant rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden">
-            {/* Top Toolbar with Date Navigator */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-variant/60 mb-4">
-                <div className="w-full flex justify-center sm:justify-start sm:w-auto">
-                    <DateNavigator currentDateKey={currentDateKey} onDateChange={onDateChange} />
-                </div>
+        <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 rounded-[32px] p-6 shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.3)] transition-all hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] relative overflow-hidden">
+            
+            {/* Subtle atmospheric glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-[64px] pointer-events-none" />
 
-                <div className="flex items-center justify-center w-full sm:w-auto gap-2 text-on-surface-variant dark:text-on-surface-variant shrink-0">
-                    <button
-                        onClick={onOpenBarcodeScanner}
-                        className="p-1.5 rounded-full hover:bg-surface-container dark:bg-surface-container-high/80 transition-colors text-on-surface-variant btn-press"
-                        title="Barcode Scanner"
-                    >
-                        <ScanLine size={18} />
-                    </button>
-                </div>
+            {/* Top Toolbar with Date Navigator */}
+            <div className="flex items-center justify-between gap-3 mb-6 relative z-10">
+                <DateNavigator currentDateKey={currentDateKey} onDateChange={onDateChange} />
+
+                <button
+                    onClick={onOpenBarcodeScanner}
+                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-on-surface-variant hover:text-on-surface hover:scale-105 active:scale-95"
+                    title="Barcode Scanner"
+                >
+                    <ScanLine size={18} />
+                </button>
             </div>
 
             {/* Main Gauge & Metrics Grid */}
-            <div className="flex items-end justify-between text-center px-2 pb-2">
+            <div className="grid grid-cols-3 items-center text-center relative z-10 gap-2">
+                
                 {/* Left Metric: Activity */}
-                <div className="flex flex-col items-center justify-center pb-2">
-                    <span className="text-2xl font-bold text-purple-900 tracking-tight drop-shadow-sm">{activityBurned}</span>
-                    <span className="text-[10px] font-extrabold text-activity-purple tracking-widest uppercase mt-1">{t('diet.gauge.activity')}</span>
-                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">{t('diet.gauge.kcalBurned')}</span>
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-3xl font-light text-on-surface tracking-tight tabular-nums">{activityBurned}</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">{t('diet.gauge.activity')}</span>
                 </div>
 
-                {/* Center Metric: Upward Arch Gauge */}
+                {/* Center Metric: Full Circular Gauge */}
                 <div className="flex flex-col items-center justify-center relative">
-                    <div className="relative w-44 h-24 flex items-center justify-center">
-                        <svg className="w-44 h-28 overflow-visible" viewBox="0 0 200 110">
+                    <div className="relative w-40 h-40 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                            <defs>
+                                <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="var(--color-primary, #3b82f6)" />
+                                    <stop offset="100%" stopColor="var(--color-secondary, #8b5cf6)" />
+                                </linearGradient>
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="4" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            
                             {/* Background Track Arc */}
-                            <path
-                                d="M 10,100 A 90,90 0 0,1 190,100"
+                            <circle
+                                cx="80"
+                                cy="80"
+                                r={radius}
                                 fill="none"
-                                stroke="#e2e8f0"
-                                strokeWidth="12"
-                                strokeLinecap="round"
+                                stroke="currentColor"
+                                strokeWidth="8"
+                                className="text-surface-variant/40"
                             />
+                            
                             {/* Dynamic Progress Arc */}
-                            <path
-                                d="M 10,100 A 90,90 0 0,1 190,100"
+                            <circle
+                                cx="80"
+                                cy="80"
+                                r={radius}
                                 fill="none"
                                 stroke={strokeColor}
-                                strokeWidth="12"
+                                strokeWidth="8"
                                 strokeLinecap="round"
                                 strokeDasharray={circumference}
                                 strokeDashoffset={strokeDashoffset}
-                                className="transition-all duration-1000 ease-out"
+                                className="transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                                filter={progressPercent > 0 ? "url(#glow)" : ""}
                             />
-                            <defs>
-                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="#0ea5e9" />
-                                    <stop offset="50%" stopColor="#14b8a6" />
-                                    <stop offset="100%" stopColor="#10b981" />
-                                </linearGradient>
-                            </defs>
                         </svg>
-                        {/* Gauge Central Values (Centered inside the dome) */}
-                        <div className="absolute top-10 flex flex-col items-center">
-                            <span className={`text-3xl font-bold tracking-tight drop-shadow-sm leading-none ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
+                        
+                        {/* Gauge Central Values */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
+                            <span className="text-4xl font-semibold tracking-tighter text-on-surface tabular-nums leading-none">
                                 {Math.abs(caloriesRemaining)}
+                            </span>
+                            <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">
+                                {isOverLimit ? t('diet.gauge.overLimit') : 'Net Left'}
                             </span>
                         </div>
                     </div>
-                    
-                    {/* Gauge Label below the arch with ample spacing */}
-                    <span className={`text-[10px] font-extrabold tracking-widest uppercase mt-2 ${isOverLimit ? 'text-activity-red' : 'text-activity-blue'}`}>
-                        {isOverLimit ? t('diet.gauge.overLimit') : t('diet.gauge.dailyRemaining')}
-                    </span>
-
-                    {/* Scale Anchors (0 and goal) */}
-                    <div className="w-full max-w-[140px] flex justify-between text-[10px] font-bold text-on-surface-variant px-1 mt-1">
-                        <span>0</span>
-                        <span>{calorieGoal} kcal</span>
-                    </div>
                 </div>
 
-                {/* Right Metric: Net calories left after activity */}
-                <div className="flex flex-col items-center justify-center pb-2">
-                    <span className="text-2xl font-bold text-activity-blue tracking-tight tabular-nums">{weeklyRemaining}</span>
-                    <span className="text-[10px] font-extrabold text-on-surface-variant tracking-widest uppercase mt-1">{t('diet.gauge.netLeft')}</span>
-                    <span className="text-[9px] text-on-surface-variant font-bold mt-0.5">{t('diet.gauge.kcalToday')}</span>
+                {/* Right Metric: Consumed */}
+                <div className="flex flex-col items-center justify-center">
+                    <span className="text-3xl font-light text-on-surface tracking-tight tabular-nums">{totalCalories}</span>
+                    <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">Consumed</span>
                 </div>
+            </div>
+            
+            {/* Daily Goal Label */}
+            <div className="text-center mt-6 relative z-10">
+                <span className="text-xs font-medium text-on-surface-variant/80">Daily Target: <strong className="text-on-surface">{calorieGoal} kcal</strong></span>
             </div>
         </div>
     );

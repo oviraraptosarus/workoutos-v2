@@ -95,7 +95,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
     };
 
     const inputCls =
-        'w-full bg-surface-container-low border border-surface-variant rounded-2xl pl-11 pr-3 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
+        'w-full bg-surface-container-low border border-surface-variant rounded-xl pl-11 pr-3 h-12 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
 
     if (successMode !== 'none') {
         if (successMode === 'created') {
@@ -110,7 +110,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                     </p>
                     <button
                         onClick={onSuccess}
-                        className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98]"
+                        className="w-full bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl transition-transform active:scale-[0.98]"
                     >
                         Go to Login
                     </button>
@@ -148,7 +148,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                         setLoading(false);
                     }
                 }}
-                className="w-full bg-white text-black font-label-md text-label-md py-3.5 rounded-2xl flex items-center justify-center gap-2 border border-black/10 shadow-sm transition-transform active:scale-[0.98] disabled:opacity-50"
+                className="w-full bg-white text-black font-label-md text-label-md h-12 rounded-xl flex items-center justify-center gap-2 border border-black/10 shadow-sm transition-transform active:scale-[0.98] disabled:opacity-50"
             >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -282,7 +282,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-2xl transition-transform active:scale-[0.98] disabled:opacity-50 mt-3"
+                className="w-full bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl transition-transform active:scale-[0.98] disabled:opacity-50 mt-3"
             >
                 {loading ? (t('auth.signup.creating') !== 'auth.signup.creating' ? t('auth.signup.creating') : 'Creating account...') : (t('auth.signup.createAccountButton') !== 'auth.signup.createAccountButton' ? t('auth.signup.createAccountButton') : 'Create Account')}
             </button>

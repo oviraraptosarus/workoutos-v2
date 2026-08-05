@@ -190,7 +190,7 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
     };
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-[2rem] p-6 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
+        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
             <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.presetTitle')}</h3>
             
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">

@@ -192,7 +192,7 @@ export default function WeightLogCard() {
     };
 
     return (
-        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-lg">
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-lg">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-on-surface-variant">
                     <span className="material-symbols-outlined text-primary text-[20px]">monitor_weight</span>

@@ -80,7 +80,7 @@ export default function RecentActivity() {
     };
 
     if (loading) return (
-        <section className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all">
+        <section className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all">
             <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 mb-3">
                 <Loader2 size={16} className="text-primary animate-spin" /> {t('recentActivity.title', { fallback: 'Recent Activity' })}
             </h2>
@@ -88,7 +88,7 @@ export default function RecentActivity() {
     );
 
     return (
-        <section className={`bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all ${isClearing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+        <section className={`bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all ${isClearing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
             <div className="flex items-center justify-between mb-3">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                     <span className="text-lg">⚡</span> {t('recentActivity.title', { fallback: 'Recent Activity' })}

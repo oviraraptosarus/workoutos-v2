@@ -9,6 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase/client';
 import CommandCenterOverlay from '@/app/components/modals/CommandCenterOverlay';
 import { useCommandCenterEngine } from '@/hooks/useCommandCenterEngine';
+import { useReminderEngine } from '@/hooks/useReminderEngine';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -26,6 +27,7 @@ export default function DashboardHeader() {
     
     // Initialize the engine to generate AI insights behind the scenes
     useCommandCenterEngine();
+    useReminderEngine();
     
     const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'Friend');
     const initial = displayName.charAt(0).toUpperCase();
@@ -53,7 +55,7 @@ export default function DashboardHeader() {
             <div className="flex items-center justify-between gap-2 pt-2 pb-4">
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                     <div className="flex flex-col items-start min-w-0 w-full">
-                        <h1 className="text-3xl sm:text-4xl font-bold text-on-surface drop-shadow-sm truncate w-full py-1">
+                        <h1 className="text-2xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
                         <div className="flex items-center gap-2 mt-1.5 sm:mt-1">

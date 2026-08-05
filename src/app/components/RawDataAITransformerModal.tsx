@@ -247,7 +247,7 @@ export default function RawDataAITransformerModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-card-white/95 backdrop-blur-md rounded-3xl w-full max-w-xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white/95 backdrop-blur-md rounded-2xl w-full max-w-xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] border border-surface-variant overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Modal Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant bg-surface-container-low">
@@ -273,7 +273,7 @@ export default function RawDataAITransformerModal({
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-6 space-y-5 overflow-y-auto">
+                <div className="p-4 sm:p-5 space-y-5 overflow-y-auto">
                     
                     {/* Raw Text Scratchpad Area */}
                     <div className="space-y-2">

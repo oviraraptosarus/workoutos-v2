@@ -159,7 +159,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
 
     const modalContent = (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-card-white  border border-surface-variant  rounded-3xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-card-white  border border-surface-variant  rounded-2xl w-full max-w-2xl shadow-[0_25px_70px_0_rgba(0,0,0,0.3)] overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant  bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10">
@@ -185,7 +185,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
                 </div>
 
                 {/* Body */}
-                <div className="p-6 overflow-y-auto flex-1">
+                <div className="p-4 sm:p-5 overflow-y-auto flex-1">
                     {!report && !loading && !error && (
                         <div className="text-center py-10">
                             <div className="w-20 h-20 mx-auto bg-white/5 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">

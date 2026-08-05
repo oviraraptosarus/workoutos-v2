@@ -77,7 +77,7 @@ export default function QuickNotes() {
     if (!isClient) return null;
 
     return (
-        <section className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all animate-fade-in relative overflow-hidden">
+        <section className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all animate-fade-in relative overflow-hidden">
             <div className="flex items-center justify-between mb-3">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                     <PenTool size={16} className="text-primary" /> Quick Notes

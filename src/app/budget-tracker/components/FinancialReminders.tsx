@@ -61,7 +61,7 @@ export default function FinancialReminders() {
     };
 
     return (
-        <div className="bg-card-white  border border-surface-variant  p-6 rounded-3xl shadow-sm transition-colors h-full flex flex-col">
+        <div className="bg-card-white  border border-surface-variant  p-4 sm:p-5 rounded-2xl shadow-sm transition-colors h-full flex flex-col">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-full bg-white/5 dark:bg-amber-900/30 text-white shadow-sm border border-surface-variant ">

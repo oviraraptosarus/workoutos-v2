@@ -147,6 +147,44 @@ CREATE TABLE IF NOT EXISTS public.notification_settings (
 );
 CREATE TRIGGER update_notification_settings_updated_at BEFORE UPDATE ON public.notification_settings FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+CREATE TABLE IF NOT EXISTS public.smart_reminders_config (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  reminder_type text NOT NULL,
+  is_enabled boolean DEFAULT true,
+  time time,
+  recurring_days jsonb DEFAULT '[1,2,3,4,5,6,0]'::jsonb,
+  interval_minutes integer,
+  start_time time,
+  end_time time,
+  skip_next_date date,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  UNIQUE(user_id, reminder_type)
+);
+CREATE TRIGGER update_smart_reminders_config_updated_at BEFORE UPDATE ON public.smart_reminders_config FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
+CREATE TABLE IF NOT EXISTS public.command_center_items (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  title text NOT NULL,
+  description text,
+  category text CHECK (category IN ('Immediate Action', 'Reminder', 'Planner Deadline', 'Health Alert', 'Workout Alert', 'Diet Alert', 'Budget Alert', 'AI Insight', 'System Event')),
+  priority text CHECK (priority IN ('high', 'medium', 'low')) DEFAULT 'medium',
+  icon text DEFAULT 'bell',
+  source_module text,
+  status text CHECK (status IN ('active', 'completed', 'dismissed', 'snoozed')) DEFAULT 'active',
+  action_type text,
+  due_at timestamp with time zone,
+  snoozed_until timestamp with time zone,
+  is_skipped boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
+);
+CREATE TRIGGER update_command_center_items_updated_at BEFORE UPDATE ON public.command_center_items FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+
 -- ----------------------------------------------------------------------------
 -- 4. DAILY LOGS & HEALTH
 -- ----------------------------------------------------------------------------

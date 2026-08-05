@@ -65,7 +65,7 @@ export default function WaterCard() {
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter') router.push('/water'); }}
             aria-label="Hydration details"
-            className="bg-card-white dark:bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
+            className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col h-full relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
         >
             {/* Liquid fill — rises with intake */}
             <div
