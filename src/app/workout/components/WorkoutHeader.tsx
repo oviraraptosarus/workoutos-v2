@@ -22,7 +22,7 @@ export default function WorkoutHeader({ onStartEmpty, onLogActivity }: WorkoutHe
             <div className="flex items-center gap-2">
                 <button 
                     onClick={onLogActivity}
-                    className="flex-1 sm:flex-none items-center justify-center gap-2 bg-tertiary-container hover:bg-tertiary text-on-tertiary-container hover:text-on-tertiary px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm btn-press flex"
+                    className="flex-1 sm:flex-none items-center justify-center gap-2 bg-secondary hover:bg-secondary-fixed text-on-secondary px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm btn-press flex"
                 >
                     <Activity size={16} /> Log Activity
                 </button>

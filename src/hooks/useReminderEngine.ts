@@ -4,13 +4,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function useReminderEngine() {
     const { userProfile, user } = useAuth();
-    const hasRunRef = useRef(false);
-
     useEffect(() => {
-        if (!user || !userProfile || hasRunRef.current) return;
+        if (!user || !userProfile) return;
         
         const runEngine = async () => {
-            hasRunRef.current = true;
             try {
                 // 1. Fetch configs
                 const { data: configs } = await supabase
@@ -171,6 +168,30 @@ export function useReminderEngine() {
 
                 if (newAlerts.length > 0) {
                     await supabase.from('command_center_items').insert(newAlerts);
+                    
+                    // Trigger Native Notifications
+                    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+                        newAlerts.forEach(alert => {
+                            const showNotification = () => {
+                                const options = {
+                                    body: alert.description,
+                                    icon: '/logo.png',
+                                    badge: '/logo.png',
+                                    tag: alert.title
+                                };
+                                if ('serviceWorker' in navigator) {
+                                    navigator.serviceWorker.ready.then(reg => {
+                                        reg.showNotification(alert.title, options);
+                                    }).catch(() => {
+                                        new Notification(alert.title, options);
+                                    });
+                                } else {
+                                    new Notification(alert.title, options);
+                                }
+                            };
+                            showNotification();
+                        });
+                    }
                 }
 
             } catch (error) {
@@ -178,6 +199,10 @@ export function useReminderEngine() {
             }
         };
 
+        // Run immediately, then every 60 seconds
         runEngine();
+        const intervalId = setInterval(runEngine, 60000);
+
+        return () => clearInterval(intervalId);
     }, [user, userProfile]);
 }

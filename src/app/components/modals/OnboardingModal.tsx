@@ -121,7 +121,7 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-xl transition-all duration-300 px-4">
-            <div className="w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col py-6 relative no-scrollbar">
+            <div className="w-full max-w-md h-[100dvh] overflow-y-auto flex flex-col py-6 relative no-scrollbar">
                 
                 {/* Header / Back Button */}
                 {step > 0 && step < 8 && (
