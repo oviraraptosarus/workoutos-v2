@@ -51,7 +51,7 @@ function ToggleRow({ icon, label, value, onChange }: { icon: string, label: stri
             </div>
             <button
                 onClick={() => onChange(!value)}
-                className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${value ? 'bg-primary' : 'bg-surface-variant/50'}`}
+                className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${value ? 'bg-[#0a84ff]' : 'bg-surface-variant/50'}`}
             >
                 <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${value ? 'translate-x-6' : 'translate-x-0'}`} />
             </button>
@@ -463,7 +463,7 @@ export default function ProfileHub() {
                             </div>
                             <button
                                 onClick={() => handleInputSave('notificationsEnabled', !formData.notificationsEnabled)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.notificationsEnabled ? 'bg-activity-green' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.notificationsEnabled ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.notificationsEnabled ? 'right-1' : 'left-1'}`} />
                             </button>
@@ -475,7 +475,7 @@ export default function ProfileHub() {
                             </div>
                             <button
                                 onClick={() => handleInputSave('enableFinancialReminders', !formData.enableFinancialReminders)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.enableFinancialReminders ? 'bg-activity-green' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.enableFinancialReminders ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.enableFinancialReminders ? 'right-1' : 'left-1'}`} />
                             </button>
@@ -566,7 +566,7 @@ export default function ProfileHub() {
                             </div>
                             <button
                                 onClick={() => handleInputSave('voiceEnabled', !formData.voiceEnabled)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.voiceEnabled ? 'bg-secondary' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.voiceEnabled ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.voiceEnabled ? 'right-1' : 'left-1'}`} />
                             </button>
@@ -598,7 +598,7 @@ export default function ProfileHub() {
                             </div>
                             <button
                                 onClick={() => handleInputSave('streamingResponsesEnabled', !formData.streamingResponsesEnabled)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.streamingResponsesEnabled ? 'bg-secondary' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.streamingResponsesEnabled ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.streamingResponsesEnabled ? 'right-1' : 'left-1'}`} />
                             </button>

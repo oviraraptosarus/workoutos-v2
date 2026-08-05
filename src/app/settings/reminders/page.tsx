@@ -77,7 +77,7 @@ export default function RemindersSettingsPage() {
                             </div>
                             <button
                                 onClick={() => updateConfig(selectedType, { ...config, smart_detection: !config.smart_detection })}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${config.smart_detection ? 'bg-primary' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${config.smart_detection ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${config.smart_detection ? 'right-1' : 'left-1'}`} />
                             </button>
@@ -90,7 +90,7 @@ export default function RemindersSettingsPage() {
                             </div>
                             <button
                                 onClick={() => updateConfig(selectedType, { ...config, silent_mode: !config.silent_mode })}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${config.silent_mode ? 'bg-primary' : 'bg-surface-container-high'}`}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${config.silent_mode ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                             >
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${config.silent_mode ? 'right-1' : 'left-1'}`} />
                             </button>
@@ -206,7 +206,7 @@ export default function RemindersSettingsPage() {
                                     </div>
                                     <button
                                         onClick={() => handleToggle(item.type, isEnabled)}
-                                        className={`relative w-12 h-7 rounded-full transition-colors shrink-0 ${isEnabled ? 'bg-primary' : 'bg-surface-container-high'}`}
+                                        className={`relative w-12 h-7 rounded-full transition-colors shrink-0 ${isEnabled ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
                                     >
                                         <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${isEnabled ? 'right-1' : 'left-1'}`} />
                                     </button>
