@@ -64,21 +64,32 @@ export default function RawDataAITransformerModal({
         }
 
         const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
 
+        let finalTranscript = '';
+        const existing = typeof rawText === 'string' ? rawText + ' ' : '';
+        
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            let finalTranscript = '';
+            let interimTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
                 }
             }
-            if (finalTranscript) {
-                setRawText((prev) => prev ? prev + ' ' + finalTranscript : finalTranscript);
-            }
+            
+            setRawText((existing + finalTranscript + interimTranscript).trim());
+            
+            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+            debounceTimerRef.current = setTimeout(() => {
+                setIsListening(false);
+                if (recognitionRef.current) recognitionRef.current.stop();
+            }, 3000);
         };
         recognition.onerror = () => setIsListening(false);
         recognition.onend = () => setIsListening(false);

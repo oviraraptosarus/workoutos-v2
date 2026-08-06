@@ -81,7 +81,7 @@ export function useReminderEngine() {
                             // Escalate!
                             await supabase.from('command_center_items').update({
                                 title: `🚨 Escalate: ${item.title}`,
-                                priority: 'urgent'
+                                priority: 'high'
                             }).eq('id', item.id);
                             
                             // Re-notify with urgency
@@ -96,7 +96,8 @@ export function useReminderEngine() {
                                         body: `You haven't addressed this yet: ${item.description}`,
                                         icon: '/logo.png',
                                         badge: '/logo.png',
-                                        data: navUrl
+                                        data: navUrl,
+                                        tag: `escalate-${item.id}`
                                     };
                                     if ('serviceWorker' in navigator) {
                                         navigator.serviceWorker.ready.then(reg => reg.showNotification(`🚨 ${item.title}`, options));

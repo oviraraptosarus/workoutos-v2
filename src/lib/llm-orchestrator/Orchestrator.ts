@@ -119,7 +119,7 @@ export class LLMOrchestrator {
         // If all models fail, return friendly fallback message
         console.error(`[Orchestrator] All models exhausted or failed. Last error: ${lastError?.message}`);
         return {
-            text: "AVA ప్రస్తుతం బిజీగా ఉంది. దయచేసి కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",
+            text: "Failed to process request. Please try again later.",
             sourceModel: "fallback",
             latencyMs: 0,
             retries: 0

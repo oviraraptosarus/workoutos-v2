@@ -38,20 +38,31 @@ export class OpenAIProvider extends BaseProvider {
              messages.push({ role: 'user', content: 'Hello' });
         }
 
-        // Map Gemini tools to OpenAI tools (simplified mapping)
+        // Map Gemini tools to OpenAI tools
         let tools: any = undefined;
         if (request.tools && request.tools.length > 0) {
-            // Very naive mapping, assuming the caller passes the raw Gemini format.
-            // Ideally, the Orchestrator expects a universal tool format.
-            // For now, if tools are passed, we map the Gemini structure to OpenAI.
             const geminiTools = request.tools[0]?.functionDeclarations;
             if (geminiTools && Array.isArray(geminiTools)) {
+                const mapTypeToLowercase = (obj: any): any => {
+                    if (!obj || typeof obj !== 'object') return obj;
+                    if (Array.isArray(obj)) return obj.map(mapTypeToLowercase);
+                    const newObj: any = {};
+                    for (const [key, value] of Object.entries(obj)) {
+                        if (key === 'type' && typeof value === 'string') {
+                            newObj[key] = value.toLowerCase();
+                        } else {
+                            newObj[key] = mapTypeToLowercase(value);
+                        }
+                    }
+                    return newObj;
+                };
+
                 tools = geminiTools.map((t: any) => ({
                     type: 'function',
                     function: {
                         name: t.name,
                         description: t.description,
-                        parameters: t.parameters
+                        parameters: mapTypeToLowercase(t.parameters)
                     }
                 }));
             }

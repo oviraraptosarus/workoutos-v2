@@ -123,7 +123,7 @@ export function useCommandCenterEngine() {
                         .eq('status', 'active');
                     
                     const existingTitles = new Set((existing || []).map(e => e.title));
-                    const uniqueInsights = newInsights.filter(ins => !existingTitles.has(ins.title));
+                    const uniqueInsights = newInsights.filter(ins => !existingTitles.has(ins.title) && !existingTitles.has(`🚨 Escalate: ${ins.title}`));
 
                     if (uniqueInsights.length > 0) {
                         await supabase.from('command_center_items').insert(uniqueInsights);

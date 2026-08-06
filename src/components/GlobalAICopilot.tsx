@@ -538,20 +538,22 @@ export default function GlobalAICopilot() {
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
         const existing = promptRef.current ? promptRef.current + ' ' : '';
+        let finalTranscript = '';
+        
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return; // Prevent late results after stopping
-            let transcript = '';
+            
+            let interimTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
-                transcript += event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
             }
             
-            // Just append the new final or interim transcripts robustly
-            // A simpler approach for continuous is just to rebuild from all results
-            let fullTranscript = '';
-            for (let i = 0; i < event.results.length; i++) fullTranscript += event.results[i][0].transcript;
-            
-            const full = (existing + fullTranscript).trim();
+            const full = (existing + finalTranscript + interimTranscript).trim();
             setPrompt(full);
             
             // Auto-send after 3.5 seconds of silence

@@ -65,15 +65,32 @@ export default function GeminiFoodAssistant() {
         }
 
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
 
+        let finalTranscript = '';
+        const existing = typeof prompt === 'string' ? prompt + ' ' : '';
+        let debounceTimer: NodeJS.Timeout;
+
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            const current = event.resultIndex;
-            const transcript = event.results[current][0].transcript;
-            setPrompt(transcript);
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            
+            setPrompt((existing + finalTranscript + interimTranscript).trim());
+
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                setIsListening(false);
+                recognition.stop();
+            }, 3000);
         };
         recognition.onerror = () => setIsListening(false);
         recognition.onend = () => setIsListening(false);
