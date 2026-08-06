@@ -46,3 +46,10 @@
 *   **Source of Truth**: Never use `localStorage` as a primary source of truth; Supabase is the sole source of truth.
 *   **Error Instrumentation**: ALWAYS use unique Error IDs (`ORCH-XXXX`) for backend crashes and return them cleanly to the UI. Never return generic "Failed to process request" messages.
 *   **Tool Execution Validation**: ALWAYS throw explicit errors in client-side tool execution (`GlobalAICopilot.tsx`) if Supabase SQL operations fail. Never allow tools to fail silently without surfacing the error to the chat UI.
+
+## 8. Developer Observability System (Telemetry)
+*   **Architecture**: All AI request lifecycle events (prompts, context building, orchestrator responses, database writes, and errors) are logged asynchronously to the `telemetry_logs` Supabase table.
+*   **Request IDs**: Every interaction generates a unique `request_id` (e.g. `REQ-YYYYMMDD-XXXXXX`) in `/api/ai/chat/route.ts`. This ID flows down into the orchestrator and back up to the frontend UI for end-to-end tracing.
+*   **telemetryEngine**: A fire-and-forget singleton service (`src/services/telemetryEngine.ts`) handles asynchronous inserts to avoid blocking AI/UI threads.
+*   **Developer Mode**: Activated via `?dev=unlock` (sets `workoutos_dev_mode` in localStorage). When active, `GlobalAICopilot.tsx` replaces standard error messages with an advanced Error Overlay containing the Stack Trace, Reason, and a link to the Telemetry Logs.
+*   **Admin Dashboard**: `/admin` is a protected internal route that provides live visualization of System Health, Request Inspector, Error Center, Live Event Stream, and Database counts. Future developers must use this dashboard for debugging scaling issues rather than relying on console logs.

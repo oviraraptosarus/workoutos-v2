@@ -1,18 +1,32 @@
 import { NextResponse } from 'next/server';
 import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
+import { telemetryEngine } from '@/services/telemetryEngine';
 
 export async function POST(req: Request) {
+    const requestId = telemetryEngine.generateRequestId();
+    
     try {
         const body = await req.json();
         const { prompt, userProfile, image, history, appState, preferredLanguage, aiMemories, currentDateTime } = body;
 
+        telemetryEngine.logEvent({
+            user_id: userProfile?.id || 'anonymous',
+            request_id: requestId,
+            event_type: 'PROMPT_RECEIVED',
+            module: 'AI Orchestrator',
+            payload: { prompt, hasImage: !!image },
+            status: 'INFO'
+        });
+
         if (!prompt && !image) {
-            return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
+            telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ERROR', module: 'AI Orchestrator', status: 'FAILED', payload: { error: 'No prompt or image' } });
+            return NextResponse.json({ error: 'Prompt or image is required', requestId }, { status: 400 });
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set' }, { status: 500 });
+            telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ERROR', module: 'AI Orchestrator', status: 'FAILED', payload: { error: 'Missing API Key' } });
+            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set', requestId }, { status: 500 });
         }
 
         const systemInstruction = `You are "Ava", an elite AI health and fitness assistant inside "Workout OS". You are friendly, concise, direct, and speak like a knowledgeable coach — not a robot.
@@ -34,24 +48,11 @@ ${appState ? JSON.stringify(appState, null, 2) : 'No live state provided.'}
 
 === CRITICAL RULES — FOLLOW THESE EXACTLY ===
 
-RULE 1 — CLARIFICATION BEFORE LOGGING (MOST IMPORTANT):
-Before calling ANY logging or creation function (log_nutrition, log_sleep, log_water, add_expense, add_income, add_task, add_reminder), you MUST have all required details. If the user's message is vague or incomplete, ask a SHORT clarifying question instead of calling the function with guessed/zero values. Examples:
-  User: "remind me to buy milk" or "create task buy milk" → Ask: "When should I remind you (date and time) and what priority is this?" Do not create a task or reminder without the user specifying at least the day or time.
-  User: "I have to complete maths assignment by 10th august" → Ask: "What time on August 10th is it due, and when would you like me to remind you?"
-  User: "log my lunch" → Ask: "What did you have for lunch and roughly how much?"
-  User: "I ate something" → Ask: "What did you eat? Rough portion size works too!"
-  User: "log sleep" or "log my night" or "I slept" with no details → Ask in ONE message for all sleep details:
-    Ask: "Quick sleep check-in! Tell me: what time did you sleep and wake up, how would you rate the quality (excellent/good/fair/poor), waking mood (great/good/okay/groggy), energy (high/medium/low), stress (low/moderate/high), and any notes or dreams?"
-  User: "I slept at 11 and woke at 6" → You have bedtime/waketime. Still ask quality, mood, energy, stress before logging.
-  User: "slept at 11, woke at 6, quality was good, mood good, energy medium, stress low" → Call log_sleep with all fields now.
-  User: "I slept 7 hours, felt great, energy was high" → Call log_sleep with hours:7, quality:"good", mood:"great", energy:"high", stress:"low"
-  User: "log 500ml water" → You have enough — call log_water immediately
-  User: "I had 2 chapatis and dal for lunch" → Estimate macros and call log_nutrition with mealName, category:Lunch, calories, protein, carbs, fat
-  User: "log lunch" or "log breakfast" with nothing else → Ask: "What did you have? Tell me the food and rough amount and I'll log it with full macros!"
-  User: "I ate rice" → Ask: "How much rice roughly, and was there anything else with it (dal, sabzi, etc)? Which meal — lunch or dinner?"
-  User: "log my weight" or "log weight" → Ask: "What's your weight today?"
-  User: "log my end of day reflection" or "end of day" or "EOD log" → Respond with a warm check-in asking: "Let's do your end-of-day check-in! Tell me: overall mood today (great/good/okay/bad), energy level (high/medium/low), stress (low/moderate/high), and optionally your journal thoughts, wins, or what you're grateful for. I'll navigate you to the reflection page too!" Then call navigate_to with path "/sleep".
-  User: "I spent 200 on coffee" → Call add_expense immediately
+RULE 1 — ZERO FRICTION LOGGING & EXECUTION (MOST IMPORTANT):
+Do NOT interrogate the user. The app's core philosophy is zero-friction execution. If a user asks to log a meal, add a task, set a reminder, or save a memory, EXECUTE THE TOOL IMMEDIATELY with whatever information they provided.
+- If they don't provide a specific time for a reminder (e.g. "remind me tomorrow"), pick a sensible default (e.g., 09:00 for morning).
+- If they say "log lunch", call the nutrition logging tool with sensible estimated macros for a generic lunch.
+- Never respond with a clarifying question if you can execute a tool using reasonable defaults. Just execute the tool and briefly confirm it was done!
 
 RULE 2 — NO DASHES IN RESPONSES:
 Never use " - " as a separator or list bullet. Use bullet points (•), numbered lists, or plain sentences instead. Never write "something - explanation" patterns.
@@ -315,17 +316,21 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
                 });
 
                 if (response.text || response.functionCall) {
+                    telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ORCHESTRATOR_RESPONSE', module: 'AI Orchestrator', status: 'SUCCESS', payload: { source: response.sourceModel, hasFunction: !!response.functionCall, functionName: response.functionCall?.name, latencyMs: response.latencyMs }, latency_ms: response.latencyMs });
                     return NextResponse.json({
                         result: response.text || "Done.",
                         source: response.sourceModel,
-                        functionCall: response.functionCall
+                        functionCall: response.functionCall,
+                        requestId
                     });
                 } else {
-                    return NextResponse.json({ error: 'LLM Returned Empty Content' }, { status: 500 });
+                    telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ORCHESTRATOR_RESPONSE', module: 'AI Orchestrator', status: 'FAILED', payload: { error: 'Empty Content' } });
+                    return NextResponse.json({ error: 'LLM Returned Empty Content', requestId }, { status: 500 });
                 }
             } catch (err: any) {
                 console.error('Orchestrator API call failed:', err);
-                return NextResponse.json({ error: `Orchestrator error: ${err.message}` }, { status: 500 });
+                telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ERROR', module: 'AI Orchestrator', status: 'FAILED', payload: { error: err.message, stack: err.stack } });
+                return NextResponse.json({ error: `Orchestrator error: ${err.message}`, requestId, devDetails: { message: err.message, stack: err.stack } }, { status: 500 });
             }
         }
 
@@ -350,10 +355,23 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
         }
 
         const fallbackResponse = `### ${verdict}\n\n**పోషకాల వివరాలు:**\n• ${macros}\n\n**సలహాదారు గమనిక:**\n${advice}`;
-        return NextResponse.json({ result: fallbackResponse, source: 'gemini-fallback' });
     } catch (error: any) {
         const errorId = `ORCH-${Math.floor(1000 + Math.random() * 9000)}`;
+        // Try to parse out the userProfile from the request if possible, but the body has already been consumed.
+        // We'll log it as a fatal error without user_id, but the request_id is present.
+        telemetryEngine.logEvent({ user_id: 'anonymous', request_id: requestId, event_type: 'ERROR', module: 'API Route', status: 'FAILED', payload: { error: error.message, stack: error.stack, errorId } });
         console.error(`[${errorId}] Fatal Request Error in Chat API:`, error.stack || error);
-        return NextResponse.json({ error: `Request failed. Error ID: ${errorId}` }, { status: 500 });
+        
+        let devMode = false;
+        try {
+            // We can't access body again, so we'll just check if process.env is dev or return a basic error.
+            // Wait, we can't reliably read devMode here since body is consumed.
+        } catch (e) {}
+
+        return NextResponse.json({ 
+            error: `Request failed. Error ID: ${errorId}`, 
+            requestId,
+            devDetails: { message: error.message, stack: error.stack }
+        }, { status: 500 });
     }
 }

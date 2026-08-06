@@ -65,7 +65,7 @@ export function useReminderEngine() {
                 // 3. Fetch existing command center items to prevent duplicates and handle escalation
                 const { data: existing } = await supabase
                     .from('command_center_items')
-                    .select('id, title, category, source_module, created_at, description, status')
+                    .select('id, title, category, source_module, created_at, description, status, action_type')
                     .eq('user_id', user.id)
                     .eq('status', 'active')
                     .gte('created_at', `${todayStr}T00:00:00Z`);
@@ -87,10 +87,16 @@ export function useReminderEngine() {
                             // Re-notify with urgency
                             if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
                                 const showNotification = () => {
+                                    let navUrl = '/';
+                                    if (item.action_type === 'OPEN_PLANNER') navUrl = '/planner';
+                                    else if (item.action_type === 'OPEN_WATER') navUrl = '/diet';
+                                    else if (item.action_type === 'OPEN_SLEEP') navUrl = '/sleep';
+
                                     const options = {
                                         body: `You haven't addressed this yet: ${item.description}`,
                                         icon: '/logo.png',
                                         badge: '/logo.png',
+                                        data: navUrl
                                     };
                                     if ('serviceWorker' in navigator) {
                                         navigator.serviceWorker.ready.then(reg => reg.showNotification(`🚨 ${item.title}`, options));

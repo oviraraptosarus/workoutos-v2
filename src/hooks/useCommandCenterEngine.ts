@@ -82,11 +82,14 @@ export function useCommandCenterEngine() {
 
                 // Daily Coach / Evening Wrap-up
                 const hour = new Date().getHours();
+                const todayIso = new Date().toISOString().split('T')[0];
+
                 if (hour < 12) {
+                    const { count: pendingTasks } = await supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('date', todayIso).eq('completed', false);
                     newInsights.push({
                         user_id: user.id,
                         title: 'Morning Briefing',
-                        description: `Good morning! Let's conquer the day. Remember your primary goal: ${userProfile.fitnessGoal}. Have you planned your workout yet?`,
+                        description: `Good morning! You have ${pendingTasks || 0} tasks planned today. Remember your primary goal: ${userProfile.fitnessGoal}. Let's conquer the day!`,
                         category: 'AI Insight',
                         priority: 'medium',
                         icon: 'rocket',
@@ -94,15 +97,20 @@ export function useCommandCenterEngine() {
                         action_type: 'OPEN_PLANNER',
                     });
                 } else if (hour >= 18) {
+                    // Fetch today's actual data
+                    const { data: todayLog } = await supabase.from('daily_logs').select('water_ml_total').eq('user_id', user.id).eq('date', todayIso).maybeSingle();
+                    const { count: compTasks } = await supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('date', todayIso).eq('completed', true);
+                    const { count: mealCount } = await supabase.from('meal_entries').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('date', todayIso);
+                    
                     newInsights.push({
                         user_id: user.id,
                         title: 'Evening Wrap-Up',
-                        description: 'How did today go? Log your final meals and reflect on your progress. Consistency is key.',
+                        description: `You finished ${compTasks || 0} tasks, logged ${mealCount || 0} meals, and drank ${todayLog?.water_ml_total || 0}ml of water today. Ready to reflect?`,
                         category: 'AI Insight',
                         priority: 'medium',
                         icon: 'moon',
                         source_module: 'Reflection',
-                        action_type: 'OPEN_PLANNER',
+                        action_type: 'OPEN_PLANNER', // Route to Planner or Sleep page depending on preference
                     });
                 }
 

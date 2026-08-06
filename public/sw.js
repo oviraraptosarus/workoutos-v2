@@ -40,6 +40,9 @@ self.addEventListener('notificationclick', function(event) {
                         client = clientList[i];
                     }
                 }
+                if (event.notification.data && event.notification.data !== '/') {
+                    client.navigate(event.notification.data);
+                }
                 return client.focus();
             }
             return clients.openWindow(event.notification.data || '/');

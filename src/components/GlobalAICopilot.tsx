@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
 import { supabase } from '@/lib/supabase/client';
+import { telemetryEngine } from '@/services/telemetryEngine';
 import ReactMarkdown from 'react-markdown';
 
 
@@ -20,6 +21,9 @@ interface ChatMessage {
     text: string;
     timestamp: string;
     imageUrl?: string;
+    requestId?: string;
+    isError?: boolean;
+    devDetails?: any;
 }
 
 function formatTime(date: Date) {
@@ -71,6 +75,11 @@ export default function GlobalAICopilot() {
 
     // Quick-action chips derived from the latest Ava response
     const [chips, setChips] = useState<string[]>([]);
+
+    const [isDevMode, setIsDevMode] = useState(false);
+    useEffect(() => {
+        setIsDevMode(localStorage.getItem('workoutos_dev_mode') === 'true');
+    }, []);
 
     const recognitionRef = useRef<any>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -305,7 +314,7 @@ export default function GlobalAICopilot() {
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories, currentDateTime }),
+                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories, currentDateTime, devMode: isDevMode }),
             });
 
             const data = await res.json();
@@ -323,15 +332,13 @@ export default function GlobalAICopilot() {
                             description: args.description || '', 
                             completed: false,
                             due_date: args.dueDate || '',
-                            due_time: args.dueTime || null,
-                            priority: args.priority || 'none',
-                            reminder_time: args.reminderTime || null
+                            due_time: args.dueTime || null
+                            // 'priority' and 'reminder_time' are unmigrated columns, removed to prevent schema cache errors
                         }).select().single();
                         
                         if (error) throw new Error(`Tool Execution Failed (add_task): ${error.message}`);
-
                         
-                        if (newTask && (newTask.reminder_time || newTask.due_time)) {
+                        if (newTask && newTask.due_time) {
                             // The reminder will be automatically picked up by useReminderEngine when the time arrives
                         }
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
@@ -460,6 +467,7 @@ export default function GlobalAICopilot() {
                     sender: 'ava',
                     text: data.result || "I've added that.",
                     timestamp: formatTime(new Date()),
+                    requestId: data.requestId,
                 };
                 setMessages(prev => [...prev, avaMsg]);
                 setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || "I've added that." }]);
@@ -481,7 +489,11 @@ export default function GlobalAICopilot() {
                     }
                 }
             } else {
-                throw new Error(data.error || 'No response');
+                // If API returned an error JSON
+                const errObj = new Error(data.error || 'No response');
+                (errObj as any).requestId = data.requestId;
+                (errObj as any).devDetails = data.devDetails;
+                throw errObj;
             }
         } catch (err: any) {
             const errMsg: ChatMessage = {
@@ -489,7 +501,10 @@ export default function GlobalAICopilot() {
                 sender: 'ava',
                 text: `⚠️ ${err.message || "I couldn't process that right now."}`,
                 timestamp: formatTime(new Date()),
-            };
+                isError: true,
+                requestId: err.requestId,
+                ...(err.devDetails && { devDetails: err.devDetails })
+            } as any;
             setMessages(prev => [...prev, errMsg]);
         } finally {
             setLoading(false);
@@ -665,43 +680,66 @@ export default function GlobalAICopilot() {
                         {/* Messages */}
                         {messages.map((msg) => (
                             <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-200`}>
-                                {msg.sender === 'ava' && (
-                                    <div className="flex items-start gap-2.5 w-full max-w-full">
-                                        <div className="shrink-0 mt-1">
-                                            <div className="ava-orb-icon w-7 h-7 rounded-full shadow-[0_0_10px_rgba(130,60,255,0.6)]" />
-                                        </div>
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[11px] font-bold text-white">Ava</span>
-                                                <span className="text-[10px] text-white/30">{msg.timestamp}</span>
-                                            </div>
-                                            <div className="ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm text-white/85 leading-relaxed">
-                                                <div className="prose prose-invert prose-sm max-w-none
-                                                    prose-headings:text-white prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
-                                                    prose-p:text-white/80 prose-p:leading-relaxed prose-p:my-1
-                                                    prose-li:text-white/80 prose-li:my-0.5
-                                                    prose-strong:text-white prose-strong:font-semibold
-                                                    prose-hr:border-white/10 prose-hr:my-3">
-                                                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                {msg.sender === 'ava' ? (
+                                    msg.isError && isDevMode ? (
+                                        <div className="flex items-start gap-2.5 max-w-[95%] w-full">
+                                            <div className="ava-orb-icon w-7 h-7 rounded-full shrink-0 mt-1 flex items-center justify-center bg-red-500/20 text-red-500">⚠️</div>
+                                            <div className="bg-black/80 border border-red-500/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg w-full font-mono text-xs">
+                                                <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                                                    <span className="text-red-400 font-bold uppercase tracking-wider">Request Failed</span>
+                                                    <span className="text-white/40">{msg.requestId || 'UNKNOWN'}</span>
+                                                </div>
+                                                <div className="text-white/70 mb-1">Reason:</div>
+                                                <div className="text-red-300 font-bold mb-3">{msg.text.replace('⚠️ ', '')}</div>
+                                                
+                                                {(msg as any).devDetails?.stack && (
+                                                    <div className="mt-2 p-2 bg-red-950/40 rounded text-red-200/70 overflow-x-auto whitespace-pre">
+                                                        {(msg as any).devDetails.stack}
+                                                    </div>
+                                                )}
+
+                                                <div className="mt-4 flex gap-2">
+                                                    <button onClick={() => handleSend(promptRef.current)} className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded transition-colors">Retry Request</button>
+                                                    <a href={`/admin?request_id=${msg.requestId}`} target="_blank" rel="noreferrer" className="px-3 py-1 bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 rounded transition-colors flex items-center gap-1">Open Telemetry Logs <SlidersHorizontal size={12}/></a>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-                                {msg.sender === 'user' && (
+                                    ) : (
+                                        <div className="flex items-start gap-2.5 w-full max-w-full">
+                                            <div className="shrink-0 mt-1">
+                                                <div className="ava-orb-icon w-7 h-7 rounded-full shadow-[0_0_10px_rgba(130,60,255,0.6)]" />
+                                            </div>
+                                            <div className="flex flex-col gap-1 w-full">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[11px] font-bold text-white">Ava</span>
+                                                    <span className="text-[10px] text-white/30">{msg.timestamp}</span>
+                                                    {msg.requestId && isDevMode && <span className="text-[10px] text-purple-400 font-mono ml-auto">{msg.requestId}</span>}
+                                                </div>
+                                                <div className={`ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-white/85'}`}>
+                                                    <div className="prose prose-invert prose-sm max-w-none
+                                                        prose-headings:text-white prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
+                                                        prose-p:text-white/80 prose-p:leading-relaxed prose-p:my-1
+                                                        prose-li:text-white/80 prose-li:my-0.5
+                                                        prose-strong:text-white prose-strong:font-semibold
+                                                        prose-hr:border-white/10 prose-hr:my-3">
+                                                        {msg.text.startsWith('⚠️') ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                ) : (
                                     <div className="flex flex-col items-end gap-1 w-full max-w-[90%] sm:max-w-[85%]">
                                         <div className="bg-[#2a2a38] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white/90 leading-relaxed break-words whitespace-pre-wrap">
                                             {msg.imageUrl && (
-                                                <img src={msg.imageUrl} alt="attached" className="w-40 rounded-xl mb-2 object-cover" />
+                                                <div className="relative rounded-2xl overflow-hidden border border-white/10 mb-1">
+                                                    <img src={msg.imageUrl} alt="Uploaded preview" className="w-48 h-auto object-cover" />
+                                                </div>
                                             )}
-                                            {msg.text}
-                                        </div>
-                                        <div className="flex items-center gap-1.5 pr-1">
-                                            <span className="text-[10px] text-white/30">{msg.timestamp}</span>
-                                            <svg width="14" height="10" viewBox="0 0 14 10" className="text-white" fill="none">
-                                                <path d="M1 5l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                                <path d="M5 5l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                            </svg>
+                                            <div className="ava-user-msg text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm break-words whitespace-pre-wrap font-medium">
+                                                {msg.text}
+                                            </div>
+                                            <div className="text-[10px] text-white/30 mr-1 mt-1 text-right">{msg.timestamp}</div>
                                         </div>
                                     </div>
                                 )}
