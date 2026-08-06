@@ -66,7 +66,7 @@ export default function DietGaugeSummary({
                 
                 {/* Left Metric: Activity */}
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-3xl font-light text-on-surface tracking-tight tabular-nums">{activityBurned}</span>
+                    <span className="text-2xl font-semibold text-on-surface tracking-tight tabular-nums">{activityBurned}</span>
                     <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">{t('diet.gauge.activity')}</span>
                 </div>
 
@@ -114,7 +114,7 @@ export default function DietGaugeSummary({
                         
                         {/* Gauge Central Values */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
-                            <span className="text-4xl font-semibold tracking-tighter text-on-surface tabular-nums leading-none">
+                            <span className="text-3xl font-bold tracking-tight text-on-surface tabular-nums leading-none">
                                 {Math.abs(caloriesRemaining)}
                             </span>
                             <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">
@@ -126,7 +126,7 @@ export default function DietGaugeSummary({
 
                 {/* Right Metric: Consumed */}
                 <div className="flex flex-col items-center justify-center">
-                    <span className="text-3xl font-light text-on-surface tracking-tight tabular-nums">{totalCalories}</span>
+                    <span className="text-2xl font-semibold text-on-surface tracking-tight tabular-nums">{totalCalories}</span>
                     <span className="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase mt-2">Consumed</span>
                 </div>
             </div>

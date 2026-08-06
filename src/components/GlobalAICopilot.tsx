@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AIDebugDashboard } from './AIDebugDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -60,8 +61,10 @@ export default function GlobalAICopilot() {
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
     const [isListening, setIsListening] = useState(false);
+    const [isDevMode, setIsDevMode] = useState(false);
+    const [showDebugDashboard, setShowDebugDashboard] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [contextStatus, setContextStatus] = useState<Record<string, { loaded: boolean; error?: string; query?: string }> | null>(null);
+    const [contextStatus, setContextStatus] = useState<Record<string, any>>({});
     const [selectedAuditModule, setSelectedAuditModule] = useState<string | null>(null);
 
     // Conversation history — persists across open/close within the same session
@@ -76,7 +79,6 @@ export default function GlobalAICopilot() {
     // Quick-action chips derived from the latest Ava response
     const [chips, setChips] = useState<string[]>([]);
 
-    const [isDevMode, setIsDevMode] = useState(false);
     useEffect(() => {
         setIsDevMode(localStorage.getItem('workoutos_dev_mode') === 'true');
     }, []);
@@ -138,6 +140,7 @@ export default function GlobalAICopilot() {
 
         isSendingRef.current = true;
         const currentImage = selectedImage;
+        const reqId = `REQ-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.floor(100000 + Math.random() * 900000)}`;
         const now = formatTime(new Date());
 
         const userMsg: ChatMessage = {
@@ -146,6 +149,7 @@ export default function GlobalAICopilot() {
             text: q || 'Analyzing image…',
             timestamp: now,
             imageUrl: currentImage ?? undefined,
+            requestId: reqId
         };
 
         setMessages(prev => [...prev, userMsg]);
@@ -157,14 +161,13 @@ export default function GlobalAICopilot() {
 
         try {
             const dateKey = selectedDate || new Date().toISOString().split('T')[0];
-            const { data: { user } } = await supabase.auth.getUser();
-
-            let currentAppState: any = { date: dateKey, time: formatTime(new Date()) };
+            // Re-fetch all context just before sending
+            const currentAppState: any = { dashboard: null, planner: null, workout: null, nutrition: null, budget: null, habits: null, commandCenter: null, date: dateKey, time: formatTime(new Date()) };
+            let apiHistory = messages;
             let aiMemories: any[] = [];
             
-            // Context Load Tracking
-            const contextStatus: Record<string, { loaded: boolean; error?: string; query?: string }> = {
-                'Profile': { loaded: false, query: 'userProfile' },
+            const contextStatus: Record<string, any> = {
+                'Profile': { loaded: false, query: "userProfile" },
                 'Dashboard': { loaded: false, query: "supabase.from('daily_logs')" },
                 'Planner': { loaded: false, query: "supabase.from('tasks')" },
                 'Habits': { loaded: false, query: "supabase.from('habits')" },
@@ -174,6 +177,8 @@ export default function GlobalAICopilot() {
                 'Budget': { loaded: false, query: "getIncome() / getExpenses()" },
                 'AIMemory': { loaded: false, query: "getAIMemories()" }
             };
+
+            const { data: { user } } = await supabase.auth.getUser();
 
             if (user) {
                 // Determine 'since' for recent data (14 days ago)
@@ -306,15 +311,13 @@ export default function GlobalAICopilot() {
             }
             
             // Expose the contextStatus for debugging UI
-            if (process.env.NODE_ENV === 'development') {
-                setContextStatus(contextStatus);
-            }
+            setContextStatus(contextStatus);
 
             const currentDateTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories, currentDateTime, devMode: isDevMode }),
+                body: JSON.stringify({ prompt: q, requestId: reqId, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories, currentDateTime, devMode: isDevMode }),
             });
 
             const data = await res.json();
@@ -333,29 +336,26 @@ export default function GlobalAICopilot() {
                             completed: false,
                             due_date: args.dueDate || '',
                             due_time: args.dueTime || null
-                            // 'priority' and 'reminder_time' are unmigrated columns, removed to prevent schema cache errors
                         }).select().single();
                         
                         if (error) throw new Error(`Tool Execution Failed (add_task): ${error.message}`);
                         
                         if (newTask && newTask.due_time) {
-                            // The reminder will be automatically picked up by useReminderEngine when the time arrives
                         }
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
                     } else if (fn === 'add_reminder') {
-                        // We store the reminder in reminder_preferences
                         const type = args.type || 'Custom';
                         const config = {
                             time: args.time || null,
                             repeat: args.repeat || false,
                             days: args.days || [],
                             snooze_duration: args.snooze_duration || 10,
-                            smart_detection: args.smart_detection || false
+                            smart_detection: args.smart_detection || false,
+                            title: args.title || null
                         };
                         const { updateReminderPreference } = await import('@/services/reminderEngine');
                         await updateReminderPreference(type, true, config);
                         
-                        // Also schedule one immediate command center item if it's a one-off for today
                         if (args.time) {
                             const today = new Date().toISOString().split('T')[0];
                             const { error } = await supabase.from('command_center_items').insert({
@@ -370,6 +370,8 @@ export default function GlobalAICopilot() {
                             });
                             if (error) throw new Error(`Tool Execution Failed (add_reminder/command_center): ${error.message}`);
                         }
+                        window.dispatchEvent(new Event('workout_os_refresh'));
+                        window.dispatchEvent(new Event('workout_os_tasks_updated'));
                     } else if (fn === 'append_quick_note') {
                         const { data: profile, error: profileErr } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
                         if (profileErr && profileErr.code !== 'PGRST116') throw new Error(`Tool Execution Failed (append_quick_note/select): ${profileErr.message}`);
@@ -395,7 +397,6 @@ export default function GlobalAICopilot() {
                     } else if (fn === 'log_sleep') {
                         const sleepHours = Number(args.hours) || 0;
 
-                        // Build the detailed log entry (matches EnhancedSleepLogger format)
                         const sleepLogEntry = {
                             id: Date.now(),
                             amount: sleepHours,
@@ -414,7 +415,6 @@ export default function GlobalAICopilot() {
                             }
                         };
 
-                        // Night sleep replaces the day's entry; nap would append
                         const updatedSleepLogs = [sleepLogEntry];
 
                         const sleepRow: any = {
@@ -489,20 +489,23 @@ export default function GlobalAICopilot() {
                     }
                 }
             } else {
-                // If API returned an error JSON
                 const errObj = new Error(data.error || 'No response');
                 (errObj as any).requestId = data.requestId;
-                (errObj as any).devDetails = data.devDetails;
+                (errObj as any).devDetails = typeof data.devDetails === 'string' ? JSON.parse(data.devDetails) : data.devDetails;
                 throw errObj;
             }
         } catch (err: any) {
+            console.error('AI Request Error:', err);
+            const isDevErr = isDevMode && err.devDetails;
+            const fallbackMsg = "The AI network is currently experiencing high load or your API keys are invalid. Please try again in a few seconds.";
+            
             const errMsg: ChatMessage = {
                 id: `e-${Date.now()}`,
                 sender: 'ava',
-                text: `⚠️ ${err.message || "I couldn't process that right now."}`,
+                text: isDevErr ? `⚠️ [Dev Mode] ${err.message}` : `⚠️ ${fallbackMsg}`,
                 timestamp: formatTime(new Date()),
                 isError: true,
-                requestId: err.requestId,
+                requestId: err.requestId || 'UNKNOWN',
                 ...(err.devDetails && { devDetails: err.devDetails })
             } as any;
             setMessages(prev => [...prev, errMsg]);
@@ -542,7 +545,7 @@ export default function GlobalAICopilot() {
         
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            if (!isListeningRef.current) return; // Prevent late results after stopping
+            if (!isListeningRef.current) return;
             
             let interimTranscript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -556,13 +559,11 @@ export default function GlobalAICopilot() {
             const full = (existing + finalTranscript + interimTranscript).trim();
             setPrompt(full);
             
-            // Auto-send after 3.5 seconds of silence
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
                 if (!isListeningRef.current) return;
                 setIsListening(false);
                 if (recognitionRef.current) recognitionRef.current.stop();
-                // Auto-send the captured speech
                 if (full) handleSend(full);
             }, 3500);
         };
@@ -580,7 +581,6 @@ export default function GlobalAICopilot() {
                 setSelectedImage(compressedDataUrl);
             } catch (err) {
                 console.error('Failed to compress image:', err);
-                // Fallback to uncompressed if it fails for some reason
                 const reader = new FileReader();
                 reader.onloadend = () => setSelectedImage(reader.result as string);
                 reader.readAsDataURL(file);
@@ -593,7 +593,6 @@ export default function GlobalAICopilot() {
 
     return (
         <>
-            {/* Floating Trigger Button */}
             {!isOpen && (
                 <div className="fixed bottom-28 left-5 sm:bottom-8 sm:left-8 z-[9998] pointer-events-none">
                     <button
@@ -606,18 +605,23 @@ export default function GlobalAICopilot() {
                 </div>
             )}
 
-            {/* Full-Screen Chat Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-[10000] flex flex-col bg-[#0d0d12]/95 backdrop-blur-2xl animate-in fade-in duration-200">
 
-                    {/* Top Bar */}
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
                             <div className="ava-orb-icon w-8 h-8 rounded-full shadow-[0_0_16px_rgba(130,60,255,0.7)]" />
                             <span className="text-white font-bold text-base tracking-tight">Ava</span>
+                            {isDevMode && (
+                                <button 
+                                    onClick={() => setShowDebugDashboard(true)}
+                                    className="px-2 py-0.5 ml-2 rounded bg-white/10 border border-white/20 text-[10px] uppercase font-bold tracking-wider text-white/50 hover:text-white transition-colors"
+                                >
+                                    AI Debug
+                                </button>
+                            )}
                         </div>
                         <div className="flex items-center gap-2">
-                            {/* Clear chat button — only show when there are messages */}
                             {hasMessages && (
                                 <button
                                     onClick={clearChat}
@@ -637,10 +641,8 @@ export default function GlobalAICopilot() {
                         </div>
                     </div>
 
-                    {/* Chat Area */}
                     <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-5 scrollbar-hide">
 
-                        {/* Welcome heading — only when no messages yet */}
                         {!hasMessages && (
                             <div className="flex flex-col items-center justify-center h-full min-h-[30vh] text-center px-4 animate-in fade-in duration-300">
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white/90 leading-snug">
@@ -648,7 +650,6 @@ export default function GlobalAICopilot() {
                                 </h1>
                                 <p className="text-white/40 text-sm mt-3 font-medium">{t('copilot.subGreeting')}</p>
 
-                                {/* Quick action grid */}
                                 <div className="mt-6 w-full max-w-sm grid grid-cols-2 gap-2.5">
                                     {[
                                         { emoji: '🍽️', label: t('copilot.logMeal'), prompt: 'log my meal' },
@@ -679,7 +680,6 @@ export default function GlobalAICopilot() {
                             </div>
                         )}
 
-                        {/* Messages */}
                         {messages.map((msg) => (
                             <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-200`}>
                                 {msg.sender === 'ava' ? (
@@ -748,7 +748,6 @@ export default function GlobalAICopilot() {
                             </div>
                         ))}
 
-                        {/* Loading indicator */}
                         {loading && (
                             <div className="flex items-start gap-2.5 animate-in slide-in-from-bottom-2 duration-200">
                                 <div className="ava-orb-icon w-7 h-7 rounded-full shrink-0 mt-1" />
@@ -759,40 +758,10 @@ export default function GlobalAICopilot() {
                                 </div>
                             </div>
                         )}
-                        {/* Context Debugger Overlay */}
-                        {process.env.NODE_ENV === 'development' && contextStatus && (
-                            <div className="mx-4 my-2 flex flex-col gap-2 max-w-xs ml-auto items-end">
-                                <div className="p-3 bg-black/50 border border-white/20 rounded-xl w-full">
-                                    <div className="text-[10px] font-mono text-white/70 mb-2 font-bold tracking-wider uppercase">Context Audit</div>
-                                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                                        {Object.entries(contextStatus).map(([module, state]) => (
-                                            <button 
-                                                key={module} 
-                                                onClick={() => setSelectedAuditModule(selectedAuditModule === module ? null : module)}
-                                                className={`flex items-center gap-1.5 text-[10px] font-mono hover:bg-white/10 p-1 rounded transition-colors text-left ${selectedAuditModule === module ? 'bg-white/10' : ''}`}
-                                            >
-                                                <span>{state.loaded ? '✅' : '❌'}</span>
-                                                <span className={state.loaded ? 'text-white' : 'text-white/40'}>{module}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                {selectedAuditModule && contextStatus[selectedAuditModule] && (
-                                    <div className="p-3 bg-red-950/80 border border-red-500/30 rounded-xl w-full text-xs font-mono">
-                                        <div className="font-bold text-red-400 mb-1">{selectedAuditModule} {contextStatus[selectedAuditModule].loaded ? 'LOADED' : 'FAILED'}</div>
-                                        <div className="text-white/70 mt-2">Reason:</div>
-                                        <div className="text-white whitespace-pre-wrap">{contextStatus[selectedAuditModule].error || 'No error details.'}</div>
-                                        <div className="text-white/70 mt-2">Query:</div>
-                                        <div className="text-white/50">{contextStatus[selectedAuditModule].query}</div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Quick-Action Chips */}
                     {chips.length > 0 && !loading && (
                         <div className="flex gap-2 px-4 sm:px-6 py-2 overflow-x-auto scrollbar-hide shrink-0 animate-in slide-in-from-bottom-4 duration-300">
                             {chips.map((chip) => (
@@ -810,7 +779,6 @@ export default function GlobalAICopilot() {
                         </div>
                     )}
 
-                    {/* Input Bar */}
                     <div className="shrink-0 px-4 sm:px-6 pb-6 pt-2">
                         <div className="flex items-end gap-3 bg-[#1e1e28] border border-white/10 rounded-2xl px-3 py-2 focus-within:border-white/20/40 transition-colors">
                             <input

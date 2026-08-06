@@ -60,6 +60,38 @@ export function useReminderEngine() {
                             tasksToMarkNotified.push(pt.id);
                         }
                     }
+
+                    const isEvening = now.getHours() >= 20; // 8 PM
+                    // Re-check existing in a larger scope or move this block if needed, 
+                    // keeping structure as provided by instruction.
+                    const { data: existingCheck } = await supabase
+                        .from('command_center_items')
+                        .select('title')
+                        .eq('user_id', user.id)
+                        .eq('status', 'active');
+                    const existingTitles = new Set((existingCheck || []).map(e => e.title));
+
+                    if (isEvening && !existingTitles.has('Evening Wrap-Up') && !existingTitles.has('🚨 Escalate: Evening Wrap-Up')) {
+                        const { data } = await supabase
+                            .from('daily_logs')
+                            .select('reflection')
+                            .eq('user_id', user.id)
+                            .eq('date', todayStr)
+                            .maybeSingle();
+                        if (!data || !data.reflection || Object.keys(data.reflection).length === 0) {
+                            newAlerts.push({
+                                user_id: user.id,
+                                title: 'Evening Wrap-Up',
+                                description: 'How did today go? Log your final meals and reflect on your progress. Consistency is key.',
+                                category: 'Health Alert',
+                                priority: 'high',
+                                icon: 'moon',
+                                source_module: 'Reflection',
+                                action_type: 'OPEN_SLEEP',
+                                status: 'active'
+                            });
+                        }
+                    }
                 }
 
                 // 3. Fetch existing command center items to prevent duplicates and handle escalation
@@ -79,10 +111,17 @@ export function useReminderEngine() {
                         const minsPassed = (now.getTime() - itemTime) / 60000;
                         if (minsPassed > 60 && !item.title.includes('🚨')) {
                             // Escalate!
-                            await supabase.from('command_center_items').update({
+                            const updatePayload: any = {
                                 title: `🚨 Escalate: ${item.title}`,
                                 priority: 'high'
-                            }).eq('id', item.id);
+                            };
+                            
+                            // Fix legacy rows that have invalid categories blocking the UPDATE
+                            if (item.category === 'Wellness') {
+                                updatePayload.category = 'Health Alert';
+                            }
+                            
+                            await supabase.from('command_center_items').update(updatePayload).eq('id', item.id);
                             
                             // Re-notify with urgency
                             if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
@@ -187,14 +226,14 @@ export function useReminderEngine() {
                             }
                         } else {
                             if (config.time && currentTimeStr >= config.time) {
-                                const title = `Reminder: ${reminderType}`;
+                                const title = config.title || `Reminder: ${reminderType}`;
                                 if (!existingTitles.has(title) && !existingTitles.has(`🚨 Escalate: ${title}`)) {
                                     const missing = await isMissingLog(reminderType);
                                     if (missing) {
                                         newAlerts.push({
                                             user_id: user.id,
                                             title: title,
-                                            description: `It's past ${config.time}. Don't forget your ${reminderType.toLowerCase()}!`,
+                                            description: config.title ? `It's past ${config.time}. Don't forget: ${config.title}!` : `It's past ${config.time}. Don't forget your ${reminderType.toLowerCase()}!`,
                                             category: 'Reminder',
                                             priority: 'medium',
                                             icon: 'bell',

@@ -258,6 +258,7 @@ export default function GeminiFoodAssistant() {
                             protein: Number(args.protein) || 0,
                             carbs: Number(args.carbs) || 0,
                             fat: Number(args.fat) || 0,
+                            fiber: 0,
                             sugar: 0,
                             icon: '🤖'
                         });

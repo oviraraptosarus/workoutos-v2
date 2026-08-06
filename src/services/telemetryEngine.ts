@@ -32,7 +32,11 @@ class TelemetryEngine {
         // Fire asynchronously
         this._pushToSupabase(event).catch(err => {
             // Fallback to console if DB write fails (e.g., if table isn't created yet)
-            console.error(`[TELEMETRY FAILURE] Request: ${event.request_id} | Event: ${event.event_type} | Module: ${event.module}`, err);
+            if (err?.code === 'PGRST205') {
+                console.warn(`[Telemetry] Schema cache stale. Please run 'NOTIFY pgrst, "reload schema"' in Supabase SQL editor.`);
+            } else {
+                console.error(`[TELEMETRY FAILURE] Request: ${event.request_id} | Event: ${event.event_type} | Module: ${event.module}`, err);
+            }
         });
 
         // Also print beautifully to dev console if in dev mode

@@ -41,15 +41,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   enable_financial_reminders boolean DEFAULT true,
   currency text DEFAULT 'INR',
   
-  -- Smart Fitness Engine
-  activity_level text CHECK (activity_level IN ('sedentary', 'light', 'moderate', 'active', 'athlete')),
-  bmi numeric,
-  bmr numeric,
-  tdee numeric,
-  protein_goal numeric,
-  fat_goal numeric,
-  carb_goal numeric,
-  
   -- Gamification (Streaks are here)
   level integer DEFAULT 1,
   current_streak integer DEFAULT 0,
@@ -63,7 +54,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   accepted_at timestamptz,
 
   -- Preferences & Settings
-  onboarding_completed boolean DEFAULT false,
   theme text NOT NULL DEFAULT 'system' CHECK (theme IN ('light', 'dark', 'system')),
   units text NOT NULL DEFAULT 'metric' CHECK (units IN ('metric', 'imperial')),
   preferred_language text DEFAULT 'en',
@@ -83,108 +73,32 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
--- Auto-create profile from auth.users
+-- Auth Trigger for Profile Auto-Creation
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name, avatar_path, onboarding_completed)
+  INSERT INTO public.profiles (
+    id, email, full_name, username, 
+    accepted_terms, accepted_privacy, terms_version, privacy_version, accepted_at
+  )
   VALUES (
-    NEW.id,
-    NEW.email,
-    NEW.raw_user_meta_data->>'full_name',
-    NEW.raw_user_meta_data->>'avatar_url',
-    false
-  );
-  
-  -- Create dependent settings records automatically
-  INSERT INTO public.notification_settings (user_id) VALUES (NEW.id);
-  INSERT INTO public.ai_settings (user_id) VALUES (NEW.id);
-  
+    NEW.id, 
+    NEW.email, 
+    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'username', lower(split_part(NEW.email, '@', 1))),
+    COALESCE((NEW.raw_user_meta_data->>'accepted_terms')::boolean, false),
+    COALESCE((NEW.raw_user_meta_data->>'accepted_privacy')::boolean, false),
+    NEW.raw_user_meta_data->>'terms_version',
+    NEW.raw_user_meta_data->>'privacy_version',
+    (NEW.raw_user_meta_data->>'accepted_at')::timestamptz
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Backend Fitness Engine
-CREATE OR REPLACE FUNCTION public.calculate_fitness_metrics() 
-RETURNS TRIGGER AS $$
-DECLARE
-  v_age integer;
-  v_multiplier numeric;
-  v_bmr numeric;
-  v_tdee numeric;
-  v_cal_goal numeric;
-BEGIN
-  -- We only compute if we have height, weight, and DOB/Age
-  IF NEW.height_cm IS NOT NULL AND NEW.current_weight IS NOT NULL AND NEW.dob IS NOT NULL THEN
-    
-    -- BMI
-    NEW.bmi := NEW.current_weight / ((NEW.height_cm / 100.0) ^ 2);
-    
-    -- Age calculation
-    v_age := extract(year from age(current_date, NEW.dob));
-    
-    -- BMR (Mifflin-St Jeor)
-    IF NEW.gender = 'female' THEN
-      v_bmr := (10 * NEW.current_weight) + (6.25 * NEW.height_cm) - (5 * v_age) - 161;
-    ELSE
-      v_bmr := (10 * NEW.current_weight) + (6.25 * NEW.height_cm) - (5 * v_age) + 5;
-    END IF;
-    NEW.bmr := v_bmr;
-    
-    -- TDEE
-    v_multiplier := CASE 
-      WHEN NEW.activity_level = 'sedentary' THEN 1.2
-      WHEN NEW.activity_level = 'light' THEN 1.375
-      WHEN NEW.activity_level = 'moderate' THEN 1.55
-      WHEN NEW.activity_level = 'active' THEN 1.725
-      WHEN NEW.activity_level = 'athlete' THEN 1.9
-      ELSE 1.2 -- default
-    END;
-    v_tdee := v_bmr * v_multiplier;
-    NEW.tdee := v_tdee;
-    
-    -- Calorie Goal
-    v_cal_goal := CASE
-      WHEN NEW.fitness_goal ILIKE '%Fat%' OR NEW.fitness_goal ILIKE '%Lose%' THEN v_tdee - 500
-      WHEN NEW.fitness_goal ILIKE '%Muscle%' OR NEW.fitness_goal ILIKE '%Gain%' THEN v_tdee + 300
-      ELSE v_tdee -- Maintain
-    END;
-    NEW.calorie_goal := round(v_cal_goal);
-    
-    -- Macros
-    IF NEW.target_weight IS NOT NULL THEN
-      NEW.protein_goal := round(2.0 * NEW.target_weight);
-    ELSE
-      NEW.protein_goal := round(2.0 * NEW.current_weight);
-    END IF;
-    
-    NEW.fat_goal := round((v_cal_goal * 0.25) / 9.0);
-    
-    -- Carbs (remaining calories)
-    NEW.carb_goal := round((v_cal_goal - (NEW.protein_goal * 4) - (NEW.fat_goal * 9)) / 4.0);
-    IF NEW.carb_goal < 0 THEN NEW.carb_goal := 0; END IF;
-    
-    -- Water
-    NEW.water_goal_ml := round(NEW.current_weight * 35);
-    
-  END IF;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-DROP TRIGGER IF EXISTS trigger_calculate_fitness_metrics ON public.profiles;
-CREATE TRIGGER trigger_calculate_fitness_metrics
-  BEFORE INSERT OR UPDATE OF current_weight, height_cm, dob, gender, activity_level, fitness_goal, target_weight
-  ON public.profiles
-  FOR EACH ROW
-  EXECUTE FUNCTION public.calculate_fitness_metrics();
-
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- Username Helpers
 CREATE OR REPLACE FUNCTION public.check_username_available(p_username text) RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER AS $$
@@ -222,22 +136,31 @@ CREATE TABLE IF NOT EXISTS public.notification_settings (
   water_reminder boolean DEFAULT true,
   meal_reminder boolean DEFAULT true,
   workout_reminder boolean DEFAULT true,
-  planner_reminders boolean DEFAULT true,
-  habit_reminders boolean DEFAULT true,
-  budget_alerts boolean DEFAULT true,
-  weekly_reports boolean DEFAULT true,
-  ai_insights boolean DEFAULT true,
   quiet_hours_start time,
   quiet_hours_end time,
-  notification_sound boolean DEFAULT true,
-  vibration_enabled boolean DEFAULT true,
-  push_enabled boolean DEFAULT true,
-  email_enabled boolean DEFAULT false,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   UNIQUE(user_id)
 );
 CREATE TRIGGER update_notification_settings_updated_at BEFORE UPDATE ON public.notification_settings FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TABLE IF NOT EXISTS public.smart_reminders_config (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  reminder_type text NOT NULL,
+  is_enabled boolean DEFAULT true,
+  time time,
+  recurring_days jsonb DEFAULT '[1,2,3,4,5,6,0]'::jsonb,
+  interval_minutes integer,
+  start_time time,
+  end_time time,
+  skip_next_date date,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  UNIQUE(user_id, reminder_type)
+);
+CREATE TRIGGER update_smart_reminders_config_updated_at BEFORE UPDATE ON public.smart_reminders_config FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
 
 CREATE TABLE IF NOT EXISTS public.command_center_items (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -251,10 +174,13 @@ CREATE TABLE IF NOT EXISTS public.command_center_items (
   status text CHECK (status IN ('active', 'completed', 'dismissed', 'snoozed')) DEFAULT 'active',
   action_type text,
   due_at timestamp with time zone,
+  snoozed_until timestamp with time zone,
+  is_skipped boolean DEFAULT false,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now()
 );
 CREATE TRIGGER update_command_center_items_updated_at BEFORE UPDATE ON public.command_center_items FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
 
 -- ----------------------------------------------------------------------------
 -- 4. DAILY LOGS & HEALTH
@@ -567,11 +493,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ----------------------------------------------------------------------------
--- 13. STORAGE BUCKETS & POLICIES
+-- 13. STORAGE POLICIES
 -- ----------------------------------------------------------------------------
--- Ensure buckets exist (requires appropriate privileges)
-INSERT INTO storage.buckets (id, name, public) VALUES ('progress_photos', 'progress_photos', false) ON CONFLICT (id) DO NOTHING;
-INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT (id) DO NOTHING;
+-- Ensure buckets exist (must be done in Dashboard or via storage.buckets API)
+-- Assuming 'progress_photos' and 'avatars' buckets are already created.
 
 DO $$
 DECLARE
@@ -588,48 +513,8 @@ BEGIN
     EXECUTE format('DROP POLICY IF EXISTS "Users can update own %I" ON storage.objects;', b);
     EXECUTE format('CREATE POLICY "Users can update own %I" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = ''%I'' AND auth.uid() = (storage.foldername(name))[1]::uuid);', b, b);
     
+    EXECUTE format('DROP POLICY IF EXISTS "Users can delete own %I" ON storage.objects;', b);
     EXECUTE format('CREATE POLICY "Users can delete own %I" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = ''%I'' AND auth.uid() = (storage.foldername(name))[1]::uuid);', b, b);
   END LOOP;
 END;
 $$ LANGUAGE plpgsql;
-
--- ----------------------------------------------------------------------------
--- 14. AI MEMORY & REMINDER PREFERENCES (Premium Evolution)
--- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.ai_memories (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  category text NOT NULL,
-  memory_text text NOT NULL,
-  confidence_score numeric DEFAULT 1.0,
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now()
-);
-
-CREATE TRIGGER update_ai_memories_updated_at BEFORE UPDATE ON public.ai_memories FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-ALTER TABLE public.ai_memories ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own ai_memories" ON public.ai_memories FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own ai_memories" ON public.ai_memories FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own ai_memories" ON public.ai_memories FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own ai_memories" ON public.ai_memories FOR DELETE USING (auth.uid() = user_id);
-
-
-CREATE TABLE IF NOT EXISTS public.reminder_preferences (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  type text NOT NULL,
-  is_enabled boolean DEFAULT true,
-  config jsonb DEFAULT '{}'::jsonb,
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now(),
-  UNIQUE(user_id, type)
-);
-
-CREATE TRIGGER update_reminder_preferences_updated_at BEFORE UPDATE ON public.reminder_preferences FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-ALTER TABLE public.reminder_preferences ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view own reminder_preferences" ON public.reminder_preferences FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own reminder_preferences" ON public.reminder_preferences FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own reminder_preferences" ON public.reminder_preferences FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own reminder_preferences" ON public.reminder_preferences FOR DELETE USING (auth.uid() = user_id);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, Mic, Check, Wand2, ArrowRight, Utensils, Droplet, Dumbbell, FileText } from 'lucide-react';
 import { MealItem, MealCategory } from '../diet/types';
@@ -44,6 +44,9 @@ export default function RawDataAITransformerModal({
     const [parsedResult, setParsedResult] = useState<ParsedResult | null>(null);
     const [isListening, setIsListening] = useState(false);
     const [appliedNotice, setAppliedNotice] = useState(false);
+    
+    const recognitionRef = useRef<any>(null);
+    const debounceTimerRef = useRef<any>(null);
 
     useEffect(() => {
         setMounted(true);

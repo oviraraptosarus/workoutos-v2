@@ -23,6 +23,9 @@
         *   Modified `Orchestrator.ts` to explicitly detect `AbortError` and natively failover to fallback models rather than aborting.
         *   Wrapped all Supabase context queries in `GlobalAICopilot.tsx` with `.catch()` to ensure partial context loads gracefully even if one module fails.
         *   Fixed the Dashboard check to use `!dailyLogRes.error` so empty days are correctly treated as "loaded".
+*   **LLM Provider Failover Fix**: Added `gemini-2.5-flash` and `openrouter/auto` to the `DEFAULT_PRIORITY_LIST` in `llm.ts` to gracefully bypass invalid API keys and offline free models.
+*   **Client-Side Crash Fix**: Added missing `fiber` initializations to `MacroGoals` and missing `useRef` hooks in `RawDataAITransformerModal.tsx` that were causing white-screen crashes on load.
+*   **Reminder UI Sync Fix**: Fixed `GlobalAICopilot.tsx` to explicitly dispatch `workout_os_refresh` upon creating reminders so the UI updates instantly, and passed `title` into `useReminderEngine.ts` so custom notifications show the actual task title instead of "Custom".
 
 ## 4. Current Known Issues
 *   Mobile vertical space is wasted on traditional dashboard cards.
@@ -38,28 +41,28 @@
 *   **Decision:** All UI changes must retain existing backend Supabase calls. No bypassing established hooks or duplicating API routes.
 *   **Decision:** The AI Orchestrator must always gracefully degrade to fallback models on timeouts, rate limits, or network errors, and never abort completely unless it hits a fatal 400 Bad Request.
 *   **Current AI Architecture:** AI requests are handled via a central `Orchestrator.ts` that acts as an Execution Coach. The Orchestrator gathers full app state (profile, workouts, nutrition, sleep, reminders, budget, AI memories) using `Promise.all` in `GlobalAICopilot.tsx`, and passes it to the AI.
-*   **AI Data Access:** The AI can access goals, biometrics, macro/water targets, workout/sleep/meal/journal logs, habits, tasks, reminders, budget, AI memory, notification preferences, timezone, and conversation history.
-*   **Diet Guidance Strategy:** The AI prioritizes calorie control, protein, fiber, hydration, and meal consistency. It evaluates actual user logs instead of guessing. Fiber is strictly included in macro reasoning.
-*   **Reminder Behavior Strategy:** The AI enforces zero-friction execution. If a user asks for a reminder, it creates one directly using sensible defaults (e.g., 09:00 for "tomorrow") rather than interrogating the user with clarifying questions.
+*   **What the AI can access:** The AI can access profile data, goals, height/weight/age/gender, calorie targets, protein/carb/fat/fiber/water targets, workout history, sleep history, meal logs, journal/reflection logs, habits, planner tasks, reminders, budget, AI memory, streaks, progress photos metadata, notification preferences, language settings, timezone, time of day, and recent conversation history.
+*   **How diet guidance works:** The AI actively helps fix diet by prioritizing calorie control, protein, fiber, hydration, and meal consistency. It uses actual logged meal data to reason across macros (including fiber) instead of guessing. It provides low-friction, practical meal advice based on actual progress.
+*   **How reminder behavior works:** The AI enforces zero-friction execution. It creates or proposes reminders for water, meals, sleep, workouts, journaling, budget, etc. directly instead of only talking about them. Reminders are timely, non-spammy, and tied to real app data.
 
 ## 7. The AI Rulebook (`WORKOUTOS_AI_RULEBOOK.md`)
-*   **Why it exists:** To prevent the AI from drifting into generic chatbot behavior. It strictly defines the AI as a practical health and fitness Execution Coach.
-*   **What it contains:** Definitive rules on data usage, hallucination prevention, diet/workout/sleep/journal coaching, memory utilization, zero-friction tool execution, output style, and health safety.
-*   **What changed:** The rulebook was codified to replace scattered system prompts. The AI is now explicitly forbidden from interrogating the user over trivial missing details when executing tools (like reminders or tasks), prioritizing immediate execution via sensible defaults.
-*   **Future Contributors:** You MUST NOT break or contradict `WORKOUTOS_AI_RULEBOOK.md`. If a feature or backend change conflicts with it, follow the rulebook first, explain the conflict, and suggest the safest alternative. Do not silently violate it.
+*   **Why it exists:** To prevent the AI from drifting into generic chatbot behavior. It strictly defines the AI as a practical health and fitness Execution Coach that uses real data.
+*   **What it contains:** Definitive rules on data access, data reasoning, hallucination prevention, diet/workout/sleep/journal coaching, memory utilization, zero-friction tool execution, output style, and health safety.
+*   **What changed:** The rulebook was codified into a permanent markdown file that comprehensively defines execution strategy for compound intents, ambiguity handling (sensible estimates), and direct correction handling.
+*   **Future Contributors:** You MUST NOT break or contradict `WORKOUTOS_AI_RULEBOOK.md`. If any feature, prompt, or backend change conflicts with this rulebook, you must follow the rulebook first, explain the conflict, suggest the safest alternative, and do not silently violate it.
 
 ## 8. Dangerous Things Not to Break (Fragile Systems)
+*   **What should not be broken:** The `WORKOUTOS_AI_RULEBOOK.md` is the single source of truth for the AI's behavior and must be followed.
 *   **Orchestrator Retry Loop**: Do NOT throw errors inside the inner `while` loop in `Orchestrator.ts` unless it is an explicitly non-retryable API error (like 400). Throwing will bypass all OpenRouter/Gemini fallback models.
 *   **Context Builder (`Promise.all`)**: Do NOT add raw `supabase.from()` promises to the AI context builder without `.catch()`. A single network failure will kill the entire AI chat request.
-*   **Database Schema**: Do NOT modify existing `supabase.from().insert()` payloads without adding schema fallbacks, as the production DB schema is fixed and unmigrated for some columns (e.g., `tasks.priority`).
+*   **Database Schema**: Do NOT modify existing `supabase.from().insert()` payloads without adding schema fallbacks, as the production DB schema is fixed.
 *   **AI API Boundary**: Do NOT bypass the AI Orchestrator API (`/api/ai/chat`) for AVA interactions.
 *   **Source of Truth**: Never use `localStorage` as a primary source of truth; Supabase is the sole source of truth.
-*   **Error Instrumentation**: ALWAYS use unique Error IDs (`ORCH-XXXX`) for backend crashes and return them cleanly to the UI. Never return generic "Failed to process request" messages.
-*   **Tool Execution Validation**: ALWAYS throw explicit errors in client-side tool execution (`GlobalAICopilot.tsx`) if Supabase SQL operations fail. Never allow tools to fail silently without surfacing the error to the chat UI.
+*   **Error Instrumentation**: ALWAYS use unique Error IDs (`ORCH-XXXX`) for backend crashes.
 
-## 8. Developer Observability System (Telemetry)
-*   **Architecture**: All AI request lifecycle events (prompts, context building, orchestrator responses, database writes, and errors) are logged asynchronously to the `telemetry_logs` Supabase table.
-*   **Request IDs**: Every interaction generates a unique `request_id` (e.g. `REQ-YYYYMMDD-XXXXXX`) in `/api/ai/chat/route.ts`. This ID flows down into the orchestrator and back up to the frontend UI for end-to-end tracing.
-*   **telemetryEngine**: A fire-and-forget singleton service (`src/services/telemetryEngine.ts`) handles asynchronous inserts to avoid blocking AI/UI threads.
-*   **Developer Mode**: Activated via `?dev=unlock` (sets `workoutos_dev_mode` in localStorage). When active, `GlobalAICopilot.tsx` replaces standard error messages with an advanced Error Overlay containing the Stack Trace, Reason, and a link to the Telemetry Logs.
-*   **Admin Dashboard**: `/admin` is a protected internal route that provides live visualization of System Health, Request Inspector, Error Center, Live Event Stream, and Database counts. Future developers must use this dashboard for debugging scaling issues rather than relying on console logs.
+## 9. Developer Observability System (Telemetry)
+*   **Architecture**: All AI request lifecycle events are logged asynchronously to the `telemetry_logs` Supabase table.
+*   **Request IDs**: Every interaction generates a unique `request_id` for end-to-end tracing.
+*   **telemetryEngine**: A fire-and-forget singleton service (`src/services/telemetryEngine.ts`).
+*   **Developer Mode**: Activated via `?dev=unlock`. Shows advanced Error Overlay containing Stack Trace and Reason.
+*   **Admin Dashboard**: `/admin` provides live visualization of System Health and Error Center.

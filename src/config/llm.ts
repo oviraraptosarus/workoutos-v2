@@ -19,36 +19,44 @@ function getApiKey(provider: ProviderId): string | undefined {
     }
 }
 
+// Configurable Priority List
+const DEFAULT_PRIORITY_LIST = [
+    { provider: 'gemini', model: 'gemini-2.5-flash' },
+    { provider: 'gemini', model: 'gemini-1.5-flash' },
+    { provider: 'openrouter', model: 'openrouter/auto' }
+];
+
 export function buildConfig(): OrchestratorConfig {
-    const primaryProvider = parseProvider(process.env.PRIMARY_PROVIDER || 'gemini');
-    const primaryModel = process.env.PRIMARY_MODEL || 'gemini-2.5-flash';
-    
     const priorityModels: ModelConfig[] = [];
-
-    // Add Primary
-    priorityModels.push({
-        id: `${primaryProvider}:${primaryModel}`,
-        provider: primaryProvider,
-        modelName: primaryModel,
-        isConfigured: !!getApiKey(primaryProvider)
-    });
-
-    // Add OpenRouter Fallbacks if defined
-    const openRouterModelsStr = process.env.OPENROUTER_MODELS;
-    if (openRouterModelsStr) {
-        const orModels = openRouterModelsStr.split(',').map(m => m.trim()).filter(Boolean);
-        const hasKey = !!getApiKey('openrouter');
-        
-        orModels.forEach(model => {
-            priorityModels.push({
-                id: `openrouter:${model}`,
-                provider: 'openrouter',
-                modelName: model,
-                baseURL: 'https://openrouter.ai/api/v1',
-                isConfigured: hasKey
+    
+    // Check if user provided a custom unified list, otherwise use default
+    const customListStr = process.env.MODEL_PRIORITY_LIST;
+    let listToUse = DEFAULT_PRIORITY_LIST;
+    
+    if (customListStr) {
+        try {
+            // Support simple comma-separated format: "gemini:gemini-1.5-flash,openrouter:deepseek/deepseek-v3:free"
+            listToUse = customListStr.split(',').map(m => {
+                const parts = m.trim().split(':');
+                return { provider: parts[0] as ProviderId, model: parts.slice(1).join(':') };
             });
-        });
+        } catch (e) {
+            console.error("Failed to parse custom MODEL_PRIORITY_LIST", e);
+        }
     }
+
+    listToUse.forEach(item => {
+        const providerId = parseProvider(item.provider);
+        const hasKey = !!getApiKey(providerId);
+        
+        priorityModels.push({
+            id: `${providerId}:${item.model}`,
+            provider: providerId,
+            modelName: item.model,
+            baseURL: providerId === 'openrouter' ? 'https://openrouter.ai/api/v1' : undefined,
+            isConfigured: hasKey
+        });
+    });
 
     return {
         priorityModels,

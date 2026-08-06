@@ -75,4 +75,20 @@ export class HealthMonitor {
         }
         return result;
     }
+
+    public getHealthSummary() {
+        const summary: any = {};
+        for (const [key, stats] of this.store.entries()) {
+            const totalAttempts = stats.successes + stats.failures;
+            const successRate = totalAttempts > 0 ? (stats.successes / totalAttempts) * 100 : 100;
+            const avgLatency = stats.successes > 0 ? (stats.totalLatencyMs / stats.successes) : 0;
+            summary[key] = {
+                successRate: `${successRate.toFixed(1)}%`,
+                averageLatencyMs: avgLatency.toFixed(0),
+                consecutiveFailures: stats.failures,
+                status: stats.isCooldown ? 'COOLDOWN' : 'HEALTHY'
+            };
+        }
+        return summary;
+    }
 }

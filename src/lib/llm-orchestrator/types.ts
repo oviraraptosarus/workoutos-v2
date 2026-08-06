@@ -17,6 +17,7 @@ export interface OrchestratorConfig {
 }
 
 export interface CompletionRequest {
+    requestId?: string;
     systemInstruction?: string;
     prompt: string;
     image?: string; // base64 data URI

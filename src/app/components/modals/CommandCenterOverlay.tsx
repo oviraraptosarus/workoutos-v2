@@ -17,6 +17,7 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
     const { user } = useAuth();
     const router = useRouter();
     const [items, setItems] = useState<any[]>([]);
+    const [upcoming, setUpcoming] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const { snapshot, refreshSnapshot } = useDailySnapshot();
     
@@ -48,6 +49,22 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
             });
             setItems(sorted);
         }
+
+        // Fetch Upcoming Activities (Tasks)
+        const todayStr = new Date().toISOString().split('T')[0];
+        const { data: upcomingTasks } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('completed', false)
+            .gte('date', todayStr)
+            .order('date', { ascending: true })
+            .limit(5);
+            
+        if (upcomingTasks) {
+            setUpcoming(upcomingTasks);
+        }
+
         setLoading(false);
     };
 
@@ -193,17 +210,6 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
 
                 <div className="flex-1 overflow-y-auto px-6 pb-6 pt-4 space-y-4">
                     
-                    {process.env.NODE_ENV === 'development' && (
-                        <div className="bg-red-500/10 border border-red-500/30 p-3 rounded-2xl mb-4">
-                            <h4 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-2 flex items-center gap-1"><Zap size={10} /> Debug Diagnostics</h4>
-                            <div className="text-xs text-red-200/70 font-mono space-y-1">
-                                <p>Source: <span className="text-white">useDailySnapshot (Live)</span></p>
-                                <p>Timestamp: <span className="text-white">{new Date(snapshot.timestamp).toISOString()}</span></p>
-                                <p>State: <span className="text-white">{snapshot.isEmpty ? 'Empty' : 'Has Data'}</span></p>
-                                <p>Points: <span className="text-white">{snapshot.completionPercentage}%</span></p>
-                            </div>
-                        </div>
-                    )}
 
                     {/* Next Reminder Pill */}
                     {nextReminder !== "No reminders scheduled." ? (
@@ -294,6 +300,31 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
                                 </div>
                             </div>
                         ))
+                    )}
+
+                    {/* Upcoming Activities Section */}
+                    {upcoming.length > 0 && (
+                        <div className="mt-8 mb-4">
+                            <h4 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Calendar size={12} /> Upcoming Activities
+                            </h4>
+                            <div className="space-y-3">
+                                {upcoming.map(task => (
+                                    <div key={task.id} className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:bg-surface-container transition-colors cursor-pointer" onClick={() => { onClose(); router.push('/planner'); }}>
+                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5">
+                                            <Calendar size={16} className="text-on-surface-variant" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-on-surface truncate">{task.title}</h4>
+                                            <p className="text-xs text-on-surface-variant truncate">
+                                                {task.due_time ? `Due at ${task.due_time}` : `Due ${task.date}`}
+                                            </p>
+                                        </div>
+                                        <ExternalLink size={14} className="text-on-surface-variant opacity-50" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

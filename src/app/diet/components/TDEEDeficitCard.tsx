@@ -67,7 +67,7 @@ export default function TDEEDeficitCard({
             {/* Hero Stat: Weekly Velocity */}
             <div className="mb-8">
                 <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-semibold tracking-tighter text-on-surface tabular-nums">
+                    <span className="text-4xl font-bold tracking-tight text-on-surface tabular-nums">
                         {isDeficit ? `-${weeklyPaceKg}` : `+${weeklyPaceKg}`}
                     </span>
                     <span className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">kg/wk</span>

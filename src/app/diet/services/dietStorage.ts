@@ -255,7 +255,7 @@ export const saveActivityBurnedForDate = async (dateKey: string, amount: number)
 };
 
 export const getMacroGoals = async (): Promise<MacroGoals> => {
-    const defaultGoals = { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35 };
+    const defaultGoals = { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35, fiber: 25 };
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return defaultGoals;
 
@@ -267,7 +267,8 @@ export const getMacroGoals = async (): Promise<MacroGoals> => {
             protein: config.protein || 140,
             carbs: config.carbs || 220,
             fat: config.fat || 65,
-            sugar: config.sugar || 35
+            sugar: config.sugar || 35,
+            fiber: config.fiber || 25
         };
     }
     return defaultGoals;

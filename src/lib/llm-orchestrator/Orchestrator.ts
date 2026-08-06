@@ -5,7 +5,7 @@ import { CompletionRequest, CompletionResponse, ModelConfig } from './types';
 import { GeminiProvider } from './providers/GeminiProvider';
 import { OpenAIProvider } from './providers/OpenAIProvider';
 import { AnthropicProvider } from './providers/AnthropicProvider';
-
+import { telemetryEngine } from '@/services/telemetryEngine';
 export class LLMOrchestrator {
     private config = llmConfig;
     private health = new HealthMonitor();
@@ -61,7 +61,7 @@ export class LLMOrchestrator {
 
             try {
                 let retries = 0;
-                const attemptSuccess = false;
+                let attemptSuccess = false;
 
                 while (retries <= this.config.maxRetries && !attemptSuccess) {
                     try {
@@ -79,6 +79,23 @@ export class LLMOrchestrator {
 
                         // Success
                         this.health.recordSuccess(model.id, latencyMs);
+                        
+                        telemetryEngine.logEvent({
+                            user_id: 'anonymous', // Orchestrator doesn't know user_id here easily without changing signature
+                            request_id: request.requestId || 'UNKNOWN',
+                            event_type: 'TOOL_SUCCESS',
+                            module: 'Orchestrator',
+                            status: 'SUCCESS',
+                            latency_ms: latencyMs,
+                            payload: { 
+                                sourceModel: model.id, 
+                                provider: model.provider,
+                                tokens: response.text.length / 4, // Rough estimate
+                                isFallback: model.id !== this.config.priorityModels[0]?.id,
+                                retries
+                            }
+                        });
+
                         return { ...response, sourceModel: model.id, retries };
 
                     } catch (error: any) {
@@ -86,10 +103,25 @@ export class LLMOrchestrator {
                         const isExplicitlyNonRetryable = error?.isRetryable === false;
                         const reason = isAbort ? 'timeout' : (error?.status === 429 ? 'rate_limit' : 'error');
                         
-                        console.warn(`[Orchestrator] Attempt ${retries + 1} failed for ${model.id}. Reason: ${reason}.`);
+                        console.warn(`[Orchestrator] Attempt ${retries + 1} failed for ${model.id}. Reason: ${reason}. Error: ${error?.message}`);
+
+                        telemetryEngine.logEvent({
+                            user_id: 'anonymous',
+                            request_id: request.requestId || 'UNKNOWN',
+                            event_type: 'TOOL_FAILED',
+                            module: 'Orchestrator',
+                            status: 'FAILED',
+                            payload: { 
+                                sourceModel: model.id, 
+                                provider: model.provider,
+                                attempt: retries + 1,
+                                reason,
+                                errorMessage: error?.message || 'Unknown error'
+                            }
+                        });
 
                         if (isAbort || isExplicitlyNonRetryable) {
-                            // Don't retry the same model. Failover to the next fallback model immediately.
+                            // Don't retry the same model for timeouts or fatal model errors. Failover to the next fallback immediately.
                             console.warn(`[Orchestrator] Skipping further retries on ${model.id}. Failing over.`);
                             this.health.recordFailure(model.id, reason);
                             lastError = error;
@@ -116,14 +148,12 @@ export class LLMOrchestrator {
             }
         }
 
-        // If all models fail, return friendly fallback message
-        console.error(`[Orchestrator] All models exhausted or failed. Last error: ${lastError?.message}`);
-        return {
-            text: "Failed to process request. Please try again later.",
-            sourceModel: "fallback",
-            latencyMs: 0,
-            retries: 0
-        };
+        // If all models fail, throw structured error instead of hiding it behind a successful 200 payload
+        const errMsg = `Orchestrator exhausted all models. Last failure: ${lastError?.message || 'Unknown'}`;
+        console.error(`[Orchestrator] ${errMsg}`);
+        const finalError = new Error(errMsg);
+        (finalError as any).status = 502; // Bad Gateway / Downstream error
+        throw finalError;
     }
 }
 

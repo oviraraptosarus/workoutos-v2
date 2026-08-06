@@ -39,6 +39,7 @@ export default function DietPage() {
         carbs: 220,
         fat: 65,
         sugar: 35,
+        fiber: 25,
     });
 
     // Modals visibility state

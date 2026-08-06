@@ -88,6 +88,7 @@ export default function NutritionCard() {
                     carbs: 0,
                     fat: 0,
                     sugar: 0,
+                    fiber: 0,
                     icon: '⚡'
                 });
                 await saveMealsForDate(selectedDate, meals);

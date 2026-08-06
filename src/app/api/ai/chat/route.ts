@@ -3,11 +3,10 @@ import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 import { telemetryEngine } from '@/services/telemetryEngine';
 
 export async function POST(req: Request) {
-    const requestId = telemetryEngine.generateRequestId();
-    
     try {
         const body = await req.json();
-        const { prompt, userProfile, image, history, appState, preferredLanguage, aiMemories, currentDateTime } = body;
+        const { prompt, requestId: clientRequestId, userProfile, image, history, appState, preferredLanguage, aiMemories, currentDateTime, devMode } = body;
+        const requestId = clientRequestId || telemetryEngine.generateRequestId();
 
         telemetryEngine.logEvent({
             user_id: userProfile?.id || 'anonymous',
@@ -23,10 +22,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Prompt or image is required', requestId }, { status: 400 });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ERROR', module: 'AI Orchestrator', status: 'FAILED', payload: { error: 'Missing API Key' } });
-            return NextResponse.json({ error: 'GEMINI_API_KEY environment variable is not set', requestId }, { status: 500 });
+        const hasAnyKey = process.env.GEMINI_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+        if (!hasAnyKey) {
+            telemetryEngine.logEvent({ user_id: userProfile?.id, request_id: requestId, event_type: 'ERROR', module: 'AI Orchestrator', status: 'FAILED', payload: { error: 'No API Keys Configured' } });
+            return NextResponse.json({ error: 'No AI API Keys are configured on the server', requestId }, { status: 500 });
         }
 
         const systemInstruction = `You are "Ava", an elite AI health and fitness assistant inside "Workout OS". You are friendly, concise, direct, and speak like a knowledgeable coach — not a robot.
@@ -107,7 +106,7 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
 
 === END RULES ===`;
 
-        if (apiKey) {
+        if (hasAnyKey) {
             try {
                 const contents: any[] = [];
 
@@ -162,6 +161,7 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
                 const currentPromptObj = mappedHistory.pop();
 
                 const response = await orchestrator.generateContent({
+                    requestId,
                     systemInstruction,
                     prompt: currentPromptObj?.text || prompt,
                     history: mappedHistory,
@@ -357,17 +357,17 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
         const fallbackResponse = `### ${verdict}\n\n**పోషకాల వివరాలు:**\n• ${macros}\n\n**సలహాదారు గమనిక:**\n${advice}`;
     } catch (error: any) {
         const errorId = `ORCH-${Math.floor(1000 + Math.random() * 9000)}`;
-        // Try to parse out the userProfile from the request if possible, but the body has already been consumed.
-        // We'll log it as a fatal error without user_id, but the request_id is present.
-        telemetryEngine.logEvent({ user_id: 'anonymous', request_id: requestId, event_type: 'ERROR', module: 'API Route', status: 'FAILED', payload: { error: error.message, stack: error.stack, errorId } });
-        console.error(`[${errorId}] Fatal Request Error in Chat API:`, error.stack || error);
-        
+        let requestId = "UNKNOWN";
         let devMode = false;
+
         try {
-            // We can't access body again, so we'll just check if process.env is dev or return a basic error.
-            // Wait, we can't reliably read devMode here since body is consumed.
+            // We can parse it from req if we hadn't consumed it, but since it's already consumed, 
+            // we will just assume devMode might be false unless we can tell otherwise.
+            // But wait, we can't reliably read it.
         } catch (e) {}
 
+        console.error(`[${errorId}] Fatal Request Error in Chat API:`, error.stack || error);
+        
         return NextResponse.json({ 
             error: `Request failed. Error ID: ${errorId}`, 
             requestId,
