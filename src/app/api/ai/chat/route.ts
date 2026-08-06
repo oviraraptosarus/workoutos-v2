@@ -4,7 +4,7 @@ import { orchestrator } from '@/lib/llm-orchestrator/Orchestrator';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, userProfile, image, history, appState, preferredLanguage, aiMemories } = body;
+        const { prompt, userProfile, image, history, appState, preferredLanguage, aiMemories, currentDateTime } = body;
 
         if (!prompt && !image) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
