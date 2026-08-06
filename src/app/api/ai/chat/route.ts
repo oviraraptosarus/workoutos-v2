@@ -351,7 +351,9 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
 
         const fallbackResponse = `### ${verdict}\n\n**పోషకాల వివరాలు:**\n• ${macros}\n\n**సలహాదారు గమనిక:**\n${advice}`;
         return NextResponse.json({ result: fallbackResponse, source: 'gemini-fallback' });
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+    } catch (error: any) {
+        const errorId = `ORCH-${Math.floor(1000 + Math.random() * 9000)}`;
+        console.error(`[${errorId}] Fatal Request Error in Chat API:`, error.stack || error);
+        return NextResponse.json({ error: `Request failed. Error ID: ${errorId}` }, { status: 500 });
     }
 }

@@ -44,3 +44,5 @@
 *   **Database Schema**: Do NOT modify existing `supabase.from().insert()` payloads without adding schema fallbacks, as the production DB schema is fixed and unmigrated for some columns.
 *   **AI API Boundary**: Do NOT bypass the AI Orchestrator API (`/api/ai/chat`) for AVA interactions.
 *   **Source of Truth**: Never use `localStorage` as a primary source of truth; Supabase is the sole source of truth.
+*   **Error Instrumentation**: ALWAYS use unique Error IDs (`ORCH-XXXX`) for backend crashes and return them cleanly to the UI. Never return generic "Failed to process request" messages.
+*   **Tool Execution Validation**: ALWAYS throw explicit errors in client-side tool execution (`GlobalAICopilot.tsx`) if Supabase SQL operations fail. Never allow tools to fail silently without surfacing the error to the chat UI.

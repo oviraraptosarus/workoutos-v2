@@ -328,6 +328,9 @@ export default function GlobalAICopilot() {
                             reminder_time: args.reminderTime || null
                         }).select().single();
                         
+                        if (error) throw new Error(`Tool Execution Failed (add_task): ${error.message}`);
+
+                        
                         if (newTask && (newTask.reminder_time || newTask.due_time)) {
                             // The reminder will be automatically picked up by useReminderEngine when the time arrives
                         }
@@ -348,7 +351,7 @@ export default function GlobalAICopilot() {
                         // Also schedule one immediate command center item if it's a one-off for today
                         if (args.time) {
                             const today = new Date().toISOString().split('T')[0];
-                            await supabase.from('command_center_items').insert({
+                            const { error } = await supabase.from('command_center_items').insert({
                                 user_id: user.id,
                                 title: args.title || `Reminder: ${type}`,
                                 description: `You asked me to remind you about ${type}.`,
@@ -358,9 +361,11 @@ export default function GlobalAICopilot() {
                                 source_module: 'Ava',
                                 due_at: `${today}T${args.time}:00Z`
                             });
+                            if (error) throw new Error(`Tool Execution Failed (add_reminder/command_center): ${error.message}`);
                         }
                     } else if (fn === 'append_quick_note') {
-                                                const { data: profile } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
+                        const { data: profile, error: profileErr } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
+                        if (profileErr && profileErr.code !== 'PGRST116') throw new Error(`Tool Execution Failed (append_quick_note/select): ${profileErr.message}`);
                         const currentConfig = profile?.target_config || {};
                         const currentNote = currentConfig.quickNotes?.[dateKey] || '';
                         const updatedConfig = {
@@ -370,7 +375,8 @@ export default function GlobalAICopilot() {
                                 [dateKey]: currentNote + '\\n' + (args.text || '')
                             }
                         };
-                        await supabase.from('profiles').update({ target_config: updatedConfig }).eq('id', user.id);
+                        const { error: updateErr } = await supabase.from('profiles').update({ target_config: updatedConfig }).eq('id', user.id);
+                        if (updateErr) throw new Error(`Tool Execution Failed (append_quick_note/update): ${updateErr.message}`);
 
                     } else if (fn === 'navigate_to' && args.path) {
                         router.push(args.path);
@@ -416,7 +422,7 @@ export default function GlobalAICopilot() {
                         const { error } = await supabase
                             .from('daily_logs')
                             .upsert(sleepRow, { onConflict: 'user_id,date' });
-                        if (error) console.error("Error from AI sleep upsert:", error);
+                        if (error) throw new Error(`Tool Execution Failed (log_sleep): ${error.message}`);
 
                         window.dispatchEvent(new Event('storage'));
                         window.dispatchEvent(new Event('workout_os_sleep_updated'));

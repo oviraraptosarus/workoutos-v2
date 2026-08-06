@@ -48,7 +48,9 @@ Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your r
             console.error('Report API Orchestrator call failed:', err);
             return NextResponse.json({ error: `Orchestrator error: ${err.message}` }, { status: 500 });
         }
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+    } catch (error: any) {
+        const errorId = `ORCH-${Math.floor(1000 + Math.random() * 9000)}`;
+        console.error(`[${errorId}] Fatal Request Error in Report API:`, error.stack || error);
+        return NextResponse.json({ error: `Request failed. Error ID: ${errorId}` }, { status: 500 });
     }
 }
