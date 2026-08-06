@@ -9,32 +9,98 @@ export function useReminderEngine() {
         
         const runEngine = async () => {
             try {
-                // 1. Fetch configs
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const currentTimeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); // 24hr format
+                const currentDay = now.getDay();
+
+                // 1. Fetch configs from reminder_preferences
                 const { data: configs } = await supabase
-                    .from('smart_reminders_config')
+                    .from('reminder_preferences')
                     .select('*')
                     .eq('user_id', user.id)
                     .eq('is_enabled', true);
-                
-                if (!configs || configs.length === 0) return;
+                    
+                // Fetch Notification Settings toggles (from profile/page.tsx)
+                const { data: notifSettings } = await supabase
+                    .from('notification_settings')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
 
-                const now = new Date();
-                const currentDay = now.getDay(); // 0-6
-                const currentHours = now.getHours();
-                const currentMinutes = now.getMinutes();
-                const currentTimeStr = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
-                const todayStr = now.toISOString().split('T')[0];
+                const plannerEnabled = notifSettings ? notifSettings.planner_reminders : true;
+                const habitEnabled = notifSettings ? notifSettings.habit_reminders : true;
 
                 const newAlerts: any[] = [];
+                const tasksToMarkNotified: string[] = [];
+                
+                // 2. Fetch pending tasks that have reminders due (if enabled)
+                if (plannerEnabled) {
+                    const { data: pendingTasks } = await supabase
+                        .from('tasks')
+                        .select('id, title, full_title, priority, reminder_time, due_time, due_date')
+                        .eq('user_id', user.id)
+                        .eq('completed', false)
+                        .eq('notification_sent', false)
+                        .or('reminder_time.lte.' + now.toISOString() + ',and(due_date.eq.' + todayStr + ',due_time.lte.' + currentTimeStr + ')');
 
-                // 2. Fetch existing command center items to prevent duplicates
+                    if (pendingTasks && pendingTasks.length > 0) {
+                        for (const pt of pendingTasks) {
+                            newAlerts.push({
+                                user_id: user.id,
+                                title: pt.title,
+                                description: `Task Due: ${pt.full_title || pt.title}`,
+                                category: 'Reminder',
+                                priority: pt.priority === 'high' ? 'high' : 'medium',
+                                icon: 'check-square',
+                                source_module: 'Planner',
+                                action_type: 'OPEN_PLANNER',
+                                status: 'active'
+                            });
+                            tasksToMarkNotified.push(pt.id);
+                        }
+                    }
+                }
+
+                // 3. Fetch existing command center items to prevent duplicates and handle escalation
                 const { data: existing } = await supabase
                     .from('command_center_items')
-                    .select('title, category, source_module')
+                    .select('id, title, category, source_module, created_at, description, status')
                     .eq('user_id', user.id)
+                    .eq('status', 'active')
                     .gte('created_at', `${todayStr}T00:00:00Z`);
 
                 const existingTitles = new Set((existing || []).map(e => e.title));
+                
+                // Escalation Engine: Escalate reminders ignored for > 60 minutes
+                if (existing && existing.length > 0) {
+                    for (const item of existing) {
+                        const itemTime = new Date(item.created_at).getTime();
+                        const minsPassed = (now.getTime() - itemTime) / 60000;
+                        if (minsPassed > 60 && !item.title.includes('🚨')) {
+                            // Escalate!
+                            await supabase.from('command_center_items').update({
+                                title: `🚨 Escalate: ${item.title}`,
+                                priority: 'urgent'
+                            }).eq('id', item.id);
+                            
+                            // Re-notify with urgency
+                            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+                                const showNotification = () => {
+                                    const options = {
+                                        body: `You haven't addressed this yet: ${item.description}`,
+                                        icon: '/logo.png',
+                                        badge: '/logo.png',
+                                    };
+                                    if ('serviceWorker' in navigator) {
+                                        navigator.serviceWorker.ready.then(reg => reg.showNotification(`🚨 ${item.title}`, options));
+                                    }
+                                };
+                                showNotification();
+                            }
+                        }
+                    }
+                }
 
                 // Helper to check missing logs
                 const isMissingLog = async (type: string) => {
@@ -71,17 +137,6 @@ export function useReminderEngine() {
                         if (type === 'Daily Reflection' && (!data.reflection || Object.keys(data.reflection).length === 0)) return true;
                         return false;
                     }
-                    if (type === 'Progress Photo') {
-                        const { data } = await supabase
-                            .from('progress_photos')
-                            .select('id')
-                            .eq('user_id', user.id)
-                            .gte('created_at', `${todayStr}T00:00:00Z`)
-                            .limit(1);
-                        return !data || data.length === 0;
-                    }
-                    // For Water, Walk, Stretch, Meditation - these are just general reminders 
-                    // unless we want to query water logs.
                     if (type === 'Water') {
                         const { data } = await supabase
                             .from('daily_logs')
@@ -89,77 +144,58 @@ export function useReminderEngine() {
                             .eq('user_id', user.id)
                             .eq('date', todayStr)
                             .maybeSingle();
-                        // Only remind if they haven't reached goal
                         return !data || data.water_ml_total < (userProfile.waterGoalMl || 3000);
                     }
-                    return true; // For others, always fire if time passed
+                    return true;
                 };
 
-                for (const config of configs) {
-                    // Check skip date
-                    if (config.skip_next_date === todayStr) continue;
-                    
-                    // Check recurring days
-                    const days = config.recurring_days || [];
-                    if (!days.includes(currentDay)) continue;
+                // Evaluate smart preferences
+                if (configs && configs.length > 0) {
+                    for (const pref of configs) {
+                        const config = pref.config || {};
+                        const days = config.days || [];
+                        if (days.length > 0 && !days.includes(currentDay)) continue;
 
-                    // Water is special (interval based)
-                    if (config.reminder_type === 'Water') {
-                        if (config.start_time && config.end_time && config.interval_minutes) {
-                            if (currentTimeStr >= config.start_time && currentTimeStr <= config.end_time) {
-                                // Just a simple logic: Check if we haven't reminded about water in the last interval
-                                const { data: lastWater } = await supabase
-                                    .from('command_center_items')
-                                    .select('created_at')
-                                    .eq('user_id', user.id)
-                                    .eq('title', 'Time to Hydrate')
-                                    .gte('created_at', `${todayStr}T00:00:00Z`)
-                                    .order('created_at', { ascending: false })
-                                    .limit(1);
-                                
-                                let shouldRemindWater = true;
-                                if (lastWater && lastWater.length > 0) {
-                                    const lastTime = new Date(lastWater[0].created_at).getTime();
-                                    const minutesSinceLast = (now.getTime() - lastTime) / 60000;
-                                    if (minutesSinceLast < config.interval_minutes) {
-                                        shouldRemindWater = false;
-                                    }
-                                }
+                        const reminderType = pref.type;
 
-                                if (shouldRemindWater) {
+                        if (reminderType === 'Water' || reminderType === 'water') {
+                            if (config.time && currentTimeStr >= config.time) {
+                                const title = 'Time to Hydrate';
+                                if (!existingTitles.has(title) && !existingTitles.has(`🚨 Escalate: ${title}`)) {
                                     const missing = await isMissingLog('Water');
                                     if (missing) {
                                         newAlerts.push({
                                             user_id: user.id,
-                                            title: 'Time to Hydrate',
-                                            description: `Drink some water to hit your ${userProfile.waterGoalMl}ml goal!`,
+                                            title: title,
+                                            description: `Drink some water to hit your ${userProfile.waterGoalMl || 3000}ml goal!`,
                                             category: 'Health Alert',
                                             priority: 'medium',
                                             icon: 'droplets',
                                             source_module: 'Water',
-                                            action_type: 'OPEN_WATER'
+                                            action_type: 'OPEN_WATER',
+                                            status: 'active'
                                         });
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        // Regular time-based reminder
-                        if (config.time && currentTimeStr >= config.time) {
-                            const title = `Log your ${config.reminder_type}`;
-                            if (!existingTitles.has(title)) {
-                                const missing = await isMissingLog(config.reminder_type);
-                                if (missing) {
-                                    newAlerts.push({
-                                        user_id: user.id,
-                                        title: title,
-                                        description: `It's past ${config.time}. Don't forget to track your ${config.reminder_type.toLowerCase()}!`,
-                                        category: 'Reminder',
-                                        priority: 'medium',
-                                        icon: 'bell',
-                                        source_module: config.reminder_type,
-                                        action_type: `OPEN_${config.reminder_type.toUpperCase().replace(' ', '_')}`
-                                    });
+                        } else {
+                            if (config.time && currentTimeStr >= config.time) {
+                                const title = `Reminder: ${reminderType}`;
+                                if (!existingTitles.has(title) && !existingTitles.has(`🚨 Escalate: ${title}`)) {
+                                    const missing = await isMissingLog(reminderType);
+                                    if (missing) {
+                                        newAlerts.push({
+                                            user_id: user.id,
+                                            title: title,
+                                            description: `It's past ${config.time}. Don't forget your ${reminderType.toLowerCase()}!`,
+                                            category: 'Reminder',
+                                            priority: 'medium',
+                                            icon: 'bell',
+                                            source_module: reminderType,
+                                            action_type: `OPEN_APP`,
+                                            status: 'active'
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -168,6 +204,10 @@ export function useReminderEngine() {
 
                 if (newAlerts.length > 0) {
                     await supabase.from('command_center_items').insert(newAlerts);
+                    
+                    if (tasksToMarkNotified.length > 0) {
+                        await supabase.from('tasks').update({ notification_sent: true }).in('id', tasksToMarkNotified);
+                    }
                     
                     // Trigger Native Notifications
                     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
@@ -199,10 +239,8 @@ export function useReminderEngine() {
             }
         };
 
-        // Run immediately, then every 60 seconds
         runEngine();
         const intervalId = setInterval(runEngine, 60000);
-
         return () => clearInterval(intervalId);
     }, [user, userProfile]);
 }

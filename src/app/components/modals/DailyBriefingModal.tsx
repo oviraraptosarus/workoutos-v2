@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Sun, Moon, Droplets, Dumbbell, Zap, Target } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDailySnapshot } from '@/hooks/useDailySnapshot';
 
 interface DailyBriefingModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface DailyBriefingModalProps {
 export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBriefingModalProps) {
     const { user } = useAuth();
     const [isVisible, setIsVisible] = useState(false);
+    const { snapshot } = useDailySnapshot();
 
     useEffect(() => {
         if (isOpen) {
@@ -58,7 +60,9 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                     <p className="text-on-surface-variant font-medium leading-relaxed mb-8">
                         {isMorning 
                             ? "You've got a solid day ahead. Here is your personalized battle plan to hit your targets today." 
-                            : "Great work today. Let's review your progress and get ready to recharge for tomorrow."}
+                            : snapshot.isEmpty
+                                ? "No activity logged today yet. Rest up and let's crush it tomorrow!"
+                                : "Great work today. Let's review your progress and get ready to recharge for tomorrow."}
                     </p>
 
                     <div className="space-y-3">
@@ -70,7 +74,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                     </div>
                                     <div>
                                         <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Hydration Target</div>
-                                        <div className="text-base font-bold text-on-surface">Drink 3000ml of water</div>
+                                        <div className="text-base font-bold text-on-surface">Drink {snapshot.waterProgress.target}ml of water</div>
                                     </div>
                                 </div>
                                 <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
@@ -79,7 +83,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                     </div>
                                     <div>
                                         <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Today's Workout</div>
-                                        <div className="text-base font-bold text-on-surface">Push Day (Chest & Triceps)</div>
+                                        <div className="text-base font-bold text-on-surface">{snapshot.workoutName || 'Rest Day or Unstructured Workout'}</div>
                                     </div>
                                 </div>
                                 <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
@@ -88,40 +92,48 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                     </div>
                                     <div>
                                         <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Diet Target</div>
-                                        <div className="text-base font-bold text-on-surface">2200 kcal • 160g Protein</div>
+                                        <div className="text-base font-bold text-on-surface">{snapshot.caloriesProgress.target} kcal • {snapshot.proteinProgress.target}g Protein</div>
                                     </div>
                                 </div>
                             </>
                         ) : (
-                            <>
-                                <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                                        <Target size={20} />
-                                    </div>
-                                    <div>
-                                        <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Completion Rate</div>
-                                        <div className="text-base font-bold text-on-surface">85% of goals hit today</div>
-                                    </div>
+                            snapshot.isEmpty ? (
+                                <div className="bg-surface-container-low border border-white/5 rounded-2xl p-6 text-center text-on-surface-variant">
+                                    <p>Nothing was logged today.</p>
                                 </div>
-                                <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
-                                        <Dumbbell size={20} />
+                            ) : (
+                                <>
+                                    <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                                            <Target size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Completion Rate</div>
+                                            <div className="text-base font-bold text-on-surface">{snapshot.completionPercentage}% of goals hit today</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Workout Logged</div>
-                                        <div className="text-base font-bold text-on-surface">Push Day Completed 🔥</div>
+                                    <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
+                                            <Dumbbell size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Workout Logged</div>
+                                            <div className="text-base font-bold text-on-surface">{snapshot.workoutName ? `${snapshot.workoutName} Completed 🔥` : 'No workout logged today'}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
-                                        <Zap size={20} />
-                                    </div>
-                                    <div>
-                                        <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Missed Habit</div>
-                                        <div className="text-base font-bold text-on-surface">Only 1500ml / 3000ml water</div>
-                                    </div>
-                                </div>
-                            </>
+                                    {snapshot.missingActivity && (
+                                        <div className="bg-surface-container-low border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
+                                                <Zap size={20} />
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Missed Target</div>
+                                                <div className="text-base font-bold text-on-surface">{snapshot.missingActivity}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )
                         )}
                     </div>
 

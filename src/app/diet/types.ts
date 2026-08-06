@@ -10,6 +10,7 @@ export interface MealItem {
     protein: number;
     fat: number;
     sugar: number;
+    fiber: number;
     bites?: number;
     icon?: string;
 }
@@ -20,4 +21,5 @@ export interface MacroGoals {
     carbs: number;
     fat: number;
     sugar: number;
+    fiber: number;
 }

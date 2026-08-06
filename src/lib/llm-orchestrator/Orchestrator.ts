@@ -82,14 +82,18 @@ export class LLMOrchestrator {
                         return { ...response, sourceModel: model.id, retries };
 
                     } catch (error: any) {
-                        const isRetryable = error?.isRetryable;
-                        const reason = error?.name === 'AbortError' ? 'timeout' : (error?.status === 429 ? 'rate_limit' : 'error');
+                        const isAbort = error?.name === 'AbortError';
+                        const isExplicitlyNonRetryable = error?.isRetryable === false;
+                        const reason = isAbort ? 'timeout' : (error?.status === 429 ? 'rate_limit' : 'error');
                         
-                        console.warn(`[Orchestrator] Attempt ${retries + 1} failed for ${model.id}. Reason: ${reason}. Retryable: ${isRetryable}`);
+                        console.warn(`[Orchestrator] Attempt ${retries + 1} failed for ${model.id}. Reason: ${reason}.`);
 
-                        if (!isRetryable) {
-                            // Non-retryable (e.g. 401, 400). Do NOT failover to next model. Surface immediately.
-                            throw error;
+                        if (isAbort || isExplicitlyNonRetryable) {
+                            // Don't retry the same model. Failover to the next fallback model immediately.
+                            console.warn(`[Orchestrator] Skipping further retries on ${model.id}. Failing over.`);
+                            this.health.recordFailure(model.id, reason);
+                            lastError = error;
+                            break;
                         }
 
                         retries++;
@@ -105,9 +109,10 @@ export class LLMOrchestrator {
                         }
                     }
                 }
-            } catch (fatalError) {
-                // Abort completely (auth error, invalid prompt, etc.)
-                throw fatalError;
+            } catch (fatalError: any) {
+                console.error(`[Orchestrator] Fatal error evaluating ${model.id}:`, fatalError);
+                lastError = fatalError;
+                // Continue to the next fallback model instead of aborting the pipeline
             }
         }
 

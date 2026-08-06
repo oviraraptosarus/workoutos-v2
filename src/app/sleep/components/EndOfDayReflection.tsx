@@ -7,31 +7,39 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-interface ReflectionData {
+interface JournalData {
     mood: string;
     energy: string;
     stress: string;
     productivity: number;
     waterIntake: string;
     screenTime: string;
-    journal: string;
-    highlights: string;
+    morning_journal: string;
+    evening_reflection: string;
+    free_writing: string;
     gratitude: string;
+    wins: string;
+    lessons: string;
+    tomorrow_priorities: string;
     rating: number;
     bedtime?: string;
     waketime?: string;
 }
 
-const DEFAULT_REFLECTION: ReflectionData = {
+const DEFAULT_JOURNAL: JournalData = {
     mood: 'good',
     energy: 'medium',
     stress: 'low',
     productivity: 3,
     waterIntake: '',
     screenTime: '',
-    journal: '',
-    highlights: '',
+    morning_journal: '',
+    evening_reflection: '',
+    free_writing: '',
     gratitude: '',
+    wins: '',
+    lessons: '',
+    tomorrow_priorities: '',
     rating: 5,
 };
 
@@ -57,7 +65,7 @@ export default function EndOfDayReflection() {
     const { selectedDate } = useDate();
     const { user } = useAuth();
 
-    const [reflection, setReflection] = useState<ReflectionData>(DEFAULT_REFLECTION);
+    const [reflection, setReflection] = useState<JournalData>(DEFAULT_JOURNAL);
     const [isSaving, setIsSaving] = useState(false);
     const [savedNotice, setSavedNotice] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -76,13 +84,13 @@ export default function EndOfDayReflection() {
                 .maybeSingle();
 
             if (data?.reflection && Object.keys(data.reflection).length > 0) {
-                setReflection({ ...DEFAULT_REFLECTION, ...(data.reflection as ReflectionData) });
+                setReflection({ ...DEFAULT_JOURNAL, ...(data.reflection as JournalData) });
                 setIsLoaded(true);
                 return;
             }
         }
 
-        setReflection(DEFAULT_REFLECTION);
+        setReflection(DEFAULT_JOURNAL);
         setIsLoaded(true);
     }, [selectedDate, user]);
 
@@ -101,7 +109,15 @@ export default function EndOfDayReflection() {
                     // Structured columns that already exist
                     mood_rating: moodToRating(reflection.mood),
                     energy_rating: energyToRating(reflection.energy),
-                    // Removed reflection object as it does not exist in daily_logs schema
+                    reflection: {
+                        morning_journal: reflection.morning_journal,
+                        evening_reflection: reflection.evening_reflection,
+                        free_writing: reflection.free_writing,
+                        gratitude: reflection.gratitude,
+                        wins: reflection.wins,
+                        lessons: reflection.lessons,
+                        tomorrow_priorities: reflection.tomorrow_priorities,
+                    }
                 };
 
                 // Map screen time string to minutes if provided
@@ -128,7 +144,7 @@ export default function EndOfDayReflection() {
         setTimeout(() => setSavedNotice(false), 3000);
     };
 
-    const update = (field: keyof ReflectionData, value: any) =>
+    const update = (field: keyof JournalData, value: any) =>
         setReflection(prev => ({ ...prev, [field]: value }));
 
     const SELECT_CLS = "w-full bg-surface-container-highest border border-transparent focus:border-secondary rounded-xl px-3 py-2 text-sm font-bold text-on-surface appearance-none transition-colors outline-none";
@@ -149,7 +165,7 @@ export default function EndOfDayReflection() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2">
-                    <BookOpen size={18} className="text-secondary" /> End of Day Reflection
+                    <BookOpen size={18} className="text-secondary" /> Daily Journal
                 </h2>
                 <button
                     onClick={handleSave}
@@ -227,32 +243,74 @@ export default function EndOfDayReflection() {
             {/* Text areas */}
             <div className="space-y-4">
                 <div>
-                    <label className={LABEL_CLS}>{t('sleep.reflection.journal')}</label>
+                    <label className={LABEL_CLS}>Morning Journal / Intentions</label>
                     <textarea
                         rows={2}
-                        placeholder={t("sleep.reflection.journalPlaceholder")}
-                        value={reflection.journal}
-                        onChange={e => update('journal', e.target.value)}
+                        placeholder="How do you want to show up today?"
+                        value={reflection.morning_journal}
+                        onChange={e => update('morning_journal', e.target.value)}
                         className={TEXTAREA_CLS}
                     />
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>{t('sleep.reflection.highlights')}</label>
+                    <label className={LABEL_CLS}>Evening Reflection</label>
                     <textarea
                         rows={2}
-                        placeholder={t("sleep.reflection.highlightsPlaceholder")}
-                        value={reflection.highlights}
-                        onChange={e => update('highlights', e.target.value)}
+                        placeholder="How did today go?"
+                        value={reflection.evening_reflection}
+                        onChange={e => update('evening_reflection', e.target.value)}
                         className={TEXTAREA_CLS}
                     />
                 </div>
                 <div>
-                    <label className={LABEL_CLS}>{t('sleep.reflection.gratitude')}</label>
+                    <label className={LABEL_CLS}>Free Writing</label>
                     <textarea
                         rows={2}
-                        placeholder={t("sleep.reflection.gratitudePlaceholder")}
+                        placeholder="Dump your thoughts here..."
+                        value={reflection.free_writing}
+                        onChange={e => update('free_writing', e.target.value)}
+                        className={TEXTAREA_CLS}
+                    />
+                </div>
+                <div>
+                    <label className={LABEL_CLS}>Gratitude</label>
+                    <textarea
+                        rows={2}
+                        placeholder="What are you grateful for today?"
                         value={reflection.gratitude}
                         onChange={e => update('gratitude', e.target.value)}
+                        className={TEXTAREA_CLS}
+                    />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className={LABEL_CLS}>Wins / Highlights</label>
+                        <textarea
+                            rows={2}
+                            placeholder="What went well?"
+                            value={reflection.wins}
+                            onChange={e => update('wins', e.target.value)}
+                            className={TEXTAREA_CLS}
+                        />
+                    </div>
+                    <div>
+                        <label className={LABEL_CLS}>Lessons Learned</label>
+                        <textarea
+                            rows={2}
+                            placeholder="What could be improved?"
+                            value={reflection.lessons}
+                            onChange={e => update('lessons', e.target.value)}
+                            className={TEXTAREA_CLS}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label className={LABEL_CLS}>Tomorrow's Priorities</label>
+                    <textarea
+                        rows={2}
+                        placeholder="What's the main focus for tomorrow?"
+                        value={reflection.tomorrow_priorities}
+                        onChange={e => update('tomorrow_priorities', e.target.value)}
                         className={TEXTAREA_CLS}
                     />
                 </div>

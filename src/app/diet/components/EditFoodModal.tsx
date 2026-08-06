@@ -23,24 +23,25 @@ interface FoodPreset {
     protein: number;
     fat: number;
     sugar: number;
+    fiber: number;
     icon: string;
 }
 
 const FOOD_PRESETS: FoodPreset[] = [
-    { name: 'Grilled Chicken Breast', category: 'Lunch', portion: '150g', calories: 240, carbs: 0, protein: 46, fat: 5, sugar: 0, icon: '🍗' },
-    { name: 'Oatmeal & Honey', category: 'Breakfast', portion: '1 bowl', calories: 250, carbs: 45, protein: 8, fat: 4, sugar: 8, icon: '🥣' },
-    { name: 'Boiled Eggs', category: 'Breakfast', portion: '2 large', calories: 140, carbs: 1, protein: 12, fat: 9, sugar: 0, icon: '🥚' },
-    { name: 'Black Coffee / Espresso', category: 'Breakfast', portion: '1 cup', calories: 5, carbs: 0, protein: 0, fat: 0, sugar: 0, icon: '☕' },
-    { name: 'Avocado Toast', category: 'Breakfast', portion: '1 slice', calories: 210, carbs: 22, protein: 6, fat: 11, sugar: 2, icon: '🍞' },
-    { name: 'Salmon & Veggie Salad', category: 'Dinner', portion: '1 plate', calories: 420, carbs: 14, protein: 36, fat: 24, sugar: 4, icon: '🥗' },
-    { name: 'Whey Protein Shake', category: 'Snacks', portion: '1 scoop', calories: 150, carbs: 4, protein: 28, fat: 2, sugar: 1, icon: '🥤' },
-    { name: 'Honeycrisp Apple', category: 'Snacks', portion: '1 medium', calories: 95, carbs: 25, protein: 1, fat: 0, sugar: 19, icon: '🍎' },
-    { name: 'Plain Greek Yogurt', category: 'Snacks', portion: '1 cup', calories: 130, carbs: 8, protein: 22, fat: 0, sugar: 6, icon: '🥣' },
-    { name: 'Turkey & Cheese Sandwich', category: 'Lunch', portion: '1 sandwich', calories: 380, carbs: 36, protein: 26, fat: 14, sugar: 4, icon: '🥪' },
-    { name: 'Dal & Chapati', category: 'Lunch', portion: '2 chapati + 1 bowl dal', calories: 420, carbs: 68, protein: 16, fat: 8, sugar: 3, icon: '🫓' },
-    { name: 'Rice & Sabzi', category: 'Dinner', portion: '1 plate', calories: 380, carbs: 72, protein: 10, fat: 6, sugar: 2, icon: '🍛' },
-    { name: 'Paneer Bhurji', category: 'Dinner', portion: '150g', calories: 320, carbs: 8, protein: 22, fat: 22, sugar: 2, icon: '🧀' },
-    { name: 'Banana', category: 'Snacks', portion: '1 medium', calories: 105, carbs: 27, protein: 1, fat: 0, sugar: 14, icon: '🍌' },
+    { name: 'Grilled Chicken Breast', category: 'Lunch', portion: '150g', calories: 240, carbs: 0, protein: 46, fat: 5, sugar: 0, fiber: 0, icon: '🍗' },
+    { name: 'Oatmeal & Honey', category: 'Breakfast', portion: '1 bowl', calories: 250, carbs: 45, protein: 8, fat: 4, sugar: 8, fiber: 5, icon: '🥣' },
+    { name: 'Boiled Eggs', category: 'Breakfast', portion: '2 large', calories: 140, carbs: 1, protein: 12, fat: 9, sugar: 0, fiber: 0, icon: '🥚' },
+    { name: 'Black Coffee / Espresso', category: 'Breakfast', portion: '1 cup', calories: 5, carbs: 0, protein: 0, fat: 0, sugar: 0, fiber: 0, icon: '☕' },
+    { name: 'Avocado Toast', category: 'Breakfast', portion: '1 slice', calories: 210, carbs: 22, protein: 6, fat: 11, sugar: 2, fiber: 6, icon: '🍞' },
+    { name: 'Salmon & Veggie Salad', category: 'Dinner', portion: '1 plate', calories: 420, carbs: 14, protein: 36, fat: 24, sugar: 4, fiber: 6, icon: '🥗' },
+    { name: 'Whey Protein Shake', category: 'Snacks', portion: '1 scoop', calories: 150, carbs: 4, protein: 28, fat: 2, sugar: 1, fiber: 1, icon: '🥤' },
+    { name: 'Honeycrisp Apple', category: 'Snacks', portion: '1 medium', calories: 95, carbs: 25, protein: 1, fat: 0, sugar: 19, fiber: 4, icon: '🍎' },
+    { name: 'Plain Greek Yogurt', category: 'Snacks', portion: '1 cup', calories: 130, carbs: 8, protein: 22, fat: 0, sugar: 6, fiber: 0, icon: '🥣' },
+    { name: 'Turkey & Cheese Sandwich', category: 'Lunch', portion: '1 sandwich', calories: 380, carbs: 36, protein: 26, fat: 14, sugar: 4, fiber: 4, icon: '🥪' },
+    { name: 'Dal & Chapati', category: 'Lunch', portion: '2 chapati + 1 bowl dal', calories: 420, carbs: 68, protein: 16, fat: 8, sugar: 3, fiber: 10, icon: '🫓' },
+    { name: 'Rice & Sabzi', category: 'Dinner', portion: '1 plate', calories: 380, carbs: 72, protein: 10, fat: 6, sugar: 2, fiber: 6, icon: '🍛' },
+    { name: 'Paneer Bhurji', category: 'Dinner', portion: '150g', calories: 320, carbs: 8, protein: 22, fat: 22, sugar: 2, fiber: 1, icon: '🧀' },
+    { name: 'Banana', category: 'Snacks', portion: '1 medium', calories: 105, carbs: 27, protein: 1, fat: 0, sugar: 14, fiber: 3, icon: '🍌' },
 ];
 
 const EMOJI_OPTIONS = ['☕', '🍞', '🥚', '🥗', '🍗', '🍎', '🥪', '🥑', '🥣', '🥤', '🥞', '🍕', '🥩', '🍌', '🫓', '🍛', '🧀', '🥦', '🍜', '🍣'];
@@ -51,6 +52,7 @@ const MACRO_FIELDS = [
     { key: 'carbs', label: 'Carbs', unit: 'g', accent: '#ff9f0a', placeholder: '30' },
     { key: 'fat', label: 'Fat', unit: 'g', accent: '#ff453a', placeholder: '8' },
     { key: 'sugar', label: 'Sugar', unit: 'g', accent: '#bf5af2', placeholder: '4' },
+    { key: 'fiber', label: 'Fiber', unit: 'g', accent: '#34c759', placeholder: '5' },
 ];
 
 export default function EditFoodModal({
@@ -70,6 +72,7 @@ export default function EditFoodModal({
     const [protein, setProtein] = useState<number | ''>('');
     const [fat, setFat] = useState<number | ''>('');
     const [sugar, setSugar] = useState<number | ''>('');
+    const [fiber, setFiber] = useState<number | ''>('');
     const [bites, setBites] = useState<number | ''>(2);
     const [icon, setIcon] = useState('🥗');
 
@@ -88,6 +91,7 @@ export default function EditFoodModal({
             setProtein(initialData.protein || 0);
             setFat(initialData.fat || 0);
             setSugar(initialData.sugar || 0);
+            setFiber(initialData.fiber || 0);
             setBites(initialData.bites ?? Math.round((initialData.calories || 0) / 50));
             setIcon(initialData.icon || '🥗');
         } else {
@@ -99,6 +103,7 @@ export default function EditFoodModal({
             setProtein('');
             setFat('');
             setSugar('');
+            setFiber('');
             setBites(2);
             setIcon(defaultCategory === 'Breakfast' ? '☕' : defaultCategory === 'Lunch' ? '🥗' : defaultCategory === 'Dinner' ? '🍗' : '🍎');
         }
@@ -117,6 +122,7 @@ export default function EditFoodModal({
         setProtein(preset.protein);
         setFat(preset.fat);
         setSugar(preset.sugar);
+        setFiber(preset.fiber);
         setBites(Math.round(preset.calories / 50));
         setIcon(preset.icon);
         setShowPresets(false);
@@ -140,6 +146,7 @@ export default function EditFoodModal({
             protein: Number(protein) || 0,
             fat: Number(fat) || 0,
             sugar: Number(sugar) || 0,
+            fiber: Number(fiber) || 0,
             bites: Number(bites) || Math.round((Number(calories) || 0) / 50),
             icon,
         });
@@ -155,9 +162,9 @@ export default function EditFoodModal({
 
     const activeColor = '#ffffff';
 
-    const macroValues: Record<string, number | ''> = { calories, protein, carbs, fat, sugar };
+    const macroValues: Record<string, number | ''> = { calories, protein, carbs, fat, sugar, fiber };
     const macroSetters: Record<string, (v: number | '') => void> = {
-        calories: setCalories, protein: setProtein, carbs: setCarbs, fat: setFat, sugar: setSugar,
+        calories: setCalories, protein: setProtein, carbs: setCarbs, fat: setFat, sugar: setSugar, fiber: setFiber,
     };
 
     const modalContent = (

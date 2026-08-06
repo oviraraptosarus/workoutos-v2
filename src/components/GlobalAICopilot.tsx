@@ -57,6 +57,8 @@ export default function GlobalAICopilot() {
     const [loading, setLoading] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [contextStatus, setContextStatus] = useState<Record<string, { loaded: boolean; error?: string; query?: string }> | null>(null);
+    const [selectedAuditModule, setSelectedAuditModule] = useState<string | null>(null);
 
     // Conversation history — persists across open/close within the same session
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -148,68 +150,162 @@ export default function GlobalAICopilot() {
             const dateKey = selectedDate || new Date().toISOString().split('T')[0];
             const { data: { user } } = await supabase.auth.getUser();
 
-            let dbState: any = {};
-            let dbTasks: any[] = [];
-            let recentDays: any[] = [];
-            let workoutToday: any = null;
-
-            if (user) {
-                const { data } = await supabase
-                    .from('daily_logs')
-                    .select('water_ml_total, sleep_hours, sleep_bedtime, sleep_waketime, weight_kg, mood_rating, energy_rating, hunger_rating, caffeine_mg, steps')
-                    .eq('user_id', user.id).eq('date', dateKey).maybeSingle();
-                if (data) dbState = {
-                    waterMl: data.water_ml_total, sleepHrs: data.sleep_hours,
-                    bedtime: data.sleep_bedtime, waketime: data.sleep_waketime,
-                    weightKg: data.weight_kg, mood: data.mood_rating,
-                    energy: data.energy_rating, hunger: data.hunger_rating,
-                    caffeineMg: data.caffeine_mg, steps: data.steps,
-                };
-
-                const meals = await getMealsForDate(dateKey);
-                dbState.nutritionKcal = meals.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
-                dbState.meals = meals.map((m: any) => ({ name: m.name, kcal: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat }));
-
-                const { data: tasksData } = await supabase.from('tasks').select('*').eq('user_id', user.id).eq('date', dateKey);
-                if (tasksData) dbTasks = tasksData;
-
-                const since = new Date();
-                since.setDate(since.getDate() - 13);
-                const sinceKey = `${since.getFullYear()}-${String(since.getMonth() + 1).padStart(2, '0')}-${String(since.getDate()).padStart(2, '0')}`;
-                const { data: trend } = await supabase.from('daily_logs')
-                    .select('date, sleep_hours, water_ml_total, weight_kg, mood_rating, energy_rating')
-                    .eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true });
-                if (trend) recentDays = trend;
-
-                const { data: wk } = await supabase.from('workout_logs')
-                    .select('session_type, exercises, completed').eq('user_id', user.id).eq('date', dateKey);
-                if (wk?.length) workoutToday = wk;
-            }
-
-            const currentAppState = {
-                date: dateKey,
-                waterMl: dbState.waterMl || 0, waterGoalMl: userProfile?.waterGoalMl ?? null,
-                sleepHrs: dbState.sleepHrs || 0, sleepGoal: userProfile?.sleepGoal ?? null,
-                bedtime: dbState.bedtime ?? null, waketime: dbState.waketime ?? null,
-                weightKg: dbState.weightKg ?? null, targetWeight: userProfile?.targetWeight ?? null,
-                mood: dbState.mood ?? null, energy: dbState.energy ?? null,
-                hunger: dbState.hunger ?? null, caffeineMg: dbState.caffeineMg ?? null,
-                steps: dbState.steps ?? null,
-                nutritionKcal: dbState.nutritionKcal || 0, calorieGoal: userProfile?.calorieGoal ?? null,
-                meals: dbState.meals || [], workoutToday, tasks: dbTasks, last14Days: recentDays,
-                quickNotes: (userProfile?.targetConfig as any)?.quickNotes?.[dateKey] || '',
-                budgetIncome: await getIncome(), budgetExpenses: await getExpenses(),
+            let currentAppState: any = { date: dateKey, time: formatTime(new Date()) };
+            let aiMemories: any[] = [];
+            
+            // Context Load Tracking
+            const contextStatus: Record<string, { loaded: boolean; error?: string; query?: string }> = {
+                'Profile': { loaded: false, query: 'userProfile' },
+                'Dashboard': { loaded: false, query: "supabase.from('daily_logs')" },
+                'Planner': { loaded: false, query: "supabase.from('tasks')" },
+                'Habits': { loaded: false, query: "supabase.from('habits')" },
+                'CommandCenter': { loaded: false, query: "supabase.from('command_center_items')" },
+                'Workout': { loaded: false, query: "supabase.from('workout_logs')" },
+                'Nutrition': { loaded: false, query: "supabase.from('meal_entries')" },
+                'Budget': { loaded: false, query: "getIncome() / getExpenses()" },
+                'AIMemory': { loaded: false, query: "getAIMemories()" }
             };
 
-            let aiMemories: any[] = [];
-            if (userProfile?.aiMemoryEnabled !== false) {
-                aiMemories = await getAIMemories();
+            if (user) {
+                // Determine 'since' for recent data (14 days ago)
+                const since = new Date();
+                since.setDate(since.getDate() - 13);
+                const sinceKey = since.toISOString().split('T')[0];
+
+                contextStatus['Profile'].loaded = !!userProfile;
+                if (!userProfile) contextStatus['Profile'].error = "User profile is missing or undefined";
+
+                // Fire all DB queries in parallel with catch blocks so one failure doesn't abort the AI pipeline
+                const [
+                    dailyLogRes,
+                    tasksRes,
+                    habitsRes,
+                    commandCenterRes,
+                    workoutRes,
+                    recentWorkoutsRes,
+                    recentMealsRes,
+                    mealsRes,
+                    budgetIncomeRes,
+                    budgetExpensesRes,
+                    memoryRes
+                ] = await Promise.all([
+                    supabase.from('daily_logs').select('*').eq('user_id', user.id).eq('date', dateKey).maybeSingle().then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('tasks').select('*').eq('user_id', user.id).eq('completed', false).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('habits').select('*').eq('user_id', user.id).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('command_center_items').select('*').eq('user_id', user.id).eq('status', 'active').then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('workout_logs').select('session_type, exercises, completed').eq('user_id', user.id).eq('date', dateKey).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('workout_logs').select('date, session_type, completed').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('meal_entries').select('date, meal_slot, name, calories, protein').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
+                    getMealsForDate(dateKey).then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
+                    getIncome().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
+                    getExpenses().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
+                    userProfile?.aiMemoryEnabled !== false ? getAIMemories().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })) : Promise.resolve({ data: [], error: null })
+                ]);
+
+                // Dashboard / Daily Logs
+                if (!dailyLogRes.error) {
+                    const data = dailyLogRes.data || {};
+                    currentAppState.dashboard = {
+                        waterMl: data.water_ml_total || 0,
+                        sleepHrs: data.sleep_hours || 0,
+                        weightKg: data.weight_kg,
+                        mood: data.mood_rating,
+                        energy: data.energy_rating,
+                        journal: data.reflection
+                    };
+                    contextStatus['Dashboard'].loaded = true;
+                } else {
+                    currentAppState.dashboard = { waterMl: 0, sleepHrs: 0 };
+                    contextStatus['Dashboard'].error = dailyLogRes.error.message || String(dailyLogRes.error);
+                }
+
+                // Planner
+                if (!tasksRes.error && tasksRes.data) {
+                    const today = new Date().toISOString().split('T')[0];
+                    currentAppState.planner = {
+                        overdue: tasksRes.data.filter(t => t.date && t.date < today),
+                        today: tasksRes.data.filter(t => t.date === today),
+                        upcoming: tasksRes.data.filter(t => t.date && t.date > today)
+                    };
+                    contextStatus['Planner'].loaded = true;
+                } else if (tasksRes.error) {
+                    contextStatus['Planner'].error = tasksRes.error.message || String(tasksRes.error);
+                }
+
+                // Habits
+                if (!habitsRes.error && habitsRes.data) {
+                    currentAppState.habits = habitsRes.data;
+                    contextStatus['Habits'].loaded = true;
+                } else if (habitsRes.error) {
+                    contextStatus['Habits'].error = habitsRes.error.message || String(habitsRes.error);
+                }
+
+                // Command Center
+                if (!commandCenterRes.error && commandCenterRes.data) {
+                    currentAppState.commandCenter = commandCenterRes.data;
+                    contextStatus['CommandCenter'].loaded = true;
+                } else if (commandCenterRes.error) {
+                    contextStatus['CommandCenter'].error = commandCenterRes.error.message || String(commandCenterRes.error);
+                }
+
+                // Workout
+                if (!workoutRes.error && !recentWorkoutsRes.error) {
+                    currentAppState.workout = {
+                        today: workoutRes.data || null,
+                        recent: recentWorkoutsRes.data || []
+                    };
+                    contextStatus['Workout'].loaded = true;
+                } else {
+                    contextStatus['Workout'].error = (workoutRes.error?.message || recentWorkoutsRes.error?.message) || 'Workout fetch failed';
+                }
+
+                // Nutrition
+                if (!mealsRes.error && !recentMealsRes.error) {
+                    const mealsData = mealsRes.data || [];
+                    const nutritionKcal = mealsData.reduce((acc: number, m: any) => acc + (m.calories || 0), 0);
+                    const nutritionFiber = mealsData.reduce((acc: number, m: any) => acc + (m.fiber || 0), 0);
+                    currentAppState.nutrition = {
+                        todayKcal: nutritionKcal,
+                        todayFiber: nutritionFiber,
+                        meals: mealsData.map((m: any) => ({ name: m.name, kcal: m.calories, protein: m.protein, fiber: m.fiber })),
+                        recent: recentMealsRes.data || []
+                    };
+                    contextStatus['Nutrition'].loaded = true;
+                } else {
+                    contextStatus['Nutrition'].error = (mealsRes.error?.message || recentMealsRes.error?.message) || 'Nutrition fetch failed';
+                }
+
+                // Budget
+                if (!budgetIncomeRes.error && !budgetExpensesRes.error) {
+                    currentAppState.budget = {
+                        income: budgetIncomeRes.data || 0,
+                        expenses: budgetExpensesRes.data || 0,
+                        monthlyBudget: userProfile?.monthlyBudget || 0
+                    };
+                    contextStatus['Budget'].loaded = true;
+                } else {
+                    contextStatus['Budget'].error = (budgetIncomeRes.error?.message || budgetExpensesRes.error?.message) || 'Budget fetch failed';
+                }
+
+                // AI Memory
+                if (!memoryRes.error) {
+                    aiMemories = memoryRes.data || [];
+                    contextStatus['AIMemory'].loaded = true;
+                } else {
+                    contextStatus['AIMemory'].error = memoryRes.error.message || String(memoryRes.error);
+                }
+            }
+            
+            // Expose the contextStatus for debugging UI
+            if (process.env.NODE_ENV === 'development') {
+                setContextStatus(contextStatus);
             }
 
+            const currentDateTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories }),
+                body: JSON.stringify({ prompt: q, userProfile, image: currentImage, history: apiHistory, appState: currentAppState, preferredLanguage: language, aiMemories, currentDateTime }),
             });
 
             const data = await res.json();
@@ -219,7 +315,7 @@ export default function GlobalAICopilot() {
                     const fn = data.functionCall.name;
                     const args = data.functionCall.args;
                     if (fn === 'add_task') {
-                        await supabase.from('tasks').insert({ 
+                        const { data: newTask, error } = await supabase.from('tasks').insert({ 
                             user_id: user.id, 
                             date: dateKey, 
                             title: args.title || 'New Task',
@@ -230,8 +326,39 @@ export default function GlobalAICopilot() {
                             due_time: args.dueTime || null,
                             priority: args.priority || 'none',
                             reminder_time: args.reminderTime || null
-                        });
+                        }).select().single();
+                        
+                        if (newTask && (newTask.reminder_time || newTask.due_time)) {
+                            // The reminder will be automatically picked up by useReminderEngine when the time arrives
+                        }
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
+                    } else if (fn === 'add_reminder') {
+                        // We store the reminder in reminder_preferences
+                        const type = args.type || 'Custom';
+                        const config = {
+                            time: args.time || null,
+                            repeat: args.repeat || false,
+                            days: args.days || [],
+                            snooze_duration: args.snooze_duration || 10,
+                            smart_detection: args.smart_detection || false
+                        };
+                        const { updateReminderPreference } = await import('@/services/reminderEngine');
+                        await updateReminderPreference(type, true, config);
+                        
+                        // Also schedule one immediate command center item if it's a one-off for today
+                        if (args.time) {
+                            const today = new Date().toISOString().split('T')[0];
+                            await supabase.from('command_center_items').insert({
+                                user_id: user.id,
+                                title: args.title || `Reminder: ${type}`,
+                                description: `You asked me to remind you about ${type}.`,
+                                category: 'Reminder',
+                                priority: 'medium',
+                                icon: 'bell',
+                                source_module: 'Ava',
+                                due_at: `${today}T${args.time}:00Z`
+                            });
+                        }
                     } else if (fn === 'append_quick_note') {
                                                 const { data: profile } = await supabase.from('profiles').select('target_config').eq('id', user.id).single();
                         const currentConfig = profile?.target_config || {};
@@ -325,11 +452,11 @@ export default function GlobalAICopilot() {
                 const avaMsg: ChatMessage = {
                     id: `a-${Date.now()}`,
                     sender: 'ava',
-                    text: data.result || 'Done.',
+                    text: data.result || "I've added that.",
                     timestamp: formatTime(new Date()),
                 };
                 setMessages(prev => [...prev, avaMsg]);
-                setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || '' }]);
+                setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || "I've added that." }]);
                 setChips(deriveChips(data.result || ''));
 
                 if (data.result && data.result.length < 200) {
@@ -392,15 +519,26 @@ export default function GlobalAICopilot() {
         const existing = promptRef.current ? promptRef.current + ' ' : '';
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
+            if (!isListeningRef.current) return; // Prevent late results after stopping
             let transcript = '';
-            for (let i = 0; i < event.results.length; i++) transcript += event.results[i][0].transcript;
-            const full = (existing + transcript).trim();
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            
+            // Just append the new final or interim transcripts robustly
+            // A simpler approach for continuous is just to rebuild from all results
+            let fullTranscript = '';
+            for (let i = 0; i < event.results.length; i++) fullTranscript += event.results[i][0].transcript;
+            
+            const full = (existing + fullTranscript).trim();
             setPrompt(full);
+            
             // Auto-send after 3.5 seconds of silence
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
-                if (recognitionRef.current) recognitionRef.current.stop();
+                if (!isListeningRef.current) return;
                 setIsListening(false);
+                if (recognitionRef.current) recognitionRef.current.stop();
                 // Auto-send the captured speech
                 if (full) handleSend(full);
             }, 3500);
@@ -522,7 +660,7 @@ export default function GlobalAICopilot() {
                         {messages.map((msg) => (
                             <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-200`}>
                                 {msg.sender === 'ava' && (
-                                    <div className="flex items-start gap-2.5 max-w-[88%] sm:max-w-[80%]">
+                                    <div className="flex items-start gap-2.5 w-full max-w-full">
                                         <div className="shrink-0 mt-1">
                                             <div className="ava-orb-icon w-7 h-7 rounded-full shadow-[0_0_10px_rgba(130,60,255,0.6)]" />
                                         </div>
@@ -545,8 +683,8 @@ export default function GlobalAICopilot() {
                                     </div>
                                 )}
                                 {msg.sender === 'user' && (
-                                    <div className="flex flex-col items-end gap-1 max-w-[80%] sm:max-w-[70%]">
-                                        <div className="bg-[#2a2a38] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white/90 leading-relaxed">
+                                    <div className="flex flex-col items-end gap-1 w-full max-w-[90%] sm:max-w-[85%]">
+                                        <div className="bg-[#2a2a38] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white/90 leading-relaxed break-words whitespace-pre-wrap">
                                             {msg.imageUrl && (
                                                 <img src={msg.imageUrl} alt="attached" className="w-40 rounded-xl mb-2 object-cover" />
                                             )}
@@ -575,6 +713,36 @@ export default function GlobalAICopilot() {
                                 </div>
                             </div>
                         )}
+                        {/* Context Debugger Overlay */}
+                        {process.env.NODE_ENV === 'development' && contextStatus && (
+                            <div className="mx-4 my-2 flex flex-col gap-2 max-w-xs ml-auto items-end">
+                                <div className="p-3 bg-black/50 border border-white/20 rounded-xl w-full">
+                                    <div className="text-[10px] font-mono text-white/70 mb-2 font-bold tracking-wider uppercase">Context Audit</div>
+                                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                                        {Object.entries(contextStatus).map(([module, state]) => (
+                                            <button 
+                                                key={module} 
+                                                onClick={() => setSelectedAuditModule(selectedAuditModule === module ? null : module)}
+                                                className={`flex items-center gap-1.5 text-[10px] font-mono hover:bg-white/10 p-1 rounded transition-colors text-left ${selectedAuditModule === module ? 'bg-white/10' : ''}`}
+                                            >
+                                                <span>{state.loaded ? '✅' : '❌'}</span>
+                                                <span className={state.loaded ? 'text-white' : 'text-white/40'}>{module}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                {selectedAuditModule && contextStatus[selectedAuditModule] && (
+                                    <div className="p-3 bg-red-950/80 border border-red-500/30 rounded-xl w-full text-xs font-mono">
+                                        <div className="font-bold text-red-400 mb-1">{selectedAuditModule} {contextStatus[selectedAuditModule].loaded ? 'LOADED' : 'FAILED'}</div>
+                                        <div className="text-white/70 mt-2">Reason:</div>
+                                        <div className="text-white whitespace-pre-wrap">{contextStatus[selectedAuditModule].error || 'No error details.'}</div>
+                                        <div className="text-white/70 mt-2">Query:</div>
+                                        <div className="text-white/50">{contextStatus[selectedAuditModule].query}</div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         <div ref={messagesEndRef} />
                     </div>
 
@@ -621,9 +789,14 @@ export default function GlobalAICopilot() {
                                 rows={1}
                                 value={prompt}
                                 onChange={handleInput}
-                                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                                placeholder={selectedImage ? t('copilot.imageReady') : t('copilot.messagePlaceholder')}
-                                className="flex-1 max-h-[100px] bg-transparent py-2.5 text-sm text-white/85 font-medium focus:outline-none resize-none placeholder:text-white/30"
+                                onKeyDown={(e) => { 
+                                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { 
+                                        e.preventDefault(); 
+                                        handleSend(); 
+                                    } 
+                                }}
+                                placeholder={selectedImage ? t('copilot.imageReady') : "Type a message... (Ctrl+Enter to send)"}
+                                className="flex-1 max-h-[250px] bg-transparent py-2.5 text-sm text-white/85 font-medium focus:outline-none resize-none placeholder:text-white/30 overflow-y-auto"
                             />
 
                             {selectedImage && (

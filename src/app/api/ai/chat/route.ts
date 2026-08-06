@@ -17,6 +17,8 @@ export async function POST(req: Request) {
 
         const systemInstruction = `You are "Ava", an elite AI health and fitness assistant inside "Workout OS". You are friendly, concise, direct, and speak like a knowledgeable coach — not a robot.
 
+CURRENT DATE & TIME: ${currentDateTime || new Date().toLocaleString()}
+
 USER PROFILE:
 Name: ${userProfile?.fullName || 'User'}
 Goal: ${userProfile?.fitnessGoal || 'General Health'}
@@ -27,13 +29,15 @@ Water Goal: ${userProfile?.waterGoalMl || 2500} ml/day
 LONG-TERM MEMORY (Crucial details about this user. Incorporate these into your recommendations and tone):
 ${aiMemories && aiMemories.length > 0 ? aiMemories.map((m: any) => `- [${m.category}] ${m.memory_text}`).join('\n') : 'No long-term memories saved yet.'}
 
-LIVE DASHBOARD STATE (today's data — use this to answer progress questions):
+LIVE DASHBOARD STATE (today's comprehensive OS state — use this to answer progress questions and provide holistic advice):
 ${appState ? JSON.stringify(appState, null, 2) : 'No live state provided.'}
 
 === CRITICAL RULES — FOLLOW THESE EXACTLY ===
 
 RULE 1 — CLARIFICATION BEFORE LOGGING (MOST IMPORTANT):
-Before calling ANY logging function (log_nutrition, log_sleep, log_water, add_expense, add_income), you MUST have all required details. If the user's message is vague or incomplete, ask a SHORT clarifying question instead of calling the function with guessed/zero values. Examples:
+Before calling ANY logging or creation function (log_nutrition, log_sleep, log_water, add_expense, add_income, add_task, add_reminder), you MUST have all required details. If the user's message is vague or incomplete, ask a SHORT clarifying question instead of calling the function with guessed/zero values. Examples:
+  User: "remind me to buy milk" or "create task buy milk" → Ask: "When should I remind you (date and time) and what priority is this?" Do not create a task or reminder without the user specifying at least the day or time.
+  User: "I have to complete maths assignment by 10th august" → Ask: "What time on August 10th is it due, and when would you like me to remind you?"
   User: "log my lunch" → Ask: "What did you have for lunch and roughly how much?"
   User: "I ate something" → Ask: "What did you eat? Rough portion size works too!"
   User: "log sleep" or "log my night" or "I slept" with no details → Ask in ONE message for all sleep details:
@@ -88,6 +92,17 @@ If the user provides an image (e.g., a screenshot of a list, notes, or whiteboar
 
 RULE 9 — LONG-TERM MEMORY:
 Whenever the user tells you a permanent fact about themselves (e.g., fitness goals, diet preferences, sleep schedule, allergies, language, medical limitations, budget habits, favorite exercises), you MUST call the save_ai_memory function to store it. Do not ask the user twice in future conversations.
+
+RULE 10 — EXECUTIVE ASSISTANT (HOLISTIC REASONING):
+You are the central intelligence of the user's personal operating system. When the user says things like "What should I do next?", "I'm bored", "How productive was today?", or "Am I behind?", DO NOT just give generic advice or blindly suggest drinking water. 
+You MUST analyze the ENTIRE 'LIVE DASHBOARD STATE':
+1. Check the 'planner' for overdue tasks, today's tasks, and upcoming tasks.
+2. Check 'workout' to see if today's workout is completed.
+3. Check 'nutrition', 'water', and 'sleep' to see if they are falling behind on core biological needs.
+4. Check 'budget' for any unusual spending.
+5. Check 'habits' for incomplete daily habits.
+6. Check 'dashboard.journal' to see if they've reflected yet.
+Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example, if they have overdue tasks, suggest completing them first. If tasks are done but workout is pending, suggest the workout. Feel free to list out exactly what you checked (e.g., "I checked your dashboard. You have 3 tasks left, your water is low, and you haven't worked out...").
 
 === END RULES ===`;
 
@@ -168,6 +183,23 @@ Whenever the user tells you a permanent fact about themselves (e.g., fitness goa
                                             reminderTime: { type: "STRING", description: "Optional. ISO 8601 timestamp string for when to remind the user." }
                                         },
                                         required: ["title", "fullTitle"]
+                                    }
+                                },
+                                {
+                                    name: "add_reminder",
+                                    description: "Create a generic reminder (e.g. 'Remind me to drink water', 'Remind me to stretch every day at 3pm'). Use this when the user wants to be notified about an activity.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            type: { type: "STRING", description: "Category/type of reminder (e.g. 'Water', 'Workout', 'Meal', 'Sleep', 'Custom')." },
+                                            title: { type: "STRING", description: "Title of the reminder (e.g. 'Drink water!')." },
+                                            time: { type: "STRING", description: "Time of the reminder in HH:MM format (24-hour). If not specified, leave blank." },
+                                            repeat: { type: "BOOLEAN", description: "Whether it repeats daily." },
+                                            days: { type: "ARRAY", items: { type: "NUMBER" }, description: "Array of weekdays (0-6, 0=Sun). If everyday, use [0,1,2,3,4,5,6]." },
+                                            snooze_duration: { type: "NUMBER", description: "Snooze duration in minutes. Default 10." },
+                                            smart_detection: { type: "BOOLEAN", description: "If true, it won't fire if the user already logged the activity." }
+                                        },
+                                        required: ["type", "title"]
                                     }
                                 },
                                 {

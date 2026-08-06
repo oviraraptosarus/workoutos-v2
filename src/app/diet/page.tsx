@@ -190,6 +190,7 @@ export default function DietPage() {
     const totalCarbs = meals.reduce((acc, m) => acc + (m.carbs || 0), 0);
     const totalFat = meals.reduce((acc, m) => acc + (m.fat || 0), 0);
     const totalSugar = meals.reduce((acc, m) => acc + (m.sugar || 0), 0);
+    const totalFiber = meals.reduce((acc, m) => acc + (m.fiber || 0), 0);
 
     // Dynamic TDEE Calculation (Mifflin-St Jeor)
     const calculateTDEE = () => {
@@ -265,6 +266,7 @@ export default function DietPage() {
                     totalCarbs={totalCarbs}
                     totalFat={totalFat}
                     totalSugar={totalSugar}
+                    totalFiber={totalFiber}
                     macroGoals={macroGoals}
                     onUpdateGoals={handleUpdateGoals}
                 />

@@ -54,7 +54,7 @@ export function buildConfig(): OrchestratorConfig {
         priorityModels,
         maxRetries: parseInt(process.env.MAX_RETRIES || '2', 10),
         cooldownMs: parseInt(process.env.COOLDOWN_SECONDS || '60', 10) * 1000,
-        timeoutMs: parseInt(process.env.TIMEOUT_SECONDS || '15', 10) * 1000,
+        timeoutMs: parseInt(process.env.TIMEOUT_SECONDS || '30', 10) * 1000,
     };
 }
 

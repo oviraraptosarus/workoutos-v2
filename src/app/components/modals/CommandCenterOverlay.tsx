@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { X, Bell, Zap, Calendar, HeartPulse, Dumbbell, Utensils, DollarSign, Brain, Activity, Check, Clock, ExternalLink, Target, TrendingUp, Sparkles, Moon, Droplets, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SnoozeSheet from '@/app/components/modals/SnoozeSheet';
+import { useDailySnapshot } from '@/hooks/useDailySnapshot';
 
 interface CommandCenterOverlayProps {
     isOpen: boolean;
@@ -17,15 +18,15 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
     const router = useRouter();
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const { snapshot, refreshSnapshot } = useDailySnapshot();
     
     // Dynamic Greeting
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
     
-    // Mock Stats for UI until hooked up to real backend engine
-    const currentStreak = user?.user_metadata?.current_streak || 12;
-    const completionPct = 68;
-    const nextReminder = "Drink Water (2:00 PM)";
+    const currentStreak = snapshot.streak;
+    const completionPct = snapshot.completionPercentage;
+    const nextReminder = snapshot.nextReminder || "No reminders scheduled.";
 
     const fetchItems = async () => {
         if (!user) return;
@@ -53,6 +54,7 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
     useEffect(() => {
         if (isOpen) {
             fetchItems();
+            refreshSnapshot();
         }
     }, [isOpen, user]);
 
@@ -66,6 +68,7 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
         } else {
             await supabase.from('command_center_items').update({ status: action }).eq('id', id);
         }
+        refreshSnapshot();
     };
 
     const handleSnoozeConfirm = async (date: Date) => {
@@ -80,8 +83,8 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
         if (actionType.includes('WATER')) router.push('/water');
         else if (actionType.includes('SLEEP')) router.push('/sleep');
         else if (actionType.includes('WORKOUT')) router.push('/workout');
-        else if (actionType.includes('BREAKFAST') || actionType.includes('LUNCH') || actionType.includes('DINNER') || actionType.includes('SNACK')) router.push('/diet');
-        else if (actionType.includes('PLANNER')) router.push('/planner');
+        else if (actionType.includes('BREAKFAST') || actionType.includes('LUNCH') || actionType.includes('DINNER') || actionType.includes('SNACK') || actionType.includes('MEAL')) router.push('/diet');
+        else if (actionType.includes('PLANNER') || actionType.includes('JOURNAL')) router.push('/planner');
         
         onClose();
     };
@@ -190,27 +193,37 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
 
                 <div className="flex-1 overflow-y-auto px-6 pb-6 pt-4 space-y-4">
                     
-                    {/* Next Reminder Pill */}
-                    <div className="bg-surface-container border border-white/10 text-on-surface px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm group hover:border-white/20 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <Clock size={18} className="text-on-surface-variant group-hover:text-on-surface transition-colors" />
-                            <span className="font-semibold text-sm">Next: {nextReminder}</span>
-                        </div>
-                        <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </div>
-
-                    {/* AI Insight Card - Integrated into feed natively */}
-                    <div className="bg-surface-container border border-white/10 p-6 rounded-[2rem] relative overflow-hidden group shadow-[0_10px_30px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all">
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 blur-3xl group-hover:bg-white/10 transition-colors pointer-events-none" />
-                        <div className="flex items-center gap-2 mb-4 relative z-10">
-                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                                <Sparkles size={14} className="text-on-surface" />
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="bg-red-500/10 border border-red-500/30 p-3 rounded-2xl mb-4">
+                            <h4 className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-2 flex items-center gap-1"><Zap size={10} /> Debug Diagnostics</h4>
+                            <div className="text-xs text-red-200/70 font-mono space-y-1">
+                                <p>Source: <span className="text-white">useDailySnapshot (Live)</span></p>
+                                <p>Timestamp: <span className="text-white">{new Date(snapshot.timestamp).toISOString()}</span></p>
+                                <p>State: <span className="text-white">{snapshot.isEmpty ? 'Empty' : 'Has Data'}</span></p>
+                                <p>Points: <span className="text-white">{snapshot.completionPercentage}%</span></p>
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface">AI Insight</span>
                         </div>
-                        <h3 className="text-lg font-semibold tracking-tight text-on-surface leading-tight mb-2 relative z-10">Optimal Hydration Window</h3>
-                        <p className="text-sm text-on-surface-variant leading-relaxed relative z-10">Based on your workout schedule, drinking 500ml of water right now will peak your hydration just in time for your 5 PM session.</p>
-                    </div>
+                    )}
+
+                    {/* Next Reminder Pill */}
+                    {nextReminder !== "No reminders scheduled." ? (
+                        <div className="bg-surface-container border border-white/10 text-on-surface px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm group hover:border-white/20 transition-colors cursor-pointer">
+                            <div className="flex items-center gap-3">
+                                <Clock size={18} className="text-on-surface-variant group-hover:text-on-surface transition-colors" />
+                                <span className="font-semibold text-sm">Next: {nextReminder}</span>
+                            </div>
+                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                    ) : (
+                        <div className="bg-surface-container/50 border border-white/5 text-on-surface-variant px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm">
+                            <div className="flex items-center gap-3">
+                                <Clock size={18} className="opacity-50" />
+                                <span className="text-sm">No reminders scheduled</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Real Database AI Items Rendered Below */}
 
                     {loading ? (
                         <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div></div>
@@ -220,7 +233,7 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
                                 <Check size={32} strokeWidth={1.5} />
                             </div>
                             <p className="font-semibold text-on-surface text-lg tracking-tight">You're all caught up!</p>
-                            <p className="text-sm text-center max-w-[200px] mt-1 text-on-surface-variant">No new insights or actions pending right now.</p>
+                            <p className="text-sm text-center max-w-[200px] mt-1 text-on-surface-variant">No new database actions pending right now.</p>
                         </div>
                     ) : (
                         items.map(item => (

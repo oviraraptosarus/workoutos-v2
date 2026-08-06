@@ -12,6 +12,7 @@ export interface ReminderConfig {
     snooze_duration?: number; // minutes
     skip_once?: boolean;
     notification_style?: 'banner' | 'modal' | 'silent';
+    priority?: 'low' | 'normal' | 'high' | 'urgent';
 }
 
 export interface ReminderPreference {

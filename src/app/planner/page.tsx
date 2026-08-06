@@ -114,7 +114,7 @@ export default function PlannerPage() {
             title: newTitle,
             full_title: newTitle,
             description: newDesc,
-            due_date: newDate,
+            due_date: newDate || null,
             due_time: null,
             subtasks: newSubTasks.map(st => ({ id: st.id, title: st.title, completed: false })),
             completed: false,
@@ -122,12 +122,18 @@ export default function PlannerPage() {
             reminder_time: newReminderTime ? new Date(newReminderTime).toISOString() : null
         };
 
-        let { data } = await supabase.from('tasks').insert(newTaskObj).select().single();
-        if (!data) {
+        let { data, error } = await supabase.from('tasks').insert(newTaskObj).select().single();
+        if (error) {
             // Fallback for unmigrated schema
             const fallbackObj = { ...newTaskObj };
             delete (fallbackObj as any).reminder_time;
-            ({ data } = await supabase.from('tasks').insert(fallbackObj).select().single());
+            delete (fallbackObj as any).priority;
+            const res = await supabase.from('tasks').insert(fallbackObj).select().single();
+            data = res.data;
+            if (res.error) {
+                alert("Error inserting task: " + res.error.message);
+                console.error(res.error);
+            }
         }
         if (data) {
             const newTask: Task = {
@@ -160,15 +166,19 @@ export default function PlannerPage() {
             date: new Date().toISOString().split('T')[0],
             title: clean,
             description: '',
-            due_date: '',
+            due_date: null,
             subtasks: [],
             completed: false
         };
         // Try with priority; if the column isn't migrated yet the insert 400s, so
         // retry without it. Task still appears either way.
-        let { data } = await supabase.from('tasks').insert({ ...base, priority }).select().single();
-        if (!data) {
-            ({ data } = await supabase.from('tasks').insert(base).select().single());
+        let { data, error } = await supabase.from('tasks').insert({ ...base, priority }).select().single();
+        if (error) {
+            const res = await supabase.from('tasks').insert(base).select().single();
+            data = res.data;
+            if (res.error) {
+                alert("Error promoting task: " + res.error.message);
+            }
         }
         if (data) {
             const newTask: Task = {
@@ -215,7 +225,20 @@ export default function PlannerPage() {
         if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
         if (updates.reminderTime !== undefined) dbUpdates.reminder_time = updates.reminderTime ? new Date(updates.reminderTime).toISOString() : null;
         
-        await supabase.from('tasks').update(dbUpdates).eq('id', taskId);
+        const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', taskId);
+        
+        if (error) {
+            // Fallback for unmigrated schema
+            const fallbackUpdates = { ...dbUpdates };
+            delete fallbackUpdates.priority;
+            delete fallbackUpdates.reminder_time;
+            
+            const res = await supabase.from('tasks').update(fallbackUpdates).eq('id', taskId);
+            if (res.error) {
+                alert("Error updating task: " + res.error.message);
+                console.error(res.error);
+            }
+        }
         setEditingTaskId(null);
     };
 

@@ -12,6 +12,7 @@ interface MacroRingsProps {
     totalCarbs: number;
     totalFat: number;
     totalSugar: number;
+    totalFiber: number;
     macroGoals?: MacroGoals;
     onUpdateGoals?: (goals: MacroGoals) => void;
 }
@@ -22,7 +23,8 @@ export default function MacroRings({
     totalCarbs,
     totalFat,
     totalSugar,
-    macroGoals = { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35 },
+    totalFiber,
+    macroGoals = { calories: 2200, protein: 140, carbs: 220, fat: 65, sugar: 35, fiber: 25 },
     onUpdateGoals,
 }: MacroRingsProps) {
     const { userProfile } = useAuth();
@@ -39,6 +41,7 @@ export default function MacroRings({
         { name: t('diet.macro.carbs'), eaten: totalCarbs, goal: macroGoals.carbs || 220, color: 'from-orange-400 to-orange-500', unit: 'g' },
         { name: t('diet.macro.fat'), eaten: totalFat, goal: macroGoals.fat || 65, color: 'from-rose-400 to-rose-500', unit: 'g' },
         { name: t('diet.macro.sugar'), eaten: totalSugar, goal: macroGoals.sugar || 35, color: 'from-amber-400 to-amber-500', unit: 'g' },
+        { name: 'Fiber', eaten: totalFiber, goal: macroGoals.fiber || 25, color: 'from-emerald-400 to-emerald-500', unit: 'g' },
     ];
 
     const progressPercentage = Math.min(100, (totalCalories / calorieGoal) * 100);
@@ -191,6 +194,17 @@ export default function MacroRings({
                                         type="number"
                                         value={tempGoals.sugar}
                                         onChange={(e) => setTempGoals({ ...tempGoals, sugar: Number(e.target.value) })}
+                                        className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-[11px] font-bold text-white mb-1">Fiber (g)</label>
+                                    <input
+                                        type="number"
+                                        value={tempGoals.fiber}
+                                        onChange={(e) => setTempGoals({ ...tempGoals, fiber: Number(e.target.value) })}
                                         className="w-full bg-white/5/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold"
                                     />
                                 </div>

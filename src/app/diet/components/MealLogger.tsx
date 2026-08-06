@@ -231,6 +231,7 @@ export default function MealLogger({
                                                             <p className="text-xs font-medium text-on-surface-variant mt-1">
                                                                 <strong className="text-on-surface tabular-nums">{item.bites ? `${item.bites} BITES` : `${item.calories} KCAL`}</strong> • {item.portion}
                                                                 {item.protein ? ` • ${item.protein}g protein` : ''}
+                                                                {item.fiber ? ` • ${item.fiber}g fiber` : ''}
                                                             </p>
                                                         </div>
                                                     </div>

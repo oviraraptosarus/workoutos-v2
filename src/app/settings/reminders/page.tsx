@@ -22,7 +22,9 @@ const DEFAULT_REMINDERS = [
     { type: 'walk', label: 'Daily Walk', icon: Zap, color: 'text-lime-500', bg: 'bg-lime-500/10' },
     { type: 'stretch', label: 'Stretch / Mobility', icon: Zap, color: 'text-orange-400', bg: 'bg-orange-400/10' },
     { type: 'weight', label: 'Weigh-in', icon: Settings2, color: 'text-slate-500', bg: 'bg-slate-500/10' },
-    { type: 'journal', label: 'Journal', icon: Zap, color: 'text-purple-400', bg: 'bg-purple-400/10' }
+    { type: 'journal', label: 'Journal', icon: Zap, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+    { type: 'medication', label: 'Medication', icon: Zap, color: 'text-red-400', bg: 'bg-red-400/10' },
+    { type: 'custom', label: 'Custom Reminder', icon: Settings2, color: 'text-gray-500', bg: 'bg-gray-500/10' }
 ];
 
 export default function RemindersSettingsPage() {
@@ -65,7 +67,7 @@ export default function RemindersSettingsPage() {
         return (
             <div className="fixed inset-0 z-50 flex flex-col justify-end">
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setSelectedType(null)} />
-                <div className="relative bg-background rounded-t-3xl border-t border-surface-variant/30 shadow-2xl p-6 pb-safe-bottom animate-in slide-in-from-bottom duration-300">
+                <div className="relative bg-background rounded-t-3xl border-t border-surface-variant/30 shadow-2xl p-6 pb-safe-bottom max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
                     <div className="w-12 h-1.5 bg-surface-variant rounded-full mx-auto mb-6 opacity-50" />
                     <h3 className="text-xl font-bold text-on-surface mb-6 capitalize">{selectedType} Reminder Settings</h3>
                     
@@ -95,7 +97,76 @@ export default function RemindersSettingsPage() {
                                 <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${config.silent_mode ? 'right-1' : 'left-1'}`} />
                             </button>
                         </div>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <label className="font-bold text-sm text-on-surface">Sound Alert</label>
+                                <p className="text-xs text-on-surface-variant">Play notification sound</p>
+                            </div>
+                            <button
+                                onClick={() => updateConfig(selectedType, { ...config, sound: !config.sound })}
+                                className={`relative w-12 h-7 rounded-full transition-colors ${config.sound ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
+                            >
+                                <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${config.sound ? 'right-1' : 'left-1'}`} />
+                            </button>
+                        </div>
                         
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="font-bold text-sm text-on-surface">Time</label>
+                                <input 
+                                    type="time" 
+                                    value={config.time || '09:00'} 
+                                    onChange={(e) => updateConfig(selectedType, { ...config, time: e.target.value })}
+                                    className="w-full bg-surface-container-low border border-surface-variant/30 rounded-xl p-3 text-sm text-on-surface"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="font-bold text-sm text-on-surface">Priority</label>
+                                <select 
+                                    value={config.priority || 'normal'}
+                                    onChange={(e) => updateConfig(selectedType, { ...config, priority: e.target.value as any })}
+                                    className="w-full bg-surface-container-low border border-surface-variant/30 rounded-xl p-3 text-sm text-on-surface"
+                                >
+                                    <option value="low">Low</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="font-bold text-sm text-on-surface">Repeat</label>
+                                <button
+                                    onClick={() => updateConfig(selectedType, { ...config, repeat: !config.repeat })}
+                                    className={`relative w-12 h-7 rounded-full transition-colors ${config.repeat ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
+                                >
+                                    <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${config.repeat ? 'right-1' : 'left-1'}`} />
+                                </button>
+                            </div>
+                            {config.repeat && (
+                                <div className="flex justify-between gap-1 mt-2">
+                                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => {
+                                        const isSelected = (config.days || []).includes(idx);
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => {
+                                                    const days = config.days || [];
+                                                    const newDays = isSelected ? days.filter(d => d !== idx) : [...days, idx];
+                                                    updateConfig(selectedType, { ...config, days: newDays });
+                                                }}
+                                                className={`w-10 h-10 rounded-full font-bold text-xs transition-colors ${isSelected ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}
+                                            >
+                                                {day}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="space-y-2">
                             <label className="font-bold text-sm text-on-surface">Snooze Duration (minutes)</label>
                             <select 
