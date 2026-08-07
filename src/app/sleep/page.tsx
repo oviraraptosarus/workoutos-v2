@@ -120,17 +120,13 @@ export default function SleepPage() {
 
     const handleAdd = async (amount: number, type: string, details?: any) => {
         if (!selectedDate) return;
-        // A night's sleep is a single value — replace the day's total rather than
-        // accumulate, so re-logging corrects instead of doubling.
-        const isNightSleep = type === 'Night Sleep';
-        const newTotal = isNightSleep ? amount : currentSleep + amount;
+        
+        const newTotal = currentSleep + amount;
         setCurrentSleep(newTotal);
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const newLogs = isNightSleep
-            ? [{ id: Date.now(), amount, time: timeStr, type, details }]
-            : [{ id: Date.now(), amount, time: timeStr, type, details }, ...logs];
+        const newLogs = [{ id: Date.now(), amount, time: timeStr, type, details }, ...logs];
         setLogs(newLogs);
 
         await saveToSupabase(newTotal, newLogs, details?.bedtime, details?.waketime);

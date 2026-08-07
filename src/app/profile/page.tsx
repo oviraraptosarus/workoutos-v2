@@ -358,6 +358,7 @@ export default function ProfileHub() {
                             { label: t('profile.targetWeight'), key: 'targetWeight', type: 'number' },
                             { label: t('profile.fitnessGoal'), key: 'fitnessGoal', type: 'text' },
                             { label: t('profile.calorieGoal'), key: 'calorieGoal', type: 'number' },
+                            { label: 'Daily Burn Goal', key: 'daily_burn_goal', type: 'number' },
                             { label: t('profile.waterGoal'), key: 'waterGoalMl', type: 'number' },
                         ].map(f => (
                             <div key={f.key} className="p-4 flex items-center justify-between">

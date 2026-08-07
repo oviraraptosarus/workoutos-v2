@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, Flame, X, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
@@ -14,9 +14,40 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
     const { userProfile } = useAuth();
     
     const [activityType, setActivityType] = useState('Stationary Bike');
+    const [customName, setCustomName] = useState('');
     const [durationMinutes, setDurationMinutes] = useState('');
     const [intensity, setIntensity] = useState('Moderate');
+    const [notes, setNotes] = useState('');
+    const [manualCalories, setManualCalories] = useState('');
+    const [metricValue, setMetricValue] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+
+    // Reset when modal opens/closes
+    useEffect(() => {
+        if (!isOpen) {
+            setActivityType('Stationary Bike');
+            setCustomName('');
+            setDurationMinutes('');
+            setIntensity('Moderate');
+            setNotes('');
+            setManualCalories('');
+            setMetricValue('');
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        setMetricValue('');
+    }, [activityType]);
+
+    const getMetricLabel = () => {
+        if (activityType === 'Walking' || activityType === 'Running') return 'Steps (Optional)';
+        if (activityType === 'Stationary Bike') return 'Avg Cadence (RPM) (Optional)';
+        if (activityType === 'Swimming') return 'Laps (Optional)';
+        if (activityType === 'Rowing') return 'Avg SPM (Optional)';
+        return null;
+    };
+    
+    const metricLabel = getMetricLabel();
 
     if (!isOpen) return null;
 
@@ -38,6 +69,7 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
     const durationHrs = (parseFloat(durationMinutes) || 0) / 60;
     const met = getMET(activityType, intensity);
     const estimatedCals = Math.round(met * weightKg * durationHrs);
+    const finalCalories = manualCalories !== '' ? parseInt(manualCalories) : estimatedCals;
 
     const handleSave = async () => {
         if (!durationMinutes || isNaN(parseFloat(durationMinutes))) return;
@@ -48,14 +80,23 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
             if (user) {
                 const dateKey = new Date().toISOString().split('T')[0];
                 
-                // Add to workout logs
+                // Add to workout logs using new schema
                 await supabase.from('workout_logs').insert({
                     user_id: user.id,
                     date: dateKey,
-                    session_type: activityType,
-                    exercises: [
-                        { type: 'metadata', duration: `${durationMinutes} min`, volume: `${estimatedCals} kcal burned`, intensity }
-                    ],
+                    session_type: activityType === 'Other' ? 'Custom Cardio' : activityType,
+                    exercises: [{
+                        type: 'metadata',
+                        custom_name: activityType === 'Other' ? customName : null,
+                        duration: `${durationMinutes} min`,
+                        volume: `${finalCalories} kcal burned`,
+                        duration_minutes: parseInt(durationMinutes),
+                        calories_burned: finalCalories,
+                        intensity: intensity,
+                        notes: notes,
+                        metric_value: metricValue ? parseInt(metricValue) : null,
+                        metric_label: metricLabel ? metricLabel.replace(' (Optional)', '') : null
+                    }],
                     completed: true,
                     is_outdoor: activityType === 'Running' || activityType === 'Walking'
                 });
@@ -75,11 +116,12 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
                     .upsert({
                         user_id: user.id,
                         date: dateKey,
-                        activity_burned: currentBurned + estimatedCals
+                        activity_burned: currentBurned + finalCalories
                     }, { onConflict: 'user_id,date' });
 
                 window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
                 window.dispatchEvent(new Event('workout_os_activity_updated'));
+                window.dispatchEvent(new Event('workout_os_refresh'));
             }
             onClose();
         } catch (e) {
@@ -101,7 +143,7 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
                     </button>
                 </div>
                 
-                <div className="p-5 space-y-4">
+                <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
                     <div>
                         <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Activity Type</label>
                         <select 
@@ -118,6 +160,19 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
                             <option value="Other">Other Cardio</option>
                         </select>
                     </div>
+
+                    {activityType === 'Other' && (
+                        <div>
+                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Custom Name</label>
+                            <input 
+                                type="text" 
+                                value={customName}
+                                onChange={(e) => setCustomName(e.target.value)}
+                                placeholder="e.g. HIIT, Pickleball, Dancing"
+                                className="w-full bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-tertiary placeholder:text-on-surface-variant"
+                            />
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -144,24 +199,59 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
                         </div>
                     </div>
 
+                    <div>
+                        <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Notes (Optional)</label>
+                        <input 
+                            type="text" 
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="e.g. Felt great today"
+                            className="w-full bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-tertiary placeholder:text-on-surface-variant"
+                        />
+                    </div>
+
+                    {metricLabel && (
+                        <div>
+                            <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{metricLabel}</label>
+                            <input 
+                                type="number" 
+                                value={metricValue}
+                                onChange={(e) => setMetricValue(e.target.value)}
+                                placeholder="e.g. 5000"
+                                className="w-full bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-tertiary placeholder:text-on-surface-variant"
+                            />
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Calories Burned (Override)</label>
+                        <input 
+                            type="number" 
+                            value={manualCalories}
+                            onChange={(e) => setManualCalories(e.target.value)}
+                            placeholder={`Leave blank to use AI Est: ${estimatedCals}`}
+                            className="w-full bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm font-bold text-on-surface focus:outline-none focus:border-tertiary placeholder:text-on-surface-variant/50"
+                        />
+                    </div>
+
                     <div className="bg-tertiary-container/30 border border-tertiary-container rounded-2xl p-4 flex items-center justify-between mt-2">
                         <div>
-                            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-0.5">Est. Burned</span>
+                            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-0.5">Final Burn</span>
                             <span className="text-xl font-black text-tertiary flex items-center gap-1">
-                                {estimatedCals > 0 ? estimatedCals : '--'} <Flame size={16} />
+                                {finalCalories > 0 ? finalCalories : '--'} <Flame size={16} />
                             </span>
                         </div>
                         <div className="text-right">
-                            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-0.5">MET</span>
+                            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-0.5">MET used</span>
                             <span className="text-sm font-black text-on-surface">{met.toFixed(1)}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="p-5 pt-0">
+                <div className="p-5 border-t border-surface-variant">
                     <button 
                         onClick={handleSave}
-                        disabled={!durationMinutes || isSaving}
+                        disabled={!durationMinutes || isSaving || (activityType === 'Other' && !customName)}
                         className="w-full bg-tertiary hover:bg-tertiary-fixed disabled:opacity-50 text-on-tertiary font-bold py-3.5 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
                     >
                         {isSaving ? 'Saving...' : <><Check size={16} /> Save Activity</>}

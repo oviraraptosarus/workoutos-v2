@@ -7,7 +7,10 @@ import ActiveSplitCard from './components/ActiveSplitCard';
 import RecentWorkouts from './components/RecentWorkouts';
 import PresetWorkouts from './components/PresetWorkouts';
 import ActivityTracker from './components/ActivityTracker';
+import BurnGoalTracker from './components/BurnGoalTracker';
 import CardioActivityModal from './components/modals/CardioActivityModal';
+import ActivityTrendsChart from './components/ActivityTrendsChart';
+import MuscleRecoveryHeatmap from './components/MuscleRecoveryHeatmap';
 
 export default function WorkoutPage() {
     const [activePreset, setActivePreset] = useState<any>(null);
@@ -36,6 +39,7 @@ export default function WorkoutPage() {
             }
         }, 1000);
     };
+
     return (
         <AppLayout>
             {isCountingDown && (
@@ -54,13 +58,23 @@ export default function WorkoutPage() {
                     onLogActivity={() => setIsCardioModalOpen(true)}
                 />
                 
+                <BurnGoalTracker />
+                
                 <ActivityTracker />
                 
                 <div id="tour-workout-active-split" className="relative z-[110]">
                     <ActiveSplitCard preset={activePreset} isBuilderMode={isBuilderMode} onExitBuilder={() => setIsBuilderMode(false)} />
                 </div>
-                <PresetWorkouts onPlay={handlePlayWorkout} />
-                <RecentWorkouts />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ActivityTrendsChart />
+                    <MuscleRecoveryHeatmap />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <PresetWorkouts onPlay={handlePlayWorkout} />
+                    <RecentWorkouts />
+                </div>
             </div>
         </AppLayout>
     );

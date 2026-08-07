@@ -4,9 +4,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2 } from 'lucide-react';
 import { getIncome, deleteTransaction, IncomeItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBudget } from '../contexts/BudgetContext';
 
 export default function IncomeTable() {
     const { t } = useLanguage();
+    const { selectedMonth } = useBudget();
     const [income, setIncome] = useState<IncomeItem[]>([]);
     const [highlight, setHighlight] = useState(false);
     const [query, setQuery] = useState('');
@@ -14,7 +16,7 @@ export default function IncomeTable() {
     const [pendingId, setPendingId] = useState<string | null>(null);
 
     useEffect(() => {
-        const load = async () => setIncome(await getIncome());
+        const load = async () => setIncome(await getIncome(selectedMonth));
         load();
 
         window.addEventListener('workout_os_budget_updated', load);
@@ -32,7 +34,7 @@ export default function IncomeTable() {
             window.removeEventListener('workout_os_budget_updated', load);
             window.removeEventListener('workout_os_highlight', handleHighlight);
         };
-    }, []);
+    }, [selectedMonth]);
 
     // Sources are derived from the data so the filter never offers an empty option.
     const sources = useMemo(

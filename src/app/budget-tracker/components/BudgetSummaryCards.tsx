@@ -4,22 +4,24 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, TrendingDown, Calculator } from 'lucide-react';
 import { getIncome, getExpenses, IncomeItem, ExpenseItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBudget } from '../contexts/BudgetContext';
 
 export default function BudgetSummaryCards() {
     const { t } = useLanguage();
+    const { selectedMonth } = useBudget();
     const [income, setIncome] = useState<IncomeItem[]>([]);
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
 
     useEffect(() => {
         const load = async () => {
-            setIncome(await getIncome());
-            setExpenses(await getExpenses());
+            setIncome(await getIncome(selectedMonth));
+            setExpenses(await getExpenses(selectedMonth));
         };
         load();
         
         window.addEventListener('workout_os_budget_updated', load);
         return () => window.removeEventListener('workout_os_budget_updated', load);
-    }, []);
+    }, [selectedMonth]);
 
     const totalIncome = income.reduce((acc, curr) => acc + curr.amount, 0);
     const totalExpenses = expenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -28,16 +30,18 @@ export default function BudgetSummaryCards() {
 
     const expenseRatio = totalIncome > 0 ? ((totalExpenses / totalIncome) * 100).toFixed(0) : 0;
     
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const dayOfMonth = isCurrentMonth ? today.getDate() : daysInMonth;
+    const monthPct = Math.round((dayOfMonth / daysInMonth) * 100);
+
     // We'll also calculate a projected ratio for the progress bar
     const projectedRatio = totalIncome > 0 
-        ? (( (totalExpenses / (new Date().getDate() || 1)) * (new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()) ) / totalIncome * 100).toFixed(0) 
+        ? (( (totalExpenses / (dayOfMonth || 1)) * daysInMonth ) / totalIncome * 100).toFixed(0) 
         : 0;
-
-    // Real month pace, replacing a hardcoded "84% of month".
-    const today = new Date();
-    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const dayOfMonth = today.getDate();
-    const monthPct = Math.round((dayOfMonth / daysInMonth) * 100);
 
     // Spending is "on track" when the share of income spent has not outrun the
     // share of the month that has passed.
@@ -51,16 +55,6 @@ export default function BudgetSummaryCards() {
         ? Math.round((totalExpenses / dayOfMonth) * daysInMonth)
         : totalExpenses;
 
-    // Protein metrics logic
-    const proteinExpenses = expenses.filter(e => e.protein && e.costPerG);
-    let avgCostPerG = 0;
-    let totalG = 0;
-    let totalProteinSpend = 0;
-    if (proteinExpenses.length > 0) {
-        totalG = proteinExpenses.reduce((acc, curr) => acc + (curr.protein || 0), 0);
-        totalProteinSpend = proteinExpenses.reduce((acc, curr) => acc + curr.amount, 0);
-        avgCostPerG = totalG > 0 ? totalProteinSpend / totalG : 0;
-    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -135,15 +129,6 @@ export default function BudgetSummaryCards() {
                     </div>
                     <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-200 tracking-tight leading-none mb-2">₹{netSavings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{savingsRate}{t('budget.cards.savingsRate')}</div>
-                </div>
-                
-                <div className="mt-4 pt-4 border-t border-surface-variant ">
-                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-bold tracking-widest uppercase mb-1.5">{t('budget.cards.costPerG')}</div>
-                    <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-purple-400 dark:from-purple-400 dark:to-purple-200 drop-shadow-sm">₹{avgCostPerG.toFixed(3)}</span>
-                        <span className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold">/g</span>
-                    </div>
-                    <div className="text-[10px] text-on-surface-variant dark:text-on-surface-variant font-medium">{t('budget.cards.proteinPurchased').replace('{g}', totalG.toString()).replace('{spend}', totalProteinSpend.toFixed(0))}</div>
                 </div>
             </div>
         </div>

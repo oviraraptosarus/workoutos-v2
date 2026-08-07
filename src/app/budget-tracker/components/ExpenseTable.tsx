@@ -4,9 +4,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2 } from 'lucide-react';
 import { getExpenses, deleteTransaction, ExpenseItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBudget } from '../contexts/BudgetContext';
 
 export default function ExpenseTable() {
     const { t } = useLanguage();
+    const { selectedMonth } = useBudget();
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
     const [highlight, setHighlight] = useState(false);
     const [query, setQuery] = useState('');
@@ -14,7 +16,7 @@ export default function ExpenseTable() {
     const [pendingId, setPendingId] = useState<string | null>(null);
 
     useEffect(() => {
-        const load = async () => setExpenses(await getExpenses());
+        const load = async () => setExpenses(await getExpenses(selectedMonth));
         load();
 
         window.addEventListener('workout_os_budget_updated', load);
@@ -32,7 +34,7 @@ export default function ExpenseTable() {
             window.removeEventListener('workout_os_budget_updated', load);
             window.removeEventListener('workout_os_highlight', handleHighlight);
         };
-    }, []);
+    }, [selectedMonth]);
 
     // Categories come from the data itself, so the filter can never list an option
     // that matches nothing.

@@ -273,6 +273,22 @@ Synthesize all this data to recommend the HIGHEST-VALUE NEXT ACTION. For example
                                     }
                                 },
                                 {
+                                    name: "log_workout",
+                                    description: "Log a workout or cardio activity. Use when the user states they completed an exercise (e.g., 'I walked 10000 steps', 'I ran for 30 minutes'). If they don't provide the duration, ASK for it before logging. Do NOT guess or hallucinate the duration. For walking/running, assume 100 steps per minute if duration is missing and you must calculate it, but asking is better.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            activityType: { type: "STRING", description: "Must be 'Stationary Bike', 'Running', 'Walking', 'Swimming', 'Rowing', 'Elliptical', or 'Other'." },
+                                            customName: { type: "STRING", description: "If activityType is 'Other', the name of the activity (e.g., 'HIIT', 'Pickleball')." },
+                                            durationMinutes: { type: "NUMBER", description: "Duration in minutes. If unknown, ask the user." },
+                                            intensity: { type: "STRING", description: "Must be 'Light', 'Moderate', or 'Vigorous'. Default to 'Moderate'." },
+                                            metricValue: { type: "NUMBER", description: "Numeric metric value (e.g., 10000 for steps, 30 for laps)." },
+                                            metricLabel: { type: "STRING", description: "Label for the metric (e.g., 'Steps', 'Laps', 'Avg Cadence (RPM)')." }
+                                        },
+                                        required: ["activityType"]
+                                    }
+                                },
+                                {
                                     name: "add_expense",
                                     description: "Log a financial expense. Use when the user states an amount and what they spent on. If amount or category is missing, ask first.",
                                     parameters: {

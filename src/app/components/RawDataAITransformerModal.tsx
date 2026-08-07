@@ -227,6 +227,7 @@ export default function RawDataAITransformerModal({
                 parsedResult.meals.map((m) => ({
                     ...m,
                     bites: Math.round(m.calories / 50),
+                    fiber: 0,
                 }))
             );
         }

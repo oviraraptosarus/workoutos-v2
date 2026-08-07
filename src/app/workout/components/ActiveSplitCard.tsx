@@ -141,14 +141,35 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
             await supabase.from('workout_logs').insert({
                 user_id: user.id,
                 date: todayKey,
-                session_type: preset ? preset.title : customTitle,
-                exercises: [...exercises, { type: 'metadata', duration: formatTime(elapsedSeconds), volume: `${calsBurned} kcal burned` }],
+                session_type: 'Gym',
+                custom_name: preset ? preset.title : customTitle,
+                duration_minutes: Math.round(elapsedSeconds / 60),
+                calories_burned: calsBurned,
+                exercises: exercises,
                 completed: true
             });
+
+            // Update daily_logs activity_burned
+            const { data: currentLog } = await supabase
+                .from('daily_logs')
+                .select('activity_burned')
+                .eq('user_id', user.id)
+                .eq('date', todayKey)
+                .maybeSingle();
+            
+            const currentBurned = currentLog?.activity_burned || 0;
+
+            await supabase
+                .from('daily_logs')
+                .upsert({
+                    user_id: user.id,
+                    date: todayKey,
+                    activity_burned: currentBurned + calsBurned
+                }, { onConflict: 'user_id,date' });
         }
         
-        
         window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
+        window.dispatchEvent(new Event('workout_os_activity_updated'));
     };
 
     if (isFinished) {

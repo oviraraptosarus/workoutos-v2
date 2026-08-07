@@ -20,15 +20,21 @@ export interface ExpenseItem {
     type: string;
 }
 
-export const getIncome = async (): Promise<IncomeItem[]> => {
+export const getIncome = async (month?: string): Promise<IncomeItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
     
-    const { data } = await supabase.from('expenses')
+    let query = supabase.from('expenses')
         .select('*')
         .eq('user_id', user.id)
         .eq('transaction_type', 'income')
         .order('created_at', { ascending: false });
+
+    if (month) {
+        query = query.gte('date', `${month}-01`).lte('date', `${month}-31`);
+    }
+
+    const { data } = await query;
         
     return data?.map(d => ({
         id: d.id,
@@ -40,15 +46,21 @@ export const getIncome = async (): Promise<IncomeItem[]> => {
     })) || [];
 };
 
-export const getExpenses = async (): Promise<ExpenseItem[]> => {
+export const getExpenses = async (month?: string): Promise<ExpenseItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 
-    const { data } = await supabase.from('expenses')
+    let query = supabase.from('expenses')
         .select('*')
         .eq('user_id', user.id)
         .eq('transaction_type', 'expense')
         .order('created_at', { ascending: false });
+
+    if (month) {
+        query = query.gte('date', `${month}-01`).lte('date', `${month}-31`);
+    }
+
+    const { data } = await query;
         
     return data?.map(d => ({
         id: d.id,

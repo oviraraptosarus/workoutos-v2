@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import React, { useState } from 'react';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, CheckCircle2, Target } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
@@ -145,36 +145,52 @@ export default function NutritionCard() {
                 </form>
             ) : (
                 <>
-                    {/* Centred calorie ring */}
+                    {/* Centred calorie ring or success state */}
                     <div className="flex flex-col items-center">
-                        <div className="relative" style={{ width: SIZE, height: SIZE }}>
-                            <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="-rotate-90" aria-hidden="true">
-                                <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" className="stroke-surface-container" />
-                                <circle
-                                    cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" strokeLinecap="round"
-                                    className={over ? 'stroke-activity-red' : 'stroke-on-tertiary-container'}
-                                    strokeDasharray={C}
-                                    strokeDashoffset={loaded ? C * (1 - pct) : C}
-                                    style={{ transition: 'stroke-dashoffset 900ms cubic-bezier(0.32,0.72,0,1)' }}
-                                />
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="font-display-lg text-headline-lg font-bold text-on-surface tabular-nums leading-none">
-                                    {loaded ? currentCals.toLocaleString() : (
-                                        <div className="h-8 w-16 bg-surface-variant/50 animate-pulse rounded-md inline-block"></div>
-                                    )}
-                                </span>
-                                <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
-                                    of {goalCals.toLocaleString()}
-                                </span>
+                        {remaining <= 0 ? (
+                            <div className="flex flex-col items-center justify-center gap-2 py-4 mb-1 animate-in zoom-in duration-300">
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-inner ${over ? 'bg-activity-red/20 text-activity-red' : 'bg-activity-green/20 text-activity-green'}`}>
+                                    {over ? <Target size={40} /> : <CheckCircle2 size={40} />}
+                                </div>
+                                <div className="text-center">
+                                    <p className="font-label-lg font-black text-on-surface text-lg">Goal Met!</p>
+                                    <p className="font-label-sm font-bold text-on-surface-variant mt-1">
+                                        {over ? `${(currentCals - goalCals).toLocaleString()} kcal over` : 'Perfectly on track'}
+                                    </p>
+                                    <p className="font-label-sm text-xs text-on-surface-variant mt-0.5">
+                                        {currentCals.toLocaleString()} / {goalCals.toLocaleString()} kcal
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-
-                        <p className="font-label-md text-label-md text-on-surface mt-2">
-                            {over
-                                ? `${(currentCals - goalCals).toLocaleString()} kcal over`
-                                : remaining === 0 ? 'Goal met' : `${remaining.toLocaleString()} ${t('dash.kcalLeft')}`}
-                        </p>
+                        ) : (
+                            <>
+                                <div className="relative" style={{ width: SIZE, height: SIZE }}>
+                                    <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="-rotate-90" aria-hidden="true">
+                                        <circle cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" className="stroke-surface-container" />
+                                        <circle
+                                            cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" strokeWidth="10" strokeLinecap="round"
+                                            className={over ? 'stroke-activity-red' : 'stroke-on-tertiary-container'}
+                                            strokeDasharray={C}
+                                            strokeDashoffset={loaded ? C * (1 - pct) : C}
+                                            style={{ transition: 'stroke-dashoffset 900ms cubic-bezier(0.32,0.72,0,1)' }}
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="font-display-lg text-headline-lg font-bold text-on-surface tabular-nums leading-none">
+                                            {loaded ? currentCals.toLocaleString() : (
+                                                <div className="h-8 w-16 bg-surface-variant/50 animate-pulse rounded-md inline-block"></div>
+                                            )}
+                                        </span>
+                                        <span className="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+                                            of {goalCals.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <p className="font-label-md text-label-md text-on-surface mt-2">
+                                    {`${remaining.toLocaleString()} ${t('dash.kcalLeft')}`}
+                                </p>
+                            </>
+                        )}
 
                         {isToday && (
                             <button

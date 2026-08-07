@@ -88,9 +88,27 @@ export default function ActivityTracker() {
                     activity_burned: currentBurned + addedCals
                 }, { onConflict: 'user_id,date' });
                 
+            // Also log to workout_logs so it shows in "Past Sessions" (Recent History)
+            await supabase.from('workout_logs').insert({
+                user_id: user.id,
+                date: dateKey,
+                session_type: 'Steps',
+                exercises: [{
+                    type: 'metadata',
+                    custom_name: `${stepsToAdd.toLocaleString()} Steps`,
+                    duration: 'Tracker',
+                    volume: addedCals > 0 ? `${addedCals} kcal burned` : 'Logged',
+                    calories_burned: addedCals,
+                    steps_added: stepsToAdd
+                }],
+                completed: true
+            });
+
             setSteps(newTotal);
             setInputSteps('');
             window.dispatchEvent(new Event('workout_os_activity_updated'));
+            window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
+            window.dispatchEvent(new Event('workout_os_refresh'));
             window.dispatchEvent(new Event('storage')); // to sync any hooks listening to storage
         }
         setIsSaving(false);

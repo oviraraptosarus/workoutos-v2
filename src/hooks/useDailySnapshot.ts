@@ -10,6 +10,7 @@ export interface DailySnapshot {
     caloriesProgress: { current: number; target: number };
     proteinProgress: { current: number; target: number };
     sleepProgress: { current: number; target: number };
+    burnProgress: { current: number; target: number };
     workoutName: string | null;
     missingActivity: string | null;
     plannerState: { total: number; completed: number };
@@ -19,6 +20,7 @@ export interface DailySnapshot {
     immediateAction: { title: string; description: string; actionType: string } | null;
     loading: boolean;
     timestamp: number; // for debugging
+    isRestDay: boolean;
 }
 
 export function useDailySnapshot() {
@@ -31,6 +33,7 @@ export function useDailySnapshot() {
         caloriesProgress: { current: 0, target: 2000 },
         proteinProgress: { current: 0, target: 150 },
         sleepProgress: { current: 0, target: 8 },
+        burnProgress: { current: 0, target: 500 },
         workoutName: null,
         missingActivity: null,
         plannerState: { total: 0, completed: 0 },
@@ -40,12 +43,13 @@ export function useDailySnapshot() {
         immediateAction: null,
         loading: true,
         timestamp: Date.now(),
+        isRestDay: false,
     });
 
     const fetchSnapshot = useCallback(async () => {
         if (!user) return;
         
-        const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
+        const dateKey = selectedDate || new Date().toISOString().split('T')[0];
         
         try {
             const thirtyDaysAgo = new Date();
@@ -65,11 +69,12 @@ export function useDailySnapshot() {
                 supabase.from('meal_entries').select('calories, protein').eq('user_id', user.id).eq('date', dateKey),
                 supabase.from('workout_logs').select('session_type, completed').eq('user_id', user.id).eq('date', dateKey),
                 supabase.from('tasks').select('completed').eq('user_id', user.id).eq('date', dateKey),
-                supabase.from('daily_logs').select('date, water_ml_total, sleep_hours, reflection').eq('user_id', user.id).gte('date', thirtyDaysAgoStr).order('date', { ascending: false }),
+                supabase.from('daily_logs').select('date, water_ml_total, sleep_hours, reflection, activity_burned').eq('user_id', user.id).gte('date', thirtyDaysAgoStr).order('date', { ascending: false }),
                 supabase.from('workout_logs').select('date').eq('user_id', user.id).gte('date', thirtyDaysAgoStr).order('date', { ascending: false }),
                 supabase.from('command_center_items').select('title, due_at').eq('user_id', user.id).eq('category', 'Reminder').eq('status', 'active').not('due_at', 'is', null).order('due_at', { ascending: true }).limit(1)
             ]);
 
+            const isRestDay = logs?.is_rest_day || false;
             const waterCurrent = logs?.water_ml_total || 0;
             const waterTarget = userProfile?.waterGoalMl || 3000;
             const sleepCurrent = logs?.sleep_hours || 0;
@@ -78,7 +83,10 @@ export function useDailySnapshot() {
             const caloriesCurrent = meals?.reduce((acc: number, m: any) => acc + (m.calories || 0), 0) || 0;
             const proteinCurrent = meals?.reduce((acc: number, m: any) => acc + (m.protein || 0), 0) || 0;
             const caloriesTarget = userProfile?.calorieGoal || 2000;
-            const proteinTarget = userProfile?.proteinGoal || 150;
+            const proteinTarget = (userProfile as any)?.proteinGoal || 150;
+
+            const burnCurrent = logs?.activity_burned || 0;
+            const burnTarget = (userProfile as any)?.daily_burn_goal || 500;
 
             const totalTasks = tasks?.length || 0;
             const completedTasks = tasks?.filter(t => t.completed).length || 0;
@@ -90,6 +98,7 @@ export function useDailySnapshot() {
                 waterCurrent === 0 && 
                 sleepCurrent === 0 && 
                 caloriesCurrent === 0 && 
+                burnCurrent === 0 &&
                 !workoutToday && 
                 completedTasks === 0 &&
                 !logs?.reflection;
@@ -108,6 +117,9 @@ export function useDailySnapshot() {
 
             possiblePoints += 1;
             if (workoutToday?.completed) earnedPoints += 1;
+            
+            possiblePoints += 1;
+            if (burnCurrent >= burnTarget) earnedPoints += 1;
 
             if (totalTasks > 0) {
                 possiblePoints += 1;
@@ -123,6 +135,7 @@ export function useDailySnapshot() {
             if (!workoutToday) missingActivity = 'No workout logged today';
             else if (waterCurrent < waterTarget) missingActivity = `Only ${waterCurrent}ml / ${waterTarget}ml water`;
             else if (sleepCurrent < sleepTarget) missingActivity = `Only ${sleepCurrent}h / ${sleepTarget}h sleep`;
+            else if (burnCurrent < burnTarget) missingActivity = `Burned ${burnCurrent} / ${burnTarget} kcal`;
             else if (!logs?.reflection) missingActivity = 'Journal reflection not filled';
             else if (totalTasks > completedTasks) missingActivity = `${totalTasks - completedTasks} pending planner tasks`;
 
@@ -130,7 +143,7 @@ export function useDailySnapshot() {
             // A streak day is any day with water > 0, sleep > 0, reflection, or a workout
             const activeDates = new Set<string>();
             pastLogs?.forEach(log => {
-                if ((log.water_ml_total || 0) > 0 || (log.sleep_hours || 0) > 0 || log.reflection) {
+                if ((log.water_ml_total || 0) > 0 || (log.sleep_hours || 0) > 0 || log.reflection || (log.activity_burned || 0) > 0) {
                     activeDates.add(log.date);
                 }
             });
@@ -187,6 +200,7 @@ export function useDailySnapshot() {
                 caloriesProgress: { current: caloriesCurrent, target: caloriesTarget },
                 proteinProgress: { current: proteinCurrent, target: proteinTarget },
                 sleepProgress: { current: sleepCurrent, target: sleepTarget },
+                burnProgress: { current: burnCurrent, target: burnTarget },
                 workoutName,
                 missingActivity,
                 plannerState: { total: totalTasks, completed: completedTasks },
@@ -196,6 +210,7 @@ export function useDailySnapshot() {
                 immediateAction,
                 loading: false,
                 timestamp: Date.now(),
+                isRestDay,
             });
             
         } catch (err) {
@@ -209,9 +224,13 @@ export function useDailySnapshot() {
         const handleRefresh = () => fetchSnapshot();
         window.addEventListener('workout_os_refresh', handleRefresh);
         window.addEventListener('workout_os_tasks_updated', handleRefresh);
+        window.addEventListener('workout_os_activity_updated', handleRefresh);
+        window.addEventListener('workout_os_recent_workouts_updated', handleRefresh);
         return () => {
             window.removeEventListener('workout_os_refresh', handleRefresh);
             window.removeEventListener('workout_os_tasks_updated', handleRefresh);
+            window.removeEventListener('workout_os_activity_updated', handleRefresh);
+            window.removeEventListener('workout_os_recent_workouts_updated', handleRefresh);
         };
     }, [fetchSnapshot]);
 

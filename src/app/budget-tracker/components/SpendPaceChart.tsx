@@ -5,9 +5,11 @@ import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Respon
 import { useAuth } from '@/contexts/AuthContext';
 import { getExpenses } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBudget } from '../contexts/BudgetContext';
 
 export default function SpendPaceChart() {
     const { t } = useLanguage();
+    const { selectedMonth } = useBudget();
     const { userProfile } = useAuth();
     const [expenses, setExpenses] = useState<any[]>([]);
     const [isDark, setIsDark] = useState(false);
@@ -15,7 +17,7 @@ export default function SpendPaceChart() {
     useEffect(() => {
         const load = async () => {
             try {
-                const data = await getExpenses();
+                const data = await getExpenses(selectedMonth);
                 setExpenses(data);
             } catch(e) {}
         };
@@ -39,19 +41,34 @@ export default function SpendPaceChart() {
         return () => obs.disconnect();
     }, []);
 
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    
-    // Generate the current week (Monday to Sunday)
-    const last7Days: Date[] = [];
-    const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday...
-    const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const realToday = new Date();
+    const isCurrentMonth = realToday.getFullYear() === year && (realToday.getMonth() + 1) === month;
 
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - diffToMonday + i);
-        d.setHours(12, 0, 0, 0);
-        last7Days.push(d);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    // Generate the days to plot
+    const plotDays: Date[] = [];
+    
+    if (isCurrentMonth) {
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday...
+        const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - diffToMonday + i);
+            d.setHours(12, 0, 0, 0);
+            plotDays.push(d);
+        }
+    } else {
+        // Plot specific milestones in the past month for a smooth curve
+        [1, 5, 10, 15, 20, 25, daysInMonth].forEach(day => {
+            const d = new Date(year, month - 1, day);
+            d.setHours(12, 0, 0, 0);
+            plotDays.push(d);
+        });
     }
 
     // Use userProfile.monthlyBudget as the source of truth
@@ -59,7 +76,6 @@ export default function SpendPaceChart() {
     const weeklyTarget = monthlyTarget / 4.33; // average weeks per month
 
     // Calculate daily cumulative spend over these 7 days
-    const realToday = new Date();
     realToday.setHours(23, 59, 59, 999);
 
     let weeklyTotal = 0;
@@ -69,7 +85,7 @@ export default function SpendPaceChart() {
     let spendToDate = 0;
 
     // First pass: calculate spend to date to find average
-    last7Days.forEach(dateObj => {
+    plotDays.forEach(dateObj => {
         if (dateObj <= realToday) {
             daysPassed++;
             const isoKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
@@ -80,27 +96,34 @@ export default function SpendPaceChart() {
 
     const averageDailySpend = daysPassed > 0 ? spendToDate / daysPassed : 0;
     
-    const chartData = last7Days.map((dateObj, index) => {
+    const chartData = plotDays.map((dateObj, index) => {
         const isFuture = dateObj > realToday;
-        const isoKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        
         const label = `${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getDate()}`;
         
         let actualSpend: number | null = null;
         let projectedSpend: number | null = null;
 
         if (!isFuture) {
-            const dayExpenses = expenses.filter(e => e.date === isoKey);
-            const daySpend = dayExpenses.reduce((sum, item) => sum + item.amount, 0);
-            runningTotal += daySpend;
-            actualSpend = runningTotal;
-            projectedSpend = runningTotal; // Connects the lines
+            // For the milestone points, we need the sum of expenses up to this date within the month
+            // If it's the current month (7 days view), running total is enough, but wait:
+            // if we are plotting specific days, we need absolute cumulative up to that day for the month.
+            const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            const sumToDate = expenses.filter(e => e.date <= dateStr).reduce((sum, item) => sum + item.amount, 0);
+            
+            actualSpend = sumToDate;
+            projectedSpend = sumToDate; 
+            runningTotal = sumToDate;
         } else {
-            runningTotal += averageDailySpend;
+            // Very basic projection
+            runningTotal += averageDailySpend * (isCurrentMonth ? 1 : 5);
             projectedSpend = runningTotal;
         }
 
         weeklyTotal = runningTotal;
-        const budgetPace = (weeklyTarget / 6) * index;
+        
+        const pacePerDay = monthlyTarget / daysInMonth;
+        const budgetPace = pacePerDay * dateObj.getDate();
 
         return {
             date: label,

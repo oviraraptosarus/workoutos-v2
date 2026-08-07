@@ -21,6 +21,7 @@ export default function WorkoutCard() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [customExercise, setCustomExercise] = useState('');
     const [adding, setAdding] = useState(false);
+    const [completedWorkoutName, setCompletedWorkoutName] = useState<string | null>(null);
 
     useEffect(() => {
         if (!selectedDate) return;
@@ -32,22 +33,30 @@ export default function WorkoutCard() {
             if (user) {
                 const { data } = await supabase
                     .from('workout_logs')
-                    .select('exercises')
+                    .select('session_type, exercises, completed')
                     .eq('user_id', user.id)
-                    .eq('date', selectedDate)
-                    .eq('session_type', 'dashboard-quick-log')
-                    .maybeSingle();
+                    .eq('date', selectedDate);
 
-                if (data?.exercises && Array.isArray(data.exercises) && data.exercises.length) {
-                    setExercises(data.exercises as Exercise[]);
-                    return;
+                if (data && data.length > 0) {
+                    const nonQuickLog = data.find(w => w.session_type !== 'dashboard-quick-log');
+                    if (nonQuickLog) {
+                        setCompletedWorkoutName(nonQuickLog.session_type);
+                        setExercises([]);
+                        return;
+                    }
+                    
+                    const quickLog = data.find(w => w.session_type === 'dashboard-quick-log');
+                    if (quickLog?.exercises && Array.isArray(quickLog.exercises) && quickLog.exercises.length) {
+                        setExercises(quickLog.exercises as Exercise[]);
+                        setCompletedWorkoutName(null);
+                        return;
+                    }
                 }
             }
-
-            
+            setExercises([]);
+            setCompletedWorkoutName(null);
         };
 
-        load();
         load();
         window.addEventListener('workout_os_recent_workouts_updated', load);
         return () => {
@@ -137,7 +146,22 @@ export default function WorkoutCard() {
                 </Link>
             </div>
 
-            {exercises.length === 0 ? (
+            {completedWorkoutName ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-4 mb-2 h-full">
+                    <div className="w-16 h-16 rounded-full bg-activity-green/20 flex items-center justify-center text-activity-green shadow-inner">
+                        <CheckCircle2 size={32} />
+                    </div>
+                    <div className="text-center">
+                        <p className="font-label-md font-bold text-on-surface mb-3">Workout Complete!</p>
+                        <Link
+                            href="/workout"
+                            className="font-label-md text-xs font-bold text-on-primary bg-primary px-5 py-2.5 rounded-full active:scale-95 transition-transform shadow-sm"
+                        >
+                            View Details
+                        </Link>
+                    </div>
+                </div>
+            ) : exercises.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-3 py-4 mb-2">
                     <div className="w-12 h-12 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-on-surface-variant/50 shadow-inner">
                         <span className="material-symbols-outlined text-[24px]">fitness_center</span>
@@ -182,7 +206,7 @@ export default function WorkoutCard() {
                 </>
             )}
 
-            {isToday && (
+            {!completedWorkoutName && isToday && (
                 <form onSubmit={addCustomExercise} className="mt-auto flex items-center gap-2">
                     <input
                         type="text"

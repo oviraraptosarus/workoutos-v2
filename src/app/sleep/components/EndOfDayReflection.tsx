@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { BookOpen, Star, Target, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Star, Target, CheckCircle2, History } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,6 +69,7 @@ export default function EndOfDayReflection() {
     const [isSaving, setIsSaving] = useState(false);
     const [savedNotice, setSavedNotice] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [history, setHistory] = useState<any[]>([]);
 
     // Load: Supabase first, fall back to localStorage
     const load = useCallback(async () => {
@@ -78,19 +79,30 @@ export default function EndOfDayReflection() {
         if (user) {
             const { data } = await supabase
                 .from('daily_logs')
-                .select('reflection, mood_rating, energy_rating, screen_time_phone_minutes')
+                .select('date, reflection, mood_rating, energy_rating, screen_time_phone_minutes')
                 .eq('user_id', user.id)
-                .eq('date', selectedDate)
-                .maybeSingle();
+                .lte('date', selectedDate)
+                .order('date', { ascending: false })
+                .limit(7);
 
-            if (data?.reflection && Object.keys(data.reflection).length > 0) {
-                setReflection({ ...DEFAULT_JOURNAL, ...(data.reflection as JournalData) });
+            if (data && data.length > 0) {
+                const todayLog = data.find(d => d.date === selectedDate);
+                if (todayLog?.reflection && Object.keys(todayLog.reflection).length > 0) {
+                    setReflection({ ...DEFAULT_JOURNAL, ...(todayLog.reflection as JournalData) });
+                } else {
+                    setReflection(DEFAULT_JOURNAL);
+                }
+
+                const historyLogs = data.filter(d => d.date !== selectedDate && d.reflection && Object.keys(d.reflection).length > 0);
+                setHistory(historyLogs);
+                
                 setIsLoaded(true);
                 return;
             }
         }
 
         setReflection(DEFAULT_JOURNAL);
+        setHistory([]);
         setIsLoaded(true);
     }, [selectedDate, user]);
 
@@ -340,6 +352,50 @@ export default function EndOfDayReflection() {
                     {user ? t('sleep.reflection.syncedCloud') : t('sleep.reflection.savedLocal')}
                 </span>
             </div>
+
+            {/* Recent History */}
+            {history.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-surface-variant">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2 mb-4">
+                        <History size={18} className="text-on-surface-variant" /> Recent History
+                    </h3>
+                    <div className="space-y-4">
+                        {history.map(log => (
+                            <div key={log.date} className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-4 shadow-sm">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h4 className="font-bold text-on-surface text-sm">{log.date}</h4>
+                                    {log.reflection?.rating && (
+                                        <div className="flex items-center gap-0.5 text-secondary">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <Star key={i} size={12} fill={i < log.reflection.rating ? 'currentColor' : 'none'} className={i >= log.reflection.rating ? 'text-surface-variant' : ''} />
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {log.reflection?.morning_journal && (
+                                    <div className="mb-2">
+                                        <span className="text-[10px] font-bold text-on-surface-variant uppercase block">Morning Intentions</span>
+                                        <p className="text-xs text-on-surface">{log.reflection.morning_journal}</p>
+                                    </div>
+                                )}
+                                {log.reflection?.evening_reflection && (
+                                    <div className="mb-2">
+                                        <span className="text-[10px] font-bold text-on-surface-variant uppercase block">Evening Reflection</span>
+                                        <p className="text-xs text-on-surface">{log.reflection.evening_reflection}</p>
+                                    </div>
+                                )}
+                                {log.reflection?.wins && (
+                                    <div>
+                                        <span className="text-[10px] font-bold text-on-surface-variant uppercase block">Wins</span>
+                                        <p className="text-xs text-on-surface">{log.reflection.wins}</p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -4,20 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { getExpenses, ExpenseItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useBudget } from '../contexts/BudgetContext';
 
 export default function CategoryBreakdown() {
     const { t } = useLanguage();
+    const { selectedMonth } = useBudget();
     const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
     const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
         const loadExpenses = async () => {
-            setExpenses(await getExpenses());
+            setExpenses(await getExpenses(selectedMonth));
         };
         loadExpenses();
         window.addEventListener('workout_os_budget_updated', loadExpenses);
         return () => window.removeEventListener('workout_os_budget_updated', loadExpenses);
-    }, []);
+    }, [selectedMonth]);
 
     // Calculate aggregated data
     const categoryLimits: Record<string, number> = {
