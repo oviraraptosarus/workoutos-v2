@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Play, CheckCircle2, Trophy, Flame, Video, Link as LinkIcon, Plus, Save } from 'lucide-react';
+import { WorkoutLogger } from '@/lib/workout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
@@ -138,38 +139,28 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
             const d = new Date();
             const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             
-            await supabase.from('workout_logs').insert({
-                user_id: user.id,
-                date: todayKey,
-                session_type: 'Gym',
-                custom_name: preset ? preset.title : customTitle,
-                duration_minutes: Math.round(elapsedSeconds / 60),
-                calories_burned: calsBurned,
-                exercises: exercises,
-                completed: true
-            });
-
-            // Update daily_logs activity_burned
-            const { data: currentLog } = await supabase
-                .from('daily_logs')
-                .select('activity_burned')
-                .eq('user_id', user.id)
-                .eq('date', todayKey)
-                .maybeSingle();
-            
-            const currentBurned = currentLog?.activity_burned || 0;
-
-            await supabase
-                .from('daily_logs')
-                .upsert({
-                    user_id: user.id,
+            try {
+                await WorkoutLogger.logWorkout({
+                    userId: user.id,
                     date: todayKey,
-                    activity_burned: currentBurned + calsBurned
-                }, { onConflict: 'user_id,date' });
+                    sessionType: 'Gym',
+                    customName: preset ? preset.title : customTitle,
+                    durationMinutes: Math.round(elapsedSeconds / 60),
+                    caloriesBurned: calsBurned,
+                    intensity: 'Moderate',
+                    exercises: exercises,
+                    isOutdoor: false
+                });
+
+                window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
+                window.dispatchEvent(new Event('workout_os_activity_updated'));
+            } catch (error: any) {
+                console.error("Workout saving failed:", error);
+                // Standard AGENTS.md rule: Use native browser alert() pop-ups to surface the error directly on the screen
+                alert("Error saving workout to database: " + error.message);
+                setIsFinished(false); // Rollback optimistic state
+            }
         }
-        
-        window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
-        window.dispatchEvent(new Event('workout_os_activity_updated'));
     };
 
     if (isFinished) {

@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import { getExpenses, getIncome, addTransaction } from '@/app/budget-tracker/services/budgetStorage';
 import { getMealsForDate, saveMealsForDate } from '@/app/diet/services/dietStorage';
 import { supabase } from '@/lib/supabase/client';
+import { WorkoutLogger } from '@/lib/workout';
+import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from '@google/generative-ai';
 import { telemetryEngine } from '@/services/telemetryEngine';
 import ReactMarkdown from 'react-markdown';
 
@@ -516,33 +518,30 @@ export default function GlobalAICopilot() {
                         const weightKg = userProfile?.currentWeight || 75;
                         const estimatedCals = Math.round(getMET(activityType, intensity) * weightKg * durationHrs);
 
-                        await supabase.from('workout_logs').insert({
-                            user_id: user.id,
-                            date: dateKey,
-                            session_type: activityType === 'Other' ? (args.customName || 'Custom Cardio') : activityType,
-                            exercises: [{
-                                type: 'metadata',
-                                custom_name: activityType === 'Other' ? args.customName : null,
-                                duration: `${args.durationMinutes} min`,
-                                volume: `${estimatedCals} kcal burned`,
-                                duration_minutes: Number(args.durationMinutes),
-                                calories_burned: estimatedCals,
+                        try {
+                            await WorkoutLogger.logWorkout({
+                                userId: user.id,
+                                date: dateKey,
+                                sessionType: activityType === 'Other' ? (args.customName || 'Custom Cardio') : activityType,
+                                customName: activityType === 'Other' ? args.customName : null,
+                                durationMinutes: Number(args.durationMinutes),
+                                caloriesBurned: estimatedCals,
                                 intensity: intensity,
-                                notes: 'Logged by Ava',
-                                metric_value: args.metricValue ? Number(args.metricValue) : null,
-                                metric_label: args.metricLabel ? args.metricLabel : null
-                            }],
-                            completed: true,
-                            is_outdoor: activityType === 'Running' || activityType === 'Walking'
-                        });
+                                exercises: [{
+                                    type: 'metadata',
+                                    metric_value: args.metricValue ? Number(args.metricValue) : null,
+                                    metric_label: args.metricLabel ? args.metricLabel : null
+                                }],
+                                isOutdoor: activityType === 'Running' || activityType === 'Walking'
+                            });
 
-                        const { data: currentLog } = await supabase.from('daily_logs').select('activity_burned').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
-                        await supabase.from('daily_logs').upsert({ user_id: user.id, date: dateKey, activity_burned: (currentLog?.activity_burned || 0) + estimatedCals }, { onConflict: 'user_id,date' });
-
-                        window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
-                        window.dispatchEvent(new Event('workout_os_activity_updated'));
-                        window.dispatchEvent(new Event('workout_os_refresh'));
-                        window.dispatchEvent(new Event('storage'));
+                            window.dispatchEvent(new Event('workout_os_recent_workouts_updated'));
+                            window.dispatchEvent(new Event('workout_os_activity_updated'));
+                            window.dispatchEvent(new Event('workout_os_refresh'));
+                            window.dispatchEvent(new Event('storage'));
+                        } catch (error: any) {
+                            console.error("Ava Workout Logging Failed:", error);
+                        }
 } else if (fn === 'add_expense') {
                         await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.category || 'Expense', category: args.category || 'Other', amount: Number(args.amount) || 0, protein: null, costPerG: null, type: 'essential' }, 'expense');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
