@@ -20,9 +20,10 @@ const OnboardingModal = nextDynamic(() => import('@/app/components/modals/Onboar
 
 interface AppLayoutProps {
     children: React.ReactNode;
+    hideBottomNav?: boolean;
 }
 
-export default function AppLayout({ children }: AppLayoutProps) {
+export default function AppLayout({ children, hideBottomNav = false }: AppLayoutProps) {
 
     const { userProfile, session, isLoading } = useAuth();
     const pathname = usePathname();
@@ -50,14 +51,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
     const showOnboarding = Boolean(!isLoading && session && (!userProfile || userProfile.onboarding_completed === false));
 
     return (
-        <div className="min-h-screen pb-44 sm:pb-28 bg-transparent relative z-10">
-            {!isDashboard && <TopNav />}
+        <div className={`min-h-screen ${hideBottomNav ? 'pb-0' : 'pb-44 sm:pb-28'} bg-transparent relative z-10`}>
+            {!isDashboard && !hideBottomNav && <TopNav />}
             {/* TopNav is fixed at h-16 (64px); pad the scroll container so page
                 headings are never hidden underneath it. */}
-            <main className={`max-w-5xl mx-auto p-4 sm:px-8 ${isDashboard ? 'pt-4' : 'pt-20 sm:pt-24'}`}>
+            <main className={`${hideBottomNav ? 'h-screen w-screen p-0 m-0 overflow-hidden' : 'max-w-5xl mx-auto p-4 sm:px-8 ' + (isDashboard ? 'pt-4' : 'pt-20 sm:pt-24')}`}>
                 {children}
             </main>
-            <BottomNav />
+            {!hideBottomNav && <BottomNav />}
             <OnboardingTourModal />
             <CommandPaletteModal />
             <GlobalAICopilot />

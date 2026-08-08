@@ -347,8 +347,9 @@ export default function MealPlanDetailsModal({
                 calories: recipe.calories,
                 protein: recipe.protein,
                 carbs: recipe.carbs,
-                fat: recipe.fat,
+                fat: 1,
                 sugar: 4,
+                fiber: 0,
                 bites: Math.round(recipe.calories / 50),
                 icon: recipe.icon,
             });

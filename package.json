@@ -46,7 +46,12 @@
         "lint:fix": "next lint --fix",
         "format": "prettier --write \"src/**/*.{ts,tsx,css,md,json}\"",
         "serve": "next start",
-        "type-check": "tsc --noEmit"
+        "type-check": "tsc --noEmit",
+        "supabase:login": "npx supabase login",
+        "supabase:link": "npx supabase link",
+        "supabase:push": "npx supabase db push",
+        "supabase:status": "npx supabase status",
+        "supabase:gen": "npx supabase migration new"
     },
     "dependencies": {
         "@dhiwise/component-tagger": "^1.0.15",
@@ -82,7 +87,7 @@
         "eslint-plugin-prettier": "^5.2.6",
         "postcss": "8.4.8",
         "prettier": "^3.5.3",
-        "supabase": "^2.111.0",
+        "supabase": "^2.112.0",
         "tailwindcss": "3.4.6",
         "tailwindcss-animate": "^1.0.7",
         "typescript": "^5"

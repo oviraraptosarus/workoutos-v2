@@ -26,7 +26,13 @@
 *   **LLM Provider Failover Fix**: Added `gemini-2.5-flash` and `openrouter/auto` to the `DEFAULT_PRIORITY_LIST` in `llm.ts` to gracefully bypass invalid API keys and offline free models.
 *   **Client-Side Crash Fix**: Added missing `fiber` initializations to `MacroGoals` and missing `useRef` hooks in `RawDataAITransformerModal.tsx` that were causing white-screen crashes on load.
 *   **Reminder UI Sync Fix**: Fixed `GlobalAICopilot.tsx` to explicitly dispatch `workout_os_refresh` upon creating reminders so the UI updates instantly, and passed `title` into `useReminderEngine.ts` so custom notifications show the actual task title instead of "Custom".
-
+*   **Execution OS V3 Final Build:** Completely deprecated the old `/planner` tab and replaced it with the 4-Hub Execution OS.
+    *   **Now Hub (War Room):** Features a full-screen distraction-free Mission Mode timer to enforce single-task execution.
+    *   **Brain Hub:** Integrated native Web Speech API for Zero-Friction Voice Brain Dumps.
+    *   **Goals Hub:** Full Macro Vector definition UI synced directly to the backend `execution_goals`.
+    *   **Reflect Hub:** End of day reflection.
+*   **Premium Welcome Flow:** Built a Replika-inspired, story-mode onboarding flow at `/welcome` featuring native animations and deep gradients, sitting before the sign-up screen to build emotional momentum.
+*   **V3 Additive Backend Hookup:** Successfully deployed `execution_profiles`, `execution_goals`, `task_execution_scores`, and `behavior_patterns` to Supabase, and hooked them up to Ava's `Promise.all` context array safely. Modified AI System Prompts and suggestion chips to push seamless task additions.
 ## 4. Current Known Issues
 *   Mobile vertical space is wasted on traditional dashboard cards.
 *   Tasks persistence relied on frontend fallbacks because `priority` and `reminder_time` do not exist in the database schema.
@@ -37,8 +43,22 @@
 *   Refine the AI command center logic.
 
 ## 6. Important Decisions & AI Architecture
-*   **Decision:** Pivot away from a generic dashboard to a single-action "Now" queue to reduce decision fatigue.
+*   **CRITICAL PRINCIPLE (Extend, Never Replace):** The current backend is production-critical. Existing tables, APIs, authentication, AI routing, notifications, planner, workouts, nutrition, budget, and dashboard must continue working exactly as they do today. Execution OS is an ADDITIVE capability layer.
+    *   Never rename existing tables. Never drop columns. Never replace APIs. Never rewrite existing services. Never migrate users to a different architecture. Never delete existing UI.
+    *   Instead: Add new tables, services, adapters, feature flags, wrappers, routes, and AI capabilities.
+*   **IMPACT ANALYSIS REQUIREMENT:** Before making ANY change or writing ANY code, an Impact Analysis MUST be output to the user covering: (1) Existing modules affected, (2) Existing tables affected, (3) Existing APIs affected, (4) Existing UI affected, (5) Risk level, (6) Rollback strategy, (7) Migration strategy, (8) Backward compatibility check.
+*   **SUPABASE & DOCKER RULES:** Do NOT assume Local Supabase. Check if the project is connected to hosted Supabase. DO NOT require Docker unless explicitly necessary. Generate migrations compatible with the hosted database and execute them via CLI (or output for SQL Editor).
+*   **Decision (2026-08-07 - V3.1 Additive Architecture):** The Execution OS is an **additive capability layer**, not a replacement architecture. Every migration must be 100% reversible in under 5 minutes without data loss. Use adapters instead of rewrites. Use composition instead of replacement. Use feature flags where appropriate.
+*   **Decision (2026-08-07 - V3 Pivot):** The "Planner" concept is dead. We are building a systemic **Execution OS**. The core loop is: Capture → AI Understands → AI Prioritizes → Execute ONE Task → AI Learns. The hierarchy is Life Area → Goal → Project → Task → Micro Task.
+*   **Decision:** Replaced the Planner tab with 4 hubs: **Now** (Execution Queue), **Reflect** (Reviews), **Goals** (Hierarchy), **Brain** (Capture). 
+*   **Decision:** Ava is split logically into 3 personas: Planner, Coach, Analyst. She is now stateful, remembering execution patterns (e.g., procrastinates after 8 PM).
+*   **Decision:** Tasks now have an **Execution Probability** (0-100%) and cost **Execution Budget** points (capped at 100/day).
+*   **Decision:** Added **Mission Mode** (War Room override for acute focus). The new North Star metric is **Execution Rate**.
 *   **Decision:** All UI changes must retain existing backend Supabase calls. No bypassing established hooks or duplicating API routes.
+
+## 7. Operational Workflow (Master Controller)
+*   **Workflow:** Before ANY modification: Read PROJECT_RULES & memory.md → Identify affected modules → Load framework docs (ARCHITECTURE, DATABASE_FRAMEWORK, BACKEND_FRAMEWORK, FRONTEND_FRAMEWORK, AI_PROMPT) → Run QA_FRAMEWORK mentally → Update memory.md → Update BUGS/RELEASE_CHECKLIST.
+*   **Never:** Create duplicate implementations, new Supabase clients, parallel schemas, or new API routes if an existing one can be extended.
 *   **Decision:** The AI Orchestrator must always gracefully degrade to fallback models on timeouts, rate limits, or network errors, and never abort completely unless it hits a fatal 400 Bad Request.
 *   **Current AI Architecture:** AI requests are handled via a central `Orchestrator.ts` that acts as an Execution Coach. The Orchestrator gathers full app state (profile, workouts, nutrition, sleep, reminders, budget, AI memories) using `Promise.all` in `GlobalAICopilot.tsx`, and passes it to the AI.
 *   **What the AI can access:** The AI can access profile data, goals, height/weight/age/gender, calorie targets, protein/carb/fat/fiber/water targets, workout history, sleep history, meal logs, journal/reflection logs, habits, planner tasks, reminders, budget, AI memory, streaks, progress photos metadata, notification preferences, language settings, timezone, time of day, and recent conversation history.
@@ -48,10 +68,16 @@
 ## 7. The AI Rulebook (`WORKOUTOS_AI_RULEBOOK.md`)
 *   **Why it exists:** To prevent the AI from drifting into generic chatbot behavior. It strictly defines the AI as a practical health and fitness Execution Coach that uses real data.
 *   **What it contains:** Definitive rules on data access, data reasoning, hallucination prevention, diet/workout/sleep/journal coaching, memory utilization, zero-friction tool execution, output style, and health safety.
-*   **What changed:** The rulebook was codified into a permanent markdown file that comprehensively defines execution strategy for compound intents, ambiguity handling (sensible estimates), and direct correction handling.
 *   **Future Contributors:** You MUST NOT break or contradict `WORKOUTOS_AI_RULEBOOK.md`. If any feature, prompt, or backend change conflicts with this rulebook, you must follow the rulebook first, explain the conflict, suggest the safest alternative, and do not silently violate it.
 
-## 8. Dangerous Things Not to Break (Fragile Systems)
+## Execution OS & Planner (V3 Final State)
+- **Execution OS replaces Planner:** The old `/planner` has been completely deprecated. `/planner` is now the Execution OS. The experimental `/execution` route is no longer needed.
+- **The 4 Hubs:** The UI relies on native theme variables (`glass`, `bg-surface-container`) to ensure flawless dark/light mode rendering.
+    - **Now Hub:** Replaces standard lists with a single highest-priority target ("Relentless Mode"). Hitting "Enter War Room" overrides the full screen, hiding bottom navigation, and forces a binary Mission Accomplished/Abort choice.
+    - **Brain Hub:** Unstructured brain dump area enhanced with Web Speech API for voice dictation.
+    - **Goals Hub:** Macro hierarchy (Life Area → Goal) directly persisted to backend.
+    - **Reflect Hub:** Analyzes completed tasks and logs behavioral patterns via Ava.
+- **Docker / Supabase CLI Constraint:** Added `package.json` scripts (`supabase:push`, `supabase:status`, etc.) to run Supabase CLI commands locally without needing Docker for pure remote pushes.
 *   **What should not be broken:** The `WORKOUTOS_AI_RULEBOOK.md` is the single source of truth for the AI's behavior and must be followed.
 *   **Orchestrator Retry Loop**: Do NOT throw errors inside the inner `while` loop in `Orchestrator.ts` unless it is an explicitly non-retryable API error (like 400). Throwing will bypass all OpenRouter/Gemini fallback models.
 *   **Context Builder (`Promise.all`)**: Do NOT add raw `supabase.from()` promises to the AI context builder without `.catch()`. A single network failure will kill the entire AI chat request.

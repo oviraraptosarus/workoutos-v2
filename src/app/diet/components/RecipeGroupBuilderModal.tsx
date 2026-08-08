@@ -23,6 +23,7 @@ interface SavedRecipe {
         carbs: number;
         fat: number;
         sugar: number;
+        fiber: number;
     }[];
 }
 
@@ -33,10 +34,10 @@ const DEFAULT_RECIPES: SavedRecipe[] = [
         category: 'Snacks',
         icon: '🥤',
         items: [
-            { name: 'Vanilla Whey Protein', portion: '1 scoop', calories: 120, protein: 25, carbs: 2, fat: 1, sugar: 1 },
-            { name: 'Almond Milk', portion: '1 cup', calories: 40, protein: 1, carbs: 1, fat: 3, sugar: 0 },
-            { name: 'Peanut Butter', portion: '1 tbsp', calories: 95, protein: 4, carbs: 3, fat: 8, sugar: 1 },
-            { name: 'Banana', portion: '1 medium', calories: 105, protein: 1, carbs: 27, fat: 0, sugar: 14 },
+            { name: 'Vanilla Whey Protein', portion: '1 scoop', calories: 120, protein: 25, carbs: 2, fat: 1, sugar: 1, fiber: 0 },
+            { name: 'Almond Milk', portion: '1 cup', calories: 40, protein: 1, carbs: 1, fat: 3, sugar: 0, fiber: 0 },
+            { name: 'Peanut Butter', portion: '1 tbsp', calories: 95, protein: 4, carbs: 3, fat: 8, sugar: 1, fiber: 1 },
+            { name: 'Banana', portion: '1 medium', calories: 105, protein: 1, carbs: 27, fat: 0, sugar: 14, fiber: 3 },
         ],
     },
     {
@@ -45,9 +46,9 @@ const DEFAULT_RECIPES: SavedRecipe[] = [
         category: 'Breakfast',
         icon: '🥚',
         items: [
-            { name: 'Scrambled Eggs', portion: '3 eggs', calories: 210, protein: 18, carbs: 1, fat: 15, sugar: 0 },
-            { name: 'Sourdough Toast', portion: '2 slices', calories: 220, protein: 8, carbs: 42, fat: 2, sugar: 4 },
-            { name: 'Black Coffee', portion: '1 mug', calories: 5, protein: 0, carbs: 1, fat: 0, sugar: 0 },
+            { name: 'Scrambled Eggs', portion: '3 eggs', calories: 210, protein: 18, carbs: 1, fat: 15, sugar: 0, fiber: 0 },
+            { name: 'Sourdough Toast', portion: '2 slices', calories: 220, protein: 8, carbs: 42, fat: 2, sugar: 4, fiber: 2 },
+            { name: 'Black Coffee', portion: '1 mug', calories: 5, protein: 0, carbs: 1, fat: 0, sugar: 0, fiber: 0 },
         ],
     },
 ];
@@ -68,7 +69,7 @@ export default function RecipeGroupBuilderModal({
     const [newCategory, setNewCategory] = useState<MealCategory>('Breakfast');
     const [newIcon, setNewIcon] = useState('🥗');
     const [recipeItems, setRecipeItems] = useState<SavedRecipe['items']>([
-        { name: '', portion: '1 serving', calories: 150, protein: 10, carbs: 15, fat: 5, sugar: 2 },
+        { name: '', portion: '1 serving', calories: 150, protein: 10, carbs: 15, fat: 5, sugar: 2, fiber: 0 },
     ]);
 
     useEffect(() => {
@@ -104,6 +105,7 @@ export default function RecipeGroupBuilderModal({
                 carbs: item.carbs,
                 fat: item.fat,
                 sugar: item.sugar,
+                fiber: 0,
                 bites: Math.round(item.calories / 50),
                 icon: recipe.icon,
             }))

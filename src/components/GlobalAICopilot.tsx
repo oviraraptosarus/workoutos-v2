@@ -175,7 +175,11 @@ export default function GlobalAICopilot() {
                 'Workout': { loaded: false, query: "supabase.from('workout_logs')" },
                 'Nutrition': { loaded: false, query: "supabase.from('meal_entries')" },
                 'Budget': { loaded: false, query: "getIncome() / getExpenses()" },
-                'AIMemory': { loaded: false, query: "getAIMemories()" }
+                'AIMemory': { loaded: false, query: "getAIMemories()" },
+                'ExecProfile': { loaded: false, query: "supabase.from('execution_profiles')" },
+                'ExecGoals': { loaded: false, query: "supabase.from('execution_goals')" },
+                'TaskScores': { loaded: false, query: "supabase.from('task_execution_scores')" },
+                'Behaviors': { loaded: false, query: "supabase.from('behavior_patterns')" }
             };
 
             const { data: { user } } = await supabase.auth.getUser();
@@ -201,7 +205,11 @@ export default function GlobalAICopilot() {
                     mealsRes,
                     budgetIncomeRes,
                     budgetExpensesRes,
-                    memoryRes
+                    memoryRes,
+                    execProfileRes,
+                    execGoalsRes,
+                    taskScoresRes,
+                    behaviorsRes
                 ] = await Promise.all([
                     supabase.from('daily_logs').select('*').eq('user_id', user.id).eq('date', dateKey).maybeSingle().then(res => res, e => ({ data: null, error: e })),
                     supabase.from('tasks').select('*').eq('user_id', user.id).eq('completed', false).then(res => res, e => ({ data: null, error: e })),
@@ -213,7 +221,11 @@ export default function GlobalAICopilot() {
                     getMealsForDate(dateKey).then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
                     getIncome().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
                     getExpenses().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })),
-                    userProfile?.aiMemoryEnabled !== false ? getAIMemories().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })) : Promise.resolve({ data: [], error: null })
+                    userProfile?.aiMemoryEnabled !== false ? getAIMemories().then(res => ({ data: res, error: null }), e => ({ data: null, error: e })) : Promise.resolve({ data: [], error: null }),
+                    supabase.from('execution_profiles').select('*').eq('user_id', user.id).maybeSingle().then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('execution_goals').select('*').eq('user_id', user.id).eq('status', 'active').then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('task_execution_scores').select('*').eq('user_id', user.id).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('behavior_patterns').select('*').eq('user_id', user.id).eq('is_active', true).then(res => res, e => ({ data: null, error: e }))
                 ]);
 
                 // Dashboard / Daily Logs
@@ -244,6 +256,35 @@ export default function GlobalAICopilot() {
                     contextStatus['Planner'].loaded = true;
                 } else if (tasksRes.error) {
                     contextStatus['Planner'].error = tasksRes.error.message || String(tasksRes.error);
+                }
+
+                // Execution OS V3 Extensions
+                if (!execProfileRes.error && execProfileRes.data) {
+                    currentAppState.executionProfile = execProfileRes.data;
+                    contextStatus['ExecProfile'].loaded = true;
+                } else {
+                    contextStatus['ExecProfile'].error = execProfileRes.error?.message;
+                }
+
+                if (!execGoalsRes.error && execGoalsRes.data) {
+                    currentAppState.macroGoals = execGoalsRes.data;
+                    contextStatus['ExecGoals'].loaded = true;
+                } else {
+                    contextStatus['ExecGoals'].error = execGoalsRes.error?.message;
+                }
+
+                if (!taskScoresRes.error && taskScoresRes.data) {
+                    currentAppState.taskScores = taskScoresRes.data;
+                    contextStatus['TaskScores'].loaded = true;
+                } else {
+                    contextStatus['TaskScores'].error = taskScoresRes.error?.message;
+                }
+
+                if (!behaviorsRes.error && behaviorsRes.data) {
+                    currentAppState.behaviorPatterns = behaviorsRes.data;
+                    contextStatus['Behaviors'].loaded = true;
+                } else {
+                    contextStatus['Behaviors'].error = behaviorsRes.error?.message;
                 }
 
                 // Habits
@@ -338,7 +379,20 @@ export default function GlobalAICopilot() {
                             due_time: args.dueTime || null
                         }).select().single();
                         
-                        if (error) throw new Error(`Tool Execution Failed (add_task): ${error.message}`);
+                        if (error) throw new Error(`Tool Execution Failed (add_task base): ${error.message}`);
+                        
+                        // Execution OS V3 Adapter: Append execution score if probabilty/cost provided
+                        if (newTask && (args.executionProbability !== undefined || args.energyCost !== undefined)) {
+                            const { error: adapterError } = await supabase.from('task_execution_scores').insert({
+                                task_id: newTask.id,
+                                user_id: user.id,
+                                execution_probability: args.executionProbability ?? 50,
+                                energy_cost: args.energyCost ?? 10
+                            });
+                            if (adapterError) {
+                                console.warn("Task created, but execution_scores adapter failed:", adapterError.message);
+                            }
+                        }
                         
                         if (newTask && newTask.due_time) {
                         }
@@ -445,6 +499,7 @@ export default function GlobalAICopilot() {
                             carbs: Number(args.carbs) || 0,
                             fat: Number(args.fat) || 0,
                             sugar: 0,
+                            fiber: 0,
                             icon: '🤖'
                         });
                         await saveMealsForDate(dateKey, meals);
@@ -488,15 +543,27 @@ export default function GlobalAICopilot() {
                         window.dispatchEvent(new Event('workout_os_activity_updated'));
                         window.dispatchEvent(new Event('workout_os_refresh'));
                         window.dispatchEvent(new Event('storage'));
-                    } else if (fn === 'add_expense') {
+} else if (fn === 'add_expense') {
                         await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.category || 'Expense', category: args.category || 'Other', amount: Number(args.amount) || 0, protein: null, costPerG: null, type: 'essential' }, 'expense');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
                     } else if (fn === 'add_income') {
                         await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.source || 'Income', source: args.source || 'Other', amount: Number(args.amount) || 0, type: 'one-time' }, 'income');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
                     } else if (fn === 'save_ai_memory') {
-                        const { addAIMemory } = await import('@/services/aiMemoryService');
-                        await addAIMemory(args.category || 'General', args.memory_text || '');
+                        const { error } = await supabase.from('ai_memories').insert({
+                            user_id: user.id,
+                            category: args.category,
+                            memory_text: args.memory_text
+                        });
+                        if (error) throw new Error(`Tool Execution Failed: ${error.message}`);
+                    } else if (fn === 'log_behavior_pattern') {
+                        const { error } = await supabase.from('behavior_patterns').insert({
+                            user_id: user.id,
+                            pattern_description: args.pattern_description,
+                            confidence_score: args.confidence_score ?? 50,
+                            source: 'ai_analyst'
+                        });
+                        if (error) console.warn("Failed to log behavior pattern:", error.message);
                     }
                 }
 
@@ -695,7 +762,7 @@ export default function GlobalAICopilot() {
                                         { emoji: '💧', label: t('copilot.logWater'), prompt: 'log water intake' },
                                         { emoji: '📓', label: t('copilot.endOfDay'), prompt: 'log my end of day reflection' },
                                         { emoji: '💪', label: t('copilot.workoutPlan'), prompt: 'give me a workout plan for today' },
-                                        { emoji: '💸', label: t('copilot.logExpense'), prompt: 'log an expense' },
+                                        { emoji: '✅', label: 'Add a task', prompt: 'Add a new task to my planner' },
                                         { emoji: '📊', label: t('copilot.myProgress'), prompt: 'show me my progress this week' },
                                         { emoji: '📸', label: t('copilot.progressPic'), prompt: 'I want to log a progress picture' },
                                     ].map(({ emoji, label, prompt: p }) => (

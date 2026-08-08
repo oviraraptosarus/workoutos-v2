@@ -1,686 +1,496 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
-import Link from 'next/link';
-import clsx from 'clsx';
 import { supabase } from '@/lib/supabase/client';
-import { ArrowLeft, Target, BrainCircuit, Plus, Trash2, Play, Pause, GripVertical, CheckCircle2, AlignLeft, Calendar, Circle, Bookmark, Clock, Star } from 'lucide-react';
-
 import { useAuth } from '@/contexts/AuthContext';
-export interface SubTask {
-    id: string;
-    title: string;
-    completed: boolean;
-}
+import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check } from 'lucide-react';
+import clsx from 'clsx';
 
-export type TaskPriority = 'high' | 'medium' | 'low' | 'none';
-
-export interface Task {
-    id: string;
-    title: string;
-    fullTitle?: string;
-    description: string;
-    dueDate: string;
-    dueTime?: string;
-    subTasks: SubTask[];
-    completed: boolean;
-    priority: TaskPriority;
-    reminderTime?: string;
-}
-
-export default function PlannerPage() {
+export default function ExecutionOSPage() {
     const { t } = useLanguage();
-    // --- TASK MANAGER STATE (Synced with Dashboard) ---
-    const TASKS_KEY = 'workout_os_tasks';
-    const PRIORITIES_KEY = 'workout_os_planner_priorities';
-    const FOCUS_KEY = 'workout_os_planner_focus';
-    const HABITS_KEY = 'workout_os_planner_habits';
-
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+    const { userProfile } = useAuth();
+    
+    const [activeTab, setActiveTab] = useState<'now' | 'brain' | 'goals' | 'reflect'>('now');
+    const [tasks, setTasks] = useState<any[]>([]);
+    const [goals, setGoals] = useState<any[]>([]);
+    const [isAddingGoal, setIsAddingGoal] = useState(false);
+    const [newGoalTitle, setNewGoalTitle] = useState('');
+    const [newGoalArea, setNewGoalArea] = useState('Fitness');
+    const [newGoalDate, setNewGoalDate] = useState('');
     const [isClient, setIsClient] = useState(false);
-    const { userProfile, updateUserProfile } = useAuth();
+    
+    // Brain Hub State
+    const [brainInput, setBrainInput] = useState('');
+    const [isParsing, setIsParsing] = useState(false);
+    const [brainResponse, setBrainResponse] = useState('');
+    const [isRecording, setIsRecording] = useState(false);
+    const recognitionRef = useRef<any>(null);
 
-    const [isAdding, setIsAdding] = useState(false);
-    const [newTitle, setNewTitle] = useState('');
-    const [newDesc, setNewDesc] = useState('');
-    const [newDate, setNewDate] = useState('');
-    const [newReminderTime, setNewReminderTime] = useState('');
-    const [newPriority, setNewPriority] = useState<TaskPriority>('none');
-    const [newSubTasks, setNewSubTasks] = useState<{id: string, title: string}[]>([]);
+    // Reflect Hub State
+    const [reflectInput, setReflectInput] = useState('');
+    const [isReflecting, setIsReflecting] = useState(false);
+    const [reflectResponse, setReflectResponse] = useState('');
 
-    // --- LOCAL WIDGET STATE (Not Synced) ---
-    const [priorities, setPriorities] = useState<string[]>(['', '', '']);
-    const [focusSessions, setFocusSessions] = useState([false, false, false, false]);
-    const [habitsList, setHabitsList] = useState(['Wake up early', 'Deep focus block', 'Workout / Movement', 'Drink 3L Water', 'Read 10 pages', 'Review goals']);
-    const [habitsState, setHabitsState] = useState<Record<string, boolean>>({});
+    // War Room State
+    const [isWarRoomActive, setIsWarRoomActive] = useState(false);
+    const [warRoomTime, setWarRoomTime] = useState(0);
 
     useEffect(() => {
         setIsClient(true);
-        const loadData = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            
-            // Load Tasks
-            const { data: taskData } = await supabase.from('tasks').select('*').eq('user_id', user.id);
-            if (taskData) {
-                setTasks(taskData.map(d => ({
-                    id: d.id,
-                    title: d.title,
-                    fullTitle: d.full_title || d.title,
-                    description: d.description || '',
-                    dueDate: d.due_date || '',
-                    dueTime: d.due_time || '',
-                    subTasks: d.subtasks || [],
-                    completed: d.completed || false,
-                    priority: d.priority || 'none',
-                    reminderTime: d.reminder_time || undefined
-                })));
-            }
+        loadTasks();
 
-            // Load Widgets from target_config
-            const config = (userProfile?.targetConfig as any) || {};
-            if (config.planner_priorities) setPriorities(config.planner_priorities);
-            if (config.planner_focus) setFocusSessions(config.planner_focus);
-            if (config.planner_habits_state) setHabitsState(config.planner_habits_state);
-            if (config.planner_habits_list) setHabitsList(config.planner_habits_list);
-        };
-        loadData();
+        // Setup Speech Recognition
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = true;
+                recognitionRef.current.interimResults = true;
+                
+                recognitionRef.current.onresult = (event: any) => {
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript + ' ';
+                        }
+                    }
+                    if (finalTranscript) {
+                        setBrainInput(prev => prev + finalTranscript);
+                    }
+                };
 
-        window.addEventListener('workout_os_tasks_updated', loadData);
-        return () => window.removeEventListener('workout_os_tasks_updated', loadData);
-    }, [userProfile?.targetConfig]);
+                recognitionRef.current.onerror = (event: any) => {
+                    console.error('Speech recognition error', event.error);
+                    setIsRecording(false);
+                };
 
-    const updateTargetConfig = async (updates: any) => {
-        const currentConfig = userProfile?.targetConfig || {};
-        await updateUserProfile({ targetConfig: { ...currentConfig, ...updates } });
-    };
-
-    const saveTasks = async (newTasks: Task[]) => {
-        setTasks(newTasks);
-        window.dispatchEvent(new Event('workout_os_tasks_updated'));
-    };
-
-    const handleAddTask = async () => {
-        if (!newTitle.trim()) return;
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const newTaskObj = {
-            user_id: user.id,
-            date: new Date().toISOString().split('T')[0],
-            title: newTitle,
-            full_title: newTitle,
-            description: newDesc,
-            due_date: newDate || null,
-            due_time: null,
-            subtasks: newSubTasks.map(st => ({ id: st.id, title: st.title, completed: false })),
-            completed: false,
-            priority: newPriority,
-            reminder_time: newReminderTime ? new Date(newReminderTime).toISOString() : null
-        };
-
-        let { data, error } = await supabase.from('tasks').insert(newTaskObj).select().single();
-        if (error) {
-            // Fallback for unmigrated schema
-            const fallbackObj = { ...newTaskObj };
-            delete (fallbackObj as any).reminder_time;
-            delete (fallbackObj as any).priority;
-            const res = await supabase.from('tasks').insert(fallbackObj).select().single();
-            data = res.data;
-            if (res.error) {
-                alert("Error inserting task: " + res.error.message);
-                console.error(res.error);
+                recognitionRef.current.onend = () => {
+                    setIsRecording(false);
+                };
             }
         }
-        if (data) {
-            const newTask: Task = {
-                id: data.id,
-                title: data.title,
-                fullTitle: data.full_title || data.title,
-                description: data.description || '',
-                dueDate: data.due_date || '',
-                dueTime: data.due_time || '',
-                subTasks: data.subtasks || [],
-                completed: data.completed,
-                priority: data.priority || newPriority,
-                reminderTime: data.reminder_time || newReminderTime || undefined
-            };
-            saveTasks([newTask, ...tasks]);
-        }
-        setNewTitle(''); setNewDesc(''); setNewDate(''); setNewReminderTime(''); setNewPriority('none'); setNewSubTasks([]);
-    };
-
-    // Create a task directly from a title + priority (used by the priority→tasks
-    // drag-drop). Writes to Supabase and syncs the dashboard via the shared event.
-    const createTaskFromPriority = async (title: string, priority: TaskPriority) => {
-        const clean = title.trim();
-        if (!clean) return;
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const base = {
-            user_id: user.id,
-            date: new Date().toISOString().split('T')[0],
-            title: clean,
-            description: '',
-            due_date: null,
-            subtasks: [],
-            completed: false
-        };
-        // Try with priority; if the column isn't migrated yet the insert 400s, so
-        // retry without it. Task still appears either way.
-        let { data, error } = await supabase.from('tasks').insert({ ...base, priority }).select().single();
-        if (error) {
-            const res = await supabase.from('tasks').insert(base).select().single();
-            data = res.data;
-            if (res.error) {
-                alert("Error promoting task: " + res.error.message);
-            }
-        }
-        if (data) {
-            const newTask: Task = {
-                id: data.id, title: data.title, description: '', dueDate: '',
-                subTasks: [], completed: false, priority: data.priority || priority
-            };
-            saveTasks([newTask, ...tasks]);
-        }
-    };
-
-    const toggleTask = async (taskId: string) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (!task) return;
-        const updated = tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t);
-        saveTasks(updated);
-        await supabase.from('tasks').update({ completed: !task.completed }).eq('id', taskId);
-    };
-
-    const toggleSubTask = async (taskId: string, subTaskId: string) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (!task) return;
-        
-        const updatedSubTasks = task.subTasks.map(st => st.id === subTaskId ? { ...st, completed: !st.completed } : st);
-        const updated = tasks.map(t => t.id === taskId ? { ...t, subTasks: updatedSubTasks } : t);
-        
-        saveTasks(updated);
-        await supabase.from('tasks').update({ subtasks: updatedSubTasks }).eq('id', taskId);
-    };
-
-    const deleteTask = async (taskId: string) => {
-        const updated = tasks.filter(t => t.id !== taskId);
-        saveTasks(updated);
-        await supabase.from('tasks').delete().eq('id', taskId);
-    };
-
-    const updateTask = async (taskId: string, updates: Partial<Task>) => {
-        const updated = tasks.map(t => t.id === taskId ? { ...t, ...updates } : t);
-        saveTasks(updated);
-        
-        const dbUpdates: any = {};
-        if (updates.title !== undefined) dbUpdates.title = updates.title;
-        if (updates.description !== undefined) dbUpdates.description = updates.description;
-        if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate;
-        if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
-        if (updates.reminderTime !== undefined) dbUpdates.reminder_time = updates.reminderTime ? new Date(updates.reminderTime).toISOString() : null;
-        
-        const { error } = await supabase.from('tasks').update(dbUpdates).eq('id', taskId);
-        
-        if (error) {
-            // Fallback for unmigrated schema
-            const fallbackUpdates = { ...dbUpdates };
-            delete fallbackUpdates.priority;
-            delete fallbackUpdates.reminder_time;
-            
-            const res = await supabase.from('tasks').update(fallbackUpdates).eq('id', taskId);
-            if (res.error) {
-                alert("Error updating task: " + res.error.message);
-                console.error(res.error);
-            }
-        }
-        setEditingTaskId(null);
-    };
-
-    const [isFocusModeActive, setIsFocusModeActive] = useState(false);
-    const [focusTimeLeft, setFocusTimeLeft] = useState(25 * 60);
+    }, []);
 
     useEffect(() => {
-        let timer: any;
-        if (isFocusModeActive && focusTimeLeft > 0) {
-            timer = setInterval(() => setFocusTimeLeft(t => t - 1), 1000);
-        } else if (focusTimeLeft === 0) {
-            setIsFocusModeActive(false);
-            setFocusTimeLeft(25 * 60);
+        let timer: NodeJS.Timeout;
+        if (isWarRoomActive) {
+            timer = setInterval(() => {
+                setWarRoomTime(prev => prev + 1);
+            }, 1000);
+        } else {
+            setWarRoomTime(0);
         }
         return () => clearInterval(timer);
-    }, [isFocusModeActive, focusTimeLeft]);
+    }, [isWarRoomActive]);
 
-    const formatFocusTime = (seconds: number) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s.toString().padStart(2, '0')}`;
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
     };
 
-    return (
-        <AppLayout>
-            {isFocusModeActive && (
-                <div className="fixed bottom-6 right-6 z-[999] bg-[#0f172a] shadow-2xl rounded-2xl border border-slate-700 p-4 sm:p-5 flex flex-col items-center justify-center animate-in slide-in-from-bottom-10 fade-in duration-300 w-80">
-                    <div className="text-center space-y-4">
-                        <div className="flex items-center justify-center gap-2">
-                            <BrainCircuit size={24} className="text-white animate-pulse" />
-                            <h2 className="text-sm font-black text-white tracking-widest uppercase">Deep Work</h2>
-                        </div>
-                        <div className="text-4xl font-black text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
-                            {formatFocusTime(focusTimeLeft)}
-                        </div>
-                        <p className="text-[11px] text-slate-400 font-medium px-4">All distractions are blocked. Focus on the task at hand.</p>
-                        
+    const loadTasks = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase.from('tasks').select('*').eq('user_id', user.id);
+        if (data) {
+            setTasks(data);
+        }
+        const { data: goalData } = await supabase.from('execution_goals').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+        if (goalData) {
+            setGoals(goalData);
+        }
+    };
+
+    const handleAddGoal = async () => {
+        if (!newGoalTitle.trim()) return;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { error } = await supabase.from('execution_goals').insert({
+            user_id: user.id,
+            title: newGoalTitle,
+            life_area: newGoalArea,
+            target_date: newGoalDate || null
+        });
+
+        if (!error) {
+            setNewGoalTitle('');
+            setIsAddingGoal(false);
+            loadTasks();
+        } else {
+            console.error("Failed to add goal:", error);
+            alert("Failed to add goal.");
+        }
+    };
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            recognitionRef.current?.stop();
+        } else {
+            setBrainInput(''); // Optional: clear previous or append. Let's append actually, so don't clear.
+            recognitionRef.current?.start();
+            setIsRecording(true);
+        }
+    };
+
+    const handleBrainDump = async () => {
+        if (!brainInput.trim()) return;
+        setIsParsing(true);
+        setBrainResponse('');
+        try {
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: `I am doing a Brain Dump. Parse the following unstructured thoughts, extract actionable tasks, and call add_task for each one with logical due dates. Brain Dump: ${brainInput}`,
+                    userProfile,
+                    history: []
+                })
+            });
+            const data = await res.json();
+            setBrainResponse(data.result || "Tasks extracted and queued.");
+            setBrainInput('');
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        } catch (e: any) {
+            console.error(e);
+            setBrainResponse('Failed to parse brain dump.');
+        } finally {
+            setIsParsing(false);
+        }
+    };
+
+    const handleReflect = async () => {
+        setIsReflecting(true);
+        setReflectResponse('');
+        const completedToday = tasks.filter(t => t.completed && t.date === new Date().toISOString().split('T')[0]);
+        
+        try {
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: `End of day reflection. I completed ${completedToday.length} tasks today. Here are my thoughts: ${reflectInput}. Act as the Analyst, review my day, give me a momentum score, and log any behavior patterns you notice.`,
+                    userProfile,
+                    history: []
+                })
+            });
+            const data = await res.json();
+            setReflectResponse(data.result || "Reflection saved.");
+            setReflectInput('');
+        } catch (e: any) {
+            console.error(e);
+            setReflectResponse('Failed to analyze reflection.');
+        } finally {
+            setIsReflecting(false);
+        }
+    };
+
+    const completeTask = async (taskId: string) => {
+        const { error } = await supabase.from('tasks').update({ completed: true }).eq('id', taskId);
+        if (!error) {
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
+    if (!isClient) return null;
+
+    // Highest probability incomplete task
+    const topTask = tasks.filter(t => !t.completed)[0] || null;
+
+    if (isWarRoomActive) {
+        return (
+            <AppLayout hideBottomNav={true}>
+                <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6 animate-in zoom-in-95 duration-500">
+                    <div className="absolute top-8 text-on-surface-variant uppercase tracking-[0.3em] text-sm font-bold animate-pulse">
+                        Mission Mode Active
+                    </div>
+                    
+                    <div className="text-8xl font-display font-black text-primary mb-12 tabular-nums">
+                        {formatTime(warRoomTime)}
+                    </div>
+
+                    <div className="w-full max-w-xl bg-surface-container/30 border border-surface-variant/50 p-8 rounded-3xl mb-12 text-center shadow-2xl">
+                        <p className="text-sm uppercase tracking-widest text-primary font-bold mb-4">Current Target</p>
+                        <h2 className="text-3xl font-bold text-on-surface leading-tight">
+                            {topTask?.title || "Focus on your current execution."}
+                        </h2>
+                        {topTask?.description && (
+                            <p className="text-on-surface-variant mt-4 text-lg">{topTask.description}</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
                         <button 
-                            onClick={() => { setIsFocusModeActive(false); setFocusTimeLeft(25 * 60); }}
-                            className="mt-4 px-6 py-2 rounded-full border border-slate-700 text-slate-300 text-xs font-bold hover:bg-surface-container-high hover:text-white transition-all btn-press w-full"
+                            onClick={async () => {
+                                if (topTask) await completeTask(topTask.id);
+                                setIsWarRoomActive(false);
+                            }}
+                            className="flex-1 bg-primary text-on-primary py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-lg shadow-primary/25"
                         >
-                            End Session Early
+                            <Check className="w-7 h-7" />
+                            Mission Accomplished
+                        </button>
+                        <button 
+                            onClick={() => setIsWarRoomActive(false)}
+                            className="flex-1 bg-surface-container text-on-surface py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 hover:bg-surface-variant transition-colors border border-surface-variant"
+                        >
+                            <X className="w-7 h-7" />
+                            Abort
                         </button>
                     </div>
                 </div>
-            )}
+            </AppLayout>
+        );
+    }
 
-            <div className="max-w-5xl mx-auto space-y-4 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="w-10 h-10 rounded-full bg-card-white shadow-sm flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors btn-press">
-                            <ArrowLeft size={20} />
-                        </Link>
-                        <div>
-                            <h1 className="text-2xl font-black text-on-surface tracking-tight flex items-center gap-2">
-                                <Target className="text-white" /> Planner
-                            </h1>
-                            <p className="text-sm text-on-surface-variant font-medium mt-0.5">{t('planner.desc')}</p>
-                        </div>
-                    </div>
+    return (
+        <AppLayout hideBottomNav={false}>
+            <div className="max-w-4xl mx-auto pt-safe pb-24 px-4 min-h-screen">
+                <header className="py-6 flex flex-col gap-2">
+                    <h1 className="font-display text-4xl font-bold tracking-tight text-on-background">Execution OS</h1>
+                    <p className="text-on-surface-variant font-body">Capture, process, and execute relentlessly.</p>
+                </header>
+
+                <div className="flex bg-surface-container/30 backdrop-blur-md p-1 rounded-2xl mb-8 border border-surface-variant/30 overflow-x-auto hide-scrollbar">
+                    {(['now', 'brain', 'goals', 'reflect'] as const).map(tab => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={clsx(
+                                "flex-1 py-3 px-4 rounded-xl text-sm font-label uppercase tracking-wider transition-all whitespace-nowrap",
+                                activeTab === tab 
+                                    ? "bg-primary text-on-primary shadow-lg scale-100" 
+                                    : "text-on-surface-variant hover:bg-surface-container/50 hover:text-on-surface scale-95"
+                            )}
+                        >
+                            {tab}
+                        </button>
+                    ))}
                 </div>
 
-                {/* ROW 1: TASK MANAGER */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Add Task Section */}
-                    <div className="lg:col-span-4 space-y-4">
-                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant relative overflow-hidden group">
-                            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-6 flex items-center gap-2">
-                                <Plus size={18} className="text-white" /> New Task
-                            </h2>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">{t('planner.title')}</label>
-                                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder={t('planner.whatNeedsToBeDone')} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 font-bold text-on-surface focus:outline-none focus:border-white/20 shadow-sm" />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><AlignLeft size={10} /> {t('planner.descLabel')}</label>
-                                    <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder={t('planner.addDetails')} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm resize-none h-20" />
-                                </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Calendar size={10} /> {t('planner.dueDate')}</label>
-                                    <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Star size={10} /> {t('planner.priority')}</label>
-                                        <select value={newPriority} onChange={(e) => setNewPriority(e.target.value as TaskPriority)} className="w-full bg-card-white border border-surface-variant rounded-xl px-4 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm appearance-none cursor-pointer">
-                                            <option value="none">None</option>
-                                            <option value="low">Low</option>
-                                            <option value="medium">Medium</option>
-                                            <option value="high">High</option>
-                                        </select>
+                <div className="space-y-6">
+                    {/* NOW HUB */}
+                    {activeTab === 'now' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass border border-surface-variant/30 p-8 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center min-h-[300px]">
+                                <Play className="w-16 h-16 text-primary mb-6" />
+                                <h2 className="text-3xl font-display font-bold text-on-background mb-4">Relentless Mode</h2>
+                                <p className="text-on-surface-variant mb-8 max-w-md">Lock out all distractions and focus on your single most critical execution target.</p>
+                                
+                                {topTask ? (
+                                    <div className="bg-surface-container/50 border border-surface-variant p-6 rounded-2xl w-full max-w-md mb-8">
+                                        <p className="text-xs uppercase tracking-widest text-primary font-bold mb-2">Priority Target</p>
+                                        <h3 className="text-xl font-bold text-on-surface">{topTask.title}</h3>
                                     </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1 flex items-center gap-1"><Clock size={10} /> {t('planner.reminder')}</label>
-                                        <input type="datetime-local" value={newReminderTime} onChange={(e) => setNewReminderTime(e.target.value)} className="w-full bg-card-white border border-surface-variant rounded-xl px-2 py-3 text-sm text-on-surface-variant focus:outline-none focus:border-white/20 shadow-sm" />
+                                ) : (
+                                    <div className="bg-surface-container/50 border border-surface-variant p-6 rounded-2xl w-full max-w-md mb-8">
+                                        <p className="text-on-surface-variant">Your execution queue is clear.</p>
                                     </div>
+                                )}
+
+                                <button 
+                                    disabled={!topTask}
+                                    onClick={() => setIsWarRoomActive(true)}
+                                    className="btn-primary disabled:opacity-50 w-full max-w-md py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-2 group"
+                                >
+                                    <span>Enter War Room</span>
+                                    <Play className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* BRAIN HUB */}
+                    {activeTab === 'brain' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <BrainCircuit className="w-8 h-8 text-secondary" />
+                                    <h2 className="text-2xl font-display font-bold text-on-surface">Brain Dump</h2>
                                 </div>
-                                <div>
-                                    <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1.5 ml-1">{t('planner.subTasks')}</label>
-                                    <div className="space-y-2 mb-3">
-                                        {newSubTasks.map((st, i) => (
-                                            <div key={st.id} className="flex items-center gap-2 bg-surface-container-low border border-surface-variant rounded-lg p-2">
-                                                <GripVertical size={14} className="text-on-surface-variant" />
-                                                <input type="text" value={st.title} onChange={(e) => { const copy = [...newSubTasks]; copy[i].title = e.target.value; setNewSubTasks(copy); }} className="flex-1 bg-transparent border-none focus:outline-none text-sm text-on-surface font-medium" placeholder="Sub-task title..." />
-                                                <button onClick={() => setNewSubTasks(newSubTasks.filter(s => s.id !== st.id))} className="text-on-surface-variant hover:text-white"><Trash2 size={14} /></button>
+                                <p className="text-on-surface-variant mb-6">Drop your unstructured thoughts here, or hold the mic to speak. Ava will organize it into your execution pipeline.</p>
+                                
+                                <div className="relative mb-4">
+                                    <textarea
+                                        value={brainInput}
+                                        onChange={(e) => setBrainInput(e.target.value)}
+                                        placeholder="e.g., I need to buy groceries tomorrow, finish the TPS report..."
+                                        className="w-full h-48 bg-surface-container/30 border border-surface-variant/50 rounded-2xl p-4 pb-14 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/50 resize-none"
+                                    />
+                                    <button 
+                                        onClick={toggleRecording}
+                                        className={clsx(
+                                            "absolute bottom-4 right-4 p-3 rounded-full transition-all shadow-md flex items-center gap-2",
+                                            isRecording ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" : "bg-surface-variant text-on-surface hover:bg-surface-variant/80"
+                                        )}
+                                    >
+                                        {isRecording ? (
+                                            <>
+                                                <MicOff className="w-5 h-5" />
+                                                <span className="text-sm font-bold pr-1">Stop</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Mic className="w-5 h-5" />
+                                                <span className="text-sm font-bold pr-1">Speak</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                                
+                                <button 
+                                    onClick={handleBrainDump}
+                                    disabled={isParsing || !brainInput.trim()}
+                                    className="btn-secondary w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+                                >
+                                    {isParsing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                                    {isParsing ? 'Parsing...' : 'Parse & Execute'}
+                                </button>
+
+                                {brainResponse && (
+                                    <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-on-surface">
+                                        {brainResponse}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* GOALS HUB */}
+                    {activeTab === 'goals' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <Target className="w-8 h-8 text-tertiary" />
+                                        <h2 className="text-2xl font-display font-bold text-on-surface">Macro Goals</h2>
+                                    </div>
+                                    <button 
+                                        onClick={() => setIsAddingGoal(!isAddingGoal)}
+                                        className="bg-surface-container hover:bg-surface-variant text-on-surface px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+                                    >
+                                        {isAddingGoal ? 'Cancel' : 'Define Vector'}
+                                    </button>
+                                </div>
+                                <p className="text-on-surface-variant mb-6">Your high-level execution vectors.</p>
+
+                                {isAddingGoal && (
+                                    <div className="bg-surface-container/30 border border-surface-variant/50 p-6 rounded-2xl mb-8 animate-in zoom-in-95">
+                                        <h3 className="font-bold text-on-surface mb-4">New Macro Goal</h3>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Goal Title</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={newGoalTitle}
+                                                    onChange={e => setNewGoalTitle(e.target.value)}
+                                                    placeholder="e.g. Launch MVP, Deadlift 200kg"
+                                                    className="w-full bg-background border border-surface-variant rounded-xl p-3 text-on-surface focus:outline-none focus:border-tertiary"
+                                                />
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="flex-1">
+                                                    <label className="block text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Life Area</label>
+                                                    <select 
+                                                        value={newGoalArea}
+                                                        onChange={e => setNewGoalArea(e.target.value)}
+                                                        className="w-full bg-background border border-surface-variant rounded-xl p-3 text-on-surface focus:outline-none focus:border-tertiary"
+                                                    >
+                                                        {['Fitness', 'Career', 'Learning', 'Personal', 'Finance', 'Health'].map(a => (
+                                                            <option key={a} value={a}>{a}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <label className="block text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Target Date</label>
+                                                    <input 
+                                                        type="date" 
+                                                        value={newGoalDate}
+                                                        onChange={e => setNewGoalDate(e.target.value)}
+                                                        className="w-full bg-background border border-surface-variant rounded-xl p-3 text-on-surface focus:outline-none focus:border-tertiary"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={handleAddGoal}
+                                                className="w-full bg-tertiary text-on-tertiary font-bold py-3 rounded-xl mt-4 hover:scale-[1.02] transition-transform shadow-lg shadow-tertiary/25"
+                                            >
+                                                Save Goal
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {goals.length === 0 && !isAddingGoal ? (
+                                    <div className="text-center py-12 bg-surface-container/30 border border-surface-variant/30 rounded-2xl">
+                                        <p className="text-on-surface-variant mb-4">No macro goals defined yet.</p>
+                                        <button onClick={() => setIsAddingGoal(true)} className="text-tertiary font-bold hover:underline">Define Vector</button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {goals.map(goal => (
+                                            <div key={goal.id} className="bg-surface-container/50 border border-surface-variant p-5 rounded-2xl flex items-center justify-between group hover:border-tertiary/50 transition-colors">
+                                                <div>
+                                                    <span className="text-xs font-bold uppercase tracking-widest text-tertiary bg-tertiary/10 px-2 py-1 rounded-md mb-2 inline-block">
+                                                        {goal.life_area}
+                                                    </span>
+                                                    <h3 className="font-bold text-on-surface text-lg">{goal.title}</h3>
+                                                    {goal.target_date && (
+                                                        <p className="text-sm text-on-surface-variant mt-1">Target: {new Date(goal.target_date).toLocaleDateString()}</p>
+                                                    )}
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors">
+                                                        <Target className="w-4 h-4" />
+                                                    </span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                    <button onClick={() => setNewSubTasks([...newSubTasks, { id: Date.now().toString(), title: '' }])} className="text-xs font-bold text-white bg-white/5 hover:bg-emerald-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors">
-                                        <Plus size={14} /> Add Sub-task
-                                    </button>
-                                </div>
-                                <button onClick={handleAddTask} disabled={!newTitle.trim()} className="w-full mt-4 bg-gray-900 hover:bg-black text-white font-black text-sm uppercase tracking-wider py-4 rounded-2xl flex items-center justify-center gap-2 transition-all btn-press disabled:opacity-50">
-                                    <Plus size={18} /> Save Task
-                                </button>
+                                )}
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Task List Section — also a drop target for priorities */}
-                    <div
-                        className="lg:col-span-8 space-y-4"
-                        onDragOver={(e) => {
-                            if (e.dataTransfer.types.includes('priority_text')) {
-                                e.preventDefault();
-                                e.dataTransfer.dropEffect = 'copy';
-                            }
-                        }}
-                        onDrop={(e) => {
-                            const pText = e.dataTransfer.getData('priority_text');
-                            const pRank = e.dataTransfer.getData('priority_rank');
-                            if (pText) {
-                                e.preventDefault();
-                                // Rank 1 → high, 2 → medium, else low.
-                                const level: TaskPriority = pRank === '1' ? 'high' : pRank === '2' ? 'medium' : 'low';
-                                createTaskFromPriority(pText, level);
-                            }
-                        }}
-                    >
-                        {isClient && tasks.length === 0 ? (
-                            <div className="bg-card-white border border-surface-variant p-10 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-                                <div className="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center text-on-surface-variant mb-4"><Target size={32} /></div>
-                                <h3 className="font-bold text-on-surface mb-1">No tasks yet</h3>
-                                <p className="text-sm text-on-surface-variant">Add a task on the left, or drag a priority here.</p>
-                            </div>
-                        ) : (
-                            isClient && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {tasks.map((task) => (
-                                    <div key={task.id} className={`bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant transition-all ${task.completed ? 'opacity-60 bg-surface-container-low/50' : ''}`}>
-                                        <div className="flex items-start gap-3 w-full">
-                                            <button onClick={() => toggleTask(task.id)} className={`mt-1 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.completed ? 'bg-white border-white/20 text-black' : 'border-surface-variant text-transparent hover:border-white/20'}`}>
-                                                <CheckCircle2 size={16} />
-                                            </button>
-                                            
-                                            {editingTaskId === task.id ? (
-                                                <div className="flex-1 space-y-3 min-w-0">
-                                                    <input type="text" defaultValue={task.title} onBlur={(e) => updateTask(task.id, { title: e.target.value })} className="w-full bg-transparent border-b border-white/20 px-1 py-1 font-bold text-on-surface focus:outline-none" />
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <select defaultValue={task.priority} onChange={(e) => updateTask(task.id, { priority: e.target.value as TaskPriority })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none appearance-none">
-                                                            <option value="none">{t('planner.priorityNone')}</option>
-                                                            <option value="low">{t('planner.priorityLow')}</option>
-                                                            <option value="medium">{t('planner.priorityMedium')}</option>
-                                                            <option value="high">{t('planner.priorityHigh')}</option>
-                                                        </select>
-                                                        <input type="date" defaultValue={task.dueDate} onChange={(e) => updateTask(task.id, { dueDate: e.target.value })} className="bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none" />
-                                                    </div>
-                                                    <div>
-                                                        <input type="datetime-local" defaultValue={task.reminderTime ? new Date(new Date(task.reminderTime).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''} onChange={(e) => updateTask(task.id, { reminderTime: e.target.value })} className="w-full bg-surface-container border border-surface-variant rounded-lg px-2 py-1.5 text-xs text-on-surface focus:outline-none" />
-                                                    </div>
-                                                    <div className="flex justify-end gap-2 mt-2">
-                                                        <button onClick={() => setEditingTaskId(null)} className="text-xs font-bold text-on-surface-variant hover:text-white px-3 py-1 bg-surface-container rounded-lg">Done</button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div 
-                                                    className="flex-1 min-w-0 group/task"
-                                                    draggable
-                                                    onDragStart={(e) => e.dataTransfer.setData('task_title', task.title)}
-                                                >
-                                                    <div className="flex items-start justify-between gap-2 mb-1">
-                                                        <div className="flex items-center gap-2 min-w-0" onClick={() => setEditingTaskId(task.id)}>
-                                                            {task.priority && task.priority !== 'none' && (
-                                                                <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide ${
-                                                                    task.priority === 'high' ? 'bg-error/15 text-error'
-                                                                    : task.priority === 'medium' ? 'bg-white/15 text-white dark:text-white'
-                                                                    : 'bg-secondary/15 text-secondary'
-                                                                }`}>
-                                                                    {task.priority}
-                                                                </span>
-                                                            )}
-                                                            <h3 className={`font-bold text-on-surface text-lg cursor-pointer hover:text-white truncate ${task.completed ? 'line-through text-on-surface-variant' : ''}`} title={task.fullTitle || task.title}>{task.title}</h3>
-                                                        </div>
-                                                        <button onClick={() => deleteTask(task.id)} className="text-on-surface-variant hover:text-white flex-shrink-0 p-1 opacity-0 group-hover/task:opacity-100 transition-opacity"><Trash2 size={16} /></button>
-                                                    </div>
-                                                    
-                                                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                        {task.dueDate && <div className="flex items-center gap-1 text-[11px] font-bold text-white uppercase tracking-wider"><Calendar size={12} /> {new Date(task.dueDate).toLocaleDateString()}</div>}
-                                                        {task.reminderTime && <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 uppercase tracking-wider"><Clock size={12} /> {new Date(task.reminderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>}
-                                                    </div>
-
-                                                    {task.description && <p className="text-sm text-on-surface-variant mb-3 whitespace-pre-wrap leading-relaxed">{task.description}</p>}
-                                                    {task.subTasks && task.subTasks.length > 0 && (
-                                                        <div className="space-y-2 mt-3 pt-3 border-t border-surface-variant">
-                                                            {task.subTasks.map(st => (
-                                                                <div key={st.id} className="flex items-start gap-2 group">
-                                                                    <button onClick={() => toggleSubTask(task.id, st.id)} className="mt-0.5 text-on-surface-variant group-hover:text-white flex-shrink-0">
-                                                                        {st.completed ? <CheckCircle2 size={16} className="text-white" /> : <Circle size={16} />}
-                                                                    </button>
-                                                                    <span className={`text-sm text-on-surface-variant font-medium ${st.completed ? 'line-through text-on-surface-variant' : ''}`}>{st.title}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* ROW 2: LOCAL RESTORED WIDGETS */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-surface-variant">
-                    
-                    {/* Top Priorities — dynamic, drag into Tasks to promote */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm">
-                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Bookmark size={14} className="text-white" /> {t('planner.topPriorities')}</div>
-                            <button
-                                onClick={() => {
-                                    const p = [...priorities, ''];
-                                    setPriorities(p);
-                                    updateTargetConfig({ planner_priorities: p });
-                                }}
-                                className="text-[10px] bg-white/10 text-white dark:text-white px-2 py-1 rounded flex items-center gap-1 active:scale-95 transition-transform"
-                            >
-                                <Plus size={10} /> Add
-                            </button>
-                        </div>
-                        <p className="text-[10px] text-on-surface-variant mb-3 -mt-2">{t('planner.dragPriority')}</p>
-                        <div className="space-y-3">
-                            {priorities.map((priorityText, i) => (
-                                <div
-                                    key={i}
-                                    draggable
-                                    onDragStart={(e) => {
-                                        // Carry the priority text + rank so the Tasks drop target can promote it.
-                                        e.dataTransfer.setData('priority_text', priorityText || `Priority ${i + 1}`);
-                                        e.dataTransfer.setData('priority_rank', String(i + 1));
-                                        e.dataTransfer.setData('text/plain', i.toString());
-                                    }}
-                                    onDragOver={(e) => e.preventDefault()}
-                                    onDrop={(e) => {
-                                        e.preventDefault();
-                                        const taskTitle = e.dataTransfer.getData('task_title');
-                                        if (taskTitle) {
-                                            const p = [...priorities];
-                                            p[i] = taskTitle;
-                                            setPriorities(p);
-                                            updateTargetConfig({ planner_priorities: p });
-                                            return;
-                                        }
-                                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                                        if (!isNaN(fromIdx) && fromIdx !== i) {
-                                            const p = [...priorities];
-                                            [p[fromIdx], p[i]] = [p[i], p[fromIdx]];
-                                            setPriorities(p);
-                                            updateTargetConfig({ planner_priorities: p });
-                                        }
-                                    }}
-                                    className="flex items-center gap-2 bg-surface-container p-2 rounded-xl border border-surface-variant cursor-move hover:border-white/20 hover:shadow-sm transition-all group"
-                                >
-                                    <GripVertical size={14} className="text-on-surface-variant group-hover:text-white transition-colors shrink-0" />
-                                    <div className="w-6 h-6 rounded-lg bg-white/15 text-white dark:text-white flex items-center justify-center font-black text-[10px] shrink-0">
-                                        {i + 1}
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={priorityText}
-                                        onChange={(e) => {
-                                            const p = [...priorities];
-                                            p[i] = e.target.value;
-                                            setPriorities(p);
-                                            updateTargetConfig({ planner_priorities: p });
-                                        }}
-                                        placeholder={`Priority ${i + 1}`}
-                                        className="flex-1 min-w-0 bg-transparent border-none text-sm text-on-surface font-medium focus:outline-none placeholder:text-on-surface-variant/50"
-                                    />
-                                    {/* Non-drag fallback: promote to a task on click */}
-                                    <button
-                                        onClick={() => createTaskFromPriority(priorityText || `Priority ${i + 1}`, i === 0 ? 'high' : i === 1 ? 'medium' : 'low')}
-                                        aria-label="Promote to task"
-                                        title="Send to Tasks"
-                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-white transition-all shrink-0 p-1"
-                                    >
-                                        <ArrowLeft size={13} className="rotate-[135deg]" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const p = priorities.filter((_, idx) => idx !== i);
-                                            setPriorities(p);
-                                            updateTargetConfig({ planner_priorities: p });
-                                        }}
-                                        aria-label="Remove priority"
-                                        className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-error transition-all shrink-0 p-1"
-                                    >
-                                        <Trash2 size={13} />
-                                    </button>
+                    {/* REFLECT HUB */}
+                    {activeTab === 'reflect' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <CheckCircle2 className="w-8 h-8 text-primary" />
+                                    <h2 className="text-2xl font-display font-bold text-on-surface">End of Day Review</h2>
                                 </div>
-                            ))}
-                            {priorities.length === 0 && (
-                                <p className="text-center text-on-surface-variant text-xs py-3">No priorities. Tap Add.</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Focus Sessions */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant">
-                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-wider">
-                            <BrainCircuit size={14} className="text-white" /> Focus Sessions
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 mb-4">
-                            {[1, 2, 3, 4].map((num, i) => (
-                                <div 
-                                    key={i} 
-                                    className={clsx("border rounded-2xl p-3 flex justify-between items-center transition-colors cursor-pointer", focusSessions[i] ? "bg-white/5 border-white/10" : "bg-surface-container border-surface-variant hover:border-surface-variant")}
-                                    onClick={() => {
-                                        const n = [...focusSessions];
-                                        n[i] = !n[i];
-                                        setFocusSessions(n);
-                                        updateTargetConfig({ planner_focus: n });
-                                        if (n[i]) {
-                                            setIsFocusModeActive(true);
-                                            setFocusTimeLeft(25 * 60);
-                                        }
-                                    }}
-                                >
-                                    <div>
-                                        <div className="text-xs font-bold text-on-surface mb-0.5">{t('planner.session').replace('{num}', String(num))}</div>
-                                        <div className="text-[10px] text-on-surface-variant flex items-center gap-1"><Clock size={10} /> 25 {t('planner.min')}</div>
-                                    </div>
-                                    <div className={clsx("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", focusSessions[i] ? "bg-white border-white/20 text-white" : "border-surface-variant")}>
-                                        {focusSessions[i] && <CheckCircle2 size={12} />}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Habits to Build */}
-                    <div className="bg-card-white border border-surface-variant p-5 rounded-2xl shadow-sm border-t border-surface-variant">
-                        <div className="text-on-surface-variant text-xs font-bold mb-4 flex items-center justify-between uppercase tracking-wider">
-                            <div className="flex items-center gap-2"><Star size={14} className="text-white" /> {t('planner.habits')}</div>
-                            <div className="flex items-center gap-2">
+                                <p className="text-on-surface-variant mb-6">Analyze your execution rate and log behavioral patterns to improve tomorrow.</p>
+                                
+                                <textarea
+                                    value={reflectInput}
+                                    onChange={(e) => setReflectInput(e.target.value)}
+                                    placeholder="How did today go? Any bottlenecks? What drained your energy?"
+                                    className="w-full h-32 bg-surface-container/30 border border-surface-variant/50 rounded-2xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none mb-4"
+                                />
+                                
                                 <button 
-                                    onClick={() => {
-                                        const nh = [...habitsList, 'New Habit'];
-                                        setHabitsList(nh);
-                                        updateTargetConfig({ planner_habits_list: nh });
-                                    }}
-                                    className="text-[10px] bg-white/5 text-white px-2 py-1 rounded hover:bg-emerald-100 flex items-center gap-1"
+                                    onClick={handleReflect}
+                                    disabled={isReflecting}
+                                    className="btn-primary w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2"
                                 >
-                                    <Plus size={10} /> Add
+                                    {isReflecting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                                    {isReflecting ? 'Analyzing...' : 'Run Analyst Protocol'}
                                 </button>
-                                <div className="flex gap-2 text-[9px] text-on-surface-variant w-40 justify-between px-1">
-                                    <span>{t('days.m')}</span><span>{t('days.t')}</span><span>{t('days.w')}</span><span>{t('days.th')}</span><span>{t('days.f')}</span><span>{t('days.s')}</span><span>{t('days.su')}</span>
-                                </div>
+
+                                {reflectResponse && (
+                                    <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-on-surface whitespace-pre-wrap">
+                                        {reflectResponse}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="space-y-3">
-                            {habitsList.map((habit, i) => (
-                                <div key={i} className="flex justify-between items-center gap-2 group">
-                                    <div className="flex items-center gap-2 text-[13px] font-bold text-on-surface truncate pr-1 flex-1 min-w-0">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></div>
-                                        <input
-                                            type="text"
-                                            value={habit}
-                                            placeholder="Name this habit"
-                                            onChange={(e) => {
-                                                const nh = [...habitsList];
-                                                nh[i] = e.target.value;
-                                                setHabitsList(nh);
-                                                updateTargetConfig({ planner_habits_list: nh });
-                                            }}
-                                            className="bg-transparent border-none focus:outline-none focus:bg-surface-container rounded px-1 py-0.5 w-full text-on-surface placeholder:text-on-surface-variant/50 hover:bg-surface-container-low transition-colors"
-                                        />
-                                        <button
-                                            onClick={() => {
-                                                const nh = habitsList.filter((_, idx) => idx !== i);
-                                                setHabitsList(nh);
-                                                
-                                                // Reindex the check states so days don't shift onto other habits.
-                                                const remapped: Record<string, boolean> = {};
-                                                nh.forEach((_, newIdx) => {
-                                                    const oldIdx = newIdx < i ? newIdx : newIdx + 1;
-                                                    [1,2,3,4,5,6,7].forEach((day) => {
-                                                        if (habitsState[`${oldIdx}_${day}`]) remapped[`${newIdx}_${day}`] = true;
-                                                    });
-                                                });
-                                                setHabitsState(remapped);
-                                                updateTargetConfig({ 
-                                                    planner_habits_list: nh,
-                                                    planner_habits_state: remapped 
-                                                });
-                                            }}
-                                            aria-label={`Delete habit ${habit}`}
-                                            className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-on-surface-variant hover:text-error transition-all flex-shrink-0 p-1"
-                                        >
-                                            <Trash2 size={13} />
-                                        </button>
-                                    </div>
-                                    <div className="flex gap-2 w-40 justify-between flex-shrink-0 items-center">
-                                        {[1,2,3,4,5,6,7].map((day) => {
-                                            const key = `${i}_${day}`;
-                                            return (
-                                                <input
-                                                    key={day}
-                                                    type="checkbox"
-                                                    checked={habitsState[key] || false}
-                                                    onChange={(e) => {
-                                                        const newState = { ...habitsState, [key]: e.target.checked };
-                                                        setHabitsState(newState);
-                                                        updateTargetConfig({ planner_habits_state: newState });
-                                                    }}
-                                                    className="accent-emerald-500 w-5 h-5 cursor-pointer opacity-40 hover:opacity-100 checked:opacity-100 transition-all rounded-sm"
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                            {habitsList.length === 0 && (
-                                <p className="text-center text-on-surface-variant text-[13px] py-4">No habits yet. Tap Add to create one.</p>
-                            )}
-                        </div>
-                    </div>
-
+                    )}
                 </div>
             </div>
         </AppLayout>

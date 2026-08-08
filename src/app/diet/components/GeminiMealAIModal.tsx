@@ -19,28 +19,29 @@ interface ParsedFood {
     carbs: number;
     fat: number;
     sugar: number;
+    fiber: number;
     icon: string;
 }
 
-const COMMON_DICTIONARY: Record<string, { category: MealCategory; cal: number; p: number; c: number; f: number; sugar: number; icon: string; portion: string }> = {
-    egg: { category: 'Breakfast', cal: 70, p: 6, c: 0.5, f: 5, sugar: 0, icon: '🥚', portion: '1 egg' },
-    eggs: { category: 'Breakfast', cal: 140, p: 12, c: 1, f: 9, sugar: 0, icon: '🥚', portion: '2 eggs' },
-    toast: { category: 'Breakfast', cal: 110, p: 4, c: 20, f: 1, sugar: 2, icon: '🍞', portion: '1 slice' },
-    bread: { category: 'Breakfast', cal: 120, p: 4, c: 22, f: 1.5, sugar: 2, icon: '🍞', portion: '1 slice' },
-    coffee: { category: 'Breakfast', cal: 15, p: 0, c: 1, f: 0, sugar: 0, icon: '☕', portion: '1 cup' },
-    avocado: { category: 'Breakfast', cal: 160, p: 2, c: 9, f: 15, sugar: 0.5, icon: '🥑', portion: '1/2 avocado' },
-    chicken: { category: 'Lunch', cal: 240, p: 46, c: 0, f: 5, sugar: 0, icon: '🍗', portion: '150g' },
-    rice: { category: 'Lunch', cal: 205, p: 4, c: 45, f: 0.5, sugar: 0.1, icon: '🥣', portion: '1 cup' },
-    salmon: { category: 'Dinner', cal: 350, p: 34, c: 0, f: 22, sugar: 0, icon: '🐟', portion: '180g' },
-    broccoli: { category: 'Dinner', cal: 50, p: 4, c: 10, f: 0.5, sugar: 2, icon: '🥦', portion: '1 cup' },
-    salad: { category: 'Lunch', cal: 180, p: 5, c: 12, f: 12, sugar: 4, icon: '🥗', portion: '1 bowl' },
-    oatmeal: { category: 'Breakfast', cal: 220, p: 7, c: 38, f: 3.5, sugar: 2, icon: '🥣', portion: '1 bowl' },
-    oats: { category: 'Breakfast', cal: 220, p: 7, c: 38, f: 3.5, sugar: 2, icon: '🥣', portion: '1 bowl' },
-    shake: { category: 'Snacks', cal: 180, p: 26, c: 6, f: 3, sugar: 2, icon: '🥤', portion: '1 scoop' },
-    protein: { category: 'Snacks', cal: 180, p: 26, c: 6, f: 3, sugar: 2, icon: '🥤', portion: '1 scoop' },
-    apple: { category: 'Snacks', cal: 95, p: 0.5, c: 25, f: 0.3, sugar: 19, icon: '🍎', portion: '1 medium' },
-    banana: { category: 'Snacks', cal: 105, p: 1.3, c: 27, f: 0.3, sugar: 14, icon: '🍌', portion: '1 medium' },
-    yogurt: { category: 'Breakfast', cal: 130, p: 18, c: 8, f: 0.5, sugar: 6, icon: '🥣', portion: '1 cup' },
+const COMMON_DICTIONARY: Record<string, { category: MealCategory; cal: number; p: number; c: number; f: number; sugar: number; fiber: number; icon: string; portion: string }> = {
+    egg: { category: 'Breakfast', cal: 70, p: 6, c: 0.5, f: 5, sugar: 0, fiber: 0, icon: '🥚', portion: '1 egg' },
+    eggs: { category: 'Breakfast', cal: 140, p: 12, c: 1, f: 9, sugar: 0, fiber: 0, icon: '🥚', portion: '2 eggs' },
+    toast: { category: 'Breakfast', cal: 110, p: 4, c: 20, f: 1, sugar: 2, fiber: 1, icon: '🍞', portion: '1 slice' },
+    bread: { category: 'Breakfast', cal: 120, p: 4, c: 22, f: 1.5, sugar: 2, fiber: 1, icon: '🍞', portion: '1 slice' },
+    coffee: { category: 'Breakfast', cal: 15, p: 0, c: 1, f: 0, sugar: 0, fiber: 0, icon: '☕', portion: '1 cup' },
+    avocado: { category: 'Breakfast', cal: 160, p: 2, c: 9, f: 15, sugar: 0.5, fiber: 7, icon: '🥑', portion: '1/2 avocado' },
+    chicken: { category: 'Lunch', cal: 240, p: 46, c: 0, f: 5, sugar: 0, fiber: 0, icon: '🍗', portion: '150g' },
+    rice: { category: 'Lunch', cal: 205, p: 4, c: 45, f: 0.5, sugar: 0.1, fiber: 0.6, icon: '🥣', portion: '1 cup' },
+    salmon: { category: 'Dinner', cal: 350, p: 34, c: 0, f: 22, sugar: 0, fiber: 0, icon: '🐟', portion: '180g' },
+    broccoli: { category: 'Dinner', cal: 50, p: 4, c: 10, f: 0.5, sugar: 2, fiber: 4, icon: '🥦', portion: '1 cup' },
+    salad: { category: 'Lunch', cal: 180, p: 5, c: 12, f: 12, sugar: 4, fiber: 3, icon: '🥗', portion: '1 bowl' },
+    oatmeal: { category: 'Breakfast', cal: 220, p: 7, c: 38, f: 3.5, sugar: 2, fiber: 4, icon: '🥣', portion: '1 bowl' },
+    oats: { category: 'Breakfast', cal: 220, p: 7, c: 38, f: 3.5, sugar: 2, fiber: 4, icon: '🥣', portion: '1 bowl' },
+    shake: { category: 'Snacks', cal: 180, p: 26, c: 6, f: 3, sugar: 2, fiber: 1, icon: '🥤', portion: '1 scoop' },
+    protein: { category: 'Snacks', cal: 180, p: 26, c: 6, f: 3, sugar: 2, fiber: 1, icon: '🥤', portion: '1 scoop' },
+    apple: { category: 'Snacks', cal: 95, p: 0.5, c: 25, f: 0.3, sugar: 19, fiber: 4, icon: '🍎', portion: '1 medium' },
+    banana: { category: 'Snacks', cal: 105, p: 1.3, c: 27, f: 0.3, sugar: 14, fiber: 3, icon: '🍌', portion: '1 medium' },
+    yogurt: { category: 'Breakfast', cal: 130, p: 18, c: 8, f: 0.5, sugar: 6, fiber: 0, icon: '🥣', portion: '1 cup' },
 };
 
 export default function GeminiMealAIModal({
@@ -96,6 +97,7 @@ export default function GeminiMealAIModal({
                             carbs: Math.round(val.c * multiplier),
                             fat: Math.round(val.f * multiplier),
                             sugar: Math.round(val.sugar * multiplier),
+                            fiber: Math.round(val.fiber * multiplier),
                             icon: val.icon,
                         });
                         matched = true;
@@ -119,6 +121,7 @@ export default function GeminiMealAIModal({
                         carbs: 20,
                         fat: 8,
                         sugar: 3,
+                        fiber: 1,
                         icon: '🥗',
                     });
                 }
@@ -141,6 +144,7 @@ export default function GeminiMealAIModal({
                     carbs: f.carbs,
                     fat: f.fat,
                     sugar: f.sugar,
+                    fiber: f.fiber || 0,
                     bites: Math.round(f.calories / 50),
                     icon: f.icon,
                 }))

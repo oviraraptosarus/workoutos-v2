@@ -20,10 +20,12 @@ CREATE INDEX IF NOT EXISTS idx_telemetry_created_at ON public.telemetry_logs(cre
 ALTER TABLE public.telemetry_logs ENABLE ROW LEVEL SECURITY;
 
 -- Allow users to insert and read their own telemetry (vital for client-side tool logging)
+DROP POLICY IF EXISTS "Users can view their own telemetry" ON public.telemetry_logs;
 CREATE POLICY "Users can view their own telemetry"
     ON public.telemetry_logs FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Anyone can insert telemetry logs" ON public.telemetry_logs;
 CREATE POLICY "Anyone can insert telemetry logs"
     ON public.telemetry_logs FOR INSERT
     WITH CHECK (true);

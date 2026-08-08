@@ -51,6 +51,7 @@ export const getMealsForDate = async (dateKey: string): Promise<MealItem[]> => {
         carbs: Number(row.carbs),
         fat: Number(row.fat),
         sugar: Number(row.sugar),
+        fiber: 0,
         icon: '🍽️'
     }));
 };
