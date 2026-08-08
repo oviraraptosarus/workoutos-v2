@@ -4,62 +4,33 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 export function TopNav() {
   const { userProfile } = useAuth();
-  const { t } = useLanguage();
-  const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || (t('nav.top.user') !== 'nav.top.user' ? t('nav.top.user') : 'యూజర్'));
+  const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'User');
   const initial = displayName.charAt(0).toUpperCase();
 
-  const [showNotifPrompt, setShowNotifPrompt] = React.useState(false);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === 'default') {
-        setShowNotifPrompt(true);
-      }
-    }
-  }, []);
-
-  const requestNotifPermission = async () => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      const permission = await Notification.requestPermission();
-      setShowNotifPrompt(false);
-    }
-  };
-
   return (
-    <>
-      <header className="fixed top-0 w-full z-50 glass pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        <div className="h-16 px-margin-mobile max-w-5xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2.5 active:scale-95 transition-transform">
-            <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm flex items-center justify-center bg-black">
-              <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
-            </div>
-            <span className="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Workout OS</span>
-          </Link>
-          <Link
-            href="/profile"
-            aria-label={t('nav.top.openProfile') !== 'nav.top.openProfile' ? t('nav.top.openProfile') : 'ప్రొఫైల్ తెరవండి'}
-            className="w-9 h-9 rounded-full bg-primary flex items-center justify-center active:scale-90 transition-transform"
-          >
-            {userProfile ? (
-              <span className="text-on-primary text-xs font-bold">{initial}</span>
-            ) : (
-              <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-            )}
-          </Link>
-        </div>
-      </header>
-      {showNotifPrompt && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-primary/95 backdrop-blur-sm text-on-primary px-4 py-2 flex items-center justify-between shadow-md">
-          <span className="text-sm font-medium">Enable notifications to get hydration and workout reminders!</span>
-          <button onClick={requestNotifPermission} className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ml-2 shrink-0">
-            Enable
-          </button>
-        </div>
-      )}
-    </>
+    <header className="fixed top-0 left-0 right-0 z-40 px-4 pt-4 pointer-events-none">
+      <div className="mx-auto max-w-5xl w-full bg-white/10 dark:bg-black/30 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.25)] rounded-2xl pointer-events-auto flex items-center justify-between px-4 py-3 relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+        <Link href="/dashboard" className="flex items-center gap-3 active:scale-95 transition-transform group">
+          <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow flex items-center justify-center bg-black/20 border border-white/10">
+            <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover scale-110" />
+          </div>
+          <span className="font-bold text-lg text-on-surface tracking-tight group-hover:text-secondary transition-colors">Workout OS</span>
+        </Link>
+        <Link
+          href="/profile"
+          className="w-9 h-9 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.4)] border border-white/20 hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]"
+        >
+          {userProfile ? (
+            <span className="text-black text-sm font-black">{initial}</span>
+          ) : (
+            <span className="material-symbols-outlined text-black text-[20px]">person</span>
+          )}
+        </Link>
+      </div>
+    </header>
   );
 }
