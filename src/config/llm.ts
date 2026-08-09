@@ -19,10 +19,12 @@ function getApiKey(provider: ProviderId): string | undefined {
     }
 }
 
-// Configurable Priority List
+// Configurable Priority List (Multi-Provider Cascade to prevent Rate Limits)
 const DEFAULT_PRIORITY_LIST = [
+    { provider: 'openrouter', model: 'google/gemini-2.5-flash' },
     { provider: 'gemini', model: 'gemini-2.5-flash' },
-    { provider: 'gemini', model: 'gemini-1.5-flash' },
+    { provider: 'openrouter', model: 'google/gemini-1.5-pro' },
+    { provider: 'anthropic', model: 'claude-3-5-haiku-20241022' },
     { provider: 'openrouter', model: 'openrouter/auto' }
 ];
 

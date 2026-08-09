@@ -120,9 +120,9 @@ export class LLMOrchestrator {
                             }
                         });
 
-                        if (isAbort || isExplicitlyNonRetryable) {
-                            // Don't retry the same model for timeouts or fatal model errors. Failover to the next fallback immediately.
-                            console.warn(`[Orchestrator] Skipping further retries on ${model.id}. Failing over.`);
+                        if (isAbort || isExplicitlyNonRetryable || reason === 'rate_limit') {
+                            // Don't retry the same model for timeouts, fatal model errors, or rate limits. Failover to the next fallback immediately.
+                            console.warn(`[Orchestrator] Skipping further retries on ${model.id} due to ${reason}. Failing over to next provider.`);
                             this.health.recordFailure(model.id, reason);
                             lastError = error;
                             break;
