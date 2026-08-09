@@ -22,6 +22,13 @@ export function TopNav() {
           <span className="font-bold text-lg text-on-surface tracking-tight group-hover:text-secondary transition-colors">Workout OS</span>
         </Link>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
+            className="w-9 h-9 rounded-full bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 flex items-center justify-center active:scale-90 transition-transform shadow-sm border border-[#0a84ff]/20 group"
+            aria-label="Open AI Copilot"
+          >
+            <Orbit size={18} className="text-[#0a84ff] group-hover:rotate-90 transition-transform duration-500" />
+          </button>
 
           <Link
             href="/profile"
