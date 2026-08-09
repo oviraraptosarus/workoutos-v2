@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon } from 'lucide-react';
+import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIDebugDashboard } from './AIDebugDashboard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -726,9 +726,7 @@ export default function GlobalAICopilot() {
 
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#0a84ff]/10 border border-[#0a84ff]/20 flex items-center justify-center">
-                                <Orbit size={16} className="text-[#0a84ff]" />
-                            </div>
+                            <div className="ava-orb-icon w-8 h-8 rounded-full shrink-0" />
                             <span className="text-on-surface font-bold text-base tracking-tight">Ava</span>
                             {isDevMode && (
                                 <button 
@@ -824,9 +822,7 @@ export default function GlobalAICopilot() {
                                     ) : (
                                         <div className="flex items-start gap-2.5 w-full max-w-full">
                                             <div className="shrink-0 mt-1">
-                                                <div className="w-7 h-7 rounded-full bg-[#0a84ff]/10 border border-[#0a84ff]/20 flex items-center justify-center">
-                                                    <Orbit size={14} className="text-[#0a84ff]" />
-                                                </div>
+                                                <div className="ava-orb-icon w-7 h-7 rounded-full" />
                                             </div>
                                             <div className="flex flex-col gap-1 w-full">
                                                 <div className="flex items-center gap-2">
@@ -834,13 +830,13 @@ export default function GlobalAICopilot() {
                                                     <span className="text-[10px] text-on-surface-variant">{msg.timestamp}</span>
                                                     {msg.requestId && isDevMode && <span className="text-[10px] text-purple-400 font-mono ml-auto">{msg.requestId}</span>}
                                                 </div>
-                                                <div className={`rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-on-surface border border-white/10 dark:border-white/5 bg-surface-container/60 shadow-sm backdrop-blur-md'}`}>
-                                                    <div className="prose prose-sm max-w-none dark:prose-invert
-                                                        prose-headings:text-on-surface prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
-                                                        prose-p:text-on-surface/90 prose-p:leading-relaxed prose-p:my-1
-                                                        prose-li:text-on-surface/90 prose-li:my-0.5
-                                                        prose-strong:text-on-surface prose-strong:font-bold
-                                                        prose-hr:border-on-surface/10 prose-hr:my-3">
+                                                <div className={`ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-primary-light border border-primary/30 bg-primary/10 shadow-[0_4px_24px_rgba(var(--c-primary)/0.2)] backdrop-blur-md'}`}>
+                                                    <div className="prose prose-invert prose-sm max-w-none
+                                                        prose-headings:text-primary-light prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
+                                                        prose-p:text-primary-light/90 prose-p:leading-relaxed prose-p:my-1
+                                                        prose-li:text-primary-light/90 prose-li:my-0.5
+                                                        prose-strong:text-white prose-strong:font-bold prose-strong:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]
+                                                        prose-hr:border-primary/20 prose-hr:my-3">
                                                         {msg.text.startsWith('⚠️') ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
                                                     </div>
                                                 </div>
@@ -855,10 +851,10 @@ export default function GlobalAICopilot() {
                                                     <img src={msg.imageUrl} alt="Uploaded preview" className="w-48 h-auto object-cover" />
                                                 </div>
                                             )}
-                                            <div className="bg-[#0a84ff] text-white text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm break-words whitespace-pre-wrap font-medium shadow-sm">
+                                            <div className="ava-user-msg text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm break-words whitespace-pre-wrap font-medium">
                                                 {msg.text}
                                             </div>
-                                            <div className="text-[10px] text-on-surface-variant mr-1 mt-1 text-right">{msg.timestamp}</div>
+                                            <div className="text-[10px] text-white/30 mr-1 mt-1 text-right">{msg.timestamp}</div>
                                         </div>
                                     </div>
                                 )}
@@ -867,10 +863,8 @@ export default function GlobalAICopilot() {
 
                         {loading && (
                             <div className="flex items-start gap-2.5 animate-in slide-in-from-bottom-2 duration-200">
-                                <div className="w-7 h-7 rounded-full bg-[#0a84ff]/10 border border-[#0a84ff]/20 flex items-center justify-center shrink-0 mt-1">
-                                    <Orbit size={14} className="text-[#0a84ff]" />
-                                </div>
-                                <div className="bg-surface-container/60 border border-white/10 dark:border-white/5 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2 shadow-sm backdrop-blur-md">
+                                <div className="ava-orb-icon w-7 h-7 rounded-full shrink-0 mt-1" />
+                                <div className="ava-response-card rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
                                     <span className="ava-typing-dot" style={{ animationDelay: '0ms' }} />
                                     <span className="ava-typing-dot" style={{ animationDelay: '180ms' }} />
                                     <span className="ava-typing-dot" style={{ animationDelay: '360ms' }} />
@@ -977,17 +971,24 @@ export default function GlobalAICopilot() {
                                 {isConversationMode ? <MessageSquare size={20} /> : <VolumeX size={20} />}
                             </button>
 
-                            {/* Glowing Siri-style orb */}
                             <button
                                 onClick={() => toggleListening()}
                                 aria-label={isListening ? 'Stop listening' : 'Start voice input'}
-                                className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90 ${isListening ? 'bg-red-500 shadow-md scale-105' : 'bg-[#0a84ff] shadow-md'}`}
+                                className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-transform duration-300 active:scale-90 ${isListening ? 'scale-110' : ''}`}
                             >
+                                <div className={`absolute inset-0 rounded-full ava-orb-bg ${isListening || loading ? 'ava-orb-active' : ''}`} />
                                 <div className="relative z-10">
                                     {isListening
-                                        ? <Mic size={22} className="text-white" />
-                                        : <Orbit size={22} className={`text-white ${loading ? 'animate-spin-slow' : ''}`} />}
+                                        ? <Mic size={22} className="text-white drop-shadow-lg" />
+                                        : <Sparkles size={22} className={`text-white ${loading ? 'animate-pulse' : ''}`} />}
                                 </div>
+                                {/* Pulse rings when listening */}
+                                {isListening && (
+                                    <>
+                                        <span className="absolute inset-0 rounded-full border border-white/20/40 animate-ping" />
+                                        <span className="absolute inset-[-6px] rounded-full border border-white/20/20 animate-ping [animation-delay:0.5s]" />
+                                    </>
+                                )}
                             </button>
 
                             <button

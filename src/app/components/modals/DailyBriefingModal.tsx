@@ -120,7 +120,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                 <div className="bg-surface-container-low p-4 rounded-2xl border border-white/5 relative">
                                     <Quote size={16} className="absolute top-3 left-3 text-white/10" />
                                     <p className="text-on-surface font-semibold text-sm italic pl-6 pr-2">
-                                        {dailyQuote.text}
+                                        {dailyQuote.text.replace(/^"|"$/g, "'")}
                                     </p>
                                     <p className="text-on-surface-variant text-xs font-bold text-right mt-2">
                                         {dailyQuote.subtext}

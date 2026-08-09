@@ -42,6 +42,11 @@
     *   **AI Copilot Migration:** Deprecated the Android-style floating action button (FAB) for the AI Copilot. Integrated Ava directly into the Top Navigation Bar using a futuristic `Orbit` icon. Fixed overlapping z-index bugs that caused the orb to clip into bottom cards on mobile.
     *   **Execution OS Native Sizing:** Refactored the `planner/page.tsx` tabs (Now, Brain, Goals, Reflect) to use compact, iOS-native padding (`p-6`), font sizing (`text-2xl`), and scaled-down icon wrappers (`w-10 h-10`). Removed horizontally scrolling segmented tabs in favor of evenly distributed flex boxes to match iOS native segmented controls.
     *   **Design Skill Extraction:** Extracted all premium iOS design rules (glassmorphism, micro-animations, compact spatial architecture, and typography) into a reusable AI skill (`premium-ios-design/SKILL.md`) to standardize future agent UI/UX decisions without requiring heavy prompting.
+*   **UX Retention Hooks & Haptics (2026-08-09)**:
+    *   **Casino-style Feedback Loops:** Wired `useRewardSystem().triggerSuccess()` across core actions (Dashboard task completion, hitting daily water targets, saving meal logs, and logging weight). This provides an intense sensory reward (confetti pop, satisfying chime, double-buzz haptic) mimicking Instagram/gambling mechanic feedback loops to maximize user retention and habit formation.
+    *   **Dashboard Config Persistence:** Fixed `AuthContext.tsx` payload mapping so that personalized dashboard widget layouts properly persist to the Supabase `profiles.dashboard_config` backend JSON field.
+    *   **Typography Detail:** Removed raw JSON string double-quotes from `DailyBriefingModal.tsx` quote renderer to display proper clean single-styled quotes in the UI.
+    *   **Strict AI Orb Enforcement:** The `Orbit` + `Sparkles` pulsing orb is the strictly defined Ava Copilot UI. Never replace this with generic generic Tailwind elements or static generic icons.
 ## 4. Current Known Issues
 *   Mobile vertical space is wasted on traditional dashboard cards.
 *   Tasks persistence relied on frontend fallbacks because `priority` and `reminder_time` do not exist in the database schema.

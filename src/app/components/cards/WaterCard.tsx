@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 const QUICK_ADD_ML = 250;
 
@@ -14,6 +15,7 @@ export default function WaterCard() {
     const { selectedDate, isToday } = useDate();
     const router = useRouter();
     const { t } = useLanguage();
+    const { triggerSuccess, triggerTap } = useRewardSystem();
     const [currentMl, setCurrentMl] = React.useState(0);
     const [loaded, setLoaded] = React.useState(false);
     const [saving, setSaving] = React.useState(false);
@@ -45,6 +47,14 @@ export default function WaterCard() {
         if (saving || !selectedDate) return;
         setSaving(true);
         const next = currentMl + QUICK_ADD_ML;
+        
+        // Add Casino-like hooks on milestones!
+        if (next >= goalMl && currentMl < goalMl) {
+            triggerSuccess(); // Giant confetti pop on goal reached
+        } else {
+            triggerTap(); // Normal dopamine hit
+        }
+        
         setCurrentMl(next); // optimistic
         setSplash(true);
         setTimeout(() => setSplash(false), 600);

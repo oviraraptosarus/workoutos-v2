@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
+import { useAppBadge } from '@/lib/hooks/useAppBadge';
 
 export interface DailySnapshot {
     isEmpty: boolean;
@@ -27,6 +28,7 @@ export interface DailySnapshot {
 export function useDailySnapshot() {
     const { user, userProfile } = useAuth();
     const { selectedDate } = useDate();
+    const { setBadge } = useAppBadge();
     const [snapshot, setSnapshot] = useState<DailySnapshot>({
         isEmpty: true,
         completionPercentage: 0,
@@ -241,6 +243,11 @@ export function useDailySnapshot() {
             window.removeEventListener('workout_os_recent_workouts_updated', handleRefresh);
         };
     }, [fetchSnapshot]);
+
+    useEffect(() => {
+        const uncompleted = snapshot.plannerState.total - snapshot.plannerState.completed;
+        setBadge(uncompleted > 0 ? uncompleted : 0);
+    }, [snapshot.plannerState, setBadge]);
 
     return { snapshot, refreshSnapshot: fetchSnapshot };
 }

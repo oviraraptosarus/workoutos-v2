@@ -16,6 +16,7 @@ import RawDataAITransformerModal from '@/app/components/RawDataAITransformerModa
 import GeminiBarcodeScannerModal from '@/app/components/GeminiBarcodeScannerModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 import { MealItem, MealCategory, MacroGoals } from './types';
 import {
     formatDateKey,
@@ -56,6 +57,7 @@ export default function DietPage() {
 
     const { userProfile } = useAuth();
     const { t } = useLanguage();
+    const { triggerSuccess } = useRewardSystem();
 
     // Initial load of macro goals and listen for global settings changes
     useEffect(() => {
@@ -132,6 +134,7 @@ export default function DietPage() {
         }
         setMeals(newMeals);
         await saveMealsForDate(currentDateKey, newMeals);
+        triggerSuccess();
     };
 
     const handleAddBatchMeals = async (batchMeals: Omit<MealItem, 'id'>[]) => {
@@ -142,6 +145,7 @@ export default function DietPage() {
         const newMeals = [...meals, ...newItems];
         setMeals(newMeals);
         await saveMealsForDate(currentDateKey, newMeals);
+        triggerSuccess();
     };
 
     const handleApplyWaterIntake = async (amountMl: number) => {
@@ -169,6 +173,7 @@ export default function DietPage() {
         const newMeals = [...meals, ...copied];
         setMeals(newMeals);
         await saveMealsForDate(currentDateKey, newMeals);
+        triggerSuccess();
     };
 
     const handleExportSummaryText = async () => {

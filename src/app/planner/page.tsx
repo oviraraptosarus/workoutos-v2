@@ -8,10 +8,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
+import { useWakeLock } from '@/lib/hooks/useWakeLock';
+import TaskItem from './components/TaskItem';
 
 export default function ExecutionOSPage() {
     const { t } = useLanguage();
     const { userProfile } = useAuth();
+    const { requestWakeLock, releaseWakeLock } = useWakeLock();
     
     const [activeTab, setActiveTab] = useState<'now' | 'brain' | 'goals' | 'reflect'>('now');
     const [tasks, setTasks] = useState<any[]>([]);
@@ -86,14 +89,18 @@ export default function ExecutionOSPage() {
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isWarRoomActive) {
+            requestWakeLock();
             timer = setInterval(() => {
                 setWarRoomTime(prev => prev + 1);
             }, 1000);
         } else {
+            releaseWakeLock();
             setWarRoomTime(0);
         }
-        return () => clearInterval(timer);
-    }, [isWarRoomActive]);
+        return () => {
+            clearInterval(timer);
+        };
+    }, [isWarRoomActive, requestWakeLock, releaseWakeLock]);
 
     const formatTime = (seconds: number) => {
         const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -413,47 +420,14 @@ export default function ExecutionOSPage() {
                                         </div>
                                     ) : (
                                         tasks.filter(t => !t.completed).map(task => (
-                                            <div key={task.id} className="group/item flex items-center gap-4 bg-surface-container-low hover:bg-surface-container p-4 rounded-2xl border border-surface-variant hover:border-surface-variant transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5">
-                                                <button 
-                                                    onClick={() => completeTask(task.id)}
-                                                    className="w-7 h-7 rounded-full border-2 border-on-surface-variant/30 flex-shrink-0 hover:border-activity-green hover:bg-activity-green/20 transition-all flex items-center justify-center text-transparent hover:text-activity-green shadow-inner"
-                                                >
-                                                    <CheckCircle2 size={18} />
-                                                </button>
-                                                
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="text-on-surface font-body-md font-semibold truncate group-hover/item:text-primary transition-colors">{task.title}</h3>
-                                                    {task.goal_id && goals.find(g => g.id === task.goal_id) && (
-                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-md mt-1 inline-block truncate max-w-full">
-                                                            {goals.find(g => g.id === task.goal_id)?.title}
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                <select 
-                                                    value={task.priority || 'none'}
-                                                    onChange={(e) => setPriority(task.id, e.target.value)}
-                                                    className={clsx(
-                                                        "text-[10px] font-black uppercase tracking-[0.15em] px-3 py-2 rounded-xl border focus:outline-none appearance-none cursor-pointer backdrop-blur-md transition-colors shadow-sm",
-                                                        task.priority === 'high' ? 'bg-error-container text-on-error-container border-error/30 hover:bg-error/20' :
-                                                        task.priority === 'medium' ? 'bg-surface-container-high text-on-surface border-surface-variant hover:bg-surface-container-highest' :
-                                                        task.priority === 'low' ? 'bg-secondary-container text-on-secondary-container border-secondary/30 hover:bg-secondary/20' :
-                                                        'bg-surface-container text-on-surface-variant border-surface-variant hover:bg-surface-container-high'
-                                                    )}
-                                                >
-                                                    <option value="none">No Priority</option>
-                                                    <option value="high">High</option>
-                                                    <option value="medium">Medium</option>
-                                                    <option value="low">Low</option>
-                                                </select>
-
-                                                <button
-                                                    onClick={() => deleteTask(task.id)}
-                                                    className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 hover:border-error/30 transition-all ml-1"
-                                                >
-                                                    <X size={16} />
-                                                </button>
-                                            </div>
+                                            <TaskItem 
+                                                key={task.id} 
+                                                task={task} 
+                                                goals={goals} 
+                                                onComplete={completeTask} 
+                                                onSetPriority={setPriority} 
+                                                onDelete={deleteTask} 
+                                            />
                                         ))
                                     )}
                                 </div>

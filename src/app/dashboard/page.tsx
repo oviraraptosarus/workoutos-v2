@@ -114,13 +114,6 @@ export default function Dashboard() {
             <div className="flex-1">
                 <DashboardHeader />
             </div>
-            <button 
-                onClick={() => setShowEditModal(true)}
-                className="ml-4 w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-sm"
-                aria-label="Edit Dashboard Layout"
-            >
-                <Settings2 size={18} />
-            </button>
         </div>
 
         {/* Dynamic Layout Rendering */}
@@ -156,6 +149,17 @@ export default function Dashboard() {
                     })}
                 </div>
             </div>
+        </div>
+
+        {/* Edit Layout Button at Bottom */}
+        <div className="mt-8 flex justify-center">
+            <button 
+                onClick={() => setShowEditModal(true)}
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-surface-container-low hover:bg-surface-container border border-surface-variant text-sm font-bold text-on-surface-variant hover:text-on-surface transition-all active:scale-95 shadow-sm"
+            >
+                <Settings2 size={16} />
+                Customize Dashboard
+            </button>
         </div>
       </div>
 

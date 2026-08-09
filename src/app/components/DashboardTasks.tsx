@@ -13,7 +13,7 @@ export default function DashboardTasks() {
     const { selectedDate } = useDate();
     const { t } = useLanguage();
     const { tasks, fetchTasks, toggleTask, addTask } = useTaskStore();
-    const { triggerTap } = useRewardSystem();
+    const { triggerTap, triggerSuccess } = useRewardSystem();
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -47,7 +47,7 @@ export default function DashboardTasks() {
     }, [selectedDate, fetchTasks]);
 
     const handleToggleTask = async (taskId: string) => {
-        triggerTap();
+        triggerSuccess();
         await toggleTask(taskId);
     };
 

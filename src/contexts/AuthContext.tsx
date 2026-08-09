@@ -154,6 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         notificationsEnabled: data.notifications_enabled ?? true,
                         streamingResponsesEnabled: data.target_config?.streaming_responses_enabled ?? true,
                         targetConfig: data.target_config || {},
+                        dashboard_config: data.dashboard_config,
                         onboarding_completed: data.onboarding_completed ?? false,
                         createdAt: user.created_at || data.created_at || new Date().toISOString(),
                         updatedAt: data.updated_at || new Date().toISOString(),
@@ -235,6 +236,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     payload.target_config.streaming_responses_enabled = updates.streamingResponsesEnabled;
                 }
             }
+            if (updates.dashboard_config !== undefined) payload.dashboard_config = updates.dashboard_config;
 
             if (updates.accepted_terms !== undefined) payload.accepted_terms = updates.accepted_terms;
             if (updates.accepted_privacy !== undefined) payload.accepted_privacy = updates.accepted_privacy;

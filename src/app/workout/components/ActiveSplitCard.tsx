@@ -6,6 +6,7 @@ import { WorkoutLogger } from '@/lib/workout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
+import { useWakeLock } from '@/lib/hooks/useWakeLock';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, onCloseSession }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void, onCloseSession?: () => void }) {
     const { t } = useLanguage();
@@ -18,6 +19,8 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const submitLock = useRef(false);
+    
+    const { requestWakeLock, releaseWakeLock } = useWakeLock();
 
     // Builder State
     const [customTitle, setCustomTitle] = useState('My Custom Workout');
@@ -64,6 +67,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
                         setIsTimerRunning(parsed.isTimerRunning);
                         setElapsedSeconds(parsed.elapsedSeconds);
                         setCustomTitle(parsed.customTitle);
+                        requestWakeLock();
                         if (onExitBuilder) onExitBuilder();
                     }
                 } catch (e) {}
@@ -77,6 +81,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
             setIsFinished(false);
             setElapsedSeconds(0);
             setIsTimerRunning(true); // Auto-start preset
+            requestWakeLock();
             if (onExitBuilder) onExitBuilder();
         }
     }, [preset]);
@@ -117,6 +122,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
         setElapsedSeconds(0);
         setIsTimerRunning(true);
         setIsFinished(false);
+        requestWakeLock();
     };
 
     const handleSaveLink = (idx: number) => {
@@ -133,6 +139,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
         submitLock.current = true;
         
         setIsFinished(true);
+        releaseWakeLock();
         
         const weightKg = userProfile?.targetWeight || 75;
         const durationHrs = Math.max(elapsedSeconds / 3600, 0.05);
