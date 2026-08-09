@@ -196,7 +196,6 @@ export default function MoodEnergyCard() {
                 </button>
             </div>
             </div>
-            </div>
         </section>
     );
 }
