@@ -101,10 +101,9 @@ export default function DashboardHeader() {
                     <div className="relative">
                         <button
                             onClick={() => setShowCommandCenter(true)}
-                            className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors relative"
+                            className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 via-amber-500 to-emerald-500 flex items-center justify-center text-white hover:opacity-90 transition-all active:scale-95 shadow-md relative"
                         >
-                            <Bell size={18} />
-                            {/* You could fetch a quick unread count here if needed */}
+                            <Sparkles size={18} />
                         </button>
                         
                         <CommandCenterOverlay 
