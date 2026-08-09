@@ -16,6 +16,7 @@ import { WorkoutLogger } from '@/lib/workout';
 import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from '@google/generative-ai';
 import { telemetryEngine } from '@/services/telemetryEngine';
 import ReactMarkdown from 'react-markdown';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 
 interface ChatMessage {
@@ -58,6 +59,7 @@ export default function GlobalAICopilot() {
     const { selectedDate } = useDate();
     const { language, t } = useLanguage();
     const router = useRouter();
+    const { triggerTap, triggerPop, triggerSuccess } = useRewardSystem();
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -591,6 +593,7 @@ export default function GlobalAICopilot() {
                 setMessages(prev => [...prev, avaMsg]);
                 setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || "I've added that." }]);
                 setChips(deriveChips(data.result || ''));
+                triggerSuccess();
 
                 if (data.result && data.result.length < 200) {
                     if (isConversationModeRef.current) {
@@ -721,7 +724,10 @@ export default function GlobalAICopilot() {
             {!isOpen && (
                 <div className="hidden">
                     <button
-                        onClick={() => setIsOpen(true)}
+                        onClick={() => {
+                            triggerPop();
+                            setIsOpen(true);
+                        }}
                         aria-label="Open Ava, the AI assistant"
                         className="relative pointer-events-auto w-12 h-12 rounded-full shadow-[0_4px_24px_rgba(130,60,255,0.5)] active:scale-95 transition-transform duration-200 flex items-center justify-center overflow-hidden"
                     >
@@ -788,7 +794,10 @@ export default function GlobalAICopilot() {
                                     ].map(({ emoji, label, prompt: p }) => (
                                         <button
                                             key={label}
-                                            onClick={() => handleSend(p)}
+                                            onClick={() => {
+                                                triggerTap();
+                                                handleSend(p);
+                                            }}
                                             className="flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left text-sm font-semibold text-on-surface-variant hover:text-on-surface bg-surface-container border border-surface-variant hover:bg-surface-container-high transition-all active:scale-95 shadow-sm"
                                         >
                                             <span className="text-xl">{emoji}</span>
