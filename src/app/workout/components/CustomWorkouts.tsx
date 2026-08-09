@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dumbbell, Plus, Trash2, Edit2, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface CustomWorkout {
     id: string;
@@ -21,6 +22,7 @@ interface CustomWorkoutsProps {
 
 export default function CustomWorkouts({ onPlay }: CustomWorkoutsProps) {
     const { t } = useLanguage();
+    const { triggerTap, triggerPop, triggerSuccess } = useRewardSystem();
     const [customWorkouts, setCustomWorkouts] = useState<CustomWorkout[]>([]);
     
     useEffect(() => {
@@ -40,6 +42,7 @@ export default function CustomWorkouts({ onPlay }: CustomWorkoutsProps) {
 
     const handleDelete = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        triggerPop();
         if (confirm('Are you sure you want to delete this custom workout?')) {
             const updated = customWorkouts.filter(w => w.id !== id);
             setCustomWorkouts(updated);
@@ -94,7 +97,10 @@ export default function CustomWorkouts({ onPlay }: CustomWorkoutsProps) {
                         <div 
                             key={workout.id}
                             className="bg-surface-container/50 hover:bg-surface-container transition-colors rounded-2xl p-4 cursor-pointer group flex items-center justify-between border border-white/5"
-                            onClick={() => onPlay(workout)}
+                            onClick={() => {
+                                triggerSuccess();
+                                onPlay(workout);
+                            }}
                         >
                             <div className="flex items-center gap-4">
                                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${workout.color}`}>

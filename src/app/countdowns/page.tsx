@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Plus, Hourglass, Calendar, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface Countdown {
     id: string;
@@ -15,6 +16,7 @@ interface Countdown {
 
 export default function CountdownsPage() {
     const { userProfile, session } = useAuth();
+    const { triggerSuccess, triggerPop } = useRewardSystem();
     const [countdowns, setCountdowns] = useState<Countdown[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -56,6 +58,7 @@ export default function CountdownsPage() {
             .single();
 
         if (!error && data) {
+            triggerSuccess();
             setCountdowns(prev => [...prev, data].sort((a, b) => new Date(a.target_date).getTime() - new Date(b.target_date).getTime()));
             setNewTitle('');
             setNewDate('');
@@ -67,6 +70,7 @@ export default function CountdownsPage() {
     };
 
     const handleDelete = async (id: string) => {
+        triggerPop();
         const { error } = await supabase.from('countdowns').delete().eq('id', id);
         if (!error) {
             setCountdowns(prev => prev.filter(c => c.id !== id));

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Mail, Lock } from 'lucide-react';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface LoginFormProps {
     onForgotPassword: () => void;
@@ -12,6 +13,7 @@ interface LoginFormProps {
 export default function LoginForm({ onForgotPassword }: LoginFormProps) {
     const { t } = useLanguage();
     const { signIn } = useAuth();
+    const { triggerSuccess } = useRewardSystem();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(true);
@@ -38,6 +40,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
         setError('');
         try {
             await signIn(email, password);
+            triggerSuccess();
             if (!rememberMe) {
                 localStorage.removeItem('workoutos_remembered_username');
             }

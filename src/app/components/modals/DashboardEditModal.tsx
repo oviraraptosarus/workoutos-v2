@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Minus, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 export interface DashboardWidgetConfig {
     id: string;
@@ -37,6 +38,7 @@ interface DashboardEditModalProps {
 
 export default function DashboardEditModal({ isOpen, onClose, onSave }: DashboardEditModalProps) {
     const { userProfile } = useAuth();
+    const { triggerTap, triggerPop, triggerSuccess } = useRewardSystem();
     const [layout, setLayout] = useState<DashboardWidgetConfig[]>(DEFAULT_LAYOUT);
 
     useEffect(() => {
@@ -63,6 +65,7 @@ export default function DashboardEditModal({ isOpen, onClose, onSave }: Dashboar
     if (!isOpen) return null;
 
     const toggleVisibility = (index: number) => {
+        triggerTap();
         const newLayout = [...layout];
         newLayout[index].visible = !newLayout[index].visible;
         setLayout(newLayout);
@@ -70,12 +73,14 @@ export default function DashboardEditModal({ isOpen, onClose, onSave }: Dashboar
 
     const moveWidget = (index: number, direction: 'up' | 'down') => {
         if (direction === 'up' && index > 0) {
+            triggerPop();
             const newLayout = [...layout];
             const temp = newLayout[index];
             newLayout[index] = newLayout[index - 1];
             newLayout[index - 1] = temp;
             setLayout(newLayout);
         } else if (direction === 'down' && index < layout.length - 1) {
+            triggerPop();
             const newLayout = [...layout];
             const temp = newLayout[index];
             newLayout[index] = newLayout[index + 1];
@@ -85,6 +90,7 @@ export default function DashboardEditModal({ isOpen, onClose, onSave }: Dashboar
     };
 
     const handleSave = () => {
+        triggerSuccess();
         onSave(layout);
         onClose();
     };

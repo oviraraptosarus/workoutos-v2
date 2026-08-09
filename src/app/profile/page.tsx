@@ -14,6 +14,7 @@ import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/Prog
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
 import { getLevelProgress, getNametagForLevel } from '@/lib/leveling';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 // ─── Settings Row Component ───────────────────────────────────────────────────
 function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightContent }: any) {
@@ -69,6 +70,7 @@ export default function ProfileHub() {
     const { theme, toggleTheme } = useTheme();
     const { setLanguage } = useLanguage();
     const stats = useProfileStats();
+    const { triggerSuccess } = useRewardSystem();
     
     // View state
     const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -224,6 +226,7 @@ export default function ProfileHub() {
 
     // ── Save ──
     const handleSave = useCallback(async () => {
+        triggerSuccess();
         await updateUserProfile(formData);
 
         window.dispatchEvent(new Event('storage'));
@@ -234,6 +237,7 @@ export default function ProfileHub() {
     }, [formData, updateUserProfile]);
 
     const handleInputSave = (key: keyof typeof formData, value: any) => {
+        triggerSuccess();
         const newData = { ...formData, [key]: value };
         setFormData(newData);
         updateUserProfile({ [key]: value });

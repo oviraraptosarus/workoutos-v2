@@ -10,6 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface WeightEntry {
     date: string;
@@ -21,6 +22,7 @@ const WEIGHT_KEY = 'workout_os_weight_log';
 export default function WeightLogCard() {
     const { userProfile } = useAuth();
     const { t } = useLanguage();
+    const { triggerSuccess } = useRewardSystem();
     const [weight, setWeight] = useState<number | string>(userProfile?.currentWeight || 75);
     const [isLogged, setIsLogged] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -171,6 +173,7 @@ export default function WeightLogCard() {
                 }
                 setChartData(updated);
 
+                triggerSuccess();
                 setIsLogged(true);
                 setTimeout(() => setIsLogged(false), 3000);
                 window.dispatchEvent(new Event('storage'));

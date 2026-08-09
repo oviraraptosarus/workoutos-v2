@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AtSign, Mail, Lock, ShieldCheck, User, Check, ArrowRight } from 'lucide-react';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface SignupFormProps {
     onSuccess?: () => void;
@@ -16,6 +17,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
     const router = useRouter();
     const { t } = useLanguage();
     const { signUp } = useAuth();
+    const { triggerSuccess } = useRewardSystem();
     const [fullName, setFullName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -93,8 +95,10 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                 // If auto-logged in, sign them out to force manual login
                 const { supabase } = await import('@/lib/supabase/client');
                 await supabase.auth.signOut();
+                triggerSuccess();
                 setSuccessMode('created');
             } else {
+                triggerSuccess();
                 setSuccessMode('email');
             }
         } catch (err: unknown) {

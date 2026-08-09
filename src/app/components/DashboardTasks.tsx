@@ -7,11 +7,13 @@ import { Task } from '@/store/useTaskStore';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTaskStore } from '@/store/useTaskStore';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 export default function DashboardTasks() {
     const { selectedDate } = useDate();
     const { t } = useLanguage();
     const { tasks, fetchTasks, toggleTask, addTask } = useTaskStore();
+    const { triggerTap } = useRewardSystem();
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -45,6 +47,7 @@ export default function DashboardTasks() {
     }, [selectedDate, fetchTasks]);
 
     const handleToggleTask = async (taskId: string) => {
+        triggerTap();
         await toggleTask(taskId);
     };
 

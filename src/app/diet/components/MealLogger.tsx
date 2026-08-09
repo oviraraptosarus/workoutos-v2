@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat, Sparkles } from 'lucide-react';
 import { MealItem, MealCategory } from '../types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 
 interface MealLoggerProps {
     meals: MealItem[];
@@ -44,6 +45,7 @@ export default function MealLogger({
     const [summaryCopied, setSummaryCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const { t } = useLanguage();
+    const { triggerTap, triggerPop, triggerSuccess } = useRewardSystem();
 
     const toggleCollapse = (catName: string) => {
         setCollapsed((prev) => ({ ...prev, [catName]: !prev[catName] }));
@@ -51,6 +53,7 @@ export default function MealLogger({
 
     const handleCopyYesterdayClick = () => {
         if (onCopyYesterdayMeals) {
+            triggerSuccess();
             onCopyYesterdayMeals();
             setCopiedNotice(true);
             setTimeout(() => setCopiedNotice(false), 2500);
@@ -237,23 +240,23 @@ export default function MealLogger({
                                                     </div>
 
                                                     {/* Action buttons */}
-                                                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity mt-2 sm:mt-0">
                                                         <button
-                                                            type="button"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
+                                                                triggerTap();
                                                                 onEditMealClick(item);
                                                             }}
-                                                            className="p-2 rounded-xl hover:bg-white/10 text-on-surface-variant hover:text-on-surface transition-colors"
-                                                            title="Modify nutrient contents"
+                                                            className="p-1.5 text-on-surface-variant hover:text-primary bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-white/5"
+                                                            title="Edit Meal"
                                                         >
                                                             <Edit3 size={16} />
                                                         </button>
                                                         <button
-                                                            type="button"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 if (confirm(`Remove ${item.name}?`)) {
+                                                                    triggerPop();
                                                                     onDeleteMeal(item.id);
                                                                 }
                                                             }}
