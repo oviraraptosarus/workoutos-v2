@@ -19,6 +19,14 @@ const GREETING_BY_HOUR = (h: number) => {
     return 'Good evening';
 };
 
+const QUOTES = [
+    { text: '"Tell me, what is it you plan to do with your one wild and precious life?"', subtext: "— Mary Oliver" },
+    { text: '"You could leave life right now. Let that determine what you do and say and think."', subtext: "— Marcus Aurelius" },
+    { text: '"Amateurs sit and wait for inspiration, the rest of us just get up and go to work."', subtext: "— Stephen King" },
+    { text: '"We suffer more often in imagination than in reality."', subtext: "— Seneca" },
+    { text: '"Don\'t stop when you\'re tired. Stop when you\'re done."', subtext: "— David Goggins" }
+];
+
 export default function DashboardHeader() {
     const { userProfile } = useAuth();
     const { offsetDays, setOffsetDays, selectedDate, isToday } = useDate();
@@ -26,6 +34,7 @@ export default function DashboardHeader() {
     const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
     const [showCommandCenter, setShowCommandCenter] = useState(false);
+    const [dailyQuote, setDailyQuote] = useState(QUOTES[0]);
     
     const { snapshot } = useDailySnapshot();
     
@@ -50,6 +59,10 @@ export default function DashboardHeader() {
         if (h < 12) setGreeting(t('nav.greeting.morning'));
         else if (h < 17) setGreeting(t('nav.greeting.afternoon'));
         else setGreeting(t('nav.greeting.evening'));
+        
+        // Pick a consistent quote for the day based on the date
+        const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+        setDailyQuote(QUOTES[dayOfYear % QUOTES.length]);
     }, [t]);
 
     return (
@@ -62,6 +75,9 @@ export default function DashboardHeader() {
                         <h1 className="text-2xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
+                        <p className="text-sm font-medium text-on-surface-variant italic mt-1 hidden sm:block">
+                            {dailyQuote.text} {dailyQuote.subtext}
+                        </p>
                         <div className="flex items-center gap-3 mt-2 sm:mt-1.5 flex-wrap">
                             <div className="flex items-center gap-2">
                                 <button 
