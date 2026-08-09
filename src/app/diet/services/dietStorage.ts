@@ -310,3 +310,39 @@ export const exportDailySummaryText = (dateKey: string, meals: MealItem[], water
 
     return text;
 };
+
+export const getWeeklyDeficitAggregation = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { cumulativeDeficit: 0, estimatedWeightLossKg: 0, daysTracked: 0 };
+
+    const { data: profile } = await supabase.from('profiles').select('calorie_goal').eq('id', user.id).maybeSingle();
+    const tdeeGoal = profile?.calorie_goal || 2200;
+
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
+    const dateStr = sevenDaysAgo.toISOString().split('T')[0];
+
+    const { data: logs } = await supabase
+        .from('daily_logs')
+        .select('date, nutrition_macros, activity_burned')
+        .eq('user_id', user.id)
+        .gte('date', dateStr);
+
+    if (!logs || logs.length === 0) return { cumulativeDeficit: 0, estimatedWeightLossKg: 0, daysTracked: 0 };
+
+    let totalDeficit = 0;
+    logs.forEach(log => {
+        const caloriesConsumed = log.nutrition_macros?.calories || 0;
+        const burned = log.activity_burned || 0;
+        const net = Math.max(0, caloriesConsumed - burned);
+        totalDeficit += (net - tdeeGoal);
+    });
+
+    return {
+        cumulativeDeficit: totalDeficit,
+        // Using totalDeficit directly. If totalDeficit is -3500 (deficit), they lost weight.
+        estimatedWeightLossKg: -(totalDeficit / 7700), 
+        daysTracked: logs.length
+    };
+};
