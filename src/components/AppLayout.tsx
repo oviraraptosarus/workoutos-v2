@@ -64,6 +64,15 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
             <GlobalAICopilot />
             <EndOfDayBanner />
             {session && <OnboardingModal isOpen={showOnboarding} onComplete={() => {}} />}
+            
+            {/* Global AI Copilot Floating Trigger */}
+            <button
+                onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
+                className="fixed bottom-24 left-4 sm:bottom-6 sm:left-6 w-[50px] h-[50px] rounded-full shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105 active:scale-95 transition-transform z-[45]"
+                aria-label="Open AI Copilot"
+            >
+                <div className="absolute inset-0 rounded-full ava-orb-bg opacity-90 hover:opacity-100 transition-opacity animate-[spin_10s_linear_infinite]" />
+            </button>
         </div>
     );
 }
