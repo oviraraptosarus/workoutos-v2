@@ -24,7 +24,7 @@ const DEFAULT_PRIORITY_LIST = [
     { provider: 'openrouter', model: 'google/gemini-2.5-flash' },
     { provider: 'gemini', model: 'gemini-2.5-flash' },
     { provider: 'openrouter', model: 'google/gemini-1.5-pro' },
-    { provider: 'anthropic', model: 'claude-3-5-haiku-20241022' },
+    { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct' },
     { provider: 'openrouter', model: 'openrouter/auto' }
 ];
 
