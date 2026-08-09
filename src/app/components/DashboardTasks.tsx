@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Target, CheckCircle2, Circle, Calendar, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { Task } from '@/app/planner/page';
+import { Task } from '@/store/useTaskStore';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTaskStore } from '@/store/useTaskStore';
@@ -51,7 +51,7 @@ export default function DashboardTasks() {
     const handleAddTask = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newTaskTitle.trim()) return;
-        await addTask({ title: newTaskTitle.trim() });
+        await addTask({ title: newTaskTitle.trim(), priority: 'none' });
         setNewTaskTitle('');
         // Let the store handle the local update optimistically, or fetch again
         fetchTasks(selectedDate || new Date().toLocaleDateString('en-CA'));
@@ -111,13 +111,13 @@ export default function DashboardTasks() {
                                             {task.priority}
                                         </span>
                                     )}
-                                    <h3 className="font-body-md text-sm text-on-surface truncate" title={task.fullTitle || task.title}>
+                                    <h3 className="font-body-md text-sm text-on-surface truncate" title={task.full_title || task.title}>
                                         {task.title}
                                     </h3>
                                 </div>
-                                {task.dueDate && (
+                                {task.due_date && (
                                     <div className="flex items-center gap-1 font-label-sm text-[10px] text-activity-green uppercase tracking-wider mt-1">
-                                        <Calendar size={10} /> Due: {new Date(task.dueDate).toLocaleDateString()}
+                                        <Calendar size={10} /> Due: {new Date(task.due_date).toLocaleDateString()}
                                     </div>
                                 )}
                                 {task.subTasks && task.subTasks.length > 0 && (

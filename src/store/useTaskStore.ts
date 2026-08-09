@@ -2,7 +2,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase/client';
-import { Task, SubTask } from '@/app/planner/page';
+export interface SubTask {
+    id: string;
+    title: string;
+    completed: boolean;
+}
+
+export interface Task {
+    id: string;
+    title: string;
+    full_title?: string;
+    priority: 'low' | 'medium' | 'high' | 'none';
+    category?: string;
+    due_date?: string;
+    due_time?: string;
+    reminder_time?: string;
+    completed: boolean;
+    subTasks?: SubTask[];
+    goal_id?: string;
+}
 
 interface TaskState {
     tasks: Task[];
@@ -57,10 +75,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             user_id: user.id,
             date: new Date().toLocaleDateString('en-CA'),
             title: taskData.title,
-            full_title: (taskData as any).fullTitle || taskData.title,
-            description: taskData.description,
-            due_date: taskData.dueDate,
-            due_time: (taskData as any).dueTime || null,
+            full_title: (taskData as any).full_title || taskData.title,
+            due_date: (taskData as any).due_date,
+            due_time: (taskData as any).due_time || null,
             subtasks: taskData.subtasks?.map(st => ({ id: Date.now().toString() + Math.random().toString(), title: st.title, completed: false })) || [],
             completed: false,
             priority: taskData.priority || 'none'
@@ -77,10 +94,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             const newTask: Task = {
                 id: data.id,
                 title: data.title,
-                fullTitle: data.full_title || data.title,
-                description: data.description || '',
-                dueDate: data.due_date || '',
-                dueTime: data.due_time || '',
+                full_title: data.full_title || data.title,
+                due_date: data.due_date || '',
+                due_time: data.due_time || '',
                 subTasks: data.subtasks || [],
                 completed: data.completed,
                 priority: data.priority || 'none'
@@ -113,7 +129,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
         
-        const updatedSubTasks = task.subTasks.map(st => st.id === subTaskId ? { ...st, completed: !st.completed } : st);
+        const updatedSubTasks = (task.subTasks || []).map((st: SubTask) => st.id === subTaskId ? { ...st, completed: !st.completed } : st);
         
         // Optimistic update
         const previousTasks = tasks;
@@ -148,7 +164,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     setDueDate: async (id: string, dueDate: string, dueTime?: string) => {
         const previousTasks = get().tasks;
         set(state => ({
-            tasks: state.tasks.map(t => t.id === id ? { ...t, dueDate, dueTime: dueTime || t.dueTime } : t)
+            tasks: state.tasks.map(t => t.id === id ? { ...t, due_date: dueDate, due_time: dueTime || t.due_time } : t)
         }));
         
         const updateData: any = { due_date: dueDate };
