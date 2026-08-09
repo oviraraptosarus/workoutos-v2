@@ -16,7 +16,7 @@ import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 
 export default function Dashboard() {
 
-  const { user, isLoading } = useAuth();
+  const { user, userProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
   const [showBriefing, setShowBriefing] = useState(false);
@@ -28,7 +28,12 @@ export default function Dashboard() {
       return;
     }
 
-    if (user) {
+    if (!isLoading && user && isProfileLoaded && !userProfile?.dob) {
+      router.push('/onboarding');
+      return;
+    }
+
+    if (user && isProfileLoaded && userProfile?.dob) {
       // Trigger briefing on first load of the session based on time
       const todayDate = new Date().toISOString().split('T')[0];
       const hasShownBriefing = localStorage.getItem(`briefing_shown_${todayDate}`);

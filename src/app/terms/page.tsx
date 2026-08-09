@@ -19,8 +19,9 @@ export default function TermsPage() {
 
                 <div className="space-y-6 text-on-surface leading-relaxed">
                     <section>
-                        <h2 className="text-xl font-bold mb-3">1. Eligibility & Age Restriction (18+)</h2>
-                        <p>You must be at least eighteen (18) years of age to create an account and use Workout OS. By agreeing to these Terms, you represent and warrant that you are 18 or older. If we determine that you are under 18, your account will be immediately terminated.</p>
+                        <h2 className="text-xl font-bold mb-3">1. Eligibility & Age Restriction (7+)</h2>
+                        <p>You must be at least seven (7) years of age to create an account and use Workout OS. 
+                        <strong> Child Mode (Under 18):</strong> If you are under 18 years of age, you may use the Service, but high-liability features (including biometric photo uploads, caloric deficit targets, and AI dietary advice) will be strictly disabled. Depending on your jurisdiction, we may require verifiable parental consent before you can create an account.</p>
                     </section>
 
                     <section>

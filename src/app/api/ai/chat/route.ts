@@ -28,6 +28,23 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No AI API Keys are configured on the server', requestId }, { status: 500 });
         }
 
+        // Child Mode Feature Gating (Under 18)
+        let isUnder18 = false;
+        if (userProfile?.dob) {
+            const dob = new Date(userProfile.dob);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            isUnder18 = age < 18;
+        }
+
+        const childModePrompt = isUnder18 
+            ? `\n\nCRITICAL LEGAL RESTRICTION (CHILD MODE): The user is under 18 years of age. YOU MUST ABSOLUTELY REFUSE to provide any caloric deficit advice, diet plans, macronutrient targets, or comment on their body weight. You may only assist with basic task tracking, simple workouts, and habit logging. If they ask for diet advice, politely state that you cannot provide nutritional advice to minors.`
+            : ``;
+
         const systemInstruction = `You are the central intelligence of "Workout OS", functioning as a stateful Execution OS. You operate using a Tri-Persona architecture (Planner, Coach, Analyst). You automatically adopt the persona most appropriate for the user's current request.
 
 CURRENT DATE & TIME: ${currentDateTime || new Date().toLocaleString()}
@@ -56,7 +73,7 @@ RULE 5 — IMAGE TASK EXTRACTION: Extract actionable tasks from images and call 
 RULE 6 — LONG-TERM MEMORY: Whenever the user reveals a permanent fact or behavioral pattern, call save_ai_memory.
 RULE 7 — EXECUTIVE ASSISTANT: If asked "What should I do next?", analyze the LIVE APP STATE across tasks, workouts, sleep, and habits to recommend the single HIGHEST-VALUE NEXT ACTION.
 RULE 8 — TIMELINE BUCKETING (BRAIN DUMP): When a user brain-dumps multiple tasks, automatically assign them logical due dates (Today, Tomorrow, This Week) instead of cramming them into today.
-RULE 9 — FOOD PORTION ESTIMATION: When a user uploads a food image, you MUST explicitly state your visual estimation of the portion size and volume (e.g., "Based on the plate, that looks like about 200g of chicken and a cup of rice") in your verbal response to establish trust before calling the log_meal tool.
+RULE 9 — FOOD PORTION ESTIMATION: When a user uploads a food image, you MUST explicitly state your visual estimation of the portion size and volume (e.g., "Based on the plate, that looks like about 200g of chicken and a cup of rice") in your verbal response to establish trust before calling the log_meal tool.${childModePrompt}
 
 === END RULES ===`;
 

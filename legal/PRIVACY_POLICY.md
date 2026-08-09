@@ -7,8 +7,10 @@ Welcome to Workout OS ("we", "our", or "us"). We respect your privacy and are co
 
 This Privacy Policy is designed to comply with the Digital Personal Data Protection Act, 2023 (DPDPA) of India. For users accessing the Service from the European Union, United Kingdom, or the State of California, additional provisions are outlined in Section 10.
 
-## 1. Age Restriction
-Our Service is strictly intended for individuals who are 18 years of age or older. We do not knowingly collect personal data from anyone under 18. If we become aware that we have collected personal data from a minor, we will take immediate steps to delete that data.
+## 1. Age Restriction (7+)
+Our Service is intended for individuals who are 7 years of age or older. 
+- **Under 18 (Child Mode):** If you are under 18, we restrict the collection of sensitive data (such as progress photos) and disable AI health profiling to protect your privacy. 
+- **Parental Consent:** We may require verifiable parental consent prior to account creation for users under the age of 18 (India) or 13 (US/Global), in compliance with the DPDPA and COPPA. If we become aware that we have collected personal data from a child without required consent, we will delete that data.
 
 ## 2. The Data We Collect About You
 We collect data directly from you and automatically as you interact with our Service.

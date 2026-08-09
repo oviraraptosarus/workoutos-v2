@@ -23,19 +23,13 @@ export default function AuthScreen() {
     useEffect(() => {
         // Splash screen duration
         const timer = setTimeout(() => {
-            const onboarded = localStorage.getItem('workout_os_onboarded');
-            if (onboarded === 'true') {
-                setView('welcome');
-            } else {
-                setView('onboarding');
-            }
+            setView('welcome');
         }, 1500);
         return () => clearTimeout(timer);
     }, []);
 
     const completeOnboarding = () => {
-        localStorage.setItem('workout_os_onboarded', 'true');
-        setView('signup'); // Typically after onboarding they want to get started
+        setView('signup'); 
     };
 
     if (view === 'splash') {
@@ -48,10 +42,6 @@ export default function AuthScreen() {
                 <p className="font-body-md text-on-surface-variant mt-1.5 tracking-wide opacity-80">{t('auth.splash.subtitle') !== 'auth.splash.subtitle' ? t('auth.splash.subtitle') : 'Train smart. Track everything.'}</p>
             </div>
         );
-    }
-
-    if (view === 'onboarding') {
-        return <Onboarding onComplete={completeOnboarding} />;
     }
 
     if (view === 'welcome') {

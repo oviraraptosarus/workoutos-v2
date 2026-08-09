@@ -4,8 +4,10 @@
 
 Welcome to Workout OS ("we", "our", "us", or the "Service"). By accessing or using our application, you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not use the Service.
 
-## 1. Eligibility & Age Restriction
-You must be at least eighteen (18) years of age to create an account and use the Service. By agreeing to these Terms, you represent and warrant that you are 18 or older. If we determine that you are under 18, your account will be immediately terminated.
+## 1. Eligibility & Age Restriction (7+)
+You must be at least seven (7) years of age to create an account and use the Service. 
+- **Child Mode (Under 18):** If you are under 18 years of age, you may use the Service, but high-liability features (including biometric photo uploads, caloric deficit targets, and AI dietary advice) will be strictly disabled. 
+- **Parental Consent:** Depending on your jurisdiction (e.g., under the DPDPA in India or COPPA in the US), we may require verifiable parental consent before you can create an account. If we determine that you are under 7, or lack necessary parental consent, your account will be immediately terminated.
 
 ## 2. No Medical Advice (Health & Fitness Disclaimer)
 **WORKOUT OS IS NOT A HEALTHCARE PROVIDER, DOCTOR, OR REGISTERED DIETICIAN.** 

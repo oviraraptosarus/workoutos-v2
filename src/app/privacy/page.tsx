@@ -19,8 +19,8 @@ export default function PrivacyPage() {
 
                 <div className="space-y-6 text-on-surface leading-relaxed">
                     <section>
-                        <h2 className="text-xl font-bold mb-3">1. Age Restriction (18+)</h2>
-                        <p>Our Service is strictly intended for individuals who are 18 years of age or older. We do not knowingly collect personal data from anyone under 18. By using this service, you confirm you meet this age requirement.</p>
+                        <h2 className="text-xl font-bold mb-3">1. Age Restriction (7+)</h2>
+                        <p>Our Service is intended for individuals who are 7 years of age or older. <strong>Under 18 (Child Mode):</strong> If you are under 18, we restrict the collection of sensitive data (such as progress photos) and disable AI health profiling to protect your privacy. We may require verifiable parental consent prior to account creation for users under 18 in certain jurisdictions.</p>
                     </section>
 
                     <section>
