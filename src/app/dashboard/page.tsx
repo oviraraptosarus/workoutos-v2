@@ -13,14 +13,18 @@ import DashboardTasks from '@/app/components/DashboardTasks';
 import QuickNotes from '@/app/components/QuickNotes';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
+import IOSDatePicker from '@/app/components/IOSDatePicker';
 
 export default function Dashboard() {
 
-  const { user, userProfile, isProfileLoaded, isLoading } = useAuth();
+  const { user, userProfile, updateUserProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
   const [showBriefing, setShowBriefing] = useState(false);
   const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>('morning');
+  const [showDOBModal, setShowDOBModal] = useState(false);
+  const [dob, setDob] = useState(new Date(2000, 0, 1));
+  const [savingDob, setSavingDob] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -48,7 +52,25 @@ export default function Dashboard() {
         }
       }
     }
-  }, [user, isLoading, router]);
+
+    if (user && isProfileLoaded && !userProfile?.dob) {
+        setShowDOBModal(true);
+    } else {
+        setShowDOBModal(false);
+    }
+  }, [user, userProfile, isProfileLoaded, isLoading, router]);
+
+  const handleSaveDOB = async () => {
+      setSavingDob(true);
+      try {
+          await updateUserProfile({ dob: dob.toISOString().split('T')[0] });
+          setShowDOBModal(false);
+      } catch (err) {
+          alert('Failed to save Date of Birth');
+      } finally {
+          setSavingDob(false);
+      }
+  };
 
   if (!user) return null;
 
@@ -77,10 +99,36 @@ export default function Dashboard() {
       </div>
 
       <DailyBriefingModal 
-        isOpen={showBriefing} 
+        isOpen={showBriefing && !showDOBModal} 
         onClose={() => setShowBriefing(false)} 
         mode={briefingMode} 
       />
+
+      {showDOBModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-card-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-surface-variant/30 flex flex-col items-center">
+                <h2 className="font-display-sm text-2xl font-bold text-on-surface mb-2 text-center">When were you born?</h2>
+                <p className="font-body-sm text-on-surface-variant mb-6 text-center text-sm">
+                    We need your date of birth to personalize your calorie targets, milestones, and provide age-appropriate features.
+                </p>
+                <div className="w-full mb-6">
+                    <IOSDatePicker 
+                        value={dob} 
+                        onChange={(d) => setDob(d)} 
+                        minYear={1920} 
+                        maxYear={new Date().getFullYear()} 
+                    />
+                </div>
+                <button
+                    onClick={handleSaveDOB}
+                    disabled={savingDob}
+                    className="w-full bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98] disabled:opacity-50"
+                >
+                    {savingDob ? 'Saving...' : 'Continue'}
+                </button>
+            </div>
+        </div>
+      )}
     </AppLayout>
   );
 }

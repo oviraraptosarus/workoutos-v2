@@ -353,6 +353,7 @@ export default function ProfileHub() {
                         {[
                             { label: t('profile.fullName'), key: 'fullName', type: 'text' },
                             { label: t('profile.username'), key: 'username', type: 'text' },
+                            { label: 'Date of Birth', key: 'dob', type: 'date' },
                             { label: t('profile.height'), key: 'heightCm', type: 'number' },
                             { label: t('profile.currentWeight'), key: 'currentWeight', type: 'number' },
                             { label: t('profile.targetWeight'), key: 'targetWeight', type: 'number' },
