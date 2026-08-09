@@ -364,6 +364,9 @@ export default function ExecutionOSPage() {
                                     </div>
                                     <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
                                 </div>
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                                    Your immediate action items for today. Add quick tasks, set priorities, link them to your macro goals, and check them off to build unstoppable momentum.
+                                </p>
                                 
                                 <form onSubmit={handleAddQuickTask} className="flex flex-col gap-3 relative z-10">
                                     <input 
@@ -471,8 +474,8 @@ export default function ExecutionOSPage() {
                                     </div>
                                     <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
                                 </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10">
-                                    Drop your unstructured thoughts here, or hold the mic to speak. Ava will instantly process it, extract actionable tasks, and organize them into your execution pipeline.
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                                    Use the Brain Dump when your mind is cluttered. Instead of manually organizing, just dump all your thoughts, ideas, or to-dos here (type or speak). Ava will analyze the chaos, extract the actionable tasks, and put them straight into your execution pipeline.
                                 </p>
                                 
                                 <div className="relative mb-4 z-10">
@@ -542,8 +545,8 @@ export default function ExecutionOSPage() {
                                         {isAddingGoal ? 'Cancel' : 'Define Vector'}
                                     </button>
                                 </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4">
-                                    Define your high-level execution vectors. Everything you do on a daily basis should map back to these North Star targets.
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                                    Define your long-term, high-level execution vectors. Whether it's a fitness milestone or a career target, everything you do on a daily basis should map back to these North Star targets.
                                 </p>
 
                                 {isAddingGoal && (
@@ -637,8 +640,8 @@ export default function ExecutionOSPage() {
                                     </div>
                                     <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
                                 </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4">
-                                    Did you win the day? Log your thoughts, bottlenecks, and wins. Ava will process this to adjust your behavioral patterns and tomorrow's targets.
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                                    Did you win the day? Log your daily wrap-up, bottlenecks, and wins. Ava will process this reflection to identify your behavioral patterns, suggest course corrections, and adjust tomorrow's targets.
                                 </p>
                                 
                                 <div className="relative mb-4 z-10">
