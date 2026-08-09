@@ -76,6 +76,7 @@ export default function DashboardCountdowns() {
                     );
                 })}
             </div>
+            </div>
         </section>
     );
 }
