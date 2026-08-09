@@ -42,7 +42,7 @@ export default function OnboardingPage() {
 
             const isUnder18 = age < 18;
 
-            await supabase
+            const { error: updateError } = await supabase
                 .from('profiles')
                 .update({ 
                     dob: dob.toISOString().split('T')[0],
@@ -52,10 +52,17 @@ export default function OnboardingPage() {
                 })
                 .eq('id', user.id);
 
+            if (updateError) {
+                console.error('Supabase update error:', updateError);
+                alert("Database Error: " + updateError.message + "\n\nIt looks like your backend database is missing the 'dob' column. Please run the SQL migration provided by the AI.");
+                return;
+            }
+
             localStorage.setItem('workout_os_onboarded', 'true');
             router.push('/dashboard');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving onboarding data', error);
+            alert("Unexpected Error: " + (error?.message || "Something went wrong"));
         } finally {
             setIsSaving(false);
         }
