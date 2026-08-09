@@ -123,13 +123,17 @@ export default function MoodEnergyCard() {
     // renderSegments is now RatingSlider
 
     return (
-        <div className="glass-card-premium p-4 sm:p-5 transition-all relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex flex-col">
-            <div className="flex items-baseline justify-between mb-4">
+        <section className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-3 px-1">
                 <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">How do you feel?</h3>
-                <span className="font-label-sm text-label-sm text-on-surface-variant">Optional</span>
+                <span className="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">Optional</span>
             </div>
 
-            <div className="space-y-3">
+            <div className="glass-card-premium p-4 sm:p-5 transition-all relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex flex-col flex-1 border border-white/10">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                
+                <div className="space-y-3 relative z-10">
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">
                         <Smile size={14} className="text-primary" />
@@ -158,7 +162,7 @@ export default function MoodEnergyCard() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-surface-variant">
+            <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-surface-variant relative z-10">
                 <div className="flex items-center gap-2 min-w-0">
                     <Coffee size={14} className="text-primary shrink-0" />
                     <button
@@ -191,6 +195,8 @@ export default function MoodEnergyCard() {
                     {saved ? '✓ Saved' : 'Save'}
                 </button>
             </div>
-        </div>
+            </div>
+            </div>
+        </section>
     );
 }

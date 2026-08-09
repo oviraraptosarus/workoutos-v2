@@ -317,5 +317,6 @@ export default function WeightLogCard() {
                 onPhotoUploaded={fetchPhotos}
             />
         </div>
+        </section>
     );
 }
