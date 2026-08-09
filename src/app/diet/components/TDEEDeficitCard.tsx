@@ -4,6 +4,7 @@ import React from 'react';
 import { TrendingDown, Flame, Zap, Award, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getWeeklyDeficitAggregation } from '../services/dietStorage';
 
 interface TDEEDeficitCardProps {
     totalCalories: number;
@@ -19,6 +20,20 @@ export default function TDEEDeficitCard({
     onOpenActivityModal,
 }: TDEEDeficitCardProps) {
     const { t } = useLanguage();
+    
+    const [weeklyData, setWeeklyData] = React.useState<{ cumulativeDeficit: number, estimatedWeightLossKg: number, daysTracked: number } | null>(null);
+
+    React.useEffect(() => {
+        const fetchWeekly = async () => {
+            const data = await getWeeklyDeficitAggregation();
+            setWeeklyData(data);
+        };
+        fetchWeekly();
+        
+        // Refresh when diet changes
+        window.addEventListener('workout_os_diet_updated', fetchWeekly);
+        return () => window.removeEventListener('workout_os_diet_updated', fetchWeekly);
+    }, []);
     const netCaloriesIn = Math.max(0, totalCalories - activityBurned);
     const deficitOrSurplus = netCaloriesIn - tdeeGoal; // Negative = Deficit, Positive = Surplus
     const isDeficit = deficitOrSurplus <= 0;
@@ -64,17 +79,33 @@ export default function TDEEDeficitCard({
                 </div>
             </div>
 
-            {/* Hero Stat: Weekly Velocity */}
-            <div className="mb-8">
-                <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold tracking-tight text-on-surface tabular-nums">
-                        {isDeficit ? `-${weeklyPaceKg}` : `+${weeklyPaceKg}`}
-                    </span>
-                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">kg/wk</span>
+            {/* Hero Stat: Weekly Velocity & Cumulative Deficit */}
+            <div className="mb-8 grid grid-cols-2 gap-4">
+                <div>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold tracking-tight text-on-surface tabular-nums">
+                            {isDeficit ? `-${weeklyPaceKg}` : `+${weeklyPaceKg}`}
+                        </span>
+                        <span className="text-sm font-bold text-on-surface-variant uppercase tracking-widest">kg/wk</span>
+                    </div>
+                    <p className="text-sm text-on-surface-variant font-medium mt-1">
+                        Pace based on <strong className="text-on-surface">today's</strong> deficit of {absoluteDiff} kcal.
+                    </p>
                 </div>
-                <p className="text-sm text-on-surface-variant font-medium mt-1">
-                    Projected weekly weight {isDeficit ? 'loss' : 'gain'} based on today's deficit of <strong className="text-on-surface">{absoluteDiff} kcal</strong>.
-                </p>
+                
+                {weeklyData && (
+                    <div className="pl-4 border-l border-surface-variant/30">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold tracking-tight text-on-surface tabular-nums">
+                                {weeklyData.cumulativeDeficit > 0 ? '-' : '+'}{Math.abs(weeklyData.estimatedWeightLossKg).toFixed(2)}
+                            </span>
+                            <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">kg lost</span>
+                        </div>
+                        <p className="text-sm text-on-surface-variant font-medium mt-1">
+                            Actual weight loss this week from a cumulative <strong className="text-on-surface">{Math.abs(weeklyData.cumulativeDeficit)} kcal</strong> {weeklyData.cumulativeDeficit > 0 ? 'deficit' : 'surplus'}.
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Segmented Energy Bar */}
