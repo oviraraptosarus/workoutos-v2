@@ -28,12 +28,9 @@ export default function Dashboard() {
       return;
     }
 
-    if (!isLoading && user && isProfileLoaded && !userProfile?.dob) {
-      router.push('/onboarding');
-      return;
-    }
 
-    if (user && isProfileLoaded && userProfile?.dob) {
+
+    if (user && isProfileLoaded) {
       // Trigger briefing on first load of the session based on time
       const todayDate = new Date().toISOString().split('T')[0];
       const hasShownBriefing = localStorage.getItem(`briefing_shown_${todayDate}`);

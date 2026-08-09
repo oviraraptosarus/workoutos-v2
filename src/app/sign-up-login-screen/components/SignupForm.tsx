@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AtSign, Mail, Lock, ShieldCheck, User, Check } from 'lucide-react';
+import { AtSign, Mail, Lock, ShieldCheck, User, Check, ArrowRight } from 'lucide-react';
+import IOSDatePicker from '@/app/components/IOSDatePicker';
 
 interface SignupFormProps {
     onSuccess?: () => void;
@@ -21,6 +22,9 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [acceptTerms, setAcceptTerms] = useState(false);
+    
+    const [step, setStep] = useState(0); // 0 = details, 1 = dob
+    const [dob, setDob] = useState(new Date(2000, 0, 1));
     
     const [error, setError] = useState('');
     const [successMode, setSuccessMode] = useState<'none' | 'email' | 'created'>('none');
@@ -56,6 +60,11 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
             return;
         }
 
+        if (step === 0) {
+            setStep(1);
+            return;
+        }
+
         setLoading(true);
         setError('');
         setSuccessMode('none');
@@ -72,6 +81,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
             const response = await signUp(email, password, { 
                 fullName, 
                 username: username.toLowerCase(),
+                dob: dob.toISOString().split('T')[0],
                 accepted_terms: true,
                 accepted_privacy: true,
                 terms_version: 'v1.0',
@@ -130,6 +140,49 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
                 <p className="text-sm text-on-surface-variant/70 italic">
                     (If you are the developer testing locally, check your Inbucket or disable Email Confirmations in Supabase settings).
                 </p>
+            </div>
+        );
+    }
+
+    if (step === 1) {
+        return (
+            <div className="flex flex-col items-center animate-in fade-in slide-in-from-right-4 duration-300">
+                <div className="text-center mb-6">
+                    <h2 className="font-display-sm text-2xl font-bold text-on-surface">When were you born?</h2>
+                    <p className="font-body-sm text-on-surface-variant mt-2 max-w-sm">
+                        We need this to personalize your targets and ensure we provide age-appropriate features.
+                    </p>
+                </div>
+                
+                <div className="w-full max-w-sm">
+                    <IOSDatePicker 
+                        value={dob} 
+                        onChange={(d) => setDob(d)} 
+                        minYear={1920} 
+                        maxYear={new Date().getFullYear()} 
+                    />
+                </div>
+
+                <div className="w-full mt-8">
+                    {error && (
+                        <div className="p-3 mb-4 rounded-xl bg-error/10 border border-error/20 text-error text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="w-full bg-primary text-on-primary font-label-md text-label-md h-12 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                        {loading ? 'Creating Account...' : 'Complete Setup'} <ArrowRight size={18} />
+                    </button>
+                    <button
+                        onClick={() => setStep(0)}
+                        className="w-full mt-3 text-on-surface-variant hover:text-on-surface font-label-md text-sm transition-colors"
+                    >
+                        Back
+                    </button>
+                </div>
             </div>
         );
     }
