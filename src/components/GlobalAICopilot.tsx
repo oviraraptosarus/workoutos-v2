@@ -666,22 +666,18 @@ export default function GlobalAICopilot() {
         recognition.interimResults = true;
         recognition.lang = 'en-IN';
         const existing = promptRef.current ? promptRef.current + ' ' : '';
-        let finalTranscript = '';
+        let sessionTranscript = '';
         
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return;
             
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
-                }
+            let currentTranscript = '';
+            for (let i = 0; i < event.results.length; ++i) {
+                currentTranscript += event.results[i][0].transcript;
             }
             
-            const full = (existing + finalTranscript + interimTranscript).trim();
+            const full = (existing + currentTranscript).trim();
             setPrompt(full);
             
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
