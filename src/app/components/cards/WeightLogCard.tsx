@@ -192,11 +192,8 @@ export default function WeightLogCard() {
     };
 
     return (
-        <div className="glass-card-premium p-6 animate-in fade-in slide-in-from-bottom-2 duration-300 relative overflow-hidden transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-            <div className="relative z-10 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-4">
+        <section className="flex flex-col h-full mt-2 sm:mt-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-3 px-1">
                 <div className="flex items-center gap-2 text-on-surface-variant">
                     <span className="material-symbols-outlined text-primary text-[20px]">monitor_weight</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.weight')}</span>
@@ -205,17 +202,22 @@ export default function WeightLogCard() {
                     <button
                         type="button"
                         onClick={() => setGalleryOpen(true)}
-                        className="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1 font-bold active:scale-90 transition-transform bg-secondary/10 px-2.5 py-1 rounded-full border border-secondary/20"
+                        className="font-label-sm text-[11px] text-secondary hover:underline flex items-center gap-1 font-bold uppercase tracking-wider transition-colors btn-press"
                         title="Progress Photos Gallery"
                     >
                         <Camera size={13} />
                         Photos
                     </button>
-                    <Link href="/progress" aria-label="View weight progress" className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 active:scale-90 transition-transform">
-                        Trend <ChevronRight size={16} />
+                    <Link href="/progress" aria-label="View weight progress" className="font-label-sm text-[11px] text-on-surface-variant hover:text-secondary uppercase tracking-wider flex items-center transition-colors btn-press">
+                        Trend <ChevronRight size={14} />
                     </Link>
                 </div>
             </div>
+
+            <div className="glass-card-premium p-6 relative overflow-hidden transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] border border-white/10 flex-1">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                <div className="relative z-10 flex flex-col h-full">
 
             <div className="h-40 w-full mb-4">
                 <ResponsiveContainer width="100%" height="100%">

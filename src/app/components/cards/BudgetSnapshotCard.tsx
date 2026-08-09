@@ -54,17 +54,21 @@ export default function BudgetSnapshotCard() {
     const onTrack = pct <= expectedPacePct;
 
     return (
-        <Link
-            href="/budget-tracker"
-            className="glass-card-premium p-5  flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform block"
-        >
-            <div className="flex items-center justify-between mb-3">
+        <section className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-3 px-1">
                 <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-[20px]">payments</span>
                     <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">{t('dash.budget')}</span>
                 </div>
-                <ChevronRight size={18} className="text-on-surface-variant/50" />
+                <Link href="/budget-tracker" className="font-label-sm text-[11px] text-on-surface-variant hover:text-secondary uppercase tracking-wider flex items-center transition-colors btn-press">
+                    View All <ChevronRight size={14} />
+                </Link>
             </div>
+
+            <Link
+                href="/budget-tracker"
+                className="glass-card-premium p-5 flex-1 flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform block hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] border border-white/10"
+            >
 
             {loading ? (
                 <div className="h-12 flex items-center">
@@ -118,6 +122,7 @@ export default function BudgetSnapshotCard() {
                     )}
                 </>
             )}
-        </Link>
+            </Link>
+        </section>
     );
 }

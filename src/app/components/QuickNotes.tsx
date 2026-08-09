@@ -86,12 +86,10 @@ export default function QuickNotes() {
     if (!isClient) return null;
 
     return (
-        <section className="glass-card-premium p-6 flex flex-col transition-all animate-fade-in relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-            <div className="flex items-center justify-between mb-4 relative z-10">
+        <section className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-between mb-3 px-1">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                    <PenTool size={16} className="text-primary" /> Quick Notes
+                    <PenTool size={20} className="text-primary" /> Quick Notes
                     {saveStatus === 'saving' && <Loader2 size={12} className="text-on-surface-variant animate-spin ml-1" />}
                     {saveStatus === 'saved' && <CheckCircle2 size={14} className="text-activity-green ml-1" />}
                 </h2>
@@ -99,12 +97,16 @@ export default function QuickNotes() {
                 {note.trim() && (
                     <button
                         onClick={clearNote}
-                        className="font-label-sm text-label-sm text-on-surface-variant hover:text-error flex items-center transition-colors gap-1 active:scale-95"
+                        className="font-label-sm text-[11px] text-on-surface-variant hover:text-error flex items-center transition-colors gap-1 active:scale-95 uppercase tracking-wider btn-press"
                     >
-                        Clear <Trash2 size={12} />
+                        Clear <Trash2 size={14} />
                     </button>
                 )}
             </div>
+
+            <div className="glass-card-premium p-4 sm:p-5 flex flex-col relative overflow-hidden flex-1 border border-white/10 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
             <textarea
                 value={note}
@@ -115,6 +117,7 @@ export default function QuickNotes() {
                 placeholder={isToday ? "Jot down anything raw (e.g. 2 eggs, 500ml water, 30 min run)..." : "Cannot edit historical notes."}
                 className={`glass-input-premium w-full font-body-md text-on-surface p-4 resize-none rounded-[1.25rem] relative z-10 custom-scrollbar ${!isToday ? 'opacity-70 cursor-not-allowed' : ''}`}
             />
+            </div>
         </section>
     );
 }
