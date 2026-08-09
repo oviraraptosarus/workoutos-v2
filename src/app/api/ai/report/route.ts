@@ -29,6 +29,10 @@ Output the report in crisp, beautiful Markdown with the following sections:
 LANGUAGE PREFERENCE:
 The user has set their language preference to '${preferredLanguage || 'en'}'. If 'te', you MUST output the entire report in fluent, modern Telugu. Translate all technical fitness and financial terms naturally to Telugu, or use transliteration where it makes sense. If 'en', respond in English. Never deviate from this language preference.
 
+CRITICAL OUTPUT INTEGRITY RULES:
+1. REPETITIVE-OUTPUT PREVENTION: Generate each phrase/token only once. Do not progressively re-output previously generated sentences. If a loop is detected, abort it. Never concatenate drafts.
+2. NO HYPHENS: Do NOT use hyphens ("-") as bullet points or stylistic dividers. Use standard spacing or numbers.
+
 Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your report"). Just output the raw Markdown starting with a nice Title (e.g., "# 📊 Bi-Weekly Progress Report").`;
 
         try {
