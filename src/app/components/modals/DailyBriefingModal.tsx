@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X, Sun, Moon, Droplets, Dumbbell, Zap, Target, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { X, Sun, Moon, Droplets, Dumbbell, Zap, Target, CheckCircle2, AlertTriangle, ArrowRight, Quote } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDailySnapshot } from '@/hooks/useDailySnapshot';
 import clsx from 'clsx';
+import QUOTES from '@/data/quotes.json';
 
 interface DailyBriefingModalProps {
     isOpen: boolean;
@@ -65,6 +66,10 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     if (snapshot.sleepProgress.current < snapshot.sleepProgress.target) bottlenecks.push('Sleep was suboptimal. Prioritize recovery.');
     if (completedTasks === 0 && snapshot.plannerState.total > 0) bottlenecks.push('Execution rate was low. Focus on one task at a time.');
 
+    const now = new Date();
+    const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+    const dailyQuote = QUOTES[dayOfYear % QUOTES.length];
+
     return (
         <div className={`fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-xl" onClick={onClose} />
@@ -106,11 +111,21 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                     {title}
                                     <span className={isMorning ? 'text-amber-500' : 'text-indigo-400'}>{name}</span>
                                 </h2>
-                                <p className="text-on-surface-variant font-medium leading-relaxed mb-4">
+                                <p className="text-on-surface-variant font-medium leading-relaxed mb-6">
                                     {isMorning 
                                         ? "You've got a solid day ahead. Let's review your stats and prepare for execution." 
                                         : "Great work today. Let's review your progress and get ready to recharge for tomorrow."}
                                 </p>
+                                
+                                <div className="bg-surface-container-low p-4 rounded-2xl border border-white/5 relative">
+                                    <Quote size={16} className="absolute top-3 left-3 text-white/10" />
+                                    <p className="text-on-surface font-semibold text-sm italic pl-6 pr-2">
+                                        {dailyQuote.text}
+                                    </p>
+                                    <p className="text-on-surface-variant text-xs font-bold text-right mt-2">
+                                        {dailyQuote.subtext}
+                                    </p>
+                                </div>
                             </div>
                         )}
 

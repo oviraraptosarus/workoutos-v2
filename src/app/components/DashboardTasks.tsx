@@ -73,9 +73,7 @@ export default function DashboardTasks() {
                 </Link>
             </div>
 
-            <div className={`glass-card-premium border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-white/10'} p-6 space-y-4 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]`}>
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            <div className={`relative glass-card-premium border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-white/10'} p-6 space-y-4 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]`}>
                 
                 {pendingTasks.length === 0 ? (
                     <div className="flex flex-col items-center justify-center gap-3 py-6">
