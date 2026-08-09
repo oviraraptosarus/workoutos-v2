@@ -168,9 +168,9 @@ export default function CountdownsPage() {
                                     key={countdown.id} 
                                     className={clsx(
                                         "group relative overflow-hidden rounded-[22px] p-4 flex flex-col justify-between aspect-square transition-all duration-300",
-                                        isPast ? "bg-[#1c1c1e]/50 opacity-50" : 
+                                        isPast ? "bg-card-white/50 dark:bg-[#1c1c1e]/50 opacity-50 border border-black/5 dark:border-white/5" : 
                                         isToday ? "bg-gradient-to-br from-[#0a84ff] to-[#0051a8] text-white shadow-lg shadow-[#0a84ff]/20" :
-                                        "bg-[#1c1c1e] shadow-sm"
+                                        "bg-card-white dark:bg-[#1c1c1e] shadow-sm border border-black/5 dark:border-white/5"
                                     )}
                                 >
                                     {/* Delete Button */}

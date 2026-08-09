@@ -23,10 +23,10 @@ interface CategoryConfig {
 }
 
 const CATEGORIES: CategoryConfig[] = [
-    { name: 'Breakfast', icon: <Sun className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
-    { name: 'Lunch', icon: <SunDim className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
-    { name: 'Dinner', icon: <Moon className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
-    { name: 'Snacks', icon: <Apple className="w-5 h-5 text-white" />, color: 'text-white bg-white/5' },
+    { name: 'Breakfast', icon: <Sun className="w-5 h-5 text-on-surface" />, color: 'text-on-surface' },
+    { name: 'Lunch', icon: <SunDim className="w-5 h-5 text-on-surface" />, color: 'text-on-surface' },
+    { name: 'Dinner', icon: <Moon className="w-5 h-5 text-on-surface" />, color: 'text-on-surface' },
+    { name: 'Snacks', icon: <Apple className="w-5 h-5 text-on-surface" />, color: 'text-on-surface' },
 ];
 
 export default function MealLogger({
@@ -142,7 +142,7 @@ export default function MealLogger({
             </div>
 
             {/* Meal Categories Timeline */}
-            <div className="relative border-l border-white/10 ml-4 space-y-8 pb-4">
+            <div className="relative border-l border-black/10 dark:border-white/10 ml-4 space-y-8 pb-4">
                 {CATEGORIES.map(({ name, icon, color }) => {
                     const categoryMeals = filteredMeals.filter((m) => m.category === name);
                     const isCollapsed = collapsed[name];
@@ -153,11 +153,11 @@ export default function MealLogger({
                     return (
                         <div key={name} className="relative pl-6 sm:pl-8">
                             {/* Timeline Node */}
-                            <div className="absolute -left-3 top-0 w-6 h-6 bg-background rounded-full border border-white/20 flex items-center justify-center">
+                            <div className="absolute -left-3 top-0 w-6 h-6 bg-background rounded-full border border-black/10 dark:border-white/20 flex items-center justify-center">
                                 <div className="w-2 h-2 rounded-full bg-on-surface/50" />
                             </div>
 
-                            <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 rounded-3xl p-5 sm:p-6 shadow-[0_20px_40px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] transition-all overflow-hidden relative group/cat">
+                            <div className="bg-surface-container/30 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl p-5 sm:p-6 shadow-[0_20px_40px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] transition-all overflow-hidden relative group/cat">
                                 
                                 {/* Section Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -165,7 +165,7 @@ export default function MealLogger({
                                         onClick={() => toggleCollapse(name)}
                                         className="flex items-center gap-4 cursor-pointer select-none group"
                                     >
-                                        <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 shadow-sm transition-transform group-hover:scale-105 ${color}`}>
+                                        <div className={`p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 shadow-sm transition-transform group-hover:scale-105 ${color}`}>
                                             {icon}
                                         </div>
                                         <div>

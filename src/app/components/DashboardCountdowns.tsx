@@ -59,8 +59,11 @@ export default function DashboardCountdowns() {
                 </Link>
             </div>
             
-            <div className="relative glass-card-premium border border-white/10 p-5 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
-                <div className="space-y-3">
+            <div className="relative glass-card-premium border border-black/5 dark:border-white/10 p-5 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                
+                <div className="space-y-3 relative z-10">
                 {countdowns.map(countdown => {
                     const daysLeft = getDaysRemaining(countdown.target_date);
                     return (
