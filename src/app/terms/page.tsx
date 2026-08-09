@@ -9,43 +9,44 @@ export default function TermsPage() {
     
     return (
         <div className="min-h-screen bg-background text-on-surface p-4 sm:p-5 md:p-12 font-sans">
-            <div className="max-w-3xl mx-auto bg-surface-container rounded-2xl shadow-sm border border-surface-variant/30 p-8">
+            <div className="max-w-4xl mx-auto bg-surface-container rounded-2xl shadow-sm border border-surface-variant/30 p-8">
                 <Link href="/" className="inline-flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors mb-8 font-medium">
                     <ArrowLeft size={18} /> Back
                 </Link>
                 
-                <h1 className="text-3xl font-black text-on-surface mb-2">Terms and Conditions</h1>
-                <p className="text-sm text-on-surface-variant mb-8">Last Updated: August 2026 (v1.0)</p>
+                <h1 className="text-3xl font-black text-on-surface mb-2">Terms of Service</h1>
+                <p className="text-sm text-on-surface-variant mb-8">Last Updated: August 2026</p>
 
-                <div className="space-y-4 text-on-surface leading-relaxed">
+                <div className="space-y-6 text-on-surface leading-relaxed">
                     <section>
-                        <h2 className="text-xl font-bold mb-3">1. Acceptance of Terms</h2>
-                        <p>By accessing and using Workout OS (the "Service"), you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the Service.</p>
+                        <h2 className="text-xl font-bold mb-3">1. Eligibility & Age Restriction (18+)</h2>
+                        <p>You must be at least eighteen (18) years of age to create an account and use Workout OS. By agreeing to these Terms, you represent and warrant that you are 18 or older. If we determine that you are under 18, your account will be immediately terminated.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-bold mb-3">2. User Accounts</h2>
-                        <p>To use certain features, you must register for an account. You agree to provide accurate information and are solely responsible for maintaining the confidentiality of your account credentials.</p>
+                        <h2 className="text-xl font-bold mb-3">2. No Medical Advice (Health & Fitness Disclaimer)</h2>
+                        <p className="font-bold text-red-500 dark:text-red-400 mb-2">WORKOUT OS IS NOT A HEALTHCARE PROVIDER, DOCTOR, OR REGISTERED DIETICIAN.</p>
+                        <p>The Service, including all AI-generated recommendations, workout plans, and macronutrient targets, is provided for informational and execution-tracking purposes only. You assume all risks associated with your use of the Service. You should consult a licensed healthcare professional before starting any diet or exercise program. Do not use the Service for medical diagnosis, injury rehabilitation, or treatment.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-bold mb-3">3. Medical Disclaimer</h2>
-                        <p>Workout OS is a fitness and productivity tool, not a medical device or healthcare provider. Any health, fitness, or nutritional information provided is for informational purposes only and should not replace professional medical advice. Always consult a physician before beginning any new exercise or diet program.</p>
+                        <h2 className="text-xl font-bold mb-3">3. The AI Copilot & Automated Decisions</h2>
+                        <p>The Service includes an AI Copilot powered by third-party Large Language Models (LLMs). The AI Copilot may generate inaccurate, incomplete, or inappropriate information (known as "hallucinations"). You are solely responsible for independently verifying any nutritional or fitness advice provided by the AI.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-bold mb-3">4. User Content</h2>
-                        <p>You retain ownership of the data you input (workouts, photos, budgets). By using the Service, you grant Workout OS a license to host, store, and process this data solely to provide the Service to you.</p>
+                        <h2 className="text-xl font-bold mb-3">4. Acceptable Use & Prohibited Content</h2>
+                        <p>You agree not to use the Service to upload, store, or process any illegal, infringing, or harmful content. Uploading explicit, nude, or sexually suggestive imagery to the Progress Photos feature is strictly prohibited. We employ automated screening and reserve the right to terminate accounts that violate this policy without notice.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-xl font-bold mb-3">5. Prohibited Conduct</h2>
-                        <p>You agree not to use the Service for any unlawful purpose, to reverse engineer the application, or to interfere with the proper working of the system.</p>
+                        <h2 className="text-xl font-bold mb-3">5. User Content & Intellectual Property</h2>
+                        <p>You retain all ownership rights to the data you input into the Service. You grant us a worldwide, non-exclusive license to host and process this data solely to provide the Service to you. We retain all rights to the underlying code, UI, and AI architecture.</p>
                     </section>
-
+                    
                     <section>
-                        <h2 className="text-xl font-bold mb-3">6. Termination</h2>
-                        <p>We reserve the right to suspend or terminate your account at any time for violations of these Terms, with or without notice.</p>
+                        <h2 className="text-xl font-bold mb-3">6. Limitation of Liability</h2>
+                        <p className="uppercase text-sm">To the maximum extent permitted by applicable law, Workout OS shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of data or personal injury resulting from your use of the Service or reliance on AI recommendations.</p>
                     </section>
                 </div>
             </div>
