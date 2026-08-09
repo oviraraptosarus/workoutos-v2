@@ -13,6 +13,7 @@ import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
+import { getLevelProgress, getNametagForLevel } from '@/lib/leveling';
 
 // ─── Settings Row Component ───────────────────────────────────────────────────
 function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightContent }: any) {
@@ -322,25 +323,60 @@ export default function ProfileHub() {
         reader.readAsText(file);
     };
 
-    const renderHeader = () => (
-        <div className="flex flex-col items-center pt-8 pb-6 animate-fade-in">
-            <div className="w-24 h-24 rounded-full bg-primary text-white text-4xl font-display-lg flex items-center justify-center shadow-lg mb-4 ring-4 ring-surface-container-lowest">
-                {formData.fullName ? formData.fullName.charAt(0).toUpperCase() : 'U'}
+    const renderHeader = () => {
+        const xp = formData.xp || 0;
+        const { currentLevel, nextLevelXP, currentLevelXP, progressPercent } = getLevelProgress(xp);
+        const { name: tag, colorClass, bgClass } = getNametagForLevel(currentLevel);
+
+        return (
+            <div className="flex flex-col items-center pt-8 pb-6 animate-fade-in relative">
+                {/* Level Badge */}
+                <div className="relative mb-6 group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-gradient-xy"></div>
+                    <div className="relative w-28 h-28 rounded-full bg-surface-container-lowest border-[3px] border-surface-variant flex items-center justify-center shadow-2xl overflow-hidden">
+                        {formData.avatarPath ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={formData.avatarPath} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-5xl font-display-lg text-primary">
+                                {formData.fullName ? formData.fullName.charAt(0).toUpperCase() : 'U'}
+                            </span>
+                        )}
+                        
+                        {/* Current Level Overlay at bottom of circle */}
+                        <div className="absolute bottom-0 inset-x-0 h-1/3 bg-black/40 backdrop-blur-md flex items-center justify-center">
+                            <span className="text-white text-xs font-bold tracking-widest uppercase">Lvl {currentLevel}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 className="font-headline-md text-3xl font-bold text-on-surface tracking-tight">
+                    {formData.fullName || 'User Profile'}
+                </h1>
+                <p className="text-on-surface-variant font-medium mt-1">@{formData.username || 'username'}</p>
+                
+                {/* Reddit-style Nametag */}
+                <div className={`mt-3 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2 shadow-sm border border-white/5 ${bgClass} ${colorClass}`}>
+                    <Zap size={14} className="fill-current" />
+                    {tag}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full max-w-xs mt-8">
+                    <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2">
+                        <span>{xp - currentLevelXP} XP</span>
+                        <span>{nextLevelXP - currentLevelXP} XP to Lvl {Math.min(50, currentLevel + 1)}</span>
+                    </div>
+                    <div className="h-2.5 bg-surface-container-high rounded-full overflow-hidden border border-white/5 shadow-inner">
+                        <div 
+                            className="h-full bg-primary transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(var(--primary-rgb),0.6)]"
+                            style={{ width: `${progressPercent}%` }}
+                        />
+                    </div>
+                </div>
             </div>
-            <h1 className="font-headline-md text-2xl font-bold text-on-surface">
-                {formData.fullName || 'User Profile'}
-            </h1>
-            <p className="text-on-surface-variant font-medium mt-1">@{formData.username || 'username'}</p>
-            
-            <div className="flex items-center gap-3 mt-3">
-                <span className="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">{t('profile.level').replace('{level}', String(stats.level))}</span>
-                <span className="px-3 py-1 bg-activity-red/10 text-activity-red rounded-full text-xs font-bold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
-                    {stats.currentStreak} Day Streak
-                </span>
-            </div>
-        </div>
-    );
+        );
+    };
 
     const renderQuickStats = () => (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-1 mb-8">

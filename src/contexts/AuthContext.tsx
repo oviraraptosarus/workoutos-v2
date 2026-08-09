@@ -39,6 +39,8 @@ export interface UserProfile {
     notificationsEnabled: boolean;
     streamingResponsesEnabled: boolean;
     targetConfig?: unknown;
+    dashboard_config?: unknown;
+    xp?: number;
     onboarding_completed?: boolean;
     createdAt?: string;
     updatedAt: string;
