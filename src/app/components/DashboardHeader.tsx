@@ -18,6 +18,7 @@ const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
+};
 
 
 export default function DashboardHeader() {
