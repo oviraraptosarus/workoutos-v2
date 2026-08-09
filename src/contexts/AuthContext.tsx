@@ -22,6 +22,7 @@ export interface UserProfile {
     calorieGoal: number;
     monthlyBudget: number;
     monthlyIncome?: number;
+    foodBudgets?: Record<string, number>;
     enableFinancialReminders: boolean;
     activityLevel?: string;
     dob?: string;
@@ -136,6 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         sleepGoal: data.sleep_goal || 8,
                         monthlyBudget: data.monthly_budget || 1000,
                         monthlyIncome: data.monthly_income || 2000,
+                        foodBudgets: data.food_budgets || {},
                         enableFinancialReminders: data.enable_financial_reminders !== false,
                         dob: data.dob,
                         heightCm: Number(data.height_cm) || 170,
@@ -209,6 +211,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (updates.sleepGoal !== undefined) payload.sleep_goal = updates.sleepGoal;
             if (updates.monthlyBudget !== undefined) payload.monthly_budget = updates.monthlyBudget;
             if (updates.monthlyIncome !== undefined) payload.monthly_income = updates.monthlyIncome;
+            if (updates.foodBudgets !== undefined) payload.food_budgets = updates.foodBudgets;
             if (updates.waterGoalMl !== undefined) payload.water_goal_ml = updates.waterGoalMl;
             if (updates.units !== undefined) payload.units = updates.units;
             if (updates.theme !== undefined) payload.theme = updates.theme;

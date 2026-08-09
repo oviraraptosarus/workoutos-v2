@@ -160,6 +160,18 @@ RULE 9 — CONVERSATIONAL CAPABILITY: You are NOT just a logging bot. If the use
                                     }
                                 },
                                 {
+                                    name: "add_countdown",
+                                    description: "Create a countdown target for a specific event or date. Use when a user wants to track days remaining until a specific thing happens.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            title: { type: "STRING", description: "Title of the countdown event (e.g. 'Vacation', 'Pitch')." },
+                                            targetDate: { type: "STRING", description: "Target date in YYYY-MM-DD format." }
+                                        },
+                                        required: ["title", "targetDate"]
+                                    }
+                                },
+                                {
                                     name: "breakdown_task",
                                     description: "Break a large task into smaller micro-tasks (Execution OS V3). Use this when a user is overwhelmed or a task's execution probability is low.",
                                     parameters: {

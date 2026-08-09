@@ -14,6 +14,7 @@ import QuickNotes from '@/app/components/QuickNotes';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
+import DashboardCountdowns from '@/app/components/DashboardCountdowns';
 
 export default function Dashboard() {
 
@@ -92,8 +93,9 @@ export default function Dashboard() {
              <TimeProgressWidget />
              <QuickNotes />
           </div>
-          <div className="h-full">
+          <div className="flex flex-col h-full gap-4 sm:gap-6">
              <DashboardTasks />
+             <DashboardCountdowns />
           </div>
         </div>
       </div>

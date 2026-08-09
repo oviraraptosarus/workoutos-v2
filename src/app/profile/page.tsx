@@ -76,9 +76,33 @@ export default function ProfileHub() {
     const [formData, setFormData] = useState({ ...userProfile });
     const [savedNotice, setSavedNotice] = useState(false);
     const [noticeText, setNoticeText] = useState('Settings saved!');
+    const [newFoodCategory, setNewFoodCategory] = useState('');
+    const [newFoodBudgetAmount, setNewFoodBudgetAmount] = useState('');
+
     const showNotice = () => {
         setSavedNotice(true);
         setTimeout(() => setSavedNotice(false), 3000);
+    };
+
+    const handleAddFoodBudget = () => {
+        if (!newFoodCategory.trim() || !newFoodBudgetAmount) return;
+        const amount = Number(newFoodBudgetAmount);
+        if (isNaN(amount) || amount <= 0) return;
+        
+        const currentBudgets = formData.foodBudgets || {};
+        const updatedBudgets = { ...currentBudgets, [newFoodCategory.trim()]: amount };
+        setFormData({ ...formData, foodBudgets: updatedBudgets });
+        handleInputSave('foodBudgets', updatedBudgets);
+        
+        setNewFoodCategory('');
+        setNewFoodBudgetAmount('');
+    };
+
+    const handleRemoveFoodBudget = (category: string) => {
+        const currentBudgets = { ...(formData.foodBudgets || {}) };
+        delete currentBudgets[category];
+        setFormData({ ...formData, foodBudgets: currentBudgets });
+        handleInputSave('foodBudgets', currentBudgets);
     };
 
     // Notification settings states
@@ -523,6 +547,54 @@ export default function ProfileHub() {
                                     />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <h3 className="text-lg font-bold mt-8 mb-4">Food Budgets</h3>
+                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden">
+                        <div className="p-4 flex flex-col gap-4">
+                            <p className="text-sm text-on-surface-variant">Set specific monthly budgets for categories (e.g., Protein Powder, Groceries).</p>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Category (e.g., Protein)"
+                                    value={newFoodCategory}
+                                    onChange={(e) => setNewFoodCategory(e.target.value)}
+                                    className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Budget ($)"
+                                    value={newFoodBudgetAmount}
+                                    onChange={(e) => setNewFoodBudgetAmount(e.target.value)}
+                                    className="w-24 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                />
+                                <button
+                                    onClick={handleAddFoodBudget}
+                                    className="bg-[#0a84ff] hover:bg-[#0a84ff]/90 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                            
+                            {formData.foodBudgets && Object.keys(formData.foodBudgets).length > 0 && (
+                                <div className="mt-2 divide-y divide-surface-variant/40 border border-surface-variant/30 rounded-xl">
+                                    {Object.entries(formData.foodBudgets).map(([category, amount]) => (
+                                        <div key={category} className="p-3 flex items-center justify-between">
+                                            <span className="text-sm font-medium text-on-surface">{category}</span>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-bold text-on-surface-variant">${amount}</span>
+                                                <button
+                                                    onClick={() => handleRemoveFoodBudget(category)}
+                                                    className="text-activity-red/70 hover:text-activity-red transition-colors p-1"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                     

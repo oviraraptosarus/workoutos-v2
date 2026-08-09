@@ -16,6 +16,7 @@ export default function BottomNav() {
     { name: t('nav.bottom.diet') !== 'nav.bottom.diet' ? t('nav.bottom.diet') : 'Diet', href: '/diet', icon: 'nutrition' },
     { name: t('nav.bottom.workout') !== 'nav.bottom.workout' ? t('nav.bottom.workout') : 'Workout', href: '/workout', icon: 'fitness_center' },
     { name: t('nav.bottom.budget') !== 'nav.bottom.budget' ? t('nav.bottom.budget') : 'Budget', href: '/budget-tracker', icon: 'payments' },
+    { name: t('nav.bottom.countdown') !== 'nav.bottom.countdown' ? t('nav.bottom.countdown') : 'Targets', href: '/countdowns', icon: 'hourglass_empty' },
   ];
 
   return (

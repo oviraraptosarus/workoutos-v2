@@ -406,6 +406,14 @@ export default function GlobalAICopilot() {
                         if (newTask && newTask.due_time) {
                         }
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
+                    } else if (fn === 'add_countdown') {
+                        const { error } = await supabase.from('countdowns').insert({
+                            user_id: user.id,
+                            title: args.title || 'New Countdown',
+                            target_date: args.targetDate || dateKey
+                        });
+                        if (error) throw new Error(`Tool Execution Failed (add_countdown): ${error.message}`);
+                        window.dispatchEvent(new Event('workout_os_countdowns_updated'));
                     } else if (fn === 'add_reminder') {
                         const type = args.type || 'Custom';
                         const config = {
@@ -930,12 +938,12 @@ export default function GlobalAICopilot() {
                                 value={prompt}
                                 onChange={handleInput}
                                 onKeyDown={(e) => { 
-                                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { 
+                                    if (e.key === 'Enter' && !e.shiftKey) { 
                                         e.preventDefault(); 
                                         handleSend(); 
                                     } 
                                 }}
-                                placeholder={selectedImage ? t('copilot.imageReady') : "Type a message... (Ctrl+Enter to send)"}
+                                placeholder={selectedImage ? t('copilot.imageReady') : "Type a message..."}
                                 className="flex-1 max-h-[250px] bg-transparent py-2.5 text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant overflow-y-auto"
                             />
 

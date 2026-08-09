@@ -10,7 +10,8 @@ When building or modifying applications to achieve a "Premium iOS / Apple-like" 
 ## 1. Spatial Architecture & Layout
 - **No Floating Action Buttons (FABs):** FABs are an Android Material Design pattern. On mobile web, they often clip into content, obscure bottoms of cards, and conflict with keyboards. 
 - **Action Placement:** Place global utility actions (like AI Copilots or Settings) in the Top Navigation Bar (e.g., as a right-aligned icon) or seamlessly integrated into a Bottom Tab Bar.
-- **Compactness over Padding:** Do not use excessively large paddings (`p-8` or `p-10`) or huge headings (`text-3xl` or `text-4xl`) on mobile screens. True native apps value information density while maintaining breathing room. Scale down to `p-5` or `p-6` on mobile, and use `text-xl` or `text-2xl` for section headers.
+- **Compactness over Padding:** Do not use excessively large paddings (`p-8` or `p-10`) or huge headings (`text-3xl` or `text-4xl`) on mobile screens. True native apps value information density while maintaining breathing room. Scale down to `p-4` or `p-5` on mobile, and use `text-xl` or `text-lg` for section headers.
+- **Widget-Style Layouts:** For dashboards and cards, mimic iOS Home Screen widgets. Use `rounded-3xl` (approx 24px), align text to the top-left or bottom-left (avoid centering everything), and use clean grids (e.g., standard 2-column) instead of staggered/staircase layouts which look like Android material design.
 - **Scrolling Behavior:** Avoid horizontally scrolling segmented controls or tabs on mobile unless absolutely necessary. Compress them into a single row (`flex-1` evenly distributed) or use a native-style `<select>` if there are too many.
 
 ## 2. Aesthetic Layering (Glassmorphism & Depth)
@@ -25,7 +26,8 @@ When building or modifying applications to achieve a "Premium iOS / Apple-like" 
 - **Enter/Exit Animations:** Use `animate-in fade-in slide-in-from-bottom-8 duration-700` for cards entering the viewport. Nothing should just "appear" instantly.
 
 ## 4. Typography & Iconography
-- **Typography:** Use modern, geometric sans-serif fonts (e.g., Inter, SF Pro, Outfit). Use heavy weights (`font-black`, `font-bold`) for headers and structured tracking (`tracking-tight`) to make text punchy.
+- **Typography:** Use modern, geometric sans-serif fonts (e.g., Inter, SF Pro, Outfit). Use heavy weights (`font-bold`, `font-semibold`) for headers and structured tracking (`tracking-tight`) to make text punchy. Avoid humongous font sizes; native iOS typography is legible but restrained (rarely going above `text-4xl` for hero numbers, and usually `text-xl` or `text-2xl` for titles).
+- **Colors:** Use the native iOS Blue (`#0a84ff` or `#007aff`) for primary action buttons, links, and toggles to instantly communicate interactivity. Always test buttons against both light and dark modes to ensure text legibility (e.g., white text on the blue button).
 - **Icons:** Avoid cliché icons (e.g., generic Sparkles for AI). Use thoughtful, unique iconography (e.g., Orbit, Aperture, BrainCircuit) from libraries like Lucide.
 - **Icon Sizing:** Keep icons proportionate. On mobile, `w-5 h-5` or `w-6 h-6` inside a `w-10 h-10` rounded wrapper is the sweet spot.
 
