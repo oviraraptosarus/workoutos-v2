@@ -21,8 +21,8 @@ function getApiKey(provider: ProviderId): string | undefined {
 
 // Configurable Priority List (Multi-Provider Cascade to prevent Rate Limits)
 const DEFAULT_PRIORITY_LIST = [
-    { provider: 'gemini', model: 'gemini-1.5-flash' },
-    { provider: 'openrouter', model: 'google/gemini-1.5-pro' },
+    { provider: 'gemini', model: 'gemini-3.1-flash-lite' },
+    { provider: 'gemini', model: 'gemini-2.5-flash' },
     { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct' },
     { provider: 'openrouter', model: 'openrouter/auto' }
 ];
