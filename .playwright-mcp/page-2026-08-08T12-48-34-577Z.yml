@@ -1,0 +1,49 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e58]:
+    - button "Back" [ref=f1e60] [cursor=pointer]
+    - generic [ref=f1e63]:
+      - generic [ref=f1e64]:
+        - img "Workout OS Logo" [ref=f1e66]
+        - heading "Create your account" [level=1] [ref=f1e141]
+        - paragraph [ref=f1e68]: Start tracking in under a minute.
+      - generic [ref=f1e142]:
+        - button "Continue with Google" [ref=f1e143] [cursor=pointer]
+        - generic [ref=f1e149]: or with email
+        - generic [ref=f1e153]: Your profile stays private and synced to your account.
+        - generic [ref=f1e158]:
+          - generic [ref=f1e159]: Full Name
+          - textbox "Full Name" [ref=f1e161]:
+            - /placeholder: Alex Johnson
+        - generic [ref=f1e162]:
+          - generic [ref=f1e163]: Username
+          - textbox "Username" [ref=f1e165]:
+            - /placeholder: workout_warrior
+        - generic [ref=f1e166]:
+          - generic [ref=f1e167]: Email Address
+          - textbox "Email Address" [ref=f1e169]:
+            - /placeholder: alex@workoutos.com
+        - generic [ref=f1e170]:
+          - generic [ref=f1e171]:
+            - generic [ref=f1e172]: Password
+            - textbox "Password" [ref=f1e174]:
+              - /placeholder: ••••••••
+          - generic [ref=f1e175]:
+            - generic [ref=f1e176]: Confirm
+            - textbox "Confirm" [ref=f1e178]:
+              - /placeholder: ••••••••
+        - generic [ref=f1e179]:
+          - checkbox "I agree to the Terms of Service and Privacy Policy." [ref=f1e180] [cursor=pointer]
+          - generic [ref=f1e181] [cursor=pointer]:
+            - text: I agree to the
+            - link "Terms of Service" [ref=f1e182]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=f1e183]:
+              - /url: /privacy
+            - text: .
+        - button "Create Account" [ref=f1e184] [cursor=pointer]
+      - paragraph [ref=f1e112]:
+        - text: Already have an account?
+        - button "Sign in" [active] [ref=f1e185] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f1e53] [cursor=pointer]
+  - alert [ref=f1e57]

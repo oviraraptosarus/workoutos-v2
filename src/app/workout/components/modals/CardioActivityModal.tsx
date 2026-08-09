@@ -78,7 +78,7 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
         try {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const dateKey = new Date().toISOString().split('T')[0];
+                const dateKey = new Date().toLocaleDateString('en-CA');
                 
                 // Add to workout logs using new schema
                 await supabase.from('workout_logs').insert({
@@ -261,3 +261,4 @@ export default function CardioActivityModal({ isOpen, onClose }: CardioActivityM
         </div>
     );
 }
+

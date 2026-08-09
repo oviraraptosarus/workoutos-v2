@@ -142,7 +142,7 @@ export default function GlobalAICopilot() {
 
         isSendingRef.current = true;
         const currentImage = selectedImage;
-        const reqId = `REQ-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.floor(100000 + Math.random() * 900000)}`;
+        const reqId = `REQ-${new Date().toLocaleDateString('en-CA').replace(/-/g, '')}-${Math.floor(100000 + Math.random() * 900000)}`;
         const now = formatTime(new Date());
 
         const userMsg: ChatMessage = {
@@ -162,7 +162,7 @@ export default function GlobalAICopilot() {
         setLoading(true);
 
         try {
-            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
             // Re-fetch all context just before sending
             const currentAppState: any = { dashboard: null, planner: null, workout: null, nutrition: null, budget: null, habits: null, commandCenter: null, date: dateKey, time: formatTime(new Date()) };
             let apiHistory = messages;
@@ -190,7 +190,7 @@ export default function GlobalAICopilot() {
                 // Determine 'since' for recent data (14 days ago)
                 const since = new Date();
                 since.setDate(since.getDate() - 13);
-                const sinceKey = since.toISOString().split('T')[0];
+                const sinceKey = since.toLocaleDateString('en-CA');
 
                 contextStatus['Profile'].loaded = !!userProfile;
                 if (!userProfile) contextStatus['Profile'].error = "User profile is missing or undefined";
@@ -249,7 +249,7 @@ export default function GlobalAICopilot() {
 
                 // Planner
                 if (!tasksRes.error && tasksRes.data) {
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = new Date().toLocaleDateString('en-CA');
                     currentAppState.planner = {
                         overdue: tasksRes.data.filter(t => t.date && t.date < today),
                         today: tasksRes.data.filter(t => t.date === today),
@@ -413,7 +413,7 @@ export default function GlobalAICopilot() {
                         await updateReminderPreference(type, true, config);
                         
                         if (args.time) {
-                            const today = new Date().toISOString().split('T')[0];
+                            const today = new Date().toLocaleDateString('en-CA');
                             const { error } = await supabase.from('command_center_items').insert({
                                 user_id: user.id,
                                 title: args.title || `Reminder: ${type}`,
@@ -989,3 +989,4 @@ export default function GlobalAICopilot() {
         </>
     );
 }
+

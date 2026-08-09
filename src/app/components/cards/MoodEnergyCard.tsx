@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Smile, Zap, Coffee, Utensils } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabase/client';
@@ -16,6 +16,24 @@ interface MoodState {
 }
 
 const CUP_MG = 95; // caffeine_mg is stored in mg; ~95mg per cup of coffee.
+
+const RatingSlider = memo(({ value, activeColor, onChange, label, isToday }: { value: number, activeColor: string, onChange: (val: number) => void, label: string, isToday: boolean }) => (
+    <div className="flex-1 flex gap-1" role="group" aria-label={label}>
+        {Array.from({ length: 10 }).map((_, i) => (
+            <button
+                key={i}
+                onClick={() => onChange(i + 1)}
+                disabled={!isToday}
+                aria-label={`${label} ${i + 1} of 10`}
+                aria-pressed={i < value}
+                className={`h-7 rounded-full flex-1 transition-all duration-200 ${
+                    i < value ? `${activeColor} shadow-sm` : 'bg-surface-container hover:bg-surface-container-high'
+                } disabled:cursor-not-allowed active:scale-90`}
+            />
+        ))}
+    </div>
+));
+RatingSlider.displayName = 'RatingSlider';
 
 export default function MoodEnergyCard() {
     const { t } = useLanguage();
@@ -102,25 +120,10 @@ export default function MoodEnergyCard() {
         }
     };
 
-    const renderSegments = (value: number, activeColor: string, onChange: (val: number) => void, label: string) => (
-        <div className="flex-1 flex gap-1" role="group" aria-label={label}>
-            {Array.from({ length: 10 }).map((_, i) => (
-                <button
-                    key={i}
-                    onClick={() => onChange(i + 1)}
-                    disabled={!isToday}
-                    aria-label={`${label} ${i + 1} of 10`}
-                    aria-pressed={i < value}
-                    className={`h-7 rounded-full flex-1 transition-all duration-200 ${
-                        i < value ? `${activeColor} shadow-sm` : 'bg-surface-container hover:bg-surface-container-high'
-                    } disabled:cursor-not-allowed active:scale-90`}
-                />
-            ))}
-        </div>
-    );
+    // renderSegments is now RatingSlider
 
     return (
-        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col relative overflow-hidden">
+        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all relative overflow-hidden hover:shadow-lg flex flex-col">
             <div className="flex items-baseline justify-between mb-4">
                 <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">How do you feel?</h3>
                 <span className="font-label-sm text-label-sm text-on-surface-variant">Optional</span>
@@ -132,7 +135,7 @@ export default function MoodEnergyCard() {
                         <Smile size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">{t('dash.mood')}</span>
                     </div>
-                    {renderSegments(mood, 'bg-[#f8b47b]', setMood, 'Mood')}
+                    <RatingSlider value={mood} activeColor="bg-[#f8b47b]" onChange={setMood} label="Mood" isToday={isToday} />
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{mood || '–'}</span>
                 </div>
 
@@ -141,7 +144,7 @@ export default function MoodEnergyCard() {
                         <Zap size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">{t('dash.energy')}</span>
                     </div>
-                    {renderSegments(energy, 'bg-[#82a88e]', setEnergy, 'Energy')}
+                    <RatingSlider value={energy} activeColor="bg-[#82a88e]" onChange={setEnergy} label="Energy" isToday={isToday} />
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{energy || '–'}</span>
                 </div>
 
@@ -150,7 +153,7 @@ export default function MoodEnergyCard() {
                         <Utensils size={14} className="text-primary" />
                         <span className="font-label-sm text-label-sm">{t('dash.hunger')}</span>
                     </div>
-                    {renderSegments(hunger, 'bg-[#a78bfa]', setHunger, 'Hunger')}
+                    <RatingSlider value={hunger} activeColor="bg-[#a78bfa]" onChange={setHunger} label="Hunger" isToday={isToday} />
                     <span className="w-7 text-right font-label-sm text-label-sm text-on-surface-variant tabular-nums">{hunger || '–'}</span>
                 </div>
             </div>

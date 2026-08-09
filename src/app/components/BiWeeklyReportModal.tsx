@@ -78,8 +78,8 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
             const dEnd = new Date();
             const dStart = new Date();
             dStart.setDate(dStart.getDate() - 14);
-            const startStr = dStart.toISOString().split('T')[0];
-            const endStr = dEnd.toISOString().split('T')[0];
+            const startStr = dStart.toLocaleDateString('en-CA');
+            const endStr = dEnd.toLocaleDateString('en-CA');
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("User not found");
@@ -134,7 +134,7 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `WorkoutOS_Report_${new Date().toISOString().split('T')[0]}.md`;
+        a.download = `WorkoutOS_Report_${new Date().toLocaleDateString('en-CA')}.md`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -273,3 +273,4 @@ export default function BiWeeklyReportModal({ isOpen, onClose }: BiWeeklyReportM
 
     return createPortal(modalContent, document.body);
 }
+

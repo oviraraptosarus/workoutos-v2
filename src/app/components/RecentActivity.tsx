@@ -19,7 +19,7 @@ export default function RecentActivity() {
             setLoading(true);
             const allActs: any[] = [];
             const now = Date.now();
-            const dateKey = new Date().toISOString().split('T')[0];
+            const dateKey = new Date().toLocaleDateString('en-CA');
 
             try {
                 // Fetch workouts
@@ -131,3 +131,4 @@ export default function RecentActivity() {
         </section>
     );
 }
+

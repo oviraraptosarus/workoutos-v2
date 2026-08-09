@@ -1,0 +1,266 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e23] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f10e24]
+    - generic [ref=f10e29]:
+      - button "Open issues overlay" [ref=f10e30]:
+        - generic [ref=f10e31]:
+          - generic [ref=f10e32]: "5"
+          - generic [ref=f10e33]: "6"
+        - generic [ref=f10e34]:
+          - text: Issue
+          - generic [ref=f10e35]: s
+      - button "Collapse issues badge" [ref=f10e36]
+  - alert [ref=f10e28]
+  - generic [ref=f10e39]:
+    - main [ref=f10e40]:
+      - generic [ref=f10e41]:
+        - generic [ref=f10e43]:
+          - generic [ref=f10e45]:
+            - heading "Good evening, Test" [level=1] [ref=f10e46]
+            - generic [ref=f10e47]:
+              - button [ref=f10e48] [cursor=pointer]
+              - paragraph [ref=f10e51]: Today, Saturday, Aug 8
+              - button [disabled] [ref=f10e52]
+          - generic [ref=f10e55]:
+            - button [ref=f10e57] [cursor=pointer]
+            - link "Open profile" [ref=f10e61] [cursor=pointer]:
+              - /url: /profile
+              - generic [ref=f10e62]: T
+        - generic [ref=f10e63]:
+          - generic [ref=f10e64]:
+            - link "dark_mode Sleep Not logged Log" [ref=f10e65] [cursor=pointer]:
+              - /url: /sleep
+              - generic [ref=f10e67]:
+                - generic [ref=f10e68]: dark_mode
+                - generic [ref=f10e69]: Sleep
+              - generic [ref=f10e72]:
+                - paragraph [ref=f10e73]: Not logged
+                - generic [ref=f10e74]: Log
+            - link "Hydration details" [ref=f10e76] [cursor=pointer]:
+              - generic [ref=f10e78]:
+                - generic [ref=f10e79]: water_drop
+                - generic [ref=f10e80]: Water
+              - generic [ref=f10e83]:
+                - generic [ref=f10e84]:
+                  - generic [ref=f10e85]: "0"
+                  - generic [ref=f10e86]: ml
+                - paragraph [ref=f10e87]: of 3000 ml
+                - button "Add 250 millilitres of water" [ref=f10e88]: "250"
+          - generic [ref=f10e90]:
+            - generic [ref=f10e91]:
+              - generic [ref=f10e92]:
+                - generic [ref=f10e93]:
+                  - generic [ref=f10e94]: restaurant
+                  - generic [ref=f10e95]: Nutrition
+                - link "Nutrition details" [ref=f10e96] [cursor=pointer]:
+                  - /url: /diet
+              - generic [ref=f10e99]:
+                - generic [ref=f10e104]:
+                  - generic [ref=f10e105]: "0"
+                  - generic [ref=f10e106]: of 2,200
+                - paragraph [ref=f10e107]: 2,200 kcal left
+                - button "Log meal" [ref=f10e108] [cursor=pointer]
+              - generic [ref=f10e110]:
+                - generic [ref=f10e111]:
+                  - generic [ref=f10e112]: Protein
+                  - generic [ref=f10e114]: 0/165g
+                - generic [ref=f10e115]:
+                  - generic [ref=f10e116]: Carbs
+                  - generic [ref=f10e118]: 0/220g
+                - generic [ref=f10e119]:
+                  - generic [ref=f10e120]: Fats
+                  - generic [ref=f10e122]: 0/73g
+            - generic [ref=f10e123]:
+              - generic [ref=f10e124]:
+                - generic [ref=f10e125]:
+                  - generic [ref=f10e126]: fitness_center
+                  - generic [ref=f10e127]: WORKOUT
+                - link "Workout details" [ref=f10e128] [cursor=pointer]:
+                  - /url: /workout
+              - generic [ref=f10e131]:
+                - generic [ref=f10e132]: fitness_center
+                - generic [ref=f10e134]:
+                  - paragraph [ref=f10e135]: No workouts yet
+                  - paragraph [ref=f10e136]: Time to crush your goals.
+                  - link "Start your first workout" [ref=f10e137] [cursor=pointer]:
+                    - /url: /workout
+              - generic [ref=f10e138]:
+                - textbox "Add an exercise" [ref=f10e139]:
+                  - /placeholder: Add exercise...
+                - button "Add exercise" [disabled] [ref=f10e140]
+          - generic [ref=f10e142]:
+            - generic [ref=f10e143]:
+              - heading "How do you feel?" [level=3] [ref=f10e144]
+              - generic [ref=f10e145]: Optional
+            - generic [ref=f10e146]:
+              - generic [ref=f10e147]:
+                - generic [ref=f10e148]: Mood
+                - group "Mood" [ref=f10e153]:
+                  - button "Mood 1 of 10" [ref=f10e154] [cursor=pointer]
+                  - button "Mood 2 of 10" [ref=f10e155] [cursor=pointer]
+                  - button "Mood 3 of 10" [ref=f10e156] [cursor=pointer]
+                  - button "Mood 4 of 10" [ref=f10e157] [cursor=pointer]
+                  - button "Mood 5 of 10" [ref=f10e158] [cursor=pointer]
+                  - button "Mood 6 of 10" [ref=f10e159] [cursor=pointer]
+                  - button "Mood 7 of 10" [ref=f10e160] [cursor=pointer]
+                  - button "Mood 8 of 10" [ref=f10e161] [cursor=pointer]
+                  - button "Mood 9 of 10" [ref=f10e162] [cursor=pointer]
+                  - button "Mood 10 of 10" [ref=f10e163] [cursor=pointer]
+                - generic [ref=f10e164]: –
+              - generic [ref=f10e165]:
+                - generic [ref=f10e166]: Energy
+                - group "Energy" [ref=f10e170]:
+                  - button "Energy 1 of 10" [ref=f10e171] [cursor=pointer]
+                  - button "Energy 2 of 10" [ref=f10e172] [cursor=pointer]
+                  - button "Energy 3 of 10" [ref=f10e173] [cursor=pointer]
+                  - button "Energy 4 of 10" [ref=f10e174] [cursor=pointer]
+                  - button "Energy 5 of 10" [ref=f10e175] [cursor=pointer]
+                  - button "Energy 6 of 10" [ref=f10e176] [cursor=pointer]
+                  - button "Energy 7 of 10" [ref=f10e177] [cursor=pointer]
+                  - button "Energy 8 of 10" [ref=f10e178] [cursor=pointer]
+                  - button "Energy 9 of 10" [ref=f10e179] [cursor=pointer]
+                  - button "Energy 10 of 10" [ref=f10e180] [cursor=pointer]
+                - generic [ref=f10e181]: –
+              - generic [ref=f10e182]:
+                - generic [ref=f10e183]: Hunger
+                - group "Hunger" [ref=f10e188]:
+                  - button "Hunger 1 of 10" [ref=f10e189] [cursor=pointer]
+                  - button "Hunger 2 of 10" [ref=f10e190] [cursor=pointer]
+                  - button "Hunger 3 of 10" [ref=f10e191] [cursor=pointer]
+                  - button "Hunger 4 of 10" [ref=f10e192] [cursor=pointer]
+                  - button "Hunger 5 of 10" [ref=f10e193] [cursor=pointer]
+                  - button "Hunger 6 of 10" [ref=f10e194] [cursor=pointer]
+                  - button "Hunger 7 of 10" [ref=f10e195] [cursor=pointer]
+                  - button "Hunger 8 of 10" [ref=f10e196] [cursor=pointer]
+                  - button "Hunger 9 of 10" [ref=f10e197] [cursor=pointer]
+                  - button "Hunger 10 of 10" [ref=f10e198] [cursor=pointer]
+                - generic [ref=f10e199]: –
+            - generic [ref=f10e200]:
+              - generic [ref=f10e201]:
+                - button "Remove one cup of caffeine" [disabled] [ref=f10e204]: −
+                - generic [ref=f10e205]: "0"
+                - button "Add one cup of caffeine" [ref=f10e206] [cursor=pointer]: +
+                - generic [ref=f10e207]: cups
+              - button "Save" [ref=f10e208] [cursor=pointer]
+          - link "payments Budget Snapshot ₹0 of ₹2,000 On track ₹2,000 remaining · day 8 of 31" [ref=f10e209] [cursor=pointer]:
+            - /url: /budget-tracker
+            - generic [ref=f10e211]:
+              - generic [ref=f10e212]: payments
+              - generic [ref=f10e213]: Budget Snapshot
+            - generic [ref=f10e216]:
+              - generic [ref=f10e217]:
+                - generic [ref=f10e218]: ₹0
+                - generic [ref=f10e219]: of ₹2,000
+              - generic [ref=f10e220]: On track
+            - paragraph [ref=f10e223]: ₹2,000 remaining · day 8 of 31
+        - generic [ref=f10e225]:
+          - generic [ref=f10e231]:
+            - heading "Step outside for a bit?" [level=4] [ref=f10e232]
+            - paragraph [ref=f10e233]: You've been logging for over 15 minutes. A short walk outside beats more screen time — the logs will be here when you're back.
+          - button "Dismiss banner" [ref=f10e234] [cursor=pointer]
+        - generic [ref=f10e238]:
+          - generic [ref=f10e239]:
+            - generic [ref=f10e240]:
+              - generic [ref=f10e241]: monitor_weight
+              - generic [ref=f10e242]: Weight Trend
+            - generic [ref=f10e243]:
+              - button "Photos" [ref=f10e244] [cursor=pointer]
+              - link "View weight progress" [ref=f10e248] [cursor=pointer]:
+                - /url: /progress
+                - text: Trend
+          - img [ref=f10e254]:
+            - generic [ref=f10e258]:
+              - generic [ref=f10e259]: Aug 3
+              - generic [ref=f10e261]: Aug 4
+              - generic [ref=f10e263]: Aug 5
+              - generic [ref=f10e265]: Aug 6
+              - generic [ref=f10e267]: Aug 7
+              - generic [ref=f10e269]: Aug 8
+              - generic [ref=f10e271]: Aug 9
+          - generic [ref=f10e274]:
+            - generic [ref=f10e275]:
+              - spinbutton [ref=f10e276]: "75"
+              - generic [ref=f10e277]: kg
+            - button "Save" [ref=f10e278] [cursor=pointer]
+          - generic [ref=f10e279]:
+            - generic [ref=f10e280]:
+              - generic [ref=f10e281]:
+                - generic [ref=f10e282]: photo_camera
+                - generic [ref=f10e283]: Progress Photos
+              - button "View All (0)" [ref=f10e284] [cursor=pointer]
+            - generic [ref=f10e287]:
+              - button "Add Photo" [ref=f10e288] [cursor=pointer]
+              - generic [ref=f10e292]: No photos yet. Tap Add Photo to track your body transformation visually!
+        - generic [ref=f10e293]:
+          - generic [ref=f10e294]:
+            - generic [ref=f10e295]:
+              - heading "TIME PROGRESSION" [level=3] [ref=f10e296]
+              - generic [ref=f10e300]:
+                - generic [ref=f10e302]:
+                  - generic [ref=f10e303]: YEAR
+                  - generic [ref=f10e304]: 60.2%
+                - generic [ref=f10e308]:
+                  - generic [ref=f10e309]: MONTH
+                  - generic [ref=f10e310]: 25.3%
+                - generic [ref=f10e314]:
+                  - generic [ref=f10e315]: TODAY
+                  - generic [ref=f10e316]: 83.8%
+            - generic [ref=f10e319]:
+              - heading "Quick Notes" [level=2] [ref=f10e321]
+              - textbox "Jot down anything raw (e.g. 2 eggs, 500ml water, 30 min run)..." [ref=f10e327]
+          - generic [ref=f10e329]:
+            - generic [ref=f10e330]:
+              - heading "Daily Quests" [level=2] [ref=f10e331]
+              - link "View All" [ref=f10e336] [cursor=pointer]:
+                - /url: /planner
+            - generic [ref=f10e346]:
+              - paragraph [ref=f10e347]: All caught up!
+              - paragraph [ref=f10e348]: No pending tasks for today.
+              - link "+ Add a new task" [ref=f10e349] [cursor=pointer]:
+                - /url: /planner
+      - generic [ref=f10e353]:
+        - button [ref=f10e354] [cursor=pointer]
+        - heading "Evening Wrap-Up, Test" [level=2] [ref=f10e361]
+        - paragraph [ref=f10e362]: No activity logged today yet. Rest up and let's crush it tomorrow!
+        - paragraph [ref=f10e365]: Nothing was logged today.
+        - button "Close Wrap-Up" [ref=f10e367] [cursor=pointer]
+    - navigation [ref=f10e368]:
+      - generic [ref=f10e369]:
+        - link "dashboard Today" [ref=f10e370] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f10e371]: dashboard
+          - generic [ref=f10e372]: Today
+        - link "bolt Planner" [ref=f10e373] [cursor=pointer]:
+          - /url: /planner
+          - generic [ref=f10e374]: bolt
+          - generic [ref=f10e375]: Planner
+        - link "nutrition Diet" [ref=f10e376] [cursor=pointer]:
+          - /url: /diet
+          - generic [ref=f10e377]: nutrition
+          - generic [ref=f10e378]: Diet
+        - link "fitness_center Workout" [ref=f10e379] [cursor=pointer]:
+          - /url: /workout
+          - generic [ref=f10e380]: fitness_center
+          - generic [ref=f10e381]: Workout
+        - link "payments Budget" [ref=f10e382] [cursor=pointer]:
+          - /url: /budget-tracker
+          - generic [ref=f10e383]: payments
+          - generic [ref=f10e384]: Budget
+    - button "Open Ava, the AI assistant" [ref=f10e385] [cursor=pointer]
+    - generic [ref=f10e388]:
+      - generic [ref=f10e392]:
+        - paragraph [ref=f10e393]: End of Day Reflection
+        - paragraph [ref=f10e394]: Log your reflection before you sleep
+      - button "Log It" [ref=f10e395] [cursor=pointer]
+      - button "Dismiss" [ref=f10e398] [cursor=pointer]
+    - generic [ref=f10e403]:
+      - generic [ref=f10e405]:
+        - img "Workout OS Logo" [ref=f10e407]
+        - heading "Welcome to Workout OS" [level=1] [ref=f10e408]
+        - paragraph [ref=f10e409]: Let's personalize your experience.
+        - button "Skip Onboarding" [ref=f10e410] [cursor=pointer]
+      - button "Continue" [ref=f10e412] [cursor=pointer]
+    - generic [ref=f10e417] [cursor=pointer]:
+      - generic [ref=f10e420]: Supabase Runtime Debugger
+      - generic [ref=f10e421]: 86 operations
+  - generic [ref=f10e424]: "9"

@@ -19,7 +19,7 @@ class TelemetryEngine {
      */
     public generateRequestId(): string {
         const now = new Date();
-        const yyyymmdd = now.toISOString().split('T')[0].replace(/-/g, '');
+        const yyyymmdd = now.toLocaleDateString('en-CA').replace(/-/g, '');
         const randomNum = Math.floor(100000 + Math.random() * 900000);
         return `REQ-${yyyymmdd}-${randomNum}`;
     }
@@ -66,3 +66,4 @@ class TelemetryEngine {
 }
 
 export const telemetryEngine = new TelemetryEngine();
+

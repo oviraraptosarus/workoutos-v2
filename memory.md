@@ -1,6 +1,6 @@
 # Workout OS - Project Memory
 
-**Last Updated:** 2026-08-06
+**Last Updated:** 2026-08-08
 
 ## 1. Project State & Vision
 *   **Current Phase:** Execution (Building the Relentless AI Execution Coach)
@@ -14,6 +14,11 @@
 *   **Dependencies:** Follow all rules in `PROJECT_RULES.md` and `ARCHITECTURE.md`.
 
 ## 3. Completed Work (Current Session)
+*   **System Stabilization (2026-08-08)**:
+    *   **Supabase PostgREST Fix (`useReminderEngine.ts`)**: Resolved 42+ console errors blocking dashboard render by wrapping ISO date strings with double quotes in the `.or()` filter logic to satisfy PostgREST syntax requirements.
+    *   **Onboarding Flow Escape Hatch (`OnboardingModal.tsx`)**: Added a "Skip Onboarding" button to unblock returning users whose profiles lacked certain configuration flags, gracefully initializing default target configs.
+    *   **State Hydration Data Loss Fix (`MoodEnergyCard.tsx`)**: Fixed a bug where empty local storage fallbacks would initialize mood/energy to 0 and blindly overwrite valid Supabase data on manual saves. The backend is now strictly respected as the absolute source of truth.
+    *   **React Rendering & Styling Consistency (P1)**: Extracted the 10-segment sliders in `MoodEnergyCard` into a memoized `<RatingSlider />` component to drastically reduce re-renders. Standardized Tailwind classes (`bg-card-white`, `border-black/5`, `shadow`) across `MoodEnergyCard`, `TimeProgressWidget`, and `WeightLogCard` for a cohesive premium dashboard layout.
 *   **Tasks Backend Fix**: Fixed critical backend data flow regression where tasks were failing to persist due to unmigrated `priority` and `reminder_time` columns (Handled gracefully via code fallbacks in `page.tsx`).
 *   **Product Pivot Plan**: Conducted product brainstorm and rebuild spec, proposing and approving the Execution Coach pivot.
 *   **AI Orchestrator Fix (Production Blocker)**: 
@@ -92,3 +97,9 @@
 *   **telemetryEngine**: A fire-and-forget singleton service (`src/services/telemetryEngine.ts`).
 *   **Developer Mode**: Activated via `?dev=unlock`. Shows advanced Error Overlay containing Stack Trace and Reason.
 *   **Admin Dashboard**: `/admin` provides live visualization of System Health and Error Center.
+
+## 10. The Ruthless Simplification Incident
+*   **The Incident:** During a UI/UX polish pass ('Ruthless Simplification'), critical user-facing dashboard components (WeightLogCard, TouchGrassNudge, QuickNotes, TimeProgressWidget) were unilaterally removed from src/app/dashboard/page.tsx under the misguided assumption that they constituted 'bloat'.
+*   **Why It Was a Stupid Decision:** The AI assumed that aesthetic minimalism superseded functional density without validating the utility of those specific widgets with the user. Weight tracking, daily nudges, and time widgets form the core operational view for the user's daily habits. Removing them actively degraded the product's utility in favor of an arbitrary 'clean' look. A dashboard's purpose is information density; hiding core metrics forces the user to dig for them, violating the core principle of a 'low-friction Relentless AI Execution Coach'.
+*   **The Resolution:** The dashboard changes were immediately reverted via git checkout src/app/dashboard/page.tsx. All widgets were restored to their original positions.
+*   **The Lesson (Never Repeat This):** NEVER remove functional components, widgets, or data-tracking cards from the UI solely for the sake of 'simplifying' or 'decluttering' the layout, unless explicitly directed by the user to remove that *specific* component. Aesthetic improvements must ONLY alter CSS/styling (e.g., glassmorphism, padding, colors) and NEVER alter the functional architecture or data visibility of a page.

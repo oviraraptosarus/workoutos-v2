@@ -1,0 +1,7 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e17] [cursor=pointer]
+  - alert [ref=e21]
+  - generic [ref=e30]:
+    - img "Logo" [ref=e32]
+    - heading "Workout OS" [level=1] [ref=e33]
+    - paragraph [ref=e34]: Train smarter. Track everything.

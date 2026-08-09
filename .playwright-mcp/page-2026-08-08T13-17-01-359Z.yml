@@ -1,0 +1,43 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e7]:
+    - button "Back" [ref=f3e42] [cursor=pointer]
+    - generic [ref=f3e8]:
+      - generic [ref=f3e9]:
+        - img "Workout OS Logo" [ref=f3e46]
+        - heading "Welcome back" [level=1] [ref=f3e141]
+        - paragraph [ref=f3e48]: Sign in to pick up where you left off.
+      - generic [ref=f3e142]:
+        - button "Continue with Google" [ref=f3e143] [cursor=pointer]
+        - generic [ref=f3e149]: or with email
+        - generic [ref=f3e168]: Invalid login credentials
+        - generic [ref=f3e153]:
+          - generic [ref=f3e154]: Email or Username
+          - textbox "Email or Username" [ref=f3e156]:
+            - /placeholder: you@email.com or username
+            - text: forriskywebsitesprotech@gmail.com
+        - generic [ref=f3e157]:
+          - generic [ref=f3e158]: Password
+          - textbox "Password" [ref=f3e160]:
+            - /placeholder: ••••••••
+            - text: vstar@2k8
+        - generic [ref=f3e161]:
+          - generic [ref=f3e162]:
+            - checkbox "Remember Me" [checked] [ref=f3e163] [cursor=pointer]
+            - generic [ref=f3e164] [cursor=pointer]: Remember Me
+          - button "Forgot Password?" [ref=f3e165] [cursor=pointer]
+        - button "Sign In" [ref=f3e166] [cursor=pointer]
+      - paragraph [ref=f3e74]:
+        - text: New here?
+        - button "Create an account" [ref=f3e167] [cursor=pointer]
+  - generic [ref=f3e35] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f3e36]
+    - generic [ref=f3e77]:
+      - button "Open issues overlay" [ref=f3e78]:
+        - generic [ref=f3e79]:
+          - generic [ref=f3e80]: "5"
+          - generic [ref=f3e81]: "6"
+        - generic [ref=f3e82]:
+          - text: Issue
+          - generic [ref=f3e83]: s
+      - button "Collapse issues badge" [ref=f3e84]
+  - alert [ref=f3e40]

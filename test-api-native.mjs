@@ -1,28 +1,14 @@
-(async () => {
-  try {
-    const res = await fetch('http://localhost:4028/api/ai/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        prompt: 'give me a workout plan for today', 
-        sessionId: 'test', 
-        history: [],
-        userProfile: { id: 'test-user', fitnessGoal: 'muscle building' },
-        appState: { 
-            commandCenter: [], 
-            workout: { today: null, recent: [] },
-            nutrition: { todayKcal: 0, todayFiber: 0, meals: [], recent: [] },
-            budget: { income: 0, expenses: 0, monthlyBudget: 0 }
-        },
-        aiMemories: [],
-        currentDateTime: new Date().toISOString(),
-        devMode: true
-      })
-    });
-    const text = await res.text();
-    console.log('STATUS:', res.status);
-    console.log('BODY:', text);
-  } catch (e) {
-    console.error('ERROR:', e);
-  }
-})();
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function checkSchema() {
+    const { data: data1, error: err1 } = await supabase.from('tasks').select('*').limit(1);
+    console.log("Tasks row 1 keys:", data1 && data1.length > 0 ? Object.keys(data1[0]) : (err1 || "No data"));
+    const { data: data2, error: err2 } = await supabase.from('tasks').select('priority').limit(1);
+    console.log("Tasks priority query:", err2 || data2);
+}
+
+checkSchema();

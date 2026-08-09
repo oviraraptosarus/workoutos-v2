@@ -31,16 +31,16 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
             // Calculate an approximate DOB from age
             const dob = new Date();
             dob.setFullYear(dob.getFullYear() - (Number(age) || 25));
-            const dobString = dob.toISOString().split('T')[0];
+            const dobString = dob.toLocaleDateString('en-CA');
 
             await updateUserProfile({
-                fitnessGoal: goal,
+                fitnessGoal: goal || 'Build Muscle',
                 currentWeight: Number(currentWeight) || 75,
                 targetWeight: Number(targetWeight) || 70,
                 heightCm: Number(heightCm) || 170,
                 dob: dobString,
-                gender: gender,
-                activityLevel: activityLevel,
+                gender: gender || 'male',
+                activityLevel: activityLevel || 'sedentary',
                 accepted_terms: true,
                 accepted_privacy: true,
                 terms_version: 'v2.0',
@@ -141,7 +141,17 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
                                 <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                             </div>
                             <h1 className="font-display-md text-2xl font-bold text-on-surface mb-3">Welcome to Workout OS</h1>
-                            <p className="text-on-surface-variant text-base">Let's personalize your experience.</p>
+                            <p className="text-on-surface-variant text-base mb-8">Let's personalize your experience.</p>
+                            
+                            <button 
+                                onClick={() => {
+                                    setStep(8);
+                                    saveProfile();
+                                }}
+                                className="text-primary font-bold hover:underline"
+                            >
+                                Skip Onboarding
+                            </button>
                         </div>
                     )}
 
@@ -234,3 +244,4 @@ export default function OnboardingModal({ isOpen, onComplete }: OnboardingModalP
         </div>
     );
 }
+

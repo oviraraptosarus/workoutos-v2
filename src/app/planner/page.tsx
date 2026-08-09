@@ -166,7 +166,7 @@ export default function ExecutionOSPage() {
     const handleReflect = async () => {
         setIsReflecting(true);
         setReflectResponse('');
-        const completedToday = tasks.filter(t => t.completed && t.date === new Date().toISOString().split('T')[0]);
+        const completedToday = tasks.filter(t => t.completed && t.date === new Date().toLocaleDateString('en-CA'));
         
         try {
             const res = await fetch('/api/ai/chat', {
@@ -191,6 +191,52 @@ export default function ExecutionOSPage() {
 
     const completeTask = async (taskId: string) => {
         const { error } = await supabase.from('tasks').update({ completed: true }).eq('id', taskId);
+        if (!error) {
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
+    const setPriority = async (taskId: string, priority: string) => {
+        const { error } = await supabase.from('tasks').update({ priority }).eq('id', taskId);
+        if (!error) {
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
+    const handleAddQuickTask = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const titleInput = form.elements.namedItem('taskInput') as HTMLInputElement;
+        const prioritySelect = form.elements.namedItem('prioritySelect') as HTMLSelectElement;
+        const dueDateInput = form.elements.namedItem('dueDateInput') as HTMLInputElement;
+        
+        const title = titleInput.value.trim();
+        if (!title) return;
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { error } = await supabase.from('tasks').insert({
+            user_id: user.id,
+            date: new Date().toLocaleDateString('en-CA'),
+            title: title,
+            priority: prioritySelect ? prioritySelect.value : 'none',
+            due_date: dueDateInput && dueDateInput.value ? dueDateInput.value : null,
+        });
+        
+        if (!error) {
+            titleInput.value = '';
+            if (dueDateInput) dueDateInput.value = '';
+            if (prioritySelect) prioritySelect.value = 'none';
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
+    const deleteTask = async (taskId: string) => {
+        const { error } = await supabase.from('tasks').delete().eq('id', taskId);
         if (!error) {
             loadTasks();
             window.dispatchEvent(new Event('workout_os_tasks_updated'));
@@ -251,21 +297,31 @@ export default function ExecutionOSPage() {
     return (
         <AppLayout hideBottomNav={false}>
             <div className="max-w-4xl mx-auto pt-safe pb-24 px-4 min-h-screen">
-                <header className="py-6 flex flex-col gap-2">
-                    <h1 className="font-display text-4xl font-bold tracking-tight text-on-background">Execution OS</h1>
-                    <p className="text-on-surface-variant font-body">Capture, process, and execute relentlessly.</p>
+                <header className="py-8 flex flex-col gap-4 relative z-10">
+                    <div>
+                        <h1 className="font-display text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-on-background via-on-surface to-on-surface-variant drop-shadow-sm">Execution OS</h1>
+                        <p className="text-on-surface-variant font-body text-lg opacity-80 tracking-wide mt-2">Capture, process, and execute relentlessly.</p>
+                    </div>
+                    
+                    <button 
+                        onClick={() => setIsWarRoomActive(true)}
+                        className="self-start glass-button-premium bg-error/90 text-white font-black tracking-[0.1em] text-sm uppercase px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-error transition-all"
+                    >
+                        <Target className="w-5 h-5" />
+                        Enter Mission Mode
+                    </button>
                 </header>
 
-                <div className="flex bg-surface-container/30 backdrop-blur-md p-1 rounded-2xl mb-8 border border-surface-variant/30 overflow-x-auto hide-scrollbar">
+                <div className="flex bg-white/5 dark:bg-black/20 backdrop-blur-2xl p-1.5 rounded-[1.25rem] mb-10 border border-white/10 dark:border-white/5 shadow-inner overflow-x-auto hide-scrollbar relative z-10">
                     {(['now', 'brain', 'goals', 'reflect'] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={clsx(
-                                "flex-1 py-3 px-4 rounded-xl text-sm font-label uppercase tracking-wider transition-all whitespace-nowrap",
+                                "flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap relative z-10",
                                 activeTab === tab 
-                                    ? "bg-primary text-on-primary shadow-lg scale-100" 
-                                    : "text-on-surface-variant hover:bg-surface-container/50 hover:text-on-surface scale-95"
+                                    ? "text-on-surface shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/20" 
+                                    : "text-on-surface-variant hover:text-on-surface opacity-60 hover:opacity-100 hover:bg-white/5"
                             )}
                         >
                             {tab}
@@ -276,31 +332,93 @@ export default function ExecutionOSPage() {
                 <div className="space-y-6">
                     {/* NOW HUB */}
                     {activeTab === 'now' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="glass border border-surface-variant/30 p-8 rounded-3xl shadow-xl text-center flex flex-col items-center justify-center min-h-[300px]">
-                                <Play className="w-16 h-16 text-primary mb-6" />
-                                <h2 className="text-3xl font-display font-bold text-on-background mb-4">Relentless Mode</h2>
-                                <p className="text-on-surface-variant mb-8 max-w-md">Lock out all distractions and focus on your single most critical execution target.</p>
+                        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+                            <div className="bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
-                                {topTask ? (
-                                    <div className="bg-surface-container/50 border border-surface-variant p-6 rounded-2xl w-full max-w-md mb-8">
-                                        <p className="text-xs uppercase tracking-widest text-primary font-bold mb-2">Priority Target</p>
-                                        <h3 className="text-xl font-bold text-on-surface">{topTask.title}</h3>
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
+                                        <Target className="w-7 h-7" />
                                     </div>
-                                ) : (
-                                    <div className="bg-surface-container/50 border border-surface-variant p-6 rounded-2xl w-full max-w-md mb-8">
-                                        <p className="text-on-surface-variant">Your execution queue is clear.</p>
+                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
+                                </div>
+                                
+                                <form onSubmit={handleAddQuickTask} className="flex flex-col sm:flex-row gap-3 relative z-10">
+                                    <input 
+                                        name="taskInput"
+                                        type="text" 
+                                        placeholder="Add a new task..." 
+                                        className="flex-1 bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-5 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md"
+                                    />
+                                    <div className="flex gap-2">
+                                        <input 
+                                            name="dueDateInput"
+                                            type="date"
+                                            className="bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-4 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md"
+                                        />
+                                        <select 
+                                            name="prioritySelect"
+                                            className="bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-4 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md appearance-none"
+                                        >
+                                            <option value="none">No Priority</option>
+                                            <option value="high">High</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                        <button type="submit" className="bg-primary text-on-primary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5">
+                                            Add
+                                        </button>
                                     </div>
-                                )}
+                                </form>
 
-                                <button 
-                                    disabled={!topTask}
-                                    onClick={() => setIsWarRoomActive(true)}
-                                    className="btn-primary disabled:opacity-50 w-full max-w-md py-4 text-lg font-bold rounded-2xl flex items-center justify-center gap-2 group"
-                                >
-                                    <span>Enter War Room</span>
-                                    <Play className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </button>
+                                <div className="flex flex-col gap-3 relative z-10">
+                                    {tasks.filter(t => !t.completed).length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-12 opacity-60">
+                                            <CheckCircle2 className="w-12 h-12 text-on-surface-variant mb-4 opacity-50" />
+                                            <p className="text-on-surface-variant font-bold tracking-wide">Your execution queue is clear.</p>
+                                        </div>
+                                    ) : (
+                                        tasks.filter(t => !t.completed).map(task => (
+                                            <div key={task.id} className="group/item flex items-center gap-4 bg-white/5 dark:bg-white/5 hover:bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5">
+                                                <button 
+                                                    onClick={() => completeTask(task.id)}
+                                                    className="w-7 h-7 rounded-full border-2 border-on-surface-variant/30 flex-shrink-0 hover:border-activity-green hover:bg-activity-green/20 transition-all flex items-center justify-center text-transparent hover:text-activity-green shadow-inner"
+                                                >
+                                                    <CheckCircle2 size={18} />
+                                                </button>
+                                                
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-on-surface font-body-md font-semibold truncate group-hover/item:text-primary transition-colors">{task.title}</h3>
+                                                </div>
+
+                                                <select 
+                                                    value={task.priority || 'none'}
+                                                    onChange={(e) => setPriority(task.id, e.target.value)}
+                                                    className={clsx(
+                                                        "text-[10px] font-black uppercase tracking-[0.15em] px-3 py-2 rounded-xl border focus:outline-none appearance-none cursor-pointer backdrop-blur-md transition-colors shadow-sm",
+                                                        task.priority === 'high' ? 'bg-error/15 text-error border-error/30 hover:bg-error/25' :
+                                                        task.priority === 'medium' ? 'bg-white/10 text-on-surface border-white/20 hover:bg-white/20' :
+                                                        task.priority === 'low' ? 'bg-secondary/15 text-secondary border-secondary/30 hover:bg-secondary/25' :
+                                                        'bg-black/20 text-on-surface-variant border-white/5 hover:bg-black/30'
+                                                    )}
+                                                >
+                                                    <option value="none">No Priority</option>
+                                                    <option value="high">High</option>
+                                                    <option value="medium">Medium</option>
+                                                    <option value="low">Low</option>
+                                                </select>
+
+                                                <button
+                                                    onClick={() => deleteTask(task.id)}
+                                                    className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 hover:border-error/30 transition-all ml-1"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -496,3 +614,4 @@ export default function ExecutionOSPage() {
         </AppLayout>
     );
 }
+

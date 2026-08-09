@@ -56,7 +56,7 @@ export default function BudgetSnapshotCard() {
     return (
         <Link
             href="/budget-tracker"
-            className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform block"
+            className="glass-card-premium p-5  flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform block"
         >
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">

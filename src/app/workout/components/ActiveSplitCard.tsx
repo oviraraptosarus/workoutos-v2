@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, CheckCircle2, Trophy, Flame, Video, Link as LinkIcon, Plus, Save } from 'lucide-react';
 import { WorkoutLogger } from '@/lib/workout';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,6 +17,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     // Timer State
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const submitLock = useRef(false);
 
     // Builder State
     const [customTitle, setCustomTitle] = useState('My Custom Workout');
@@ -128,6 +129,9 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     };
 
     const handleFinish = async () => {
+        if (submitLock.current) return;
+        submitLock.current = true;
+        
         setIsFinished(true);
         
         const weightKg = userProfile?.targetWeight || 75;
@@ -136,8 +140,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-            const d = new Date();
-            const todayKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            const todayKey = new Date().toLocaleDateString('en-CA');
             
             try {
                 await WorkoutLogger.logWorkout({
@@ -159,7 +162,10 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                 // Standard AGENTS.md rule: Use native browser alert() pop-ups to surface the error directly on the screen
                 alert("Error saving workout to database: " + error.message);
                 setIsFinished(false); // Rollback optimistic state
+                submitLock.current = false;
             }
+        } else {
+            submitLock.current = false;
         }
     };
 
@@ -170,7 +176,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
         const calsBurned = Math.round(6.0 * weightKg * durationHrs);
 
         return (
-            <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
+            <div className="glass-card-premium p-5  transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 text-center">
                 <div className="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mx-auto mb-4 shadow-sm border border-primary-container">
                     <Trophy size={32} />
                 </div>
@@ -196,7 +202,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
 
     if (isBuilderMode) {
         return (
-            <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="glass-card-premium p-5  transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="mb-4">
                     <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-1">{t('workout.active.plan')}</h3>
                     <input 
@@ -259,7 +265,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
     if (exercises.length === 0 && !isBuilderMode) return null;
 
     return (
-        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="glass-card-premium p-5  transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1">Today's Split</h3>

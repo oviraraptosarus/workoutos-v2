@@ -28,7 +28,7 @@ export default function ActivityTracker() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
             
-            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
             const { data } = await supabase
                 .from('daily_logs')
                 .select('steps')
@@ -63,7 +63,7 @@ export default function ActivityTracker() {
         
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
             
             // Add to steps and also calculate how many calories to add to activity_burned
             const addedDistance = (stepsToAdd * strideLengthMeters) / 1000;
@@ -135,7 +135,7 @@ export default function ActivityTracker() {
     };
 
     return (
-        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="glass-card-premium p-5  transition-all animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
@@ -186,3 +186,4 @@ export default function ActivityTracker() {
         </div>
     );
 }
+

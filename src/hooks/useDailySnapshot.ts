@@ -49,12 +49,12 @@ export function useDailySnapshot() {
     const fetchSnapshot = useCallback(async () => {
         if (!user) return;
         
-        const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+        const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
         
         try {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+            const thirtyDaysAgoStr = thirtyDaysAgo.toLocaleDateString('en-CA');
 
             const [
                 { data: logs },
@@ -236,3 +236,4 @@ export function useDailySnapshot() {
 
     return { snapshot, refreshSnapshot: fetchSnapshot };
 }
+

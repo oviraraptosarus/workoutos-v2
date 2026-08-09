@@ -145,7 +145,7 @@ export default function GeminiFoodAssistant() {
                 chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
 
-            const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+            const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
             
             const { data: { user } } = await supabase.auth.getUser();
             let dbState: any = {};
@@ -503,3 +503,4 @@ export default function GeminiFoodAssistant() {
         </>
     );
 }
+

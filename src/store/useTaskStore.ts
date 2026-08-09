@@ -55,7 +55,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
         const base = {
             user_id: user.id,
-            date: new Date().toISOString().split('T')[0],
+            date: new Date().toLocaleDateString('en-CA'),
             title: taskData.title,
             full_title: (taskData as any).fullTitle || taskData.title,
             description: taskData.description,
@@ -95,11 +95,17 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         if (!task) return;
 
         // Optimistic update
+        const previousTasks = tasks;
         set(state => ({
             tasks: state.tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
         }));
 
-        await supabase.from('tasks').update({ completed: !task.completed }).eq('id', id);
+        const { error } = await supabase.from('tasks').update({ completed: !task.completed }).eq('id', id);
+        if (error) {
+            console.error("Failed to toggle task:", error);
+            alert("Error updating task: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        }
     },
 
     toggleSubTask: async (taskId: string, subTaskId: string) => {
@@ -110,24 +116,37 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         const updatedSubTasks = task.subTasks.map(st => st.id === subTaskId ? { ...st, completed: !st.completed } : st);
         
         // Optimistic update
+        const previousTasks = tasks;
         set(state => ({
             tasks: state.tasks.map(t => t.id === taskId ? { ...t, subTasks: updatedSubTasks } : t)
         }));
         
-        await supabase.from('tasks').update({ subtasks: updatedSubTasks }).eq('id', taskId);
+        const { error } = await supabase.from('tasks').update({ subtasks: updatedSubTasks }).eq('id', taskId);
+        if (error) {
+            console.error("Failed to toggle subtask:", error);
+            alert("Error updating subtask: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        }
     },
 
     setPriority: async (id: string, priority: Task['priority']) => {
+        const previousTasks = get().tasks;
         set(state => ({
             tasks: state.tasks.map(t => t.id === id ? { ...t, priority } : t)
         }));
-        try {
-            await supabase.from('tasks').update({ priority }).eq('id', id);
+        
+        const { error } = await supabase.from('tasks').update({ priority }).eq('id', id);
+        if (error) {
+            console.error("Failed to update priority:", error);
+            alert("Error updating priority: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        } else {
             window.dispatchEvent(new Event('workout_os_tasks_updated'));
-        } catch { /* pre-migration */ }
+        }
     },
 
     setDueDate: async (id: string, dueDate: string, dueTime?: string) => {
+        const previousTasks = get().tasks;
         set(state => ({
             tasks: state.tasks.map(t => t.id === id ? { ...t, dueDate, dueTime: dueTime || t.dueTime } : t)
         }));
@@ -137,17 +156,29 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             updateData.due_time = dueTime;
         }
         
-        try {
-            await supabase.from('tasks').update(updateData).eq('id', id);
+        const { error } = await supabase.from('tasks').update(updateData).eq('id', id);
+        if (error) {
+            console.error("Failed to update due date:", error);
+            alert("Error updating due date: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        } else {
             window.dispatchEvent(new Event('workout_os_tasks_updated'));
-        } catch { }
+        }
     },
 
     deleteTask: async (id: string) => {
+        const previousTasks = get().tasks;
         // Optimistic update
         set(state => ({
             tasks: state.tasks.filter(t => t.id !== id)
         }));
-        await supabase.from('tasks').delete().eq('id', id);
+        
+        const { error } = await supabase.from('tasks').delete().eq('id', id);
+        if (error) {
+            console.error("Failed to delete task:", error);
+            alert("Error deleting task: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        }
     }
 }));
+

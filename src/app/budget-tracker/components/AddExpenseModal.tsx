@@ -26,7 +26,7 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (onAdd) {
-            onAdd({ description, amount: parseFloat(amount), category, date: new Date().toISOString().split('T')[0] });
+            onAdd({ description, amount: parseFloat(amount), category, date: new Date().toLocaleDateString('en-CA') });
         }
         onClose();
     };
@@ -90,3 +90,4 @@ export default function AddExpenseModal({ isOpen, onClose, onAdd }: AddExpenseMo
         </Modal>
     );
 }
+

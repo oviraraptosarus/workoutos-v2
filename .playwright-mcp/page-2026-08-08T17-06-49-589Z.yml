@@ -1,0 +1,221 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]
+  - alert [ref=e11]
+  - generic [ref=e12]:
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e16]:
+          - generic [ref=e18]:
+            - heading "Good evening, Test" [level=1] [ref=e19]
+            - generic [ref=e20]:
+              - button [ref=e21] [cursor=pointer]
+              - paragraph [ref=e24]: Today, Saturday, Aug 8
+              - button [disabled] [ref=e25]
+          - generic [ref=e28]:
+            - button [ref=e30] [cursor=pointer]
+            - link "Open profile" [ref=e34] [cursor=pointer]:
+              - /url: /profile
+              - generic [ref=e35]: T
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - link "dark_mode Sleep Not logged Log" [ref=e38] [cursor=pointer]:
+              - /url: /sleep
+              - generic [ref=e40]:
+                - generic [ref=e41]: dark_mode
+                - generic [ref=e42]: Sleep
+              - generic [ref=e45]:
+                - paragraph [ref=e46]: Not logged
+                - generic [ref=e47]: Log
+            - link "Hydration details" [ref=e49] [cursor=pointer]:
+              - generic [ref=e51]:
+                - generic [ref=e52]: water_drop
+                - generic [ref=e53]: Water
+              - generic [ref=e56]:
+                - generic [ref=e57]:
+                  - generic [ref=e58]: "0"
+                  - generic [ref=e59]: ml
+                - paragraph [ref=e60]: of 2625 ml
+                - button "Add 250 millilitres of water" [ref=e61]: "250"
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - generic [ref=e66]:
+                  - generic [ref=e67]: restaurant
+                  - generic [ref=e68]: Nutrition
+                - link "Nutrition details" [ref=e69] [cursor=pointer]:
+                  - /url: /diet
+              - generic [ref=e72]:
+                - generic [ref=e77]:
+                  - generic [ref=e78]: "0"
+                  - generic [ref=e79]: of 2,331
+                - paragraph [ref=e80]: 2,331 kcal left
+                - button "Log meal" [ref=e81] [cursor=pointer]
+              - generic [ref=e83]:
+                - generic [ref=e84]:
+                  - generic [ref=e85]: Protein
+                  - generic [ref=e87]: 0/175g
+                - generic [ref=e88]:
+                  - generic [ref=e89]: Carbs
+                  - generic [ref=e91]: 0/233g
+                - generic [ref=e92]:
+                  - generic [ref=e93]: Fats
+                  - generic [ref=e95]: 0/78g
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - generic [ref=e98]:
+                  - generic [ref=e99]: fitness_center
+                  - generic [ref=e100]: WORKOUT
+                - link "Workout details" [ref=e101] [cursor=pointer]:
+                  - /url: /workout
+              - generic [ref=e104]:
+                - generic [ref=e105]: fitness_center
+                - generic [ref=e107]:
+                  - paragraph [ref=e108]: No workouts yet
+                  - paragraph [ref=e109]: Time to crush your goals.
+                  - link "Start your first workout" [ref=e110] [cursor=pointer]:
+                    - /url: /workout
+              - generic [ref=e111]:
+                - textbox "Add an exercise" [ref=e112]:
+                  - /placeholder: Add exercise...
+                - button "Add exercise" [disabled] [ref=e113]
+          - generic [ref=e115]:
+            - generic [ref=e116]:
+              - heading "How do you feel?" [level=3] [ref=e117]
+              - generic [ref=e118]: Optional
+            - generic [ref=e119]:
+              - generic [ref=e120]:
+                - generic [ref=e121]: Mood
+                - group "Mood" [ref=e126]:
+                  - button "Mood 1 of 10" [ref=e127] [cursor=pointer]
+                  - button "Mood 2 of 10" [ref=e128] [cursor=pointer]
+                  - button "Mood 3 of 10" [ref=e129] [cursor=pointer]
+                  - button "Mood 4 of 10" [ref=e130] [cursor=pointer]
+                  - button "Mood 5 of 10" [ref=e131] [cursor=pointer]
+                  - button "Mood 6 of 10" [ref=e132] [cursor=pointer]
+                  - button "Mood 7 of 10" [ref=e133] [cursor=pointer]
+                  - button "Mood 8 of 10" [ref=e134] [cursor=pointer]
+                  - button "Mood 9 of 10" [ref=e135] [cursor=pointer]
+                  - button "Mood 10 of 10" [ref=e136] [cursor=pointer]
+                - generic [ref=e137]: –
+              - generic [ref=e138]:
+                - generic [ref=e139]: Energy
+                - group "Energy" [ref=e143]:
+                  - button "Energy 1 of 10" [ref=e144] [cursor=pointer]
+                  - button "Energy 2 of 10" [ref=e145] [cursor=pointer]
+                  - button "Energy 3 of 10" [ref=e146] [cursor=pointer]
+                  - button "Energy 4 of 10" [ref=e147] [cursor=pointer]
+                  - button "Energy 5 of 10" [ref=e148] [cursor=pointer]
+                  - button "Energy 6 of 10" [ref=e149] [cursor=pointer]
+                  - button "Energy 7 of 10" [ref=e150] [cursor=pointer]
+                  - button "Energy 8 of 10" [ref=e151] [cursor=pointer]
+                  - button "Energy 9 of 10" [ref=e152] [cursor=pointer]
+                  - button "Energy 10 of 10" [ref=e153] [cursor=pointer]
+                - generic [ref=e154]: –
+              - generic [ref=e155]:
+                - generic [ref=e156]: Hunger
+                - group "Hunger" [ref=e161]:
+                  - button "Hunger 1 of 10" [ref=e162] [cursor=pointer]
+                  - button "Hunger 2 of 10" [ref=e163] [cursor=pointer]
+                  - button "Hunger 3 of 10" [ref=e164] [cursor=pointer]
+                  - button "Hunger 4 of 10" [ref=e165] [cursor=pointer]
+                  - button "Hunger 5 of 10" [ref=e166] [cursor=pointer]
+                  - button "Hunger 6 of 10" [ref=e167] [cursor=pointer]
+                  - button "Hunger 7 of 10" [ref=e168] [cursor=pointer]
+                  - button "Hunger 8 of 10" [ref=e169] [cursor=pointer]
+                  - button "Hunger 9 of 10" [ref=e170] [cursor=pointer]
+                  - button "Hunger 10 of 10" [ref=e171] [cursor=pointer]
+                - generic [ref=e172]: –
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - button "Remove one cup of caffeine" [disabled] [ref=e177]: −
+                - generic [ref=e178]: "0"
+                - button "Add one cup of caffeine" [ref=e179] [cursor=pointer]: +
+                - generic [ref=e180]: cups
+              - button "Save" [ref=e181] [cursor=pointer]
+          - link "payments Budget Snapshot ₹0 of ₹2,000 On track ₹2,000 remaining · day 8 of 31" [ref=e182] [cursor=pointer]:
+            - /url: /budget-tracker
+            - generic [ref=e184]:
+              - generic [ref=e185]: payments
+              - generic [ref=e186]: Budget Snapshot
+            - generic [ref=e189]:
+              - generic [ref=e190]:
+                - generic [ref=e191]: ₹0
+                - generic [ref=e192]: of ₹2,000
+              - generic [ref=e193]: On track
+            - paragraph [ref=e196]: ₹2,000 remaining · day 8 of 31
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]:
+              - generic [ref=e201]: monitor_weight
+              - generic [ref=e202]: Weight Trend
+            - generic [ref=e203]:
+              - button "Photos" [ref=e204] [cursor=pointer]
+              - link "View weight progress" [ref=e208] [cursor=pointer]:
+                - /url: /progress
+                - text: Trend
+          - img [ref=e214]:
+            - generic [ref=e218]:
+              - generic [ref=e219]: Aug 3
+              - generic [ref=e221]: Aug 4
+              - generic [ref=e223]: Aug 5
+              - generic [ref=e225]: Aug 6
+              - generic [ref=e227]: Aug 7
+              - generic [ref=e229]: Aug 8
+              - generic [ref=e231]: Aug 9
+          - generic [ref=e234]:
+            - generic [ref=e235]:
+              - spinbutton [ref=e236]: "75"
+              - generic [ref=e237]: kg
+            - button "Save" [ref=e238] [cursor=pointer]
+          - generic [ref=e239]:
+            - generic [ref=e240]:
+              - generic [ref=e241]:
+                - generic [ref=e242]: photo_camera
+                - generic [ref=e243]: Progress Photos
+              - button "View All (0)" [ref=e244] [cursor=pointer]
+            - generic [ref=e247]:
+              - button "Add Photo" [ref=e248] [cursor=pointer]
+              - generic [ref=e252]: No photos yet. Tap Add Photo to track your body transformation visually!
+        - generic [ref=e253]:
+          - generic [ref=e254]:
+            - generic [ref=e255]:
+              - heading "TIME PROGRESSION" [level=3] [ref=e256]
+              - generic [ref=e260]:
+                - generic [ref=e262]:
+                  - generic [ref=e263]: YEAR
+                  - generic [ref=e264]: 60.3%
+                - generic [ref=e268]:
+                  - generic [ref=e269]: MONTH
+                  - generic [ref=e270]: 25.6%
+                - generic [ref=e274]:
+                  - generic [ref=e275]: TODAY
+                  - generic [ref=e276]: 94.2%
+            - generic [ref=e279]:
+              - heading "Quick Notes" [level=2] [ref=e281]
+              - textbox "Jot down anything raw (e.g. 2 eggs, 500ml water, 30 min run)..." [ref=e287]
+          - generic [ref=e289]:
+            - generic [ref=e290]:
+              - heading "Daily Quests" [level=2] [ref=e291]
+              - link "View All" [ref=e296] [cursor=pointer]:
+                - /url: /planner
+            - generic [ref=e299]:
+              - generic [ref=e300]:
+                - button [ref=e301] [cursor=pointer]
+                - heading "Test Playwright Task" [level=3] [ref=e307]
+              - generic [ref=e308]:
+                - textbox "Add a new task..." [active] [ref=e309]
+                - button "Add" [disabled] [ref=e310]
+    - navigation:
+      - generic [ref=e311]:
+        - link "dashboard" [ref=e312] [cursor=pointer]:
+          - /url: /dashboard
+        - link "bolt" [ref=e316] [cursor=pointer]:
+          - /url: /planner
+        - link "nutrition" [ref=e319] [cursor=pointer]:
+          - /url: /diet
+        - link "fitness_center" [ref=e322] [cursor=pointer]:
+          - /url: /workout
+        - link "payments" [ref=e325] [cursor=pointer]:
+          - /url: /budget-tracker
+    - button "Open Ava, the AI assistant" [ref=e328] [cursor=pointer]
+  - generic [ref=e330]: "9"

@@ -25,9 +25,7 @@ export const getDisplayDateString = (dateKey: string): string => {
     return dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 };
 
-const MEALS_PREFIX = 'workout_os_diet_meals_';
-const WATER_PREFIX = 'workout_os_water_ml_';
-const GOALS_KEY = 'workout_os_macro_goals_v1';
+
 
 export const getMealsForDate = async (dateKey: string): Promise<MealItem[]> => {
     const { data: { user } } = await supabase.auth.getUser();

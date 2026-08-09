@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .glass-card-premium {
+        @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden rounded-[2rem];
+    }
+    
+    .glass-input-premium {
+        @apply bg-black/10 dark:bg-black/40 border border-white/10 shadow-inner backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-on-surface-variant/50;
+    }
+    
+    .glass-button-premium {
+        @apply bg-primary text-on-primary font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5;
+    }
+}
+
 :root {
     /* Semantic color channels (R G B) — light theme.
        Consumed by tailwind.config.js as rgb(var(--c-*) / <alpha-value>) so every

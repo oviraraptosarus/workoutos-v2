@@ -25,7 +25,7 @@ export function useCommandCenterEngine() {
                 // 2. We will analyze the last 7 days of logs
                 const sevenDaysAgo = new Date();
                 sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-                const dateStr = sevenDaysAgo.toISOString().split('T')[0];
+                const dateStr = sevenDaysAgo.toLocaleDateString('en-CA');
 
                 const { data: recentLogs } = await supabase
                     .from('daily_logs')
@@ -82,7 +82,7 @@ export function useCommandCenterEngine() {
 
                 // Daily Coach / Evening Wrap-up
                 const hour = new Date().getHours();
-                const todayIso = new Date().toISOString().split('T')[0];
+                const todayIso = new Date().toLocaleDateString('en-CA');
 
                 if (hour < 12) {
                     const { count: pendingTasks } = await supabase.from('tasks').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('date', todayIso).eq('completed', false);
@@ -138,3 +138,4 @@ export function useCommandCenterEngine() {
         runEngine();
     }, [user, userProfile]);
 }
+

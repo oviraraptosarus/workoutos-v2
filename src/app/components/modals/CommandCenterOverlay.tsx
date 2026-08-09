@@ -51,7 +51,7 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
         }
 
         // Fetch Upcoming Activities (Tasks)
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = new Date().toLocaleDateString('en-CA');
         const { data: upcomingTasks } = await supabase
             .from('tasks')
             .select('*')
@@ -337,3 +337,4 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
         </>
     );
 }
+

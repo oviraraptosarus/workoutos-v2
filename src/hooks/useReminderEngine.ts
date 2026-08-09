@@ -10,7 +10,7 @@ export function useReminderEngine() {
         const runEngine = async () => {
             try {
                 const now = new Date();
-                const todayStr = now.toISOString().split('T')[0];
+                const todayStr = now.toLocaleDateString('en-CA');
                 const currentTimeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); // 24hr format
                 const currentDay = now.getDay();
 
@@ -42,7 +42,7 @@ export function useReminderEngine() {
                         .eq('user_id', user.id)
                         .eq('completed', false)
                         .eq('notification_sent', false)
-                        .or('reminder_time.lte.' + now.toISOString() + ',and(due_date.eq.' + todayStr + ',due_time.lte.' + currentTimeStr + ')');
+                        .or(`reminder_time.lte."${now.toISOString()}",and(due_date.eq."${todayStr}",due_time.lte."${currentTimeStr}")`);
 
                     if (pendingTasks && pendingTasks.length > 0) {
                         for (const pt of pendingTasks) {
@@ -290,3 +290,4 @@ export function useReminderEngine() {
         return () => clearInterval(intervalId);
     }, [user, userProfile]);
 }
+

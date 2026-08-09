@@ -6,7 +6,7 @@ import nextDynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePathname } from 'next/navigation';
-import DevDebugPanel from '@/components/DevDebugPanel';
+
 
 
 // Dynamic imports with ssr:false to prevent prerender crashes
@@ -64,7 +64,6 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
             <GlobalAICopilot />
             <EndOfDayBanner />
             {session && <OnboardingModal isOpen={showOnboarding} onComplete={() => {}} />}
-            <DevDebugPanel />
         </div>
     );
 }

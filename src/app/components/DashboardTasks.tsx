@@ -11,20 +11,21 @@ import { useTaskStore } from '@/store/useTaskStore';
 export default function DashboardTasks() {
     const { selectedDate } = useDate();
     const { t } = useLanguage();
-    const { tasks, fetchTasks, toggleTask } = useTaskStore();
+    const { tasks, fetchTasks, toggleTask, addTask } = useTaskStore();
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [newTaskTitle, setNewTaskTitle] = useState('');
 
     useEffect(() => {
         setIsClient(true);
         if (selectedDate) {
             fetchTasks(selectedDate);
         } else {
-            fetchTasks(new Date().toISOString().split('T')[0]);
+            fetchTasks(new Date().toLocaleDateString('en-CA'));
         }
 
         const handleUpdate = () => {
-            fetchTasks(selectedDate || new Date().toISOString().split('T')[0]);
+            fetchTasks(selectedDate || new Date().toLocaleDateString('en-CA'));
         };
         window.addEventListener('workout_os_tasks_updated', handleUpdate);
 
@@ -47,6 +48,15 @@ export default function DashboardTasks() {
         await toggleTask(taskId);
     };
 
+    const handleAddTask = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newTaskTitle.trim()) return;
+        await addTask({ title: newTaskTitle.trim() });
+        setNewTaskTitle('');
+        // Let the store handle the local update optimistically, or fetch again
+        fetchTasks(selectedDate || new Date().toLocaleDateString('en-CA'));
+    };
+
     if (!isClient) return null;
 
     const pendingTasks = tasks.filter(t => !t.completed).slice(0, 3);
@@ -63,7 +73,10 @@ export default function DashboardTasks() {
                 </Link>
             </div>
 
-            <div className={`bg-card-white dark:bg-surface-container-lowest border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-black/5 dark:border-white/5'} p-4 sm:p-5 rounded-2xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] space-y-3 flex-1 transition-all duration-500 relative overflow-hidden hover:shadow-lg`}>
+            <div className={`glass-card-premium border ${highlight ? 'border-activity-green shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-white/10'} p-6 space-y-4 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]`}>
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                
                 {pendingTasks.length === 0 ? (
                     <div className="flex flex-col items-center justify-center gap-3 py-6">
                         <div className="w-12 h-12 rounded-full bg-surface-container-high dark:bg-surface-container-high flex items-center justify-center text-activity-green shadow-inner">
@@ -79,10 +92,10 @@ export default function DashboardTasks() {
                     </div>
                 ) : (
                     pendingTasks.map((task) => (
-                        <div key={task.id} className="flex items-start gap-3 bg-surface-container-low p-3 rounded-xl border border-surface-variant">
+                        <div key={task.id} className="group/item flex items-start gap-3 bg-white/5 dark:bg-white/5 hover:bg-white/10 backdrop-blur-md p-3.5 rounded-[1rem] border border-white/5 hover:border-white/20 transition-all duration-300 shadow-sm relative z-10">
                             <button 
                                 onClick={() => handleToggleTask(task.id)}
-                                className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 border-surface-variant text-transparent hover:border-activity-green flex items-center justify-center transition-colors"
+                                className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 border-on-surface-variant/30 hover:border-activity-green hover:bg-activity-green/20 transition-all flex items-center justify-center text-transparent hover:text-activity-green shadow-inner"
                             >
                                 <CheckCircle2 size={12} />
                             </button>
@@ -124,7 +137,21 @@ export default function DashboardTasks() {
                         </Link>
                     </div>
                 )}
+
+                <form onSubmit={handleAddTask} className="mt-auto pt-4 border-t border-white/10 flex gap-2 relative z-10">
+                    <input 
+                        type="text" 
+                        value={newTaskTitle}
+                        onChange={(e) => setNewTaskTitle(e.target.value)}
+                        placeholder="Add a new task..." 
+                        className="glass-input-premium flex-1 rounded-[1rem] px-4 py-3 text-sm text-on-surface"
+                    />
+                    <button type="submit" disabled={!newTaskTitle.trim()} className="glass-button-premium px-4 py-3 rounded-[1rem] text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        Add
+                    </button>
+                </form>
             </div>
         </section>
     );
 }
+

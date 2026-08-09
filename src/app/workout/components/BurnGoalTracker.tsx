@@ -22,7 +22,7 @@ export default function BurnGoalTracker() {
 
     const toggleRestDay = async () => {
         if (!user) return;
-        const dateKey = selectedDate || new Date().toISOString().split('T')[0];
+        const dateKey = selectedDate || new Date().toLocaleDateString('en-CA');
         await supabase.from('daily_logs').upsert(
             { user_id: user.id, date: dateKey, is_rest_day: !isRestDay },
             { onConflict: 'user_id,date' }
@@ -37,7 +37,7 @@ export default function BurnGoalTracker() {
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     return (
-        <div className="bg-surface-container-low backdrop-blur-xl border border-surface-variant rounded-2xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="glass-card-premium p-5  animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-black text-on-surface flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
@@ -139,3 +139,4 @@ export default function BurnGoalTracker() {
         </div>
     );
 }
+

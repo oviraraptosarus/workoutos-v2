@@ -15,7 +15,7 @@ export default function EndOfDayBanner() {
         const check = () => {
             const now = new Date();
             const hour = now.getHours();
-            const dateKey = now.toISOString().split('T')[0];
+            const dateKey = now.toLocaleDateString('en-CA');
             setTodayKey(dateKey);
 
             // Only show between 8 PM (20:00) and 11:59 PM
@@ -106,3 +106,4 @@ export default function EndOfDayBanner() {
         </div>
     );
 }
+

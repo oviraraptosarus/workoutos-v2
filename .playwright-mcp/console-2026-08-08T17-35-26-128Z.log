@@ -1,0 +1,85 @@
+[     878ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[    1594ms] [WARNING] GoTrueClient@sb-ixqrijxdedtbxondzytn-auth-token:1 (2.110.9) 2026-08-08T17:35:27.709Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:184
+[   79260ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   81494ms] [LOG] [Fast Refresh] done in 2235ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  222065ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[  229661ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  233221ms] [LOG] [Fast Refresh] done in 3560ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  269584ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  269587ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  269587ms] [ERROR] Payload: {priority: high} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  269588ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  269588ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  269588ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  269588ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271102ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  271105ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271105ms] [ERROR] Payload: {priority: high} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271106ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271106ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271106ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  271106ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291110ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  291111ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291111ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291112ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291112ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291112ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  291112ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292838ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  292838ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292839ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292839ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292839ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292839ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  292839ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294074ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  294076ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294076ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294076ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294076ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294076ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294076ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294253ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  294254ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294254ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294254ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294255ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294255ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294255ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294424ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  294426ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294426ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294426ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294426ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294426ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  294427ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295115ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  295116ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295116ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295116ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295116ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295116ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295117ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295245ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  295246ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295246ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295246ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295246ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295246ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295247ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295473ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  295474ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295474ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295474ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295475ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295475ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  295475ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301760ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/rest/v1/tasks?id=eq.5e89d272-c329-450b-8ea7-e62e565c0157:0
+[  301761ms] [ERROR] Operation: UPDATE tasks @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301761ms] [ERROR] Payload: {completed: true} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301762ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301762ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301762ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301762ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  301763ms] [ERROR] Failed to toggle task: {code: 42703, details: null, hint: null, message: record "new" has no field "updated_at"} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56

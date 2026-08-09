@@ -63,7 +63,16 @@ export default function QuickNotes() {
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
                 saveToBackend(val);
-            }, 1500);
+            }, 500);
+        }
+    };
+
+    const handleBlur = () => {
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+        if (selectedDate && note !== undefined) {
+            saveToBackend(note);
         }
     };
 
@@ -77,8 +86,10 @@ export default function QuickNotes() {
     if (!isClient) return null;
 
     return (
-        <section className="bg-card-white dark:bg-surface-container-lowest rounded-2xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] border border-black/5 dark:border-white/5 flex flex-col transition-all animate-fade-in relative overflow-hidden">
-            <div className="flex items-center justify-between mb-3">
+        <section className="glass-card-premium p-6 flex flex-col transition-all animate-fade-in relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            <div className="flex items-center justify-between mb-4 relative z-10">
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                     <PenTool size={16} className="text-primary" /> Quick Notes
                     {saveStatus === 'saving' && <Loader2 size={12} className="text-on-surface-variant animate-spin ml-1" />}
@@ -98,10 +109,11 @@ export default function QuickNotes() {
             <textarea
                 value={note}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 disabled={!isToday}
                 rows={3}
                 placeholder={isToday ? "Jot down anything raw (e.g. 2 eggs, 500ml water, 30 min run)..." : "Cannot edit historical notes."}
-                className={`w-full bg-surface-container-low border border-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary font-body-md text-on-surface p-4 resize-none rounded-2xl transition-shadow custom-scrollbar ${!isToday ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`glass-input-premium w-full font-body-md text-on-surface p-4 resize-none rounded-[1.25rem] relative z-10 custom-scrollbar ${!isToday ? 'opacity-70 cursor-not-allowed' : ''}`}
             />
         </section>
     );

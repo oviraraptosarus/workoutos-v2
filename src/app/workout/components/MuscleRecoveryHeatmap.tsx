@@ -39,7 +39,7 @@ export default function MuscleRecoveryHeatmap() {
                 .from('workout_logs')
                 .select('date, session_type')
                 .eq('user_id', user.id)
-                .gte('date', threeDaysAgo.toISOString().split('T')[0])
+                .gte('date', threeDaysAgo.toLocaleDateString('en-CA'))
                 .order('date', { ascending: false });
 
             const newRecovery: Record<string, RecoveryStatus> = {
@@ -52,10 +52,10 @@ export default function MuscleRecoveryHeatmap() {
             };
 
             if (workouts) {
-                const todayStr = today.toISOString().split('T')[0];
+                const todayStr = today.toLocaleDateString('en-CA');
                 const yesterday = new Date();
                 yesterday.setDate(today.getDate() - 1);
-                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const yesterdayStr = yesterday.toLocaleDateString('en-CA');
 
                 workouts.forEach(w => {
                     const muscles = MUSCLE_MAPPING[w.session_type] || [];
@@ -121,3 +121,4 @@ export default function MuscleRecoveryHeatmap() {
         </div>
     );
 }
+

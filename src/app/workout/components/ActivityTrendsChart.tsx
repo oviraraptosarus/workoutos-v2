@@ -19,7 +19,7 @@ export default function ActivityTrendsChart() {
                 const d = new Date();
                 d.setDate(today.getDate() - (6 - i));
                 return {
-                    date: d.toISOString().split('T')[0],
+                    date: d.toLocaleDateString('en-CA'),
                     display: d.toLocaleDateString('en-US', { weekday: 'short' }),
                     calories: 0,
                     steps: 0
@@ -116,3 +116,4 @@ export default function ActivityTrendsChart() {
         </div>
     );
 }
+
