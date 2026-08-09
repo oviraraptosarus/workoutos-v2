@@ -22,14 +22,7 @@ export function TopNav() {
           <span className="font-bold text-lg text-on-surface tracking-tight group-hover:text-secondary transition-colors">Workout OS</span>
         </Link>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
-            aria-label="Open AI Copilot"
-            className="w-9 h-9 rounded-full transition-transform active:scale-90 flex items-center justify-center shadow-sm relative overflow-hidden group/ai border border-white/20"
-          >
-             <div className="ava-orb-icon w-full h-full absolute inset-0 opacity-80 group-hover/ai:opacity-100 transition-opacity"></div>
-             <Orbit size={18} strokeWidth={2.5} className="text-white relative z-10 drop-shadow-md group-hover/ai:rotate-180 transition-transform duration-700" />
-          </button>
+
           <Link
             href="/profile"
             className="w-9 h-9 rounded-full bg-black dark:bg-white flex items-center justify-center active:scale-90 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.2)] dark:shadow-[0_0_15px_rgba(255,255,255,0.4)] border border-black/10 dark:border-white/20 hover:shadow-[0_0_25px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]"

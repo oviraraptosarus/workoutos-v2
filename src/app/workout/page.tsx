@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import WorkoutHeader from './components/WorkoutHeader';
 import ActiveSplitCard from './components/ActiveSplitCard';
-import RecentWorkouts from './components/RecentWorkouts';
-import PresetWorkouts from './components/PresetWorkouts';
 import ActivityTracker from './components/ActivityTracker';
 import BurnGoalTracker from './components/BurnGoalTracker';
 import CardioActivityModal from './components/modals/CardioActivityModal';
 import ActivityTrendsChart from './components/ActivityTrendsChart';
-import MuscleRecoveryHeatmap from './components/MuscleRecoveryHeatmap';
+import CustomWorkouts from './components/CustomWorkouts';
+import RecentWorkouts from './components/RecentWorkouts';
 
 export default function WorkoutPage() {
     const [activePreset, setActivePreset] = useState<any>(null);
@@ -147,13 +146,12 @@ export default function WorkoutPage() {
                     <ActiveSplitCard preset={activePreset} isBuilderMode={isBuilderMode} onExitBuilder={() => setIsBuilderMode(false)} onCloseSession={() => { setActivePreset(null); setIsBuilderMode(false); }} />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                     <ActivityTrendsChart />
-                    <MuscleRecoveryHeatmap />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <PresetWorkouts onPlay={handlePlayWorkout} />
+                    <CustomWorkouts onPlay={handlePlayWorkout} />
                     <RecentWorkouts />
                 </div>
             </div>
