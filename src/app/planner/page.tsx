@@ -333,13 +333,13 @@ export default function ExecutionOSPage() {
                     </button>
                 </header>
 
-                <div className="flex bg-white/5 dark:bg-black/20 backdrop-blur-2xl p-1.5 rounded-[1.25rem] mb-10 border border-white/10 dark:border-white/5 shadow-inner overflow-x-auto hide-scrollbar relative z-10">
+                <div className="flex bg-white/5 dark:bg-black/20 backdrop-blur-2xl p-1.5 rounded-[1.25rem] mb-10 border border-white/10 dark:border-white/5 shadow-inner relative z-10 w-full overflow-hidden">
                     {(['now', 'brain', 'goals', 'reflect'] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={clsx(
-                                "flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap relative z-10",
+                                "flex-1 py-3 px-1 sm:px-4 rounded-xl text-[9px] sm:text-xs font-bold uppercase tracking-[0.05em] sm:tracking-[0.2em] transition-all duration-300 relative z-10",
                                 activeTab === tab 
                                     ? "text-on-surface shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-surface-container-high border border-surface-variant backdrop-blur-md" 
                                     : "text-on-surface-variant hover:text-on-surface opacity-60 hover:opacity-100 hover:bg-surface-container"

@@ -1,0 +1,104 @@
+[    1476ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   63063ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   75591ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[  174837ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[  586013ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  592819ms] [LOG] [Fast Refresh] done in 6806ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  593209ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279677126:0
+[  593310ms] Event
+[  594518ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  594518ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[  603495ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  605635ms] [LOG] [Fast Refresh] done in 2139ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  607457ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279691391:0
+[  607524ms] Event
+[  608158ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  608158ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[  635528ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  639226ms] [LOG] [Fast Refresh] done in 3697ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  639337ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279723288:0
+[  639424ms] Event
+[  639550ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  639551ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[  669656ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  670488ms] [LOG] [Fast Refresh] done in 832ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  671077ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279755028:0
+[  671136ms] Event
+[  671271ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  671271ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[  690587ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  691731ms] [LOG] [Fast Refresh] done in 1145ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  691860ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279775800:0
+[  691942ms] Event
+[  692052ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  692053ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[  849766ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  851934ms] [LOG] [Fast Refresh] done in 2168ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  853892ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/css/app/layout.css?v=1786279937819:0
+[  853958ms] Event
+[  854512ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[  854513ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1007517ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1011214ms] [LOG] [Fast Refresh] done in 3697ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1015766ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[ 1015766ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1073936ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1081391ms] [LOG] [Fast Refresh] done in 7456ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1082029ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[ 1082029ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1229704ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1237955ms] [LOG] [Fast Refresh] done in 8250ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1238770ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[ 1238770ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1262190ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1262742ms] [ERROR] ./src/components/GlobalAICopilot.tsx
+Error:   x Expected '</', got '('
+     ,-[D:\Workout OS\src\components\GlobalAICopilot.tsx:746:1]
+ 743 |                                 </button>
+ 744 |                             )}
+ 745 |                             <button
+ 746 |                                 useEffect(() => {
+     :                                          ^
+ 747 |         const handleOpen = () => setIsOpen(true);
+ 748 |         window.addEventListener('open-ai-copilot', handleOpen);
+ 748 |         return () => window.removeEventListener('open-ai-copilot', handleOpen);
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/GlobalAICopilot.tsx
+./src/components/AppLayout.tsx
+./src/app/water/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[ 1262763ms] [LOG] {file: Object} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/next-devtools/index.js:1630
+[ 1272837ms] [ERROR] ./src/components/GlobalAICopilot.tsx
+Error:   x Expected '</', got '('
+     ,-[D:\Workout OS\src\components\GlobalAICopilot.tsx:746:1]
+ 743 |                                 </button>
+ 744 |                             )}
+ 745 |                             <button
+ 746 |                                 useEffect(() => {
+     :                                          ^
+ 747 |         const handleOpen = () => setIsOpen(true);
+ 748 |         window.addEventListener('open-ai-copilot', handleOpen);
+ 748 |         return () => window.removeEventListener('open-ai-copilot', handleOpen);
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/GlobalAICopilot.tsx
+./src/components/AppLayout.tsx
+./src/app/dashboard/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[ 1272840ms] [LOG] {file: Object} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/next-devtools/index.js:1630
+[ 1274290ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1275201ms] [LOG] [Fast Refresh] done in 911ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1277874ms] [LOG] [Fast Refresh] done in 3583ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1278554ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[ 1278554ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1292350ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1294155ms] [LOG] [Fast Refresh] done in 1805ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1294505ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
+[ 1294506ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0

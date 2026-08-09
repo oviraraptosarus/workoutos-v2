@@ -1,0 +1,42 @@
+[   13156ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/:0
+[   13724ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(pages-dir-browser)/./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[   13998ms] Error: Module not found: Can't resolve '@supabase/ssr'
+  1 | import { redirect } from 'next/navigation';
+> 2 | import { createServerClient, type CookieOptions } from '@supabase/ssr';
+    | ^
+  3 | import { cookies } from 'next/headers';
+  4 |
+  5 | export default async function Home() {
+
+https://nextjs.org/docs/messages/module-not-found
+
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at getNotFoundError (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\parseNotFoundError.js:140:16)
+    at async getModuleBuildError (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\webpackModuleError.js:103:27)
+    at async (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:29:49)
+    at async (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:27:21)
+[   13976ms] [LOG] [HMR] connected @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/websocket.js:45
+[   13983ms] [ERROR] ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@supabase/ssr'
+  1 | import { redirect } from 'next/navigation';
+> 2 | import { createServerClient, type CookieOptions } from '@supabase/ssr';
+    | ^
+  3 | import { cookies } from 'next/headers';
+  4 |
+  5 | export default async function Home() {
+
+https://nextjs.org/docs/messages/module-not-found @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.js:76
+[   14020ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/favicon.ico:0
+[   14092ms] [LOG] {file: Object} @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/compiled/next-devtools/index.js:1630
+[   53654ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:206
+[   53700ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/webpack/030dca4b2df93db9.webpack.hot-update.json:0
+[   53701ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:347
+[   56322ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/webpack/030dca4b2df93db9.webpack.hot-update.json:0
+[   56322ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:347
+[   58539ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:206
+[   59991ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/webpack/030dca4b2df93db9.webpack.hot-update.json:0
+[   59992ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:347
+[   61986ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   63917ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   68706ms] [LOG] [Fast Refresh] done in 4791ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[   69547ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15

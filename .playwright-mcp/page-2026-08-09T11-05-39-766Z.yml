@@ -1,0 +1,169 @@
+- main [ref=f21e3]:
+  - generic [ref=f21e4]:
+    - generic [ref=f21e5]:
+      - generic [ref=f21e6]:
+        - heading "Workout Tracker" [level=1] [ref=f21e7]
+        - paragraph [ref=f21e14]: Plan, track, and crush your fitness goals
+      - generic [ref=f21e15]:
+        - button "Log Activity" [ref=f21e16] [cursor=pointer]
+        - button "Start Empty Workout" [ref=f21e19] [cursor=pointer]
+    - generic [ref=f21e21]:
+      - heading [level=3] [ref=f21e23]
+      - generic [ref=f21e27]:
+        - generic [ref=f21e28]: 0%
+        - generic [ref=f21e34]:
+          - generic [ref=f21e35]:
+            - generic [ref=f21e36]: Burned Today
+            - generic [ref=f21e37]:
+              - text: "0"
+              - generic [ref=f21e38]: kcal
+          - generic [ref=f21e39]:
+            - generic [ref=f21e40]: Target
+            - generic [ref=f21e45]: 500 kcal
+      - generic [ref=f21e46]:
+        - generic [ref=f21e47]:
+          - paragraph [ref=f21e48]: Mark as Rest Day
+          - paragraph [ref=f21e49]: Lower expectations to recover
+        - button [ref=f21e50] [cursor=pointer]
+    - generic [ref=f21e52]:
+      - generic [ref=f21e59]:
+        - heading "Daily Steps" [level=3] [ref=f21e60]
+        - paragraph [ref=f21e61] [cursor=pointer]: "Stride: 70cm"
+      - generic [ref=f21e64]:
+        - generic [ref=f21e65]:
+          - generic [ref=f21e66]: Total Steps
+          - text: "0"
+        - generic [ref=f21e67]:
+          - generic [ref=f21e68]: Burned
+          - generic [ref=f21e69]: "0"
+      - generic [ref=f21e72]:
+        - spinbutton "Add steps from tracker..." [ref=f21e73]
+        - button "Add" [disabled] [ref=f21e74]
+    - generic [ref=f21e76]:
+      - generic [ref=f21e78]:
+        - heading "Activity Trends" [level=3] [ref=f21e79]
+        - generic [ref=f21e83]:
+          - button "Calories" [ref=f21e84] [cursor=pointer]
+          - button "Steps" [ref=f21e85] [cursor=pointer]
+      - generic [ref=f21e88]:
+        - heading "Muscle Recovery" [level=3] [ref=f21e89]
+        - generic [ref=f21e92]:
+          - button "Chest Fresh" [ref=f21e93] [cursor=pointer]:
+            - generic [ref=f21e94]: Chest
+            - generic [ref=f21e95]: Fresh
+          - button "Back Fresh" [ref=f21e98] [cursor=pointer]:
+            - generic [ref=f21e99]: Back
+            - generic [ref=f21e100]: Fresh
+          - button "Legs Fresh" [ref=f21e103] [cursor=pointer]:
+            - generic [ref=f21e104]: Legs
+            - generic [ref=f21e105]: Fresh
+          - button "Arms Fresh" [ref=f21e108] [cursor=pointer]:
+            - generic [ref=f21e109]: Arms
+            - generic [ref=f21e110]: Fresh
+          - button "Shoulders Fresh" [ref=f21e113] [cursor=pointer]:
+            - generic [ref=f21e114]: Shoulders
+            - generic [ref=f21e115]: Fresh
+          - button "Core Fresh" [ref=f21e118] [cursor=pointer]:
+            - generic [ref=f21e119]: Core
+            - generic [ref=f21e120]: Fresh
+        - generic [ref=f21e123]:
+          - generic [ref=f21e124]: Fresh
+          - generic [ref=f21e126]: Recovering
+          - generic [ref=f21e128]: Fatigued
+    - generic [ref=f21e130]:
+      - generic [ref=f21e131]:
+        - heading "Preset Workouts" [level=3] [ref=f21e132]
+        - generic [ref=f21e133]:
+          - generic [ref=f21e134] [cursor=pointer]:
+            - generic [ref=f21e139]:
+              - heading "HIIT for Fat Loss" [level=4] [ref=f21e140]
+              - generic [ref=f21e141]:
+                - generic [ref=f21e142]: Tabata Protocol
+                - generic [ref=f21e143]: •
+                - generic [ref=f21e144]: 20 min
+            - generic "Play HIIT for Fat Loss" [ref=f21e145]
+          - generic [ref=f21e148] [cursor=pointer]:
+            - generic [ref=f21e157]:
+              - heading "Push Day" [level=4] [ref=f21e158]
+              - generic [ref=f21e159]:
+                - generic [ref=f21e160]: Hypertrophy Focus
+                - generic [ref=f21e161]: •
+                - generic [ref=f21e162]: 45 min
+            - generic "Play Push Day" [ref=f21e163]
+          - generic [ref=f21e166] [cursor=pointer]:
+            - generic [ref=f21e172]:
+              - heading "Pull Day" [level=4] [ref=f21e173]
+              - generic [ref=f21e174]:
+                - generic [ref=f21e175]: Hypertrophy Focus
+                - generic [ref=f21e176]: •
+                - generic [ref=f21e177]: 45 min
+            - generic "Play Pull Day" [ref=f21e178]
+          - generic [ref=f21e181] [cursor=pointer]:
+            - generic [ref=f21e186]:
+              - heading "Leg Day" [level=4] [ref=f21e187]
+              - generic [ref=f21e188]:
+                - generic [ref=f21e189]: Strength & Size
+                - generic [ref=f21e190]: •
+                - generic [ref=f21e191]: 50 min
+            - generic "Play Leg Day" [ref=f21e192]
+          - generic [ref=f21e195] [cursor=pointer]:
+            - generic [ref=f21e201]:
+              - heading "Cardio Engine" [level=4] [ref=f21e202]
+              - generic [ref=f21e203]:
+                - generic [ref=f21e204]: Norwegian 4x4
+                - generic [ref=f21e205]: •
+                - generic [ref=f21e206]: 35 min
+            - generic "Play Cardio Engine" [ref=f21e207]
+          - generic [ref=f21e210] [cursor=pointer]:
+            - generic [ref=f21e215]:
+              - heading "Full Body Core" [level=4] [ref=f21e216]
+              - generic [ref=f21e217]:
+                - generic [ref=f21e218]: Stability & Strength
+                - generic [ref=f21e219]: •
+                - generic [ref=f21e220]: 40 min
+            - generic "Play Full Body Core" [ref=f21e221]
+          - generic [ref=f21e224] [cursor=pointer]:
+            - generic [ref=f21e229]:
+              - heading "Upper Body Power" [level=4] [ref=f21e230]
+              - generic [ref=f21e231]:
+                - generic [ref=f21e232]: Explosive Focus
+                - generic [ref=f21e233]: •
+                - generic [ref=f21e234]: 40 min
+            - generic "Play Upper Body Power" [ref=f21e235]
+          - generic [ref=f21e238] [cursor=pointer]:
+            - generic [ref=f21e243]:
+              - heading "Active Recovery" [level=4] [ref=f21e244]
+              - generic [ref=f21e245]:
+                - generic [ref=f21e246]: Mobility & Stretching
+                - generic [ref=f21e247]: •
+                - generic [ref=f21e248]: 25 min
+            - generic "Play Active Recovery" [ref=f21e249]
+          - generic [ref=f21e252] [cursor=pointer]:
+            - generic [ref=f21e259]:
+              - heading "Core Crusher" [level=4] [ref=f21e260]
+              - generic [ref=f21e261]:
+                - generic [ref=f21e262]: Abs Focus
+                - generic [ref=f21e263]: •
+                - generic [ref=f21e264]: 25 min
+            - generic "Play Core Crusher" [ref=f21e265]
+          - generic [ref=f21e268] [cursor=pointer]:
+            - generic [ref=f21e273]:
+              - heading "5x5 Strength" [level=4] [ref=f21e274]
+              - generic [ref=f21e275]:
+                - generic [ref=f21e276]: Powerlifting Base
+                - generic [ref=f21e277]: •
+                - generic [ref=f21e278]: 60 min
+            - generic "Play 5x5 Strength" [ref=f21e279]
+          - generic [ref=f21e282] [cursor=pointer]:
+            - generic [ref=f21e289]:
+              - heading "Calisthenics Basics" [level=4] [ref=f21e290]
+              - generic [ref=f21e291]:
+                - generic [ref=f21e292]: Bodyweight Mastery
+                - generic [ref=f21e293]: •
+                - generic [ref=f21e294]: 35 min
+            - generic "Play Calisthenics Basics" [ref=f21e295]
+      - generic [ref=f21e298]:
+        - heading "Past Sessions" [level=3] [ref=f21e299]
+        - generic [ref=f21e301]:
+          - paragraph [ref=f21e302]: No recent sessions.
+          - paragraph [ref=f21e303]: Complete a workout to see your history here.

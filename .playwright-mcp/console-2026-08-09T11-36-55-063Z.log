@@ -1,0 +1,36 @@
+[    4816ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[ 1540879ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[ 1609353ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1613265ms] [LOG] [Fast Refresh] done in 3912ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1628155ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[ 1628156ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[ 1628156ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T12:04:03.216Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "light"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[ 1628157ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[ 1628157ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[ 1628157ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T12:04:03.219Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "light"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[ 1628461ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[ 1628461ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[ 1628461ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[ 1628461ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[ 1628489ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[ 1628489ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[ 1628489ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[ 1628489ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[ 1960592ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1966507ms] [LOG] [Fast Refresh] done in 5915ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1990030ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1990949ms] [LOG] [Fast Refresh] done in 918ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13

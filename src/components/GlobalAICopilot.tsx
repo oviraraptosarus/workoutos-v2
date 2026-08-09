@@ -60,6 +60,12 @@ export default function GlobalAICopilot() {
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-ai-copilot', handleOpen);
+        return () => window.removeEventListener('open-ai-copilot', handleOpen);
+    }, []);
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
     const [isListening, setIsListening] = useState(false);
@@ -705,7 +711,7 @@ export default function GlobalAICopilot() {
     return (
         <>
             {!isOpen && (
-                <div className="fixed bottom-28 left-5 sm:bottom-8 sm:left-8 z-[9998] pointer-events-none">
+                <div className="hidden">
                     <button
                         onClick={() => setIsOpen(true)}
                         aria-label="Open Ava, the AI assistant"

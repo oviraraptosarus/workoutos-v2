@@ -84,10 +84,7 @@ export default function DashboardTasks() {
                         </div>
                         <div className="text-center">
                             <p className="font-label-md font-bold text-on-surface">{t('tasks.allCaughtUp')}</p>
-                            <p className="font-label-sm text-xs text-on-surface-variant mt-0.5 mb-3">{t('tasks.noPending')}</p>
-                            <Link href="/planner" className="font-label-md text-xs font-bold text-on-primary bg-primary px-5 py-2.5 rounded-full active:scale-95 transition-transform shadow-sm inline-block">
-                                + Add a new task
-                            </Link>
+                            <p className="font-label-sm text-xs text-on-surface-variant mt-0.5">{t('tasks.noPending')}</p>
                         </div>
                     </div>
                 ) : (

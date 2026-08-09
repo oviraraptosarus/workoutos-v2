@@ -1,0 +1,64 @@
+- main [ref=f16e3]:
+  - generic [ref=f16e4]:
+    - generic [ref=f16e5]:
+      - generic [ref=f16e6]: U
+      - heading "User Profile" [level=1] [ref=f16e7]
+      - paragraph [ref=f16e8]: "@username"
+      - generic [ref=f16e9]:
+        - generic [ref=f16e10]: Level 1
+        - generic [ref=f16e11]:
+          - generic [ref=f16e12]: local_fire_department
+          - text: 0 Day Streak
+    - generic [ref=f16e13]:
+      - generic [ref=f16e14]:
+        - generic [ref=f16e15]: WEIGHT
+        - generic [ref=f16e16]: — kg
+      - generic [ref=f16e17]:
+        - generic [ref=f16e18]: GOAL
+        - generic [ref=f16e19]: — kg
+      - generic [ref=f16e20]:
+        - generic [ref=f16e21]: CALORIES
+        - generic [ref=f16e22]: —
+      - generic [ref=f16e23]:
+        - generic [ref=f16e24]: WATER
+        - generic [ref=f16e25]: —
+    - generic [ref=f16e26]:
+      - heading "Progress Photos" [level=3] [ref=f16e31]
+      - generic [ref=f16e32]:
+        - generic [ref=f16e33]:
+          - generic [ref=f16e34]:
+            - generic [ref=f16e35]: photo_camera
+            - generic [ref=f16e36]: Progress Photos
+          - button "View All (0)" [ref=f16e37] [cursor=pointer]
+        - generic [ref=f16e40]:
+          - button "Add Photo" [ref=f16e41] [cursor=pointer]
+          - generic [ref=f16e45]: No photos yet. Tap Add Photo to track your body transformation visually!
+    - generic [ref=f16e46]:
+      - button "person Profile" [ref=f16e47] [cursor=pointer]:
+        - generic [ref=f16e48]:
+          - generic [ref=f16e49]: person
+          - generic [ref=f16e51]: Profile
+      - button "tune Preferences Light Mode" [ref=f16e55] [cursor=pointer]:
+        - generic [ref=f16e56]:
+          - generic [ref=f16e57]: tune
+          - generic [ref=f16e59]: Preferences
+        - generic [ref=f16e60]: Light Mode
+      - button "notifications Notifications & Alerts" [ref=f16e64] [cursor=pointer]:
+        - generic [ref=f16e65]:
+          - generic [ref=f16e66]: notifications
+          - generic [ref=f16e68]: Notifications & Alerts
+      - button "memory AI Settings Voice Off" [ref=f16e72] [cursor=pointer]:
+        - generic [ref=f16e73]:
+          - generic [ref=f16e74]: memory
+          - generic [ref=f16e76]: AI Settings
+        - generic [ref=f16e77]: Voice Off
+    - generic [ref=f16e81]:
+      - button "help_outline Help & Support" [ref=f16e82] [cursor=pointer]:
+        - generic [ref=f16e83]:
+          - generic [ref=f16e84]: help_outline
+          - generic [ref=f16e86]: Help & Support
+      - button "account_circle Account" [ref=f16e90] [cursor=pointer]:
+        - generic [ref=f16e91]:
+          - generic [ref=f16e92]: account_circle
+          - generic [ref=f16e94]: Account
+    - paragraph [ref=f16e98]: Workout OS v2.0 • WorkoutOS.com
