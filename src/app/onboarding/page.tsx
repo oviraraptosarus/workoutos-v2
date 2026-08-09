@@ -20,7 +20,7 @@ export default function OnboardingPage() {
     const [quote, setQuote] = useState(quotes[0]);
     const [dob, setDob] = useState(new Date(2000, 0, 1));
     const [isSaving, setIsSaving] = useState(false);
-    const { user } = useAuth();
+    const { user, updateUserProfile } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -42,27 +42,17 @@ export default function OnboardingPage() {
 
             const isUnder18 = age < 18;
 
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ 
-                    dob: dob.toISOString().split('T')[0],
-                    accepted_terms: true,
-                    accepted_privacy: true,
-                    // If under 18, we might set a flag here, or we calculate it dynamically elsewhere.
-                })
-                .eq('id', user.id);
-
-            if (updateError) {
-                console.error('Supabase update error:', updateError);
-                alert("Database Error: " + updateError.message + "\n\nIt looks like your backend database is missing the 'dob' column. Please run the SQL migration provided by the AI.");
-                return;
-            }
+            await updateUserProfile({
+                dob: dob.toISOString().split('T')[0],
+                accepted_terms: true,
+                accepted_privacy: true,
+            });
 
             localStorage.setItem('workout_os_onboarded', 'true');
             router.push('/dashboard');
         } catch (error: any) {
             console.error('Error saving onboarding data', error);
-            alert("Unexpected Error: " + (error?.message || "Something went wrong"));
+            alert("Database Error: " + (error?.message || "Something went wrong") + "\n\nPlease make sure you've run the SQL migration to add the 'dob' column to the 'profiles' table.");
         } finally {
             setIsSaving(false);
         }
