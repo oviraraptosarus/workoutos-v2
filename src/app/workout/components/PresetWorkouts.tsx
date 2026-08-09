@@ -190,14 +190,15 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
     };
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
+        <div className="glass-card-premium p-4 sm:p-5 animate-in fade-in slide-in-from-bottom-6 duration-500 delay-100 transition-colors">
             <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.presetTitle')}</h3>
             
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
                 {PRESET_WORKOUTS.map((preset, idx) => (
                     <div 
                         key={preset.id} 
-                        className="flex items-center justify-between p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant transition-all duration-300 shadow-sm hover:bg-surface-container hover:scale-[1.02] cursor-pointer group"
+                        onClick={() => onPlay(preset)}
+                        className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 shadow-sm hover:bg-white/10 hover:scale-[1.02] cursor-pointer group"
                         style={{ animationDelay: `${(idx % 5) * 100}ms` }}
                     >
                         <div className="flex items-center gap-3">
@@ -214,12 +215,12 @@ export default function PresetWorkouts({ onPlay }: { onPlay: (preset: any) => vo
                             </div>
                         </div>
                         
-                        <button 
-                            onClick={() => onPlay(preset)}
-                            className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-secondary-container transition-colors shadow-sm btn-press"
+                        <div 
+                            className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant group-hover:text-secondary group-hover:bg-secondary-container transition-colors shadow-sm"
+                            aria-label={`Play ${preset.title}`}
                         >
                             <Play size={14} className="ml-0.5" fill="currentColor" />
-                        </button>
+                        </div>
                     </div>
                 ))}
             </div>

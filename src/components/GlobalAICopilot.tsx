@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX } from 'lucide-react';
+import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIDebugDashboard } from './AIDebugDashboard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -90,6 +90,7 @@ export default function GlobalAICopilot() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
     // Keep a ref to the latest prompt so the voice auto-send can access current value
     const promptRef = useRef('');
     promptRef.current = prompt;
@@ -684,13 +685,19 @@ export default function GlobalAICopilot() {
                 const compressedDataUrl = await compressImage(file, 800, 800, 0.7);
                 setSelectedImage(compressedDataUrl);
             } catch (err) {
-                console.error('Failed to compress image:', err);
-                const reader = new FileReader();
-                reader.onloadend = () => setSelectedImage(reader.result as string);
-                reader.readAsDataURL(file);
+                console.warn('Failed to compress image, trying fallback reader:', err);
+                try {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setSelectedImage(reader.result as string);
+                    reader.onerror = () => alert("Error: Failed to read image file from your device.");
+                    reader.readAsDataURL(file);
+                } catch (readErr: any) {
+                    alert("Error: Camera or gallery read failed: " + readErr.message);
+                }
             }
         }
         if (fileInputRef.current) fileInputRef.current.value = '';
+        if (cameraInputRef.current) cameraInputRef.current.value = '';
     };
 
     const hasMessages = messages.length > 0;
@@ -702,7 +709,7 @@ export default function GlobalAICopilot() {
                     <button
                         onClick={() => setIsOpen(true)}
                         aria-label="Open Ava, the AI assistant"
-                        className="relative pointer-events-auto w-14 h-14 rounded-full shadow-[0_4px_24px_rgba(130,60,255,0.5)] active:scale-95 transition-transform duration-200 flex items-center justify-center overflow-hidden"
+                        className="relative pointer-events-auto w-12 h-12 rounded-full shadow-[0_4px_24px_rgba(130,60,255,0.5)] active:scale-95 transition-transform duration-200 flex items-center justify-center overflow-hidden"
                     >
                         <div className="ava-orb-icon w-full h-full rounded-full" />
                     </button>
@@ -710,16 +717,16 @@ export default function GlobalAICopilot() {
             )}
 
             {isOpen && (
-                <div className="fixed inset-0 z-[10000] flex flex-col bg-[#0d0d12]/95 backdrop-blur-2xl animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[10000] flex flex-col bg-surface-container-lowest/80 backdrop-blur-3xl animate-in fade-in duration-200">
 
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
                             <div className="ava-orb-icon w-8 h-8 rounded-full shadow-[0_0_16px_rgba(130,60,255,0.7)]" />
-                            <span className="text-white font-bold text-base tracking-tight">Ava</span>
+                            <span className="text-on-surface font-bold text-base tracking-tight">Ava</span>
                             {isDevMode && (
                                 <button 
                                     onClick={() => setShowDebugDashboard(true)}
-                                    className="px-2 py-0.5 ml-2 rounded bg-white/10 border border-white/20 text-[10px] uppercase font-bold tracking-wider text-white/50 hover:text-white transition-colors"
+                                    className="px-2 py-0.5 ml-2 rounded bg-surface-container-high border border-surface-variant text-[10px] uppercase font-bold tracking-wider text-on-surface-variant hover:text-on-surface transition-colors"
                                 >
                                     AI Debug
                                 </button>
@@ -731,14 +738,14 @@ export default function GlobalAICopilot() {
                                     onClick={clearChat}
                                     aria-label="Clear conversation"
                                     title="Clear conversation"
-                                    className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                                    className="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
                                 >
                                     <Trash2 size={16} />
                                 </button>
                             )}
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 transition-colors"
+                                className="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors"
                             >
                                 <X size={18} />
                             </button>
@@ -749,10 +756,10 @@ export default function GlobalAICopilot() {
 
                         {!hasMessages && (
                             <div className="flex flex-col items-center justify-center h-full min-h-[30vh] text-center px-4 animate-in fade-in duration-300">
-                                <h1 className="text-2xl sm:text-3xl font-bold text-white/90 leading-snug">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-on-surface leading-snug">
                                     {t('copilot.greeting', { name: displayName })}
                                 </h1>
-                                <p className="text-white/40 text-sm mt-3 font-medium">{t('copilot.subGreeting')}</p>
+                                <p className="text-on-surface-variant text-sm mt-3 font-medium">{t('copilot.subGreeting')}</p>
 
                                 <div className="mt-6 w-full max-w-sm grid grid-cols-2 gap-2.5">
                                     {[
@@ -768,13 +775,7 @@ export default function GlobalAICopilot() {
                                         <button
                                             key={label}
                                             onClick={() => handleSend(p)}
-                                            className="flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left text-sm font-semibold text-white/80 transition-all active:scale-95 hover:text-white"
-                                            style={{
-                                                background: 'rgba(255,255,255,0.07)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                            }}
-                                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
-                                            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.07)')}
+                                            className="flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left text-sm font-semibold text-on-surface-variant hover:text-on-surface bg-surface-container border border-surface-variant hover:bg-surface-container-high transition-all active:scale-95 shadow-sm"
                                         >
                                             <span className="text-xl">{emoji}</span>
                                             <span>{label}</span>
@@ -821,13 +822,13 @@ export default function GlobalAICopilot() {
                                                     <span className="text-[10px] text-white/30">{msg.timestamp}</span>
                                                     {msg.requestId && isDevMode && <span className="text-[10px] text-purple-400 font-mono ml-auto">{msg.requestId}</span>}
                                                 </div>
-                                                <div className={`ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-white/85'}`}>
+                                                <div className={`ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-primary-light border border-primary/30 bg-primary/10 shadow-[0_4px_24px_rgba(var(--c-primary)/0.2)] backdrop-blur-md'}`}>
                                                     <div className="prose prose-invert prose-sm max-w-none
-                                                        prose-headings:text-white prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
-                                                        prose-p:text-white/80 prose-p:leading-relaxed prose-p:my-1
-                                                        prose-li:text-white/80 prose-li:my-0.5
-                                                        prose-strong:text-white prose-strong:font-semibold
-                                                        prose-hr:border-white/10 prose-hr:my-3">
+                                                        prose-headings:text-primary-light prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
+                                                        prose-p:text-primary-light/90 prose-p:leading-relaxed prose-p:my-1
+                                                        prose-li:text-primary-light/90 prose-li:my-0.5
+                                                        prose-strong:text-white prose-strong:font-bold prose-strong:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]
+                                                        prose-hr:border-primary/20 prose-hr:my-3">
                                                         {msg.text.startsWith('⚠️') ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
                                                     </div>
                                                 </div>
@@ -836,7 +837,7 @@ export default function GlobalAICopilot() {
                                     )
                                 ) : (
                                     <div className="flex flex-col items-end gap-1 w-full max-w-[90%] sm:max-w-[85%]">
-                                        <div className="bg-[#2a2a38] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white/90 leading-relaxed break-words whitespace-pre-wrap">
+                                        <div className="bg-surface-container-high border border-white/10 shadow-lg rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-on-surface leading-relaxed break-words whitespace-pre-wrap backdrop-blur-md">
                                             {msg.imageUrl && (
                                                 <div className="relative rounded-2xl overflow-hidden border border-white/10 mb-1">
                                                     <img src={msg.imageUrl} alt="Uploaded preview" className="w-48 h-auto object-cover" />
@@ -872,11 +873,11 @@ export default function GlobalAICopilot() {
                                 <button
                                     key={chip}
                                     onClick={() => handleSend(chip)}
-                                    className="ava-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white/80 border border-white/15 bg-white/5 hover:bg-white/10 transition-colors whitespace-nowrap"
+                                    className="ava-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-on-surface-variant bg-surface-container border border-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors whitespace-nowrap shadow-sm"
                                 >
-                                    {chip.toLowerCase().includes('save') ? <BookmarkPlus size={12} className="text-white" /> :
-                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') || chip.toLowerCase().includes('log') ? <Sparkles size={12} className="text-white" /> :
-                                     <Settings2 size={12} className="text-white" />}
+                                    {chip.toLowerCase().includes('save') ? <BookmarkPlus size={12} className="text-on-surface-variant" /> :
+                                     chip.toLowerCase().includes('make') || chip.toLowerCase().includes('add') || chip.toLowerCase().includes('log') ? <Sparkles size={12} className="text-on-surface-variant" /> :
+                                     <Settings2 size={12} className="text-on-surface-variant" />}
                                     {chip}
                                 </button>
                             ))}
@@ -884,22 +885,37 @@ export default function GlobalAICopilot() {
                     )}
 
                     <div className="shrink-0 px-4 sm:px-6 pb-6 pt-2">
-                        <div className="flex items-end gap-3 bg-[#1e1e28] border border-white/10 rounded-2xl px-3 py-2 focus-within:border-white/20/40 transition-colors">
+                        <div className="flex items-end gap-3 bg-surface-container border border-surface-variant rounded-[1.5rem] px-3 py-2 focus-within:border-primary/50 focus-within:shadow-[0_0_20px_rgba(var(--c-primary)/0.2)] transition-all backdrop-blur-xl">
                             <input
                                 type="file"
                                 accept="image/*"
                                 capture="environment"
+                                ref={cameraInputRef}
+                                onChange={handleImageSelect}
+                                className="hidden"
+                            />
+                            <input
+                                type="file"
+                                accept="image/*"
                                 ref={fileInputRef}
                                 onChange={handleImageSelect}
                                 className="hidden"
                             />
                             <button
                                 type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="p-1.5 text-white/40 hover:text-white/70 transition-colors shrink-0 mb-0.5"
-                                aria-label="Attach image"
+                                onClick={() => cameraInputRef.current?.click()}
+                                className="p-1.5 text-on-surface-variant hover:text-on-surface transition-colors shrink-0 mb-0.5"
+                                aria-label="Take Photo"
                             >
                                 <Camera size={20} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="p-1.5 text-on-surface-variant hover:text-on-surface transition-colors shrink-0 mb-0.5 -ml-2"
+                                aria-label="Upload from Gallery"
+                            >
+                                <ImageIcon size={20} />
                             </button>
 
                             <textarea
@@ -914,7 +930,7 @@ export default function GlobalAICopilot() {
                                     } 
                                 }}
                                 placeholder={selectedImage ? t('copilot.imageReady') : "Type a message... (Ctrl+Enter to send)"}
-                                className="flex-1 max-h-[250px] bg-transparent py-2.5 text-sm text-white/85 font-medium focus:outline-none resize-none placeholder:text-white/30 overflow-y-auto"
+                                className="flex-1 max-h-[250px] bg-transparent py-2.5 text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant overflow-y-auto"
                             />
 
                             {selectedImage && (
@@ -929,7 +945,7 @@ export default function GlobalAICopilot() {
                             <button
                                 onClick={() => handleSend()}
                                 disabled={(!prompt.trim() && !selectedImage) || loading}
-                                className="p-1.5 text-white/40 hover:text-white disabled:opacity-20 transition-colors shrink-0 mb-0.5"
+                                className="p-1.5 text-primary hover:text-primary-light disabled:opacity-20 transition-colors shrink-0 mb-0.5"
                                 aria-label="Send message"
                             >
                                 <Send size={20} />

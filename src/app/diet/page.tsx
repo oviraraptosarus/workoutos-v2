@@ -185,6 +185,33 @@ export default function DietPage() {
         setIsPlanDetailsOpen(true);
     };
 
+    React.useEffect(() => {
+        const handleQuickLog = async (e: any) => {
+            const planId = e.detail;
+            
+            // Map plan to a generic logged meal
+            const planMap: Record<string, any> = {
+                '1': { name: 'Morning Plan - Eggs & Toast', category: 'Breakfast', calories: 320, protein: 16, carbs: 26, fat: 18 },
+                '2': { name: 'Lunch Plan - Quinoa Bowl', category: 'Lunch', calories: 440, protein: 26, carbs: 52, fat: 14 },
+                '3': { name: 'Dinner Plan - Broccoli Curry', category: 'Dinner', calories: 380, protein: 22, carbs: 34, fat: 16 },
+                '4': { name: 'Snack Plan - Oat Bites', category: 'Snacks', calories: 180, protein: 10, carbs: 22, fat: 6 },
+            };
+
+            const mealData = planMap[planId] || { name: 'Custom Meal Plan', category: 'Snacks', calories: 200, protein: 10, carbs: 20, fat: 5 };
+            
+            await handleSaveMeal({
+                ...mealData,
+                portion: '1 serving',
+                unit: 'serving',
+                sugar: 2,
+                fiber: 5
+            });
+        };
+
+        window.addEventListener('workout_os_quick_log_meal_plan', handleQuickLog);
+        return () => window.removeEventListener('workout_os_quick_log_meal_plan', handleQuickLog);
+    }, [meals, currentDateKey]);
+
     // Calculate aggregated totals
     const totalCalories = meals.reduce((acc, m) => acc + (m.calories || 0), 0);
     const totalProtein = meals.reduce((acc, m) => acc + (m.protein || 0), 0);

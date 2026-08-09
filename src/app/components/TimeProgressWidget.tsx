@@ -46,7 +46,7 @@ export default function TimeProgressWidget() {
 
     // Prevent hydration mismatch by returning a skeleton if 0
     if (progress.year === 0) return (
-        <div className="bg-surface-container-lowest border border-surface-variant rounded-xl p-4 sm:p-5 shadow-sm h-full flex flex-col justify-center min-h-[160px]">
+        <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-center min-h-[160px]">
             <div className="animate-pulse flex flex-col gap-4">
                 <div className="h-4 bg-surface-container rounded w-1/3"></div>
                 <div className="h-2.5 bg-surface-container rounded w-full"></div>
@@ -57,13 +57,15 @@ export default function TimeProgressWidget() {
     );
 
     return (
-        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all h-full relative overflow-hidden hover:shadow-lg">
-            <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-5 flex items-center gap-2">
+        <div className="glass-card-premium p-4 sm:p-5 transition-all h-full relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+            <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant mb-5 flex items-center gap-2 relative z-10">
                 <Hourglass size={16} className="text-primary" />
                 {t('dash.timeProgression')}
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-4 relative z-10">
                 {/* Year */}
                 <div>
                     <div className="flex justify-between items-center font-label-sm text-[11px] mb-1.5 uppercase tracking-wider">
@@ -98,6 +100,7 @@ export default function TimeProgressWidget() {
                         <span className="text-on-surface-variant">{t('dash.today')}</span>
                         <span className="text-on-surface">{progress.day.toFixed(1)}%</span>
                     </div>
+
                     <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                         <div 
                             className="h-full bg-activity-green rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(34,197,94,0.3)]"

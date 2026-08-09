@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 import clsx from 'clsx';
+import { useAuth } from '@/contexts/AuthContext';
 
-const slides = [
+const defaultSlides = [
     {
         id: 0,
         text: '"Tell me, what is it you plan to do with your one wild and precious life?"',
@@ -40,9 +41,35 @@ const slides = [
     }
 ];
 
+const quotes = [
+    { text: '"Tell me, what is it you plan to do with your one wild and precious life?"', subtext: "— Mary Oliver" },
+    { text: '"You could leave life right now. Let that determine what you do and say and think."', subtext: "— Marcus Aurelius" },
+    { text: '"Amateurs sit and wait for inspiration, the rest of us just get up and go to work."', subtext: "— Stephen King" },
+    { text: '"We suffer more often in imagination than in reality."', subtext: "— Seneca" },
+    { text: '"Don\'t stop when you\'re tired. Stop when you\'re done."', subtext: "— David Goggins" }
+];
+
 export default function WelcomePage() {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [slides, setSlides] = useState(defaultSlides);
     const router = useRouter();
+    const { session, isLoading } = useAuth();
+
+    useEffect(() => {
+        if (!isLoading && session) {
+            router.push('/dashboard');
+        }
+    }, [session, isLoading, router]);
+
+    // Randomize quote on mount
+    useEffect(() => {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        setSlides(prev => {
+            const newSlides = [...prev];
+            newSlides[0] = { ...newSlides[0], text: randomQuote.text, subtext: randomQuote.subtext };
+            return newSlides;
+        });
+    }, []);
 
     // Auto-advance
     useEffect(() => {

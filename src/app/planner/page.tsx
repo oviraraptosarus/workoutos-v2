@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check } from 'lucide-react';
 import clsx from 'clsx';
+import confetti from 'canvas-confetti';
 
 export default function ExecutionOSPage() {
     const { t } = useLanguage();
@@ -27,6 +28,11 @@ export default function ExecutionOSPage() {
     const [brainResponse, setBrainResponse] = useState('');
     const [isRecording, setIsRecording] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const activeTabRef = useRef(activeTab);
+
+    useEffect(() => {
+        activeTabRef.current = activeTab;
+    }, [activeTab]);
 
     // Reflect Hub State
     const [reflectInput, setReflectInput] = useState('');
@@ -57,7 +63,11 @@ export default function ExecutionOSPage() {
                         }
                     }
                     if (finalTranscript) {
-                        setBrainInput(prev => prev + finalTranscript);
+                        if (activeTabRef.current === 'brain') {
+                            setBrainInput(prev => prev + finalTranscript);
+                        } else if (activeTabRef.current === 'reflect') {
+                            setReflectInput(prev => prev + finalTranscript);
+                        }
                     }
                 };
 
@@ -130,7 +140,6 @@ export default function ExecutionOSPage() {
         if (isRecording) {
             recognitionRef.current?.stop();
         } else {
-            setBrainInput(''); // Optional: clear previous or append. Let's append actually, so don't clear.
             recognitionRef.current?.start();
             setIsRecording(true);
         }
@@ -210,6 +219,7 @@ export default function ExecutionOSPage() {
         const form = e.target as HTMLFormElement;
         const titleInput = form.elements.namedItem('taskInput') as HTMLInputElement;
         const prioritySelect = form.elements.namedItem('prioritySelect') as HTMLSelectElement;
+        const goalSelect = form.elements.namedItem('goalSelect') as HTMLSelectElement;
         const dueDateInput = form.elements.namedItem('dueDateInput') as HTMLInputElement;
         
         const title = titleInput.value.trim();
@@ -224,12 +234,14 @@ export default function ExecutionOSPage() {
             title: title,
             priority: prioritySelect ? prioritySelect.value : 'none',
             due_date: dueDateInput && dueDateInput.value ? dueDateInput.value : null,
+            goal_id: goalSelect && goalSelect.value !== 'none' ? goalSelect.value : null,
         });
         
         if (!error) {
             titleInput.value = '';
             if (dueDateInput) dueDateInput.value = '';
             if (prioritySelect) prioritySelect.value = 'none';
+            if (goalSelect) goalSelect.value = 'none';
             loadTasks();
             window.dispatchEvent(new Event('workout_os_tasks_updated'));
         }
@@ -274,6 +286,15 @@ export default function ExecutionOSPage() {
                         <button 
                             onClick={async () => {
                                 if (topTask) await completeTask(topTask.id);
+                                if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
+                                    window.navigator.vibrate([50, 50, 50]);
+                                }
+                                confetti({
+                                    particleCount: 150,
+                                    spread: 70,
+                                    origin: { y: 0.6 },
+                                    colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+                                });
                                 setIsWarRoomActive(false);
                             }}
                             className="flex-1 bg-primary text-on-primary py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-lg shadow-primary/25"
@@ -299,8 +320,8 @@ export default function ExecutionOSPage() {
             <div className="max-w-4xl mx-auto pt-safe pb-24 px-4 min-h-screen">
                 <header className="py-8 flex flex-col gap-4 relative z-10">
                     <div>
-                        <h1 className="font-display text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-on-background via-on-surface to-on-surface-variant drop-shadow-sm">Execution OS</h1>
-                        <p className="text-on-surface-variant font-body text-lg opacity-80 tracking-wide mt-2">Capture, process, and execute relentlessly.</p>
+                        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-on-background via-on-surface to-on-surface-variant drop-shadow-sm">Execution OS</h1>
+                        <p className="text-on-surface-variant font-body text-base sm:text-lg opacity-80 tracking-wide mt-2">Capture, process, and execute relentlessly.</p>
                     </div>
                     
                     <button 
@@ -320,8 +341,8 @@ export default function ExecutionOSPage() {
                             className={clsx(
                                 "flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap relative z-10",
                                 activeTab === tab 
-                                    ? "text-on-surface shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-white/10 dark:bg-white/10 backdrop-blur-md border border-white/20" 
-                                    : "text-on-surface-variant hover:text-on-surface opacity-60 hover:opacity-100 hover:bg-white/5"
+                                    ? "text-on-surface shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-surface-container-high border border-surface-variant backdrop-blur-md" 
+                                    : "text-on-surface-variant hover:text-on-surface opacity-60 hover:opacity-100 hover:bg-surface-container"
                             )}
                         >
                             {tab}
@@ -333,41 +354,50 @@ export default function ExecutionOSPage() {
                     {/* NOW HUB */}
                     {activeTab === 'now' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                            <div className="glass-card-premium p-8 flex flex-col gap-8 min-h-[400px] group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
+                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
                                         <Target className="w-7 h-7" />
                                     </div>
                                     <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
                                 </div>
                                 
-                                <form onSubmit={handleAddQuickTask} className="flex flex-col sm:flex-row gap-3 relative z-10">
+                                <form onSubmit={handleAddQuickTask} className="flex flex-col gap-3 relative z-10">
                                     <input 
                                         name="taskInput"
                                         type="text" 
                                         placeholder="Add a new task..." 
-                                        className="flex-1 bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-5 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md"
+                                        className="w-full bg-surface-container border border-surface-variant rounded-[1.25rem] px-5 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md"
                                     />
-                                    <div className="flex gap-2">
+                                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:gap-3 w-full">
                                         <input 
                                             name="dueDateInput"
                                             type="date"
-                                            className="bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-4 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md"
+                                            className="col-span-1 w-full sm:flex-1 sm:min-w-[130px] bg-surface-container border border-surface-variant rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md"
                                         />
                                         <select 
                                             name="prioritySelect"
-                                            className="bg-black/10 dark:bg-black/40 border border-white/10 rounded-[1.25rem] px-4 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md appearance-none"
+                                            className="col-span-1 w-full sm:flex-1 sm:min-w-[110px] bg-surface-container border border-surface-variant rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md appearance-none"
                                         >
                                             <option value="none">No Priority</option>
                                             <option value="high">High</option>
                                             <option value="medium">Medium</option>
                                             <option value="low">Low</option>
                                         </select>
-                                        <button type="submit" className="bg-primary text-on-primary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5">
-                                            Add
+                                        <select 
+                                            name="goalSelect"
+                                            className="col-span-2 w-full sm:flex-1 sm:min-w-[130px] bg-surface-container border border-surface-variant rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md appearance-none truncate"
+                                        >
+                                            <option value="none">No Goal</option>
+                                            {goals.map(g => (
+                                                <option key={g.id} value={g.id}>{g.title}</option>
+                                            ))}
+                                        </select>
+                                        <button type="submit" className="col-span-2 w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5 mt-1 sm:mt-0">
+                                            Add Task
                                         </button>
                                     </div>
                                 </form>
@@ -380,7 +410,7 @@ export default function ExecutionOSPage() {
                                         </div>
                                     ) : (
                                         tasks.filter(t => !t.completed).map(task => (
-                                            <div key={task.id} className="group/item flex items-center gap-4 bg-white/5 dark:bg-white/5 hover:bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5">
+                                            <div key={task.id} className="group/item flex items-center gap-4 bg-surface-container-low hover:bg-surface-container p-4 rounded-2xl border border-surface-variant hover:border-surface-variant transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5">
                                                 <button 
                                                     onClick={() => completeTask(task.id)}
                                                     className="w-7 h-7 rounded-full border-2 border-on-surface-variant/30 flex-shrink-0 hover:border-activity-green hover:bg-activity-green/20 transition-all flex items-center justify-center text-transparent hover:text-activity-green shadow-inner"
@@ -390,6 +420,11 @@ export default function ExecutionOSPage() {
                                                 
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className="text-on-surface font-body-md font-semibold truncate group-hover/item:text-primary transition-colors">{task.title}</h3>
+                                                    {task.goal_id && goals.find(g => g.id === task.goal_id) && (
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-md mt-1 inline-block truncate max-w-full">
+                                                            {goals.find(g => g.id === task.goal_id)?.title}
+                                                        </span>
+                                                    )}
                                                 </div>
 
                                                 <select 
@@ -397,10 +432,10 @@ export default function ExecutionOSPage() {
                                                     onChange={(e) => setPriority(task.id, e.target.value)}
                                                     className={clsx(
                                                         "text-[10px] font-black uppercase tracking-[0.15em] px-3 py-2 rounded-xl border focus:outline-none appearance-none cursor-pointer backdrop-blur-md transition-colors shadow-sm",
-                                                        task.priority === 'high' ? 'bg-error/15 text-error border-error/30 hover:bg-error/25' :
-                                                        task.priority === 'medium' ? 'bg-white/10 text-on-surface border-white/20 hover:bg-white/20' :
-                                                        task.priority === 'low' ? 'bg-secondary/15 text-secondary border-secondary/30 hover:bg-secondary/25' :
-                                                        'bg-black/20 text-on-surface-variant border-white/5 hover:bg-black/30'
+                                                        task.priority === 'high' ? 'bg-error-container text-on-error-container border-error/30 hover:bg-error/20' :
+                                                        task.priority === 'medium' ? 'bg-surface-container-high text-on-surface border-surface-variant hover:bg-surface-container-highest' :
+                                                        task.priority === 'low' ? 'bg-secondary-container text-on-secondary-container border-secondary/30 hover:bg-secondary/20' :
+                                                        'bg-surface-container text-on-surface-variant border-surface-variant hover:bg-surface-container-high'
                                                     )}
                                                 >
                                                     <option value="none">No Priority</option>
@@ -425,20 +460,27 @@ export default function ExecutionOSPage() {
 
                     {/* BRAIN HUB */}
                     {activeTab === 'brain' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <BrainCircuit className="w-8 h-8 text-secondary" />
-                                    <h2 className="text-2xl font-display font-bold text-on-surface">Brain Dump</h2>
-                                </div>
-                                <p className="text-on-surface-variant mb-6">Drop your unstructured thoughts here, or hold the mic to speak. Ava will organize it into your execution pipeline.</p>
+                        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
-                                <div className="relative mb-4">
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <div className="w-12 h-12 rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md">
+                                        <BrainCircuit className="w-7 h-7" />
+                                    </div>
+                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
+                                </div>
+                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10">
+                                    Drop your unstructured thoughts here, or hold the mic to speak. Ava will instantly process it, extract actionable tasks, and organize them into your execution pipeline.
+                                </p>
+                                
+                                <div className="relative mb-4 z-10">
                                     <textarea
                                         value={brainInput}
                                         onChange={(e) => setBrainInput(e.target.value)}
-                                        placeholder="e.g., I need to buy groceries tomorrow, finish the TPS report..."
-                                        className="w-full h-48 bg-surface-container/30 border border-surface-variant/50 rounded-2xl p-4 pb-14 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-secondary/50 resize-none"
+                                        placeholder="e.g., I need to buy groceries tomorrow, finish the TPS report, and email John about the project..."
+                                        className="w-full h-48 bg-surface-container border border-surface-variant rounded-[1.25rem] p-6 pb-16 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md resize-none"
                                     />
                                     <button 
                                         onClick={toggleRecording}
@@ -464,10 +506,10 @@ export default function ExecutionOSPage() {
                                 <button 
                                     onClick={handleBrainDump}
                                     disabled={isParsing || !brainInput.trim()}
-                                    className="btn-secondary w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+                                    className="relative z-10 bg-secondary text-on-secondary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-secondary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-secondary)/0.6)] flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
                                 >
-                                    {isParsing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                                    {isParsing ? 'Parsing...' : 'Parse & Execute'}
+                                    {isParsing ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
+                                    {isParsing ? 'Parsing with AI...' : 'Parse & Execute'}
                                 </button>
 
                                 {brainResponse && (
@@ -481,21 +523,28 @@ export default function ExecutionOSPage() {
 
                     {/* GOALS HUB */}
                     {activeTab === 'goals' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <Target className="w-8 h-8 text-tertiary" />
-                                        <h2 className="text-2xl font-display font-bold text-on-surface">Macro Goals</h2>
+                        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                                
+                                <div className="flex items-center justify-between relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md">
+                                            <Target className="w-7 h-7" />
+                                        </div>
+                                        <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
                                     </div>
                                     <button 
                                         onClick={() => setIsAddingGoal(!isAddingGoal)}
-                                        className="bg-surface-container hover:bg-surface-variant text-on-surface px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+                                        className="bg-surface-container hover:bg-surface-container-high text-on-surface border border-surface-variant px-5 py-2.5 rounded-[1rem] font-bold text-sm transition-all shadow-sm backdrop-blur-md hover:-translate-y-0.5"
                                     >
                                         {isAddingGoal ? 'Cancel' : 'Define Vector'}
                                     </button>
                                 </div>
-                                <p className="text-on-surface-variant mb-6">Your high-level execution vectors.</p>
+                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10 -mt-4">
+                                    Define your high-level execution vectors. Everything you do on a daily basis should map back to these North Star targets.
+                                </p>
 
                                 {isAddingGoal && (
                                     <div className="bg-surface-container/30 border border-surface-variant/50 p-6 rounded-2xl mb-8 animate-in zoom-in-95">
@@ -577,28 +626,56 @@ export default function ExecutionOSPage() {
 
                     {/* REFLECT HUB */}
                     {activeTab === 'reflect' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="glass border border-surface-variant/30 p-6 rounded-3xl shadow-xl">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <CheckCircle2 className="w-8 h-8 text-primary" />
-                                    <h2 className="text-2xl font-display font-bold text-on-surface">End of Day Review</h2>
+                        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
+                                        <CheckCircle2 className="w-7 h-7" />
+                                    </div>
+                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
                                 </div>
-                                <p className="text-on-surface-variant mb-6">Analyze your execution rate and log behavioral patterns to improve tomorrow.</p>
+                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10 -mt-4">
+                                    Did you win the day? Log your thoughts, bottlenecks, and wins. Ava will process this to adjust your behavioral patterns and tomorrow's targets.
+                                </p>
                                 
-                                <textarea
-                                    value={reflectInput}
-                                    onChange={(e) => setReflectInput(e.target.value)}
-                                    placeholder="How did today go? Any bottlenecks? What drained your energy?"
-                                    className="w-full h-32 bg-surface-container/30 border border-surface-variant/50 rounded-2xl p-4 text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none mb-4"
-                                />
+                                <div className="relative mb-4 z-10">
+                                    <textarea
+                                        value={reflectInput}
+                                        onChange={(e) => setReflectInput(e.target.value)}
+                                        placeholder="e.g. Executed well on work tasks, but skipped the gym because I slept poorly. Need to fix sleep hygiene."
+                                        className="w-full h-32 bg-surface-container border border-surface-variant rounded-[1.25rem] p-6 pb-16 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md resize-none"
+                                    />
+                                    <button 
+                                        onClick={toggleRecording}
+                                        className={clsx(
+                                            "absolute bottom-4 right-4 p-3 rounded-full transition-all shadow-md flex items-center gap-2",
+                                            isRecording ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" : "bg-white/5 border border-white/10 text-on-surface hover:bg-white/10"
+                                        )}
+                                    >
+                                        {isRecording ? (
+                                            <>
+                                                <MicOff className="w-5 h-5" />
+                                                <span className="text-sm font-bold pr-1">Stop</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Mic className="w-5 h-5" />
+                                                <span className="text-sm font-bold pr-1">Speak</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
                                 
                                 <button 
                                     onClick={handleReflect}
-                                    disabled={isReflecting}
-                                    className="btn-primary w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+                                    disabled={isReflecting || !reflectInput.trim()}
+                                    className="relative z-10 bg-primary text-on-primary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
                                 >
-                                    {isReflecting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                                    {isReflecting ? 'Analyzing...' : 'Run Analyst Protocol'}
+                                    {isReflecting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
+                                    {isReflecting ? 'Processing...' : 'Analyze & Store'}
                                 </button>
 
                                 {reflectResponse && (

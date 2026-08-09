@@ -4,7 +4,7 @@
 
 @layer components {
     .glass-card-premium {
-        @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden rounded-[2rem];
+        @apply bg-white/70 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-surface-variant/50 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden rounded-[2rem];
     }
     
     .glass-input-premium {

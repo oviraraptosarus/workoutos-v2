@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sun, SunDim, Moon, Apple, Check, ChevronRight } from 'lucide-react';
+import { Sun, SunDim, Moon, Apple, Check, ChevronRight, Plus } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MealPlanCarouselProps {
@@ -95,6 +95,17 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
                             <div className="absolute top-4 right-4 p-1.5 rounded-full bg-emerald-500 text-white shadow-lg">
                                 <Check size={14} strokeWidth={3} />
                             </div>
+                        )}
+
+                        {/* Quick Log Button (Hover visible) */}
+                        {!item.completed && onOpenDetails && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); window.dispatchEvent(new CustomEvent('workout_os_quick_log_meal_plan', { detail: item.id })); }}
+                                className="absolute top-4 right-4 p-1.5 rounded-full bg-secondary text-on-secondary shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110 transition-all btn-press z-20"
+                                title="Quick Log Today"
+                            >
+                                <Plus size={14} strokeWidth={3} />
+                            </button>
                         )}
 
                         {/* Bottom Text Area */}

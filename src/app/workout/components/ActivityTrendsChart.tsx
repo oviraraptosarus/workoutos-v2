@@ -61,7 +61,7 @@ export default function ActivityTrendsChart() {
     const maxValue = Math.max(...data.map(d => metric === 'calories' ? d.calories : d.steps), 10);
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div className="glass-card-premium p-4 sm:p-5">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
                     <TrendingUp size={16} className="text-tertiary" /> 

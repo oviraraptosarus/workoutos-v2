@@ -159,13 +159,13 @@ export default function EndOfDayReflection() {
     const update = (field: keyof JournalData, value: any) =>
         setReflection(prev => ({ ...prev, [field]: value }));
 
-    const SELECT_CLS = "w-full bg-surface-container-highest border border-transparent focus:border-secondary rounded-xl px-3 py-2 text-sm font-bold text-on-surface appearance-none transition-colors outline-none";
-    const INPUT_CLS = "w-full bg-surface-container-highest border border-transparent focus:border-secondary rounded-xl px-3 py-2 text-sm font-medium text-on-surface transition-colors outline-none";
-    const TEXTAREA_CLS = "w-full bg-surface-container-highest border border-transparent focus:border-secondary rounded-xl px-4 py-3 text-sm font-medium text-on-surface resize-none transition-colors outline-none";
+    const SELECT_CLS = "w-full bg-white/5 border border-white/10 focus:bg-white/10 focus:border-white/20 rounded-xl px-3 py-2 text-sm font-bold text-on-surface appearance-none transition-colors outline-none shadow-inner";
+    const INPUT_CLS = "w-full bg-white/5 border border-white/10 focus:bg-white/10 focus:border-white/20 rounded-xl px-3 py-2 text-sm font-medium text-on-surface transition-colors outline-none shadow-inner";
+    const TEXTAREA_CLS = "w-full bg-white/5 border border-white/10 focus:bg-white/10 focus:border-white/20 rounded-xl px-4 py-3 text-sm font-medium text-on-surface resize-none transition-colors outline-none shadow-inner";
     const LABEL_CLS = "text-xs font-bold text-on-surface-variant uppercase tracking-wider block mb-1";
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm space-y-4 transition-colors relative">
+        <div className="glass-card-premium p-4 sm:p-5 space-y-4 transition-colors relative">
 
             {/* Saved toast */}
             {savedNotice && (

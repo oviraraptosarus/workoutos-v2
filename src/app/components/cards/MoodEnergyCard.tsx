@@ -26,7 +26,7 @@ const RatingSlider = memo(({ value, activeColor, onChange, label, isToday }: { v
                 disabled={!isToday}
                 aria-label={`${label} ${i + 1} of 10`}
                 aria-pressed={i < value}
-                className={`h-7 rounded-full flex-1 transition-all duration-200 ${
+                className={`aspect-square rounded-full flex-1 max-w-[24px] sm:max-w-[28px] transition-all duration-200 ${
                     i < value ? `${activeColor} shadow-sm` : 'bg-surface-container hover:bg-surface-container-high'
                 } disabled:cursor-not-allowed active:scale-90`}
             />
@@ -123,7 +123,7 @@ export default function MoodEnergyCard() {
     // renderSegments is now RatingSlider
 
     return (
-        <div className="bg-card-white dark:bg-surface-container-lowest rounded-2xl sm:rounded-2xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-black/5 dark:border-white/5 transition-all relative overflow-hidden hover:shadow-lg flex flex-col">
+        <div className="glass-card-premium p-4 sm:p-5 transition-all relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex flex-col">
             <div className="flex items-baseline justify-between mb-4">
                 <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">How do you feel?</h3>
                 <span className="font-label-sm text-label-sm text-on-surface-variant">Optional</span>

@@ -98,14 +98,14 @@ export default function WaterPage() {
                     </div>
                     <div className="text-right">
                         <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest block">{t('water.page.dailyGoal')}</span>
-                        <span className="text-xl font-black text-blue-900">{goalMl} <span className="text-sm text-white">{t('water.page.ml')}</span></span>
+                        <span className="text-xl font-black text-secondary">{goalMl} <span className="text-sm text-on-surface-variant">{t('water.page.ml')}</span></span>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     {/* Progress Visual */}
-                    <div className="bg-card-white border border-surface-variant p-8 rounded-2xl shadow-sm border-t border-surface-variant flex flex-col items-center justify-center">
+                    <div className="glass-card-premium p-8 flex flex-col items-center justify-center">
                         
                         <div className="relative w-[280px] h-[280px] flex items-center justify-center">
                             {/* SVG Ring */}
@@ -114,7 +114,7 @@ export default function WaterPage() {
                                 <circle 
                                     cx="140" cy="140" r={radius} 
                                     fill="transparent" 
-                                    stroke="#eff6ff"
+                                    stroke="rgba(var(--c-surface-container)/0.8)"
                                     strokeWidth="24" 
                                 />
                                 {/* Progress Ring */}
@@ -138,16 +138,16 @@ export default function WaterPage() {
 
                             {/* Inner Content */}
                             <div className="text-center z-10 flex flex-col items-center">
-                                <div className="w-12 h-12 rounded-full bg-white/5 text-white flex items-center justify-center mb-2 shadow-inner">
+                                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center mb-2 shadow-inner">
                                     <Droplet size={24} fill="currentColor" className="opacity-80" />
                                 </div>
                                 <span className="text-5xl font-black text-on-surface tracking-tighter">{currentMl}</span>
-                                <span className="text-sm font-bold text-white tracking-wider">/ {goalMl} ml</span>
+                                <span className="text-sm font-bold text-on-surface-variant tracking-wider">/ {goalMl} ml</span>
                             </div>
                         </div>
 
                         {percentage >= 100 && (
-                            <div className="mt-6 bg-white/5 text-emerald-700 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 border border-white/10 animate-bounce">
+                            <div className="mt-6 bg-activity-green/10 text-activity-green px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 border border-activity-green/20 animate-bounce">
                                 <CheckCircle2 size={18} /> Daily Goal Met!
                             </div>
                         )}
@@ -156,41 +156,41 @@ export default function WaterPage() {
                     {/* Quick Add & History */}
                     <div className="space-y-4">
                         
-                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant">
+                        <div className="glass-card-premium p-4 sm:p-5">
                             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-2">
-                                <Plus size={18} className="text-white" /> Quick Add
+                                <Plus size={18} className="text-secondary" /> Quick Add
                             </h2>
                             <div className="grid grid-cols-2 gap-3">
                                 <button 
                                     id="tour-water-page-add"
                                     onClick={() => handleAdd(250, 'Glass')}
-                                    className="bg-card-white hover:bg-white/5 border-2 border-surface-variant hover:border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all btn-press group relative z-[110]"
+                                    className="glass-card-premium hover:bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all btn-press group relative z-[110]"
                                 >
-                                    <Droplet size={24} className="text-on-surface-variant group-hover:text-white" />
-                                    <span className="font-black text-on-surface-variant group-hover:text-blue-700">+ 250ml</span>
+                                    <Droplet size={24} className="text-on-surface-variant group-hover:text-secondary" />
+                                    <span className="font-black text-on-surface">+ 250ml</span>
                                     <span className="text-[10px] font-bold text-on-surface-variant uppercase">{t('water.page.glass')}</span>
                                 </button>
                                 <button 
                                     onClick={() => handleAdd(500, 'Bottle')}
-                                    className="bg-card-white hover:bg-white/5 border-2 border-surface-variant hover:border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all btn-press group"
+                                    className="glass-card-premium hover:bg-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all btn-press group"
                                 >
-                                    <Droplet size={28} className="text-on-surface-variant group-hover:text-white" />
-                                    <span className="font-black text-on-surface-variant group-hover:text-blue-700">+ 500ml</span>
+                                    <Droplet size={28} className="text-on-surface-variant group-hover:text-secondary" />
+                                    <span className="font-black text-on-surface">+ 500ml</span>
                                     <span className="text-[10px] font-bold text-on-surface-variant uppercase">{t('water.page.bottle')}</span>
                                 </button>
-                                <div className="col-span-2 bg-card-white border-2 border-surface-variant rounded-2xl p-4 flex items-center justify-between gap-4">
+                                <div className="col-span-2 bg-surface-container/50 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4">
                                     <div className="flex-1">
                                         <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">{t('water.page.customAmount')}</label>
                                         <input 
                                             type="number" 
                                             value={customAmount} 
                                             onChange={(e) => setCustomAmount(e.target.value)}
-                                            className="w-full bg-surface-container-low border border-surface-variant rounded-xl px-3 py-2 font-bold text-on-surface focus:outline-none focus:border-white/20"
+                                            className="w-full glass-input-premium rounded-xl px-3 py-2 font-bold text-on-surface focus:outline-none"
                                         />
                                     </div>
                                     <button 
                                         onClick={() => handleAdd(parseInt(customAmount) || 0, 'Custom')}
-                                        className="bg-white hover:bg-zinc-200 text-black font-bold p-3 rounded-xl flex items-center justify-center transition-colors btn-press mt-4"
+                                        className="bg-primary text-on-primary font-bold p-3 rounded-xl flex items-center justify-center transition-colors btn-press mt-4"
                                     >
                                         <Plus size={20} />
                                     </button>
@@ -198,7 +198,7 @@ export default function WaterPage() {
                             </div>
                         </div>
 
-                        <div className="bg-card-white border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm border-t border-surface-variant flex-1 flex flex-col">
+                        <div className="glass-card-premium p-4 sm:p-5 flex-1 flex flex-col">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                                     <History size={18} className="text-on-surface-variant" /> {isToday ? t('water.page.todayLog') : t('water.page.logDate').replace('{date}', selectedDate)}

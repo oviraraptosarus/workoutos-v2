@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabase/client';
 import CommandCenterOverlay from '@/app/components/modals/CommandCenterOverlay';
 import { useCommandCenterEngine } from '@/hooks/useCommandCenterEngine';
 import { useReminderEngine } from '@/hooks/useReminderEngine';
+import { useDailySnapshot } from '@/hooks/useDailySnapshot';
+import { Sparkles } from 'lucide-react';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -24,6 +26,8 @@ export default function DashboardHeader() {
     const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
     const [showCommandCenter, setShowCommandCenter] = useState(false);
+    
+    const { snapshot } = useDailySnapshot();
     
     // Initialize the engine to generate AI insights behind the scenes
     useCommandCenterEngine();
@@ -58,9 +62,10 @@ export default function DashboardHeader() {
                         <h1 className="text-2xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
-                        <div className="flex items-center gap-2 mt-1.5 sm:mt-1">
-                            <button 
-                                onClick={() => setOffsetDays(Math.max(offsetDays - 1, -14))}
+                        <div className="flex items-center gap-3 mt-2 sm:mt-1.5 flex-wrap">
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={() => setOffsetDays(Math.max(offsetDays - 1, -14))}
                                 disabled={offsetDays <= -14}
                                 className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high disabled:opacity-30 transition-colors text-on-surface-variant dark:text-on-surface-variant"
                             >
@@ -76,6 +81,8 @@ export default function DashboardHeader() {
                             >
                                 <ChevronRight size={12} />
                             </button>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>

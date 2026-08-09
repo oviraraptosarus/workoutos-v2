@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 
-export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void }) {
+export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, onCloseSession }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void, onCloseSession?: () => void }) {
     const { t } = useLanguage();
     const { userProfile } = useAuth();
     const [isFinished, setIsFinished] = useState(false);
@@ -196,6 +196,21 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder }
                         </p>
                     </div>
                 </div>
+
+                <button
+                    onClick={() => {
+                        setIsFinished(false);
+                        setElapsedSeconds(0);
+                        setExercises([]);
+                        setIsTimerRunning(false);
+                        localStorage.removeItem('workout_os_active_session_state');
+                        if (onCloseSession) onCloseSession();
+                        else if (onExitBuilder) onExitBuilder();
+                    }}
+                    className="mt-8 bg-surface-container hover:bg-surface-container-high text-on-surface font-bold py-3 px-8 rounded-full transition-colors btn-press shadow-sm border border-surface-variant w-full"
+                >
+                    Close Session
+                </button>
             </div>
         );
     }

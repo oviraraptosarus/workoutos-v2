@@ -71,7 +71,7 @@ export default function TransactionModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-card-white  rounded-2xl w-full max-w-md shadow-xl border border-surface-variant  overflow-hidden">
                 <div className="px-6 py-4 flex items-center justify-between border-b border-surface-variant ">
-                    <h2 className="text-lg font-bold text-on-surface dark:text-white capitalize">
+                    <h2 className="text-lg font-bold text-on-surface dark:text-on-surface capitalize">
                         {type === 'income' ? t('budget.modal.addIncome') : t('budget.modal.addExpense')}
                     </h2>
                     <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface-variant dark:hover:text-gray-200">
@@ -88,7 +88,7 @@ export default function TransactionModal({
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="e.g. 500"
-                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
+                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-on-surface focus:ring-2 focus:ring-white/20 outline-none"
                             required
                         />
                     </div>
@@ -100,7 +100,7 @@ export default function TransactionModal({
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder={type === 'income' ? 'e.g. Freelance project' : 'e.g. Protein powder'}
-                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
+                            className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-on-surface focus:ring-2 focus:ring-white/20 outline-none"
                             required
                         />
                     </div>
@@ -115,7 +115,7 @@ export default function TransactionModal({
                                 value={categorySource}
                                 onChange={(e) => setCategorySource(e.target.value)}
                                 placeholder="e.g. Salary, Side Hustle"
-                                className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
+                                className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-on-surface focus:ring-2 focus:ring-white/20 outline-none"
                                 required
                             />
                         ) : (
@@ -131,7 +131,7 @@ export default function TransactionModal({
                                             setCategorySource(e.target.value);
                                         }
                                     }}
-                                    className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
+                                    className="w-full bg-surface-container-low dark:bg-surface-container-high border-none rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-on-surface focus:ring-2 focus:ring-white/20 outline-none"
                                     required={!isOtherCategory}
                                 >
                                     <option value="" disabled>{t('budget.modal.selectCategory')}</option>
@@ -156,7 +156,7 @@ export default function TransactionModal({
                                         value={categorySource}
                                         onChange={(e) => setCategorySource(e.target.value)}
                                         placeholder="Please specify..."
-                                        className="w-full mt-2 bg-surface-container-low dark:bg-surface-container-high border border-surface-variant  rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-white focus:ring-2 focus:ring-white/20 outline-none"
+                                        className="w-full mt-2 bg-surface-container-low dark:bg-surface-container-high border border-surface-variant  rounded-xl px-4 py-2.5 text-sm font-medium text-on-surface dark:text-on-surface focus:ring-2 focus:ring-white/20 outline-none"
                                         required
                                     />
                                 )}

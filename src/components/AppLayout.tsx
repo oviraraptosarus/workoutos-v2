@@ -25,7 +25,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, hideBottomNav = false }: AppLayoutProps) {
 
-    const { userProfile, session, isLoading } = useAuth();
+    const { userProfile, session, isLoading, isProfileLoaded } = useAuth();
     const pathname = usePathname();
     const isDashboard = pathname === '/dashboard';
     const { language } = useLanguage();
@@ -48,7 +48,7 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
     }, [session, userProfile, language]);
     
     // Determine if onboarding should show based on the completed flag or if profile doesn't exist yet (new OAuth users)
-    const showOnboarding = Boolean(!isLoading && session && (!userProfile || userProfile.onboarding_completed === false));
+    const showOnboarding = Boolean(!isLoading && isProfileLoaded && session && (!userProfile || userProfile.onboarding_completed === false));
 
     return (
         <div className={`min-h-screen ${hideBottomNav ? 'pb-0' : 'pb-44 sm:pb-28'} bg-transparent relative z-10`}>

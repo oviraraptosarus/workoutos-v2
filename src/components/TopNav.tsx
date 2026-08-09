@@ -22,12 +22,12 @@ export function TopNav() {
         </Link>
         <Link
           href="/profile"
-          className="w-9 h-9 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.4)] border border-white/20 hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]"
+          className="w-9 h-9 rounded-full bg-black dark:bg-white flex items-center justify-center active:scale-90 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.2)] dark:shadow-[0_0_15px_rgba(255,255,255,0.4)] border border-black/10 dark:border-white/20 hover:shadow-[0_0_25px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]"
         >
           {userProfile ? (
-            <span className="text-black text-sm font-black">{initial}</span>
+            <span className="text-white dark:text-black text-sm font-black">{initial}</span>
           ) : (
-            <span className="material-symbols-outlined text-black text-[20px]">person</span>
+            <span className="material-symbols-outlined text-white dark:text-black text-[20px]">person</span>
           )}
         </Link>
       </div>

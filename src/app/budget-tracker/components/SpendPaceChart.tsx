@@ -136,10 +136,10 @@ export default function SpendPaceChart() {
     const maxY = Math.max(weeklyTarget * 1.2, weeklyTotal * 1.2, 100);
 
     return (
-        <div className="bg-card-white  border border-surface-variant  p-4 sm:p-5 h-full flex flex-col justify-between rounded-2xl shadow-sm transition-colors">
+        <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-between transition-colors">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight mb-1">{t('budget.chart.title')}</h3>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-on-surface tracking-tight mb-1">{t('budget.chart.title')}</h3>
                     <p className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">{t('budget.chart.subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-4 text-[11px] font-semibold text-on-surface-variant dark:text-on-surface-variant">

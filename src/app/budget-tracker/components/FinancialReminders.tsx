@@ -67,7 +67,7 @@ export default function FinancialReminders() {
                     <div className="p-1.5 rounded-full bg-white/5 dark:bg-amber-900/30 text-white shadow-sm border border-surface-variant ">
                         <Bell size={16} />
                     </div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-white tracking-tight">{t('budget.reminders.title')}</h3>
+                    <h3 className="text-sm font-bold text-on-surface dark:text-on-surface tracking-tight">{t('budget.reminders.title')}</h3>
                 </div>
                 <button 
                     onClick={() => setIsAdding(!isAdding)}
@@ -130,7 +130,7 @@ export default function FinancialReminders() {
                             </div>
                             <button 
                                 onClick={() => deleteReminder(r.id)}
-                                className="text-on-surface-variant hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                                className="text-on-surface-variant hover:text-on-surface transition-colors opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 size={14} />
                             </button>

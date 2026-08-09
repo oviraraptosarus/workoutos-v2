@@ -51,7 +51,7 @@ export default function BudgetHeader() {
                     <select
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="appearance-none flex items-center gap-2 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-slate-700/80 text-on-surface-variant dark:text-gray-200 px-4 py-2.5 pr-10 rounded-2xl text-sm font-bold transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 focus:outline-none focus:ring-2 focus:ring-secondary/50 cursor-pointer"
+                        className="appearance-none flex items-center gap-2 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-surface-container/80 text-on-surface-variant dark:text-on-surface px-4 py-2.5 pr-10 rounded-2xl text-sm font-bold transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 focus:outline-none focus:ring-2 focus:ring-secondary/50 cursor-pointer"
                     >
                         {monthOptions.map(opt => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -59,7 +59,7 @@ export default function BudgetHeader() {
                     </select>
                     <ChevronDown size={16} className="text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-                <button className="flex items-center justify-center w-10 h-10 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-slate-700/80 text-on-surface-variant dark:text-gray-200 rounded-2xl transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 active:scale-95">
+                <button className="flex items-center justify-center w-10 h-10 bg-card-white dark:bg-surface-container-high/80 hover:bg-surface-container-low dark:hover:bg-surface-container/80 text-on-surface-variant dark:text-on-surface rounded-2xl transition-all shadow-sm border border-surface-variant/50 dark:border-white/5 active:scale-95">
                     <Download size={18} className="text-on-surface-variant dark:text-on-surface-variant" />
                 </button>
                 <div className="flex items-center gap-2 ml-1">

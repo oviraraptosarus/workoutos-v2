@@ -44,7 +44,8 @@ export default function RecentWorkouts() {
                     volume: cal,
                     cals_burned_raw: caloriesBurned || 0,
                     session_type: d.session_type,
-                    steps_added: metadata.steps_added || 0
+                    steps_added: metadata.steps_added || 0,
+                    originalExercises: d.exercises || []
                 };
             });
             setPastWorkouts(mapped);
@@ -114,7 +115,7 @@ export default function RecentWorkouts() {
     };
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm transition-colors">
+        <div className="glass-card-premium p-4 sm:p-5 transition-colors">
             <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider ml-1 mb-4 flex items-center gap-2">{t('workout.pastSessions')}</h3>
             
             <div className="space-y-3">
@@ -125,7 +126,12 @@ export default function RecentWorkouts() {
                     </div>
                 ) : (
                     pastWorkouts.map(workout => (
-                        <div key={workout.id} className="group relative p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant transition-colors shadow-sm hover:bg-surface-container cursor-pointer overflow-hidden">
+                        <div 
+                            key={workout.id} 
+                            onClick={() => window.dispatchEvent(new CustomEvent('workout_os_play_recent_workout', { detail: workout }))}
+                            className="group relative p-4 rounded-2xl bg-surface-container-lowest border border-surface-variant transition-colors shadow-sm hover:bg-surface-container cursor-pointer overflow-hidden"
+                            title="Click to do this workout again"
+                        >
                             <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-black text-on-surface drop-shadow-sm truncate pr-16">{workout.name}</h4>
                                 <span className="text-[10px] font-bold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full border border-surface-variant shadow-sm shrink-0">

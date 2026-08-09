@@ -95,7 +95,7 @@ export default function MuscleRecoveryHeatmap() {
     };
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div className="glass-card-premium p-4 sm:p-5">
             <h3 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2 mb-4">
                 <Activity size={16} className="text-tertiary" /> 
                 Muscle Recovery
@@ -103,13 +103,18 @@ export default function MuscleRecoveryHeatmap() {
             
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {Object.entries(recovery).map(([muscle, status]) => (
-                    <div key={muscle} className={`flex items-center justify-between p-3 rounded-xl border ${getColor(status)} transition-colors`}>
+                    <button 
+                        key={muscle} 
+                        onClick={() => window.dispatchEvent(new CustomEvent('workout_os_play_muscle_workout', { detail: muscle }))}
+                        className={`w-full flex items-center justify-between p-3 rounded-xl border ${getColor(status)} transition-all hover:scale-[1.02] active:scale-95 hover:shadow-md cursor-pointer`}
+                        title={`Start a quick ${muscle} workout`}
+                    >
                         <span className="font-bold text-sm tracking-wide">{muscle}</span>
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] uppercase font-black opacity-80 hidden sm:block">{status}</span>
                             <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${getIconColor(status)}`} />
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
             

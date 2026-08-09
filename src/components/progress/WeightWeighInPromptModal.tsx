@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Camera, X, Scale } from 'lucide-react';
+import { Camera, X, Scale, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface WeightWeighInPromptModalProps {
@@ -72,14 +72,11 @@ export default function WeightWeighInPromptModal({
     };
 
     const triggerCamera = () => {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-            typeof navigator !== 'undefined' ? navigator.userAgent : ''
-        );
-        if (isMobile && cameraInputRef.current) {
-            cameraInputRef.current.click();
-        } else if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
+        if (cameraInputRef.current) cameraInputRef.current.click();
+    };
+
+    const triggerGallery = () => {
+        if (fileInputRef.current) fileInputRef.current.click();
     };
 
     return (
@@ -135,9 +132,17 @@ export default function WeightWeighInPromptModal({
                         {uploading ? 'Saving Photo...' : 'Take Photo'}
                     </button>
                     <button
+                        onClick={triggerGallery}
+                        disabled={uploading}
+                        className="w-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold py-3.5 rounded-2xl transition-transform active:scale-95 flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm border border-surface-variant"
+                    >
+                        <ImageIcon size={18} />
+                        {uploading ? 'Saving Photo...' : 'Upload from Gallery'}
+                    </button>
+                    <button
                         onClick={onClose}
                         disabled={uploading}
-                        className="w-full bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold py-3 rounded-2xl transition-colors text-sm"
+                        className="w-full bg-transparent hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-semibold py-3 rounded-2xl transition-colors text-sm mt-1"
                     >
                         Skip
                     </button>

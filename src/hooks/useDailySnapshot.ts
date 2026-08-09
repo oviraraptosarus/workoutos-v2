@@ -15,6 +15,7 @@ export interface DailySnapshot {
     missingActivity: string | null;
     plannerState: { total: number; completed: number };
     streak: number;
+    momentumScore: number;
     nextReminder: string | null;
     aiInsight: { title: string; description: string } | null;
     immediateAction: { title: string; description: string; actionType: string } | null;
@@ -38,6 +39,7 @@ export function useDailySnapshot() {
         missingActivity: null,
         plannerState: { total: 0, completed: 0 },
         streak: 0,
+        momentumScore: 0,
         nextReminder: null,
         aiInsight: null,
         immediateAction: null,
@@ -164,6 +166,11 @@ export function useDailySnapshot() {
                 checkDate.setDate(checkDate.getDate() - 1);
             }
 
+            // Momentum Score (0-100)
+            // Weighs today's completion (50%) and the streak (50%)
+            const streakFactor = Math.min(streakCount / 7, 1); // Cap at 7 days
+            const momentumScore = Math.round((completionPercentage * 0.5) + (streakFactor * 100 * 0.5));
+
             // Next Reminder
             const nextReminder = reminders?.[0] ? `${reminders[0].title} (${new Date(reminders[0].due_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})` : null;
 
@@ -205,6 +212,7 @@ export function useDailySnapshot() {
                 missingActivity,
                 plannerState: { total: totalTasks, completed: completedTasks },
                 streak: streakCount,
+                momentumScore,
                 nextReminder,
                 aiInsight,
                 immediateAction,

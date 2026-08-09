@@ -65,10 +65,10 @@ export default function CategoryBreakdown() {
     const displayedCategories = showAll ? categories : categories.slice(0, 5);
 
     return (
-        <div className="bg-card-white backdrop-blur-xl border border-surface-variant p-4 sm:p-5 h-full flex flex-col justify-between rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+        <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h3 className="text-lg font-black text-on-surface dark:text-white tracking-tight mb-0.5 drop-shadow-sm">{t('budget.category.title')}</h3>
+                    <h3 className="text-lg font-black text-on-surface dark:text-on-surface tracking-tight mb-0.5 drop-shadow-sm">{t('budget.category.title')}</h3>
                     <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{t('budget.category.subtitle')}</p>
                 </div>
                 <span className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant bg-surface-container dark:bg-surface-container-high px-2 py-1 rounded-full">
@@ -87,7 +87,7 @@ export default function CategoryBreakdown() {
                                     <span className="text-on-surface-variant dark:text-on-surface-variant">{cat.name}</span>
                                 </div>
                                 <div className="tracking-tight">
-                                    <span className="text-on-surface dark:text-white">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
+                                    <span className="text-on-surface dark:text-on-surface">₹{cat.actual.toFixed(2).replace(/\.00$/, '')}</span>
                                     <span className="text-on-surface-variant dark:text-on-surface-variant"> / ₹{cat.limit}</span>
                                 </div>
                             </div>

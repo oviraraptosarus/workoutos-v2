@@ -64,7 +64,7 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
     };
 
     return (
-        <div className="bg-surface-container-low border border-surface-variant p-4 sm:p-5 rounded-2xl shadow-sm space-y-4 transition-colors">
+        <div className="glass-card-premium p-4 sm:p-5 space-y-4 transition-colors">
             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 mb-2">
                 <Moon size={18} className="text-secondary" /> Advanced Sleep Log
             </h2>

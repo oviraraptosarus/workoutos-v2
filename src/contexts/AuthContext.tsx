@@ -59,6 +59,7 @@ interface AuthContextType {
     session: Session | null;
     loading: boolean;
     isLoading: boolean;
+    isProfileLoaded: boolean;
     signUp: (email: string, password: string, metadata?: UserMetadata & Partial<UserProfile>) => Promise<unknown>;
     signIn: (email?: string, password?: string) => Promise<unknown>;
     signInWithGoogle: () => Promise<void>;
@@ -88,6 +89,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isProfileLoaded, setIsProfileLoaded] = useState(false);
 
     // Initial session load
     useEffect(() => {
@@ -112,6 +114,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const refreshProfile = async () => {
+        setIsProfileLoaded(false);
         if (user) {
             try {
                 const { data, error } = await supabase
@@ -166,6 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
             setUserProfile(null);
         }
+        setIsProfileLoaded(true);
     };
 
     // Load profile from Supabase when user changes
@@ -386,6 +390,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         session,
         loading,
         isLoading: loading,
+        isProfileLoaded,
         signUp,
         signIn,
         signInWithGoogle,
