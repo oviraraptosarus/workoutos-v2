@@ -18,6 +18,7 @@ const GlobalAICopilot = nextDynamic(() => import('@/components/GlobalAICopilot')
 const EndOfDayBanner = nextDynamic(() => import('@/components/EndOfDayBanner'), { ssr: false });
 const OnboardingModal = nextDynamic(() => import('@/app/components/modals/OnboardingModal'), { ssr: false });
 const DopamineVisualizer = nextDynamic(() => import('@/components/ui/DopamineVisualizer'), { ssr: false });
+const QuoteSplashOverlay = nextDynamic(() => import('@/components/ui/QuoteSplashOverlay'), { ssr: false });
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -65,6 +66,7 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
             <GlobalAICopilot />
             <EndOfDayBanner />
             <DopamineVisualizer />
+            <QuoteSplashOverlay />
             {session && <OnboardingModal isOpen={showOnboarding} onComplete={() => {}} />}
             
             {/* Global AI Copilot Floating Trigger */}
