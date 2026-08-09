@@ -102,3 +102,5 @@ Import trace for requested module:
 [ 1294155ms] [LOG] [Fast Refresh] done in 1805ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
 [ 1294505ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/manifest.webmanifest:0
 [ 1294506ms] [ERROR] Manifest fetch from http://localhost:4028/manifest.webmanifest failed, code 500 @ http://localhost:4028/dashboard:0
+[ 1348988ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/chunks/main-app.js?v=1786280432059:0
+[ 1348990ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/chunks/app-pages-internals.js:0

@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sparkles } from 'lucide-react';
+import { Orbit } from 'lucide-react';
 
 export function TopNav() {
   const { userProfile } = useAuth();
@@ -28,7 +28,7 @@ export function TopNav() {
             className="w-9 h-9 rounded-full transition-transform active:scale-90 flex items-center justify-center shadow-sm relative overflow-hidden group/ai border border-white/20"
           >
              <div className="ava-orb-icon w-full h-full absolute inset-0 opacity-80 group-hover/ai:opacity-100 transition-opacity"></div>
-             <Sparkles size={16} className="text-white relative z-10 drop-shadow-md" />
+             <Orbit size={18} strokeWidth={2.5} className="text-white relative z-10 drop-shadow-md group-hover/ai:rotate-180 transition-transform duration-700" />
           </button>
           <Link
             href="/profile"
