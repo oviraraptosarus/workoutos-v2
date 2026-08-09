@@ -354,15 +354,15 @@ export default function ExecutionOSPage() {
                     {/* NOW HUB */}
                     {activeTab === 'now' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="glass-card-premium p-8 flex flex-col gap-8 min-h-[400px] group">
+                            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
-                                        <Target className="w-7 h-7" />
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
+                                        <Target className="w-5 h-5 sm:w-7 sm:h-7" />
                                     </div>
-                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
                                 </div>
                                 
                                 <form onSubmit={handleAddQuickTask} className="flex flex-col gap-3 relative z-10">
@@ -461,17 +461,17 @@ export default function ExecutionOSPage() {
                     {/* BRAIN HUB */}
                     {activeTab === 'brain' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md">
-                                        <BrainCircuit className="w-7 h-7" />
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
+                                        <BrainCircuit className="w-5 h-5 sm:w-7 sm:h-7" />
                                     </div>
-                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
                                 </div>
-                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10">
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10">
                                     Drop your unstructured thoughts here, or hold the mic to speak. Ava will instantly process it, extract actionable tasks, and organize them into your execution pipeline.
                                 </p>
                                 
@@ -524,25 +524,25 @@ export default function ExecutionOSPage() {
                     {/* GOALS HUB */}
                     {activeTab === 'goals' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center justify-between relative z-10">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md">
-                                            <Target className="w-7 h-7" />
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md shrink-0">
+                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
-                                        <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
+                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
                                     </div>
                                     <button 
                                         onClick={() => setIsAddingGoal(!isAddingGoal)}
-                                        className="bg-surface-container hover:bg-surface-container-high text-on-surface border border-surface-variant px-5 py-2.5 rounded-[1rem] font-bold text-sm transition-all shadow-sm backdrop-blur-md hover:-translate-y-0.5"
+                                        className="bg-surface-container hover:bg-surface-container-high text-on-surface border border-surface-variant px-4 py-2 sm:px-5 sm:py-2.5 rounded-[1rem] font-bold text-xs sm:text-sm transition-all shadow-sm backdrop-blur-md hover:-translate-y-0.5 whitespace-nowrap"
                                     >
                                         {isAddingGoal ? 'Cancel' : 'Define Vector'}
                                     </button>
                                 </div>
-                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10 -mt-4">
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4">
                                     Define your high-level execution vectors. Everything you do on a daily basis should map back to these North Star targets.
                                 </p>
 
@@ -627,17 +627,17 @@ export default function ExecutionOSPage() {
                     {/* REFLECT HUB */}
                     {activeTab === 'reflect' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-8 min-h-[400px] relative overflow-hidden group">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
 
                                 <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-12 h-12 rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md">
-                                        <CheckCircle2 className="w-7 h-7" />
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
+                                        <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7" />
                                     </div>
-                                    <h2 className="text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
                                 </div>
-                                <p className="text-on-surface-variant font-medium leading-relaxed relative z-10 -mt-4">
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4">
                                     Did you win the day? Log your thoughts, bottlenecks, and wins. Ava will process this to adjust your behavioral patterns and tomorrow's targets.
                                 </p>
                                 

@@ -38,6 +38,10 @@
     *   **Reflect Hub:** End of day reflection.
 *   **Premium Welcome Flow:** Built a Replika-inspired, story-mode onboarding flow at `/welcome` featuring native animations and deep gradients, sitting before the sign-up screen to build emotional momentum.
 *   **V3 Additive Backend Hookup:** Successfully deployed `execution_profiles`, `execution_goals`, `task_execution_scores`, and `behavior_patterns` to Supabase, and hooked them up to Ava's `Promise.all` context array safely. Modified AI System Prompts and suggestion chips to push seamless task additions.
+*   **iOS Premium UI Overhaul (2026-08-09)**:
+    *   **AI Copilot Migration:** Deprecated the Android-style floating action button (FAB) for the AI Copilot. Integrated Ava directly into the Top Navigation Bar using a futuristic `Orbit` icon. Fixed overlapping z-index bugs that caused the orb to clip into bottom cards on mobile.
+    *   **Execution OS Native Sizing:** Refactored the `planner/page.tsx` tabs (Now, Brain, Goals, Reflect) to use compact, iOS-native padding (`p-6`), font sizing (`text-2xl`), and scaled-down icon wrappers (`w-10 h-10`). Removed horizontally scrolling segmented tabs in favor of evenly distributed flex boxes to match iOS native segmented controls.
+    *   **Design Skill Extraction:** Extracted all premium iOS design rules (glassmorphism, micro-animations, compact spatial architecture, and typography) into a reusable AI skill (`premium-ios-design/SKILL.md`) to standardize future agent UI/UX decisions without requiring heavy prompting.
 ## 4. Current Known Issues
 *   Mobile vertical space is wasted on traditional dashboard cards.
 *   Tasks persistence relied on frontend fallbacks because `priority` and `reminder_time` do not exist in the database schema.
