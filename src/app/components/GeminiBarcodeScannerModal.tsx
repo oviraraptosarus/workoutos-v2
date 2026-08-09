@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ScanLine, Camera, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, ScanLine, Camera, Loader2, CheckCircle2, AlertCircle, Image as ImageIcon } from 'lucide-react';
 import { MealItem } from '../diet/types';
 
 interface GeminiBarcodeScannerModalProps {
@@ -18,6 +18,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
     const [parsedMeal, setParsedMeal] = useState<Omit<MealItem, 'id'> | null>(null);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const galleryInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -140,13 +141,28 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
                             />
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                ref={galleryInputRef}
+                                onChange={handleFileChange}
+                            />
                             
-                            <button 
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-full py-4 bg-gray-900 dark:bg-card-white text-white dark:text-on-surface font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg btn-press"
-                            >
-                                <Camera size={18} /> Take Photo / Upload
-                            </button>
+                            <div className="flex gap-3 w-full">
+                                <button 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="flex-1 py-4 bg-gray-900 dark:bg-card-white text-white dark:text-on-surface font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg btn-press"
+                                >
+                                    <Camera size={18} /> Camera
+                                </button>
+                                <button 
+                                    onClick={() => galleryInputRef.current?.click()}
+                                    className="flex-1 py-4 bg-gray-900 dark:bg-card-white text-white dark:text-on-surface font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg btn-press"
+                                >
+                                    <ImageIcon size={18} /> Gallery
+                                </button>
+                            </div>
                         </div>
                     )}
 
