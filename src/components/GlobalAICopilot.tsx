@@ -726,7 +726,7 @@ export default function GlobalAICopilot() {
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
         recognition.continuous = true;
-        recognition.interimResults = true;
+        recognition.interimResults = false;
         recognition.lang = 'en-IN';
         const existing = promptRef.current ? promptRef.current + ' ' : '';
         let sessionTranscript = '';

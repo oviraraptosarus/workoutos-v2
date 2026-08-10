@@ -17,7 +17,8 @@ const WIDGET_NAMES: Record<string, string> = {
     'TimeProgressWidget': 'Time Progress',
     'QuickNotes': 'Quick Notes',
     'DashboardTasks': 'Daily Tasks',
-    'DashboardCountdowns': 'Countdowns'
+    'DashboardCountdowns': 'Countdowns',
+    'VaultWidget': 'Content Vault'
 };
 
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
@@ -27,7 +28,8 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TimeProgressWidget', visible: true },
     { id: 'QuickNotes', visible: true },
     { id: 'DashboardTasks', visible: true },
-    { id: 'DashboardCountdowns', visible: true }
+    { id: 'DashboardCountdowns', visible: true },
+    { id: 'VaultWidget', visible: true }
 ];
 
 interface DashboardEditModalProps {
@@ -118,7 +120,7 @@ export default function DashboardEditModal({ isOpen, onClose, onSave }: Dashboar
                     {layout.map((widget, index) => (
                         <div 
                             key={widget.id}
-                            className={`flex items-center gap-3 p-3 rounded-[1rem] border transition-all ${
+                            className={`flex items-center gap-2 p-2 sm:p-2.5 rounded-[1rem] border transition-all ${
                                 widget.visible 
                                     ? 'bg-surface-container/50 border-white/10' 
                                     : 'bg-black/20 border-transparent opacity-60'

@@ -15,6 +15,7 @@ import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
 import DashboardCountdowns from '@/app/components/DashboardCountdowns';
+import VaultWidget from '@/app/components/VaultWidget';
 import DashboardEditModal, { DashboardWidgetConfig } from '@/app/components/modals/DashboardEditModal';
 import { Settings2 } from 'lucide-react';
 
@@ -25,7 +26,8 @@ const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
     'TimeProgressWidget': TimeProgressWidget,
     'QuickNotes': QuickNotes,
     'DashboardTasks': DashboardTasks,
-    'DashboardCountdowns': DashboardCountdowns
+    'DashboardCountdowns': DashboardCountdowns,
+    'VaultWidget': VaultWidget
 };
 
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
@@ -35,7 +37,8 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TimeProgressWidget', visible: true },
     { id: 'QuickNotes', visible: true },
     { id: 'DashboardTasks', visible: true },
-    { id: 'DashboardCountdowns', visible: true }
+    { id: 'DashboardCountdowns', visible: true },
+    { id: 'VaultWidget', visible: true }
 ];
 
 export default function Dashboard() {
@@ -117,38 +120,19 @@ export default function Dashboard() {
         </div>
 
         {/* Dynamic Layout Rendering */}
-        <div className="flex flex-col gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
             {activeWidgets.map(w => {
                 const Component = WIDGET_COMPONENTS[w.id];
                 if (!Component) return null;
                 
-                // For BentoGrid, TouchGrass, and WeightLogCard, render full width
-                if (['BentoGrid', 'TouchGrassNudge', 'WeightLogCard'].includes(w.id)) {
-                    return (
-                        <div key={w.id} className={w.id === 'TouchGrassNudge' ? "pt-2" : ""}>
-                            <Component />
-                        </div>
-                    );
-                }
+                const isFullWidth = ['BentoGrid', 'TouchGrassNudge', 'WeightLogCard', 'VaultWidget'].includes(w.id);
                 
-                return null;
+                return (
+                    <div key={w.id} className={`${isFullWidth ? 'md:col-span-2' : ''} ${w.id === 'TouchGrassNudge' ? 'pt-2' : ''}`}>
+                        <Component />
+                    </div>
+                );
             })}
-            
-            {/* The rest are placed into a grid. This is a simple generic grid. */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="flex flex-col gap-4 sm:gap-6">
-                    {activeWidgets.filter(w => ['TimeProgressWidget', 'QuickNotes'].includes(w.id)).map(w => {
-                        const Component = WIDGET_COMPONENTS[w.id];
-                        return <Component key={w.id} />;
-                    })}
-                </div>
-                <div className="flex flex-col h-full gap-4 sm:gap-6">
-                    {activeWidgets.filter(w => ['DashboardTasks', 'DashboardCountdowns'].includes(w.id)).map(w => {
-                        const Component = WIDGET_COMPONENTS[w.id];
-                        return <Component key={w.id} />;
-                    })}
-                </div>
-            </div>
         </div>
 
         {/* Edit Layout Button at Bottom */}
