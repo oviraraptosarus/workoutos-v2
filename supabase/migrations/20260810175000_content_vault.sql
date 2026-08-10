@@ -15,21 +15,25 @@ CREATE TABLE IF NOT EXISTS public.content_vault (
 ALTER TABLE public.content_vault ENABLE ROW LEVEL SECURITY;
 
 -- Create Policies
+DROP POLICY IF EXISTS "Users can view their own vault items" ON public.content_vault;
 CREATE POLICY "Users can view their own vault items"
     ON public.content_vault
     FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own vault items" ON public.content_vault;
 CREATE POLICY "Users can insert their own vault items"
     ON public.content_vault
     FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own vault items" ON public.content_vault;
 CREATE POLICY "Users can update their own vault items"
     ON public.content_vault
     FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own vault items" ON public.content_vault;
 CREATE POLICY "Users can delete their own vault items"
     ON public.content_vault
     FOR DELETE
@@ -44,6 +48,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_content_vault_updated_at ON public.content_vault;
 CREATE TRIGGER update_content_vault_updated_at
 BEFORE UPDATE ON public.content_vault
 FOR EACH ROW
