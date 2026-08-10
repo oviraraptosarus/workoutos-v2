@@ -338,26 +338,48 @@ export const getWeeklyDeficitAggregation = async () => {
     sevenDaysAgo.setDate(today.getDate() - 6); // Last 7 days including today
     const dateStr = sevenDaysAgo.toISOString().split('T')[0];
 
-    const { data: logs } = await supabase
-        .from('daily_logs')
-        .select('date, nutrition_macros, activity_burned')
+    const { data: meals } = await supabase
+        .from('meal_entries')
+        .select('date, calories')
         .eq('user_id', user.id)
         .gte('date', dateStr);
 
-    if (!logs || logs.length === 0) return { cumulativeDeficit: 0, estimatedWeightLossKg: 0, daysTracked: 0 };
+    const { data: logs } = await supabase
+        .from('daily_logs')
+        .select('date, activity_burned')
+        .eq('user_id', user.id)
+        .gte('date', dateStr);
+
+    const dailyStats: Record<string, { caloriesConsumed: number, burned: number }> = {};
+    const dates = new Set<string>();
+
+    if (meals) {
+        meals.forEach(m => {
+            if (!dailyStats[m.date]) dailyStats[m.date] = { caloriesConsumed: 0, burned: 0 };
+            dailyStats[m.date].caloriesConsumed += (m.calories || 0);
+            dates.add(m.date);
+        });
+    }
+
+    if (logs) {
+        logs.forEach(l => {
+            if (!dailyStats[l.date]) dailyStats[l.date] = { caloriesConsumed: 0, burned: 0 };
+            dailyStats[l.date].burned = (l.activity_burned || 0);
+            dates.add(l.date);
+        });
+    }
+
+    if (dates.size === 0) return { cumulativeDeficit: 0, estimatedWeightLossKg: 0, daysTracked: 0 };
 
     let totalDeficit = 0;
-    logs.forEach(log => {
-        const caloriesConsumed = log.nutrition_macros?.calories || 0;
-        const burned = log.activity_burned || 0;
-        const net = Math.max(0, caloriesConsumed - burned);
+    Object.values(dailyStats).forEach(stat => {
+        const net = Math.max(0, stat.caloriesConsumed - stat.burned);
         totalDeficit += (net - tdeeGoal);
     });
 
     return {
         cumulativeDeficit: totalDeficit,
-        // Using totalDeficit directly. If totalDeficit is -3500 (deficit), they lost weight.
         estimatedWeightLossKg: -(totalDeficit / 7700), 
-        daysTracked: logs.length
+        daysTracked: dates.size
     };
 };
