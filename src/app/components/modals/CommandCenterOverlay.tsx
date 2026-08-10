@@ -88,6 +88,14 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
         refreshSnapshot();
     };
 
+    const handleClearAll = async () => {
+        if (!user) return;
+        const itemIds = items.map(i => i.id);
+        setItems([]);
+        await supabase.from('command_center_items').update({ status: 'dismissed' }).in('id', itemIds);
+        refreshSnapshot();
+    };
+
     const handleSnoozeConfirm = async (date: Date) => {
         if (!snoozeTargetId) return;
         setItems(prev => prev.filter(item => item.id !== snoozeTargetId));
@@ -230,6 +238,17 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
                     )}
 
                     {/* Real Database AI Items Rendered Below */}
+
+                    {!loading && items.length > 0 && (
+                        <div className="flex justify-end pb-1 pr-1">
+                            <button 
+                                onClick={handleClearAll}
+                                className="text-[10px] font-bold text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-widest flex items-center gap-1 active:scale-95"
+                            >
+                                <Check size={12} strokeWidth={3} /> Clear All
+                            </button>
+                        </div>
+                    )}
 
                     {loading ? (
                         <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div></div>

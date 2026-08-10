@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { XPService } from '@/lib/xpService';
 
 
 export class WorkoutLogger {
@@ -84,6 +85,34 @@ export class WorkoutLogger {
         if (dailyErr) {
             console.error("WorkoutLogger Daily Log Update Failed:", dailyErr);
             throw new Error(`Failed to update daily burn: ${dailyErr.message}`);
+        }
+
+        // --- XP AWARDS ---
+        if (data && data.length > 0) {
+            const workout = data[0];
+            
+            // 1. Base Workout Completion (+50)
+            // Add duration bonus
+            let baseAmount = 50;
+            if (params.durationMinutes >= 60) baseAmount += 20;
+            else if (params.durationMinutes >= 45) baseAmount += 10;
+
+            await XPService.awardXP(
+                params.userId,
+                'workout_completed',
+                baseAmount,
+                workout.id, // Using workout.id ensures no duplicate XP if this is ever retried
+                { session_type: params.sessionType, duration: params.durationMinutes }
+            );
+
+            // 2. First Workout of the Day Bonus (+10)
+            await XPService.awardXP(
+                params.userId,
+                'daily_first_workout',
+                10,
+                `workout_first_${params.date}`, // deterministic date string ensures 1 per day
+                { date: params.date }
+            );
         }
 
         return data;

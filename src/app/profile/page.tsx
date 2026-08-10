@@ -600,18 +600,18 @@ export default function ProfileHub() {
                                     placeholder="Category (e.g., Protein)"
                                     value={newFoodCategory}
                                     onChange={(e) => setNewFoodCategory(e.target.value)}
-                                    className="flex-1 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                    className="flex-1 min-w-0 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                                 />
                                 <input
                                     type="number"
                                     placeholder="Budget ($)"
                                     value={newFoodBudgetAmount}
                                     onChange={(e) => setNewFoodBudgetAmount(e.target.value)}
-                                    className="w-24 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
+                                    className="w-20 sm:w-24 shrink-0 bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                                 />
                                 <button
                                     onClick={handleAddFoodBudget}
-                                    className="bg-[#0a84ff] hover:bg-[#0a84ff]/90 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm"
+                                    className="shrink-0 bg-[#0a84ff] hover:bg-[#0a84ff]/90 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm"
                                 >
                                     Add
                                 </button>

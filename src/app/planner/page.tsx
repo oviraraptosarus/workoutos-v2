@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check } from 'lucide-react';
+import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
@@ -24,6 +24,7 @@ export default function ExecutionOSPage() {
     const [newGoalArea, setNewGoalArea] = useState('Fitness');
     const [newGoalDate, setNewGoalDate] = useState('');
     const [isClient, setIsClient] = useState(false);
+    const [catalyzingId, setCatalyzingId] = useState<string | null>(null);
     
     // Brain Hub State
     const [brainInput, setBrainInput] = useState('');
@@ -140,6 +141,88 @@ export default function ExecutionOSPage() {
         } else {
             console.error("Failed to add goal:", error);
             alert("Failed to add goal.");
+        }
+    };
+
+    const handleDeleteGoal = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this goal?')) return;
+        const { error } = await supabase.from('execution_goals').delete().eq('id', id);
+        if (!error) {
+            setGoals(goals.filter(g => g.id !== id));
+        } else {
+            console.error("Failed to delete goal:", error);
+            alert("Failed to delete goal.");
+        }
+    };
+
+    const handleCatalyzeGoal = async (goal: any) => {
+        if (catalyzingId) return;
+        setCatalyzingId(goal.id);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("No user");
+
+            const prompt = `I have a macro goal: "${goal.title}" (Category: ${goal.life_area}). Based strictly on my User Profile, fitness level, and long-term memories you have about me, give me EXACTLY 3 extremely specific, immediate micro-tasks I can do TODAY to move towards this goal. Break the inertia. CRITICAL: ONLY output a valid JSON array of strings representing the 3 micro-tasks. No markdown formatting, no code blocks, JUST the raw JSON array. DO NOT call any tools.`;
+            
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    prompt: prompt,
+                    userProfile,
+                    history: []
+                })
+            });
+            
+            if (!res.ok) throw new Error("AI request failed");
+            
+            const data = await res.json();
+            let tasksStr = data.result || data.response || data.message;
+            // Clean markdown blocks if present
+            tasksStr = tasksStr.replace(/```json/g, '').replace(/```/g, '').trim();
+            const generatedTasks = JSON.parse(tasksStr);
+
+            if (!Array.isArray(generatedTasks)) throw new Error("Invalid format");
+
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            const inserts = generatedTasks.map((tTitle: string) => ({
+                user_id: user.id,
+                title: tTitle,
+                goal_id: goal.id,
+                priority: 'high',
+                completed: false,
+                date: todayStr
+            }));
+
+            const { data: newTasks, error } = await supabase.from('tasks').insert(inserts).select();
+            if (error) throw error;
+
+            if (newTasks) {
+                setTasks(prev => [...prev, ...newTasks]);
+            }
+            
+            // Re-fetch in background to ensure everything is synced
+            loadTasks();
+
+            setActiveTab('now'); // Switch to Now tab to see the injected tasks!
+            
+            if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.dispatchEvent(new Event('workout_os_tasks_updated'));
+            }
+            
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#3b82f6', '#10b981']
+            });
+
+        } catch (err: any) {
+            console.error("Catalyst Error:", err);
+            alert("Failed to catalyze goal: " + err.message);
+        } finally {
+            setCatalyzingId(null);
         }
     };
 
@@ -262,6 +345,22 @@ export default function ExecutionOSPage() {
         }
     };
 
+    const handleClearAllTasks = async () => {
+        if (!confirm("Are you sure you want to clear all pending tasks?")) return;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { error } = await supabase.from('tasks')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('completed', false);
+
+        if (!error) {
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
     if (!isClient) return null;
 
     // Highest probability incomplete task
@@ -365,11 +464,22 @@ export default function ExecutionOSPage() {
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
-                                <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
-                                        <Target className="w-5 h-5 sm:w-7 sm:h-7" />
+                                <div className="flex items-center justify-between gap-4 relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
+                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
+                                        </div>
+                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
                                     </div>
-                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
+                                    
+                                    {tasks.filter(t => !t.completed).length > 0 && (
+                                        <button 
+                                            onClick={handleClearAllTasks}
+                                            className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-error bg-error/10 hover:bg-error/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors border border-error/20"
+                                        >
+                                            Clear All
+                                        </button>
+                                    )}
                                 </div>
                                 <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
                                     Your immediate action items for today. Add quick tasks, set priorities, link them to your macro goals, and check them off to build unstoppable momentum.
@@ -571,27 +681,48 @@ export default function ExecutionOSPage() {
                                 )}
 
                                 {goals.length === 0 && !isAddingGoal ? (
-                                    <div className="text-center py-12 bg-surface-container/30 border border-surface-variant/30 rounded-2xl">
-                                        <p className="text-on-surface-variant mb-4">No macro goals defined yet.</p>
-                                        <button onClick={() => setIsAddingGoal(true)} className="text-tertiary font-bold hover:underline">Define Vector</button>
+                                    <div className="text-center py-12 bg-surface-container/30 border border-surface-variant/30 rounded-3xl">
+                                        <p className="text-sm font-medium text-on-surface-variant mb-4">No macro goals defined yet.</p>
+                                        <button onClick={() => setIsAddingGoal(true)} className="text-tertiary text-sm font-bold tracking-tight hover:underline">Define Vector</button>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         {goals.map(goal => (
-                                            <div key={goal.id} className="bg-surface-container/50 border border-surface-variant p-5 rounded-2xl flex items-center justify-between group hover:border-tertiary/50 transition-colors">
-                                                <div>
-                                                    <span className="text-xs font-bold uppercase tracking-widest text-tertiary bg-tertiary/10 px-2 py-1 rounded-md mb-2 inline-block">
+                                            <div key={goal.id} className="bg-surface-container/30 backdrop-blur-md border border-white/5 p-4 rounded-[1.5rem] flex items-center justify-between group hover:bg-surface-container/50 transition-all shadow-sm">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-tertiary mb-1 opacity-80">
                                                         {goal.life_area}
                                                     </span>
-                                                    <h3 className="font-bold text-on-surface text-lg">{goal.title}</h3>
+                                                    <h3 className="font-semibold text-on-surface tracking-tight text-base leading-tight">{goal.title}</h3>
                                                     {goal.target_date && (
-                                                        <p className="text-sm text-on-surface-variant mt-1">Target: {new Date(goal.target_date).toLocaleDateString()}</p>
+                                                        <p className="text-xs font-medium text-on-surface-variant mt-1 opacity-70">Target: {new Date(goal.target_date).toLocaleDateString()}</p>
                                                     )}
                                                 </div>
-                                                <div className="text-right">
-                                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors">
-                                                        <Target className="w-4 h-4" />
-                                                    </span>
+                                                <div className="flex items-center gap-2">
+                                                    <button 
+                                                        onClick={() => handleDeleteGoal(goal.id)}
+                                                        className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 active:scale-95 shrink-0"
+                                                        title="Delete Goal"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleCatalyzeGoal(goal)}
+                                                        disabled={catalyzingId === goal.id}
+                                                        className={clsx(
+                                                            "w-8 h-8 rounded-full flex items-center justify-center border shadow-inner transition-all active:scale-95 shrink-0",
+                                                            catalyzingId === goal.id 
+                                                                ? "bg-tertiary/20 border-tertiary text-tertiary animate-pulse"
+                                                                : "bg-white/5 border-white/10 text-on-surface-variant group-hover:border-tertiary/30 group-hover:text-tertiary hover:bg-tertiary/10"
+                                                        )}
+                                                        title="AI Action Catalyst - Generate Tasks"
+                                                    >
+                                                        {catalyzingId === goal.id ? (
+                                                            <Loader2 size={14} className="animate-spin" />
+                                                        ) : (
+                                                            <Target size={14} />
+                                                        )}
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}

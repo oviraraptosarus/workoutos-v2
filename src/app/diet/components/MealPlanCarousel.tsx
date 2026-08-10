@@ -61,7 +61,7 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
                 <button
                     id="tour-see-details"
                     onClick={onOpenDetails}
-                    className="text-xs font-semibold text-primary hover:text-primary-fixed-variant uppercase tracking-widest flex items-center gap-1 transition-colors group relative z-[110]"
+                    className="text-xs font-semibold text-primary hover:text-primary-fixed-variant uppercase tracking-widest flex items-center gap-1 transition-colors group relative"
                 >
                     {t('diet.details')} <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </button>

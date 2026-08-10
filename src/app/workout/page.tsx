@@ -10,6 +10,8 @@ import CardioActivityModal from './components/modals/CardioActivityModal';
 import ActivityTrendsChart from './components/ActivityTrendsChart';
 import CustomWorkouts from './components/CustomWorkouts';
 import RecentWorkouts from './components/RecentWorkouts';
+import AvaWorkoutPreview, { AvaGeneratedWorkout } from './components/modals/AvaWorkoutPreview';
+import { WorkoutTemplate, WorkoutTemplateService } from '@/lib/workoutTemplates';
 
 export default function WorkoutPage() {
     const [activePreset, setActivePreset] = useState<any>(null);
@@ -17,6 +19,18 @@ export default function WorkoutPage() {
     const [isCountingDown, setIsCountingDown] = useState(false);
     const [countdown, setCountdown] = useState(3);
     const [isCardioModalOpen, setIsCardioModalOpen] = useState(false);
+    const [avaWorkout, setAvaWorkout] = useState<AvaGeneratedWorkout | null>(null);
+    const [showAvaPreview, setShowAvaPreview] = useState(false);
+
+    // Listen for Ava-generated workouts
+    React.useEffect(() => {
+        const handleAvaWorkout = (e: any) => {
+            setAvaWorkout(e.detail);
+            setShowAvaPreview(true);
+        };
+        window.addEventListener('workout_os_ava_workout_generated', handleAvaWorkout);
+        return () => window.removeEventListener('workout_os_ava_workout_generated', handleAvaWorkout);
+    }, []);
 
     const handlePlayWorkout = (preset: any) => {
         setIsBuilderMode(false);
@@ -131,6 +145,27 @@ export default function WorkoutPage() {
             )}
             
             <CardioActivityModal isOpen={isCardioModalOpen} onClose={() => setIsCardioModalOpen(false)} />
+
+            <AvaWorkoutPreview
+                isOpen={showAvaPreview}
+                workout={avaWorkout}
+                onClose={() => setShowAvaPreview(false)}
+                onSaved={(template) => {
+                    // Notify CustomWorkouts to refresh
+                    window.dispatchEvent(new CustomEvent('workout_os_template_saved', { detail: template }));
+                }}
+                onRegenerate={() => {
+                    setShowAvaPreview(false);
+                    // Re-open Ava with context
+                    window.dispatchEvent(new CustomEvent('open-ai-copilot', {
+                        detail: { prompt: 'Please regenerate the workout with the same parameters but different exercises.' }
+                    }));
+                }}
+                onStartNow={(template) => {
+                    setShowAvaPreview(false);
+                    handlePlayWorkout(WorkoutTemplateService.toPreset(template));
+                }}
+            />
 
             <div className="space-y-4">
                 <WorkoutHeader 

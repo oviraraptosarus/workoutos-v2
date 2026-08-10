@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIDebugDashboard } from './AIDebugDashboard';
+import AvaLogo from './ui/AvaLogo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -64,7 +65,16 @@ export default function GlobalAICopilot() {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const handleOpen = () => setIsOpen(true);
+        const handleOpen = (e: any) => {
+            setIsOpen(true);
+            if (e.detail?.prompt) {
+                setPrompt(e.detail.prompt);
+                if (textareaRef.current) {
+                    textareaRef.current.style.height = 'auto';
+                    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 100)}px`;
+                }
+            }
+        };
         window.addEventListener('open-ai-copilot', handleOpen);
         return () => window.removeEventListener('open-ai-copilot', handleOpen);
     }, []);
@@ -411,6 +421,15 @@ export default function GlobalAICopilot() {
                         if (newTask && newTask.due_time) {
                         }
                         window.dispatchEvent(new Event('workout_os_tasks_updated'));
+                    } else if (fn === 'add_goal') {
+                        const { error } = await supabase.from('execution_goals').insert({
+                            user_id: user.id,
+                            title: args.title,
+                            life_area: args.life_area || 'Personal',
+                            target_date: args.target_date || null
+                        });
+                        if (error) throw new Error(`Tool Execution Failed (add_goal): ${error.message}`);
+                        window.dispatchEvent(new Event('workout_os_refresh'));
                     } else if (fn === 'add_countdown') {
                         const { error } = await supabase.from('countdowns').insert({
                             user_id: user.id,
@@ -583,6 +602,39 @@ export default function GlobalAICopilot() {
                             source: 'ai_analyst'
                         });
                         if (error) console.warn("Failed to log behavior pattern:", error.message);
+                    } else if (fn === 'save_workout_template') {
+                        // Validate AI output before saving
+                        const templateName = (args.name || '').trim();
+                        const exercises = Array.isArray(args.exercises) ? args.exercises : [];
+
+                        if (!templateName) throw new Error('Ava generated a workout without a name. Please regenerate.');
+                        if (exercises.length === 0) throw new Error('Ava generated an empty exercise list. Please regenerate.');
+
+                        // Validate each exercise
+                        const validatedExercises = exercises.map((ex: any, idx: number) => {
+                            if (!ex.name || typeof ex.name !== 'string' || !ex.name.trim()) {
+                                throw new Error(`Exercise at position ${idx + 1} is missing a name.`);
+                            }
+                            if (!ex.sets || typeof ex.sets !== 'string' || !ex.sets.trim()) {
+                                throw new Error(`Exercise "${ex.name}" is missing sets/reps.`);
+                            }
+                            return {
+                                name: ex.name.trim(),
+                                sets: ex.sets.trim(),
+                                notes: ex.notes ? ex.notes.trim() : undefined,
+                                youtubeUrl: '',
+                                order: typeof ex.order === 'number' ? ex.order : idx,
+                            };
+                        });
+
+                        // Dispatch event to show the AvaWorkoutPreview modal in the workout page
+                        window.dispatchEvent(new CustomEvent('workout_os_ava_workout_generated', {
+                            detail: {
+                                name: templateName,
+                                description: (args.description || '').trim() || undefined,
+                                exercises: validatedExercises,
+                            }
+                        }));
                     }
                 }
 
@@ -726,8 +778,8 @@ export default function GlobalAICopilot() {
 
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
-                            <div className="ava-orb-icon w-8 h-8 rounded-full shrink-0" />
-                            <span className="text-on-surface font-bold text-base tracking-tight">Ava</span>
+                            <AvaLogo size={24} className="rounded-full overflow-hidden" />
+                            <span className="text-on-surface font-semibold text-[17px] tracking-tight ml-1">Ava</span>
                             {isDevMode && (
                                 <button 
                                     onClick={() => setShowDebugDashboard(true)}
@@ -797,9 +849,9 @@ export default function GlobalAICopilot() {
                             <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-200`}>
                                 {msg.sender === 'ava' ? (
                                     msg.isError && isDevMode ? (
-                                        <div className="flex items-start gap-2.5 max-w-[95%] w-full">
-                                            <div className="ava-orb-icon w-7 h-7 rounded-full shrink-0 mt-1 flex items-center justify-center bg-red-500/20 text-red-500">⚠️</div>
-                                            <div className="bg-black/80 border border-red-500/50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg w-full font-mono text-xs">
+                                        <div className="flex items-start gap-3 max-w-[95%] w-full">
+                                            <AvaLogo size={28} className="rounded-full overflow-hidden shrink-0 mt-0.5" />
+                                            <div className="bg-surface-container-low border border-red-500/30 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm w-full font-mono text-xs">
                                                 <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
                                                     <span className="text-red-400 font-bold uppercase tracking-wider">Request Failed</span>
                                                     <span className="text-white/40">{msg.requestId || 'UNKNOWN'}</span>
@@ -820,9 +872,9 @@ export default function GlobalAICopilot() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="flex items-start gap-2.5 w-full max-w-full">
-                                            <div className="shrink-0 mt-1">
-                                                <div className="ava-orb-icon w-7 h-7 rounded-full" />
+                                        <div className="flex items-start gap-3 w-full max-w-full">
+                                            <div className="shrink-0 mt-0.5">
+                                                <AvaLogo size={28} className="rounded-full overflow-hidden" />
                                             </div>
                                             <div className="flex flex-col gap-1 w-full">
                                                 <div className="flex items-center gap-2">
@@ -830,8 +882,8 @@ export default function GlobalAICopilot() {
                                                     <span className="text-[10px] text-on-surface-variant">{msg.timestamp}</span>
                                                     {msg.requestId && isDevMode && <span className="text-[10px] text-purple-400 font-mono ml-auto">{msg.requestId}</span>}
                                                 </div>
-                                                <div className={`ava-response-card rounded-2xl rounded-tl-sm p-4 text-sm leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-primary-light border border-primary/30 bg-primary/10 shadow-[0_4px_24px_rgba(var(--c-primary)/0.2)] backdrop-blur-md'}`}>
-                                                    <div className="prose prose-invert prose-sm max-w-none
+                                                <div className={`rounded-2xl rounded-tl-sm px-4 py-3 text-[15px] leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-on-surface bg-surface-container-low border border-white/5 backdrop-blur-xl'}`}>
+                                                    <div className="prose prose-invert max-w-none
                                                         prose-headings:text-primary-light prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
                                                         prose-p:text-primary-light/90 prose-p:leading-relaxed prose-p:my-1
                                                         prose-li:text-primary-light/90 prose-li:my-0.5
@@ -844,14 +896,14 @@ export default function GlobalAICopilot() {
                                         </div>
                                     )
                                 ) : (
-                                    <div className="flex flex-col items-end gap-1 w-full max-w-[90%] sm:max-w-[85%]">
-                                        <div className="bg-surface-container-high border border-white/10 shadow-lg rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-on-surface leading-relaxed break-words whitespace-pre-wrap backdrop-blur-md">
+                                    <div className="flex flex-col items-end gap-1 w-full max-w-[85%] sm:max-w-[75%]">
+                                        <div className="bg-[#0a84ff] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-sm">
                                             {msg.imageUrl && (
                                                 <div className="relative rounded-2xl overflow-hidden border border-white/10 mb-1">
                                                     <img src={msg.imageUrl} alt="Uploaded preview" className="w-48 h-auto object-cover" />
                                                 </div>
                                             )}
-                                            <div className="ava-user-msg text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm break-words whitespace-pre-wrap font-medium">
+                                            <div className="break-words whitespace-pre-wrap font-medium">
                                                 {msg.text}
                                             </div>
                                             <div className="text-[10px] text-white/30 mr-1 mt-1 text-right">{msg.timestamp}</div>
@@ -862,9 +914,9 @@ export default function GlobalAICopilot() {
                         ))}
 
                         {loading && (
-                            <div className="flex items-start gap-2.5 animate-in slide-in-from-bottom-2 duration-200">
-                                <div className="ava-orb-icon w-7 h-7 rounded-full shrink-0 mt-1" />
-                                <div className="ava-response-card rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2">
+                            <div className="flex items-start gap-3 animate-in slide-in-from-bottom-2 duration-200">
+                                <AvaLogo size={28} className="rounded-full overflow-hidden shrink-0 mt-0.5" />
+                                <div className="bg-surface-container-low border border-white/5 backdrop-blur-xl rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5 h-11">
                                     <span className="ava-typing-dot" style={{ animationDelay: '0ms' }} />
                                     <span className="ava-typing-dot" style={{ animationDelay: '180ms' }} />
                                     <span className="ava-typing-dot" style={{ animationDelay: '360ms' }} />
@@ -893,7 +945,7 @@ export default function GlobalAICopilot() {
                     )}
 
                     <div className="shrink-0 px-4 sm:px-6 pb-6 pt-2">
-                        <div className="flex items-end gap-3 bg-surface-container border border-surface-variant rounded-[1.5rem] px-3 py-2 focus-within:border-primary/50 focus-within:shadow-[0_0_20px_rgba(var(--c-primary)/0.2)] transition-all backdrop-blur-xl">
+                        <div className="flex items-end gap-2 bg-surface-container-lowest border border-white/10 rounded-full pl-3 pr-2 py-1.5 focus-within:border-white/30 transition-all backdrop-blur-3xl shadow-sm">
                             <input
                                 type="file"
                                 accept="image/*"
@@ -953,15 +1005,15 @@ export default function GlobalAICopilot() {
                             <button
                                 onClick={() => handleSend()}
                                 disabled={(!prompt.trim() && !selectedImage) || loading}
-                                className="p-1.5 text-primary hover:text-primary-light disabled:opacity-20 transition-colors shrink-0 mb-0.5"
+                                className="w-8 h-8 rounded-full bg-[#0a84ff] text-white flex items-center justify-center disabled:opacity-30 transition-colors shrink-0 mb-0.5"
                                 aria-label="Send message"
                             >
-                                <Send size={20} />
+                                <Send size={14} className="ml-0.5" />
                             </button>
                         </div>
 
-                        {/* Bottom row: controls + orb + mic */}
-                        <div className="flex items-center justify-between mt-4 px-1">
+                        {/* Bottom row: controls + mic */}
+                        <div className="flex items-center justify-between mt-3 px-2">
                             <button 
                                 onClick={() => setIsConversationMode(!isConversationMode)}
                                 className={`p-2 transition-colors flex items-center justify-center rounded-full ${isConversationMode ? 'text-white bg-white/10 shadow-[0_0_12px_rgba(168,85,247,0.4)]' : 'text-white/40 hover:text-white/70'}`} 
@@ -974,19 +1026,18 @@ export default function GlobalAICopilot() {
                             <button
                                 onClick={() => toggleListening()}
                                 aria-label={isListening ? 'Stop listening' : 'Start voice input'}
-                                className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-transform duration-300 active:scale-90 ${isListening ? 'scale-110' : ''}`}
+                                className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isListening ? 'bg-[#0a84ff] shadow-lg' : 'bg-surface-container-high border border-white/5'}`}
                             >
-                                <div className={`absolute inset-0 rounded-full ava-orb-bg ${isListening || loading ? 'ava-orb-active' : ''}`} />
                                 <div className="relative z-10">
                                     {isListening
-                                        ? <Mic size={22} className="text-white drop-shadow-lg" />
-                                        : <Sparkles size={22} className={`text-white ${loading ? 'animate-pulse' : ''}`} />}
+                                        ? <Mic size={20} className="text-white" />
+                                        : <AvaLogo size={24} className="opacity-80" />}
                                 </div>
                                 {/* Pulse rings when listening */}
                                 {isListening && (
                                     <>
-                                        <span className="absolute inset-0 rounded-full border border-white/20/40 animate-ping" />
-                                        <span className="absolute inset-[-6px] rounded-full border border-white/20/20 animate-ping [animation-delay:0.5s]" />
+                                        <span className="absolute inset-0 rounded-full border border-[#0a84ff]/40 animate-ping" />
+                                        <span className="absolute inset-[-4px] rounded-full border border-[#0a84ff]/20 animate-ping [animation-delay:0.5s]" />
                                     </>
                                 )}
                             </button>

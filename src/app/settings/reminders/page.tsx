@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Bell, Settings2, Droplets, Moon, Dumbbell, Utensils, Zap, Plus, ChevronRight, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getReminderPreferences, updateReminderPreference, ReminderPreference, ReminderConfig } from '@/services/reminderEngine';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 const DEFAULT_REMINDERS = [
     { type: 'water', label: 'Smart Water System', icon: Droplets, color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -33,6 +34,7 @@ export default function RemindersSettingsPage() {
     const [preferences, setPreferences] = useState<ReminderPreference[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedType, setSelectedType] = useState<string | null>(null);
+    const { isSupported, permission, subscribeToPush, unsubscribeFromPush, isLoading: pushLoading } = usePushNotifications();
 
     useEffect(() => {
         if (!user) return;
@@ -242,6 +244,32 @@ export default function RemindersSettingsPage() {
 
             <div className="p-4 sm:p-6 max-w-md mx-auto space-y-6 mt-4">
                 
+                {isSupported && permission !== 'granted' && (
+                    <div className="bg-surface-container-low rounded-3xl p-5 border border-primary/20 shadow-sm flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                <Bell size={20} />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-bold text-on-surface">Enable Push Notifications</h2>
+                                <p className="text-xs text-on-surface-variant">Get notified even when the app is closed.</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={subscribeToPush}
+                            disabled={pushLoading}
+                            className="w-full bg-primary text-on-primary font-bold rounded-xl py-3 text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        >
+                            {pushLoading ? 'Enabling...' : 'Allow Notifications'}
+                        </button>
+                        {permission === 'denied' && (
+                            <p className="text-[10px] text-error text-center mt-1">
+                                You have denied permission. Please enable it in your browser settings.
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 <div className="bg-surface-container-low rounded-3xl p-5 border border-primary/20 flex gap-4 items-start shadow-sm">
                     <Settings2 size={24} className="text-primary shrink-0 mt-0.5" />
                     <div>

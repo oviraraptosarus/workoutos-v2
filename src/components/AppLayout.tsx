@@ -54,10 +54,10 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
 
     return (
         <div className={`min-h-screen ${hideBottomNav ? 'pb-0' : 'pb-44 sm:pb-28'} bg-transparent relative z-10`}>
-            {!isDashboard && !hideBottomNav && <TopNav />}
+            {!hideBottomNav && <TopNav />}
             {/* TopNav is fixed at h-16 (64px); pad the scroll container so page
                 headings are never hidden underneath it. */}
-            <main className={`${hideBottomNav ? 'h-screen w-screen p-0 m-0 overflow-hidden' : 'max-w-5xl mx-auto p-4 sm:px-8 ' + (isDashboard ? 'pt-4' : 'pt-20 sm:pt-24')}`}>
+            <main className={`${hideBottomNav ? 'h-screen w-screen p-0 m-0 overflow-hidden' : 'max-w-5xl mx-auto p-4 sm:px-8 pt-20 sm:pt-24'}`}>
                 {children}
             </main>
             {!hideBottomNav && <BottomNav />}

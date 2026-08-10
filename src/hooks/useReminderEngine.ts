@@ -4,10 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function useReminderEngine() {
     const { userProfile, user } = useAuth();
+    const isRunning = useRef(false);
+
     useEffect(() => {
         if (!user || !userProfile) return;
         
         const runEngine = async () => {
+            if (isRunning.current) return;
+            isRunning.current = true;
             try {
                 const now = new Date();
                 const todayStr = now.toLocaleDateString('en-CA');
@@ -34,6 +38,15 @@ export function useReminderEngine() {
                 const newAlerts: any[] = [];
                 const tasksToMarkNotified: string[] = [];
                 
+                // 1.5 Fetch ALL existing command center items to prevent ANY duplicates universally
+                const { data: existing } = await supabase
+                    .from('command_center_items')
+                    .select('id, title, category, source_module, created_at, description, status, action_type')
+                    .eq('user_id', user.id)
+                    .eq('status', 'active');
+                    
+                const existingTitles = new Set((existing || []).map(e => e.title));
+                
                 // 2. Fetch pending tasks that have reminders due (if enabled)
                 if (plannerEnabled) {
                     const { data: pendingTasks } = await supabase
@@ -46,31 +59,25 @@ export function useReminderEngine() {
 
                     if (pendingTasks && pendingTasks.length > 0) {
                         for (const pt of pendingTasks) {
-                            newAlerts.push({
-                                user_id: user.id,
-                                title: pt.title,
-                                description: `Task Due: ${pt.full_title || pt.title}`,
-                                category: 'Reminder',
-                                priority: pt.priority === 'high' ? 'high' : 'medium',
-                                icon: 'check-square',
-                                source_module: 'Planner',
-                                action_type: 'OPEN_PLANNER',
-                                status: 'active'
-                            });
-                            tasksToMarkNotified.push(pt.id);
+                            if (!existingTitles.has(pt.title) && !existingTitles.has(`🚨 Escalate: ${pt.title}`)) {
+                                newAlerts.push({
+                                    user_id: user.id,
+                                    title: pt.title,
+                                    description: `Task Due: ${pt.full_title || pt.title}`,
+                                    category: 'Reminder',
+                                    priority: pt.priority === 'high' ? 'high' : 'medium',
+                                    icon: 'check-square',
+                                    source_module: 'Planner',
+                                    action_type: 'OPEN_PLANNER',
+                                    status: 'active'
+                                });
+                                tasksToMarkNotified.push(pt.id);
+                                existingTitles.add(pt.title);
+                            }
                         }
                     }
 
                     const isEvening = now.getHours() >= 20; // 8 PM
-                    // Re-check existing in a larger scope or move this block if needed, 
-                    // keeping structure as provided by instruction.
-                    const { data: existingCheck } = await supabase
-                        .from('command_center_items')
-                        .select('title')
-                        .eq('user_id', user.id)
-                        .eq('status', 'active');
-                    const existingTitles = new Set((existingCheck || []).map(e => e.title));
-
                     if (isEvening && !existingTitles.has('Evening Wrap-Up') && !existingTitles.has('🚨 Escalate: Evening Wrap-Up')) {
                         const { data } = await supabase
                             .from('daily_logs')
@@ -94,16 +101,6 @@ export function useReminderEngine() {
                     }
                 }
 
-                // 3. Fetch existing command center items to prevent duplicates and handle escalation
-                const { data: existing } = await supabase
-                    .from('command_center_items')
-                    .select('id, title, category, source_module, created_at, description, status, action_type')
-                    .eq('user_id', user.id)
-                    .eq('status', 'active')
-                    .gte('created_at', `${todayStr}T00:00:00Z`);
-
-                const existingTitles = new Set((existing || []).map(e => e.title));
-                
                 // Escalation Engine: Escalate reminders ignored for > 60 minutes
                 if (existing && existing.length > 0) {
                     for (const item of existing) {
@@ -282,6 +279,8 @@ export function useReminderEngine() {
 
             } catch (error) {
                 console.error("Error in Smart Reminder Engine", error);
+            } finally {
+                isRunning.current = false;
             }
         };
 

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase/client';
+import { XPService } from '@/lib/xpService';
 export interface SubTask {
     id: string;
     title: string;
@@ -121,6 +122,19 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             console.error("Failed to toggle task:", error);
             alert("Error updating task: " + error.message);
             set({ tasks: previousTasks }); // Rollback
+        } else if (!task.completed) {
+            // Task just completed! Award XP
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const isHighPriority = task.priority === 'high';
+                await XPService.awardXP(
+                    user.id,
+                    'task_completed',
+                    isHighPriority ? 10 : 5,
+                    `task_complete_${id}`,
+                    { taskId: id, priority: task.priority }
+                );
+            }
         }
     },
 

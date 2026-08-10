@@ -4,6 +4,8 @@ import { DateProvider } from '@/contexts/DateContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import LevelUpOverlay from '@/components/LevelUpOverlay';
+import '@/styles/tailwind.css';
 import '@/styles/index.css';
 
 export const metadata: Metadata = {
@@ -55,6 +57,7 @@ export default function RootLayout({
             <LanguageProvider>
               <DateProvider>
                 <ServiceWorkerRegister />
+                <LevelUpOverlay />
                 {children}
               </DateProvider>
             </LanguageProvider>

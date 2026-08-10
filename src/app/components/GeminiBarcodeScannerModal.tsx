@@ -17,6 +17,8 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
     const [isScanning, setIsScanning] = useState(false);
     const [parsedMeal, setParsedMeal] = useState<Omit<MealItem, 'id'> | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [servingWeight, setServingWeight] = useState<number>(100);
+    const [baseWeight, setBaseWeight] = useState<number>(100);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,13 +26,21 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
         setMounted(true);
     }, []);
 
+    const resetScanner = () => {
+        setImagePreview(null);
+        setIsScanning(false);
+        setParsedMeal(null);
+        setError(null);
+        setServingWeight(100);
+        setBaseWeight(100);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        if (galleryInputRef.current) galleryInputRef.current.value = '';
+    };
+
     // Reset state on open
     useEffect(() => {
         if (isOpen) {
-            setImagePreview(null);
-            setIsScanning(false);
-            setParsedMeal(null);
-            setError(null);
+            resetScanner();
         }
     }, [isOpen]);
 
@@ -80,6 +90,17 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                 if (!meal.bites) {
                     meal.bites = Math.max(1, Math.round(meal.calories / 50));
                 }
+                
+                let base = 100;
+                if (meal.portion) {
+                    const match = meal.portion.match(/([\d.]+)\s*(g|ml)/i);
+                    if (match) {
+                        base = parseFloat(match[1]) || 100;
+                    }
+                }
+                setBaseWeight(base);
+                setServingWeight(base);
+
                 setParsedMeal(meal);
             } else {
                 throw new Error(data.error || 'Failed to scan image');
@@ -91,9 +112,23 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
         }
     };
 
+    const multiplier = baseWeight > 0 ? (servingWeight / baseWeight) : 1;
+    const displayCalories = Math.round((parsedMeal?.calories || 0) * multiplier);
+    const displayProtein = Math.round((parsedMeal?.protein || 0) * multiplier);
+    const displayCarbs = Math.round((parsedMeal?.carbs || 0) * multiplier);
+    const displayFat = Math.round((parsedMeal?.fat || 0) * multiplier);
+
     const handleLogMeal = () => {
         if (parsedMeal) {
-            onLogMeal(parsedMeal);
+            onLogMeal({
+                ...parsedMeal,
+                calories: displayCalories,
+                protein: displayProtein,
+                carbs: displayCarbs,
+                fat: displayFat,
+                portion: servingWeight === baseWeight ? parsedMeal.portion : `${servingWeight}g`,
+                bites: Math.max(1, Math.round(displayCalories / 50))
+            });
             onClose();
         }
     };
@@ -203,21 +238,31 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
                                         <div className="grid grid-cols-4 gap-2 text-center">
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">KCAL</div>
-                                                <div className="text-sm font-bold text-white">{parsedMeal.calories}</div>
+                                                <div className="text-sm font-bold text-white">{displayCalories}</div>
                                             </div>
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">PRO</div>
-                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.protein}g</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{displayProtein}g</div>
                                             </div>
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">CARB</div>
-                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.carbs}g</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{displayCarbs}g</div>
                                             </div>
                                             <div className="bg-card-white  rounded-xl p-2 border border-surface-variant  shadow-sm">
                                                 <div className="text-[10px] text-on-surface-variant font-bold mb-0.5">FAT</div>
-                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{parsedMeal.fat}g</div>
+                                                <div className="text-sm font-bold text-on-surface-variant dark:text-gray-200">{displayFat}g</div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div className="bg-card-white border border-surface-variant rounded-2xl p-3 shadow-sm flex items-center justify-between">
+                                        <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Weight (g / ml)</p>
+                                        <input 
+                                            type="number" 
+                                            value={servingWeight || ''} 
+                                            onChange={(e) => setServingWeight(Number(e.target.value) || 0)}
+                                            className="w-20 bg-surface-container rounded-lg p-1.5 text-center text-sm font-bold text-on-surface focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                        />
                                     </div>
 
                                     <div className="bg-card-white  border border-surface-variant  rounded-2xl p-3 shadow-sm">
@@ -237,7 +282,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
                                     <div className="flex gap-2">
                                         <button 
-                                            onClick={() => fileInputRef.current?.click()}
+                                            onClick={resetScanner}
                                             className="flex-1 py-3 bg-surface-container dark:bg-surface-container-high hover:bg-surface-container-high dark:hover:bg-slate-700 text-on-surface-variant dark:text-on-surface-variant text-xs font-bold rounded-xl transition-colors"
                                         >
                                             Retake
@@ -254,7 +299,7 @@ export default function GeminiBarcodeScannerModal({ isOpen, onClose, onLogMeal }
 
                             {(!parsedMeal && !isScanning && error) && (
                                 <button 
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={resetScanner}
                                     className="w-full py-3 bg-surface-container dark:bg-surface-container-high hover:bg-surface-container-high dark:hover:bg-slate-700 text-on-surface-variant dark:text-on-surface-variant text-xs font-bold rounded-xl transition-colors"
                                 >
                                     Try Again

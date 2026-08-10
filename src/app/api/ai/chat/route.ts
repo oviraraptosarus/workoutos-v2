@@ -88,6 +88,7 @@ RULE 11 — REPETITIVE-OUTPUT BUG PREVENTION (CRITICAL OUTPUT INTEGRITY):
     7. Before returning the response, run a repetition check for duplicated words, phrases, prefixes, or n-gram loops.
     8. If a repetition loop is detected, discard the corrupted output and regenerate the response with a clean decoding state.
 RULE 12 — NO HYPHENS: Do NOT use hyphens ("-") as bullet points or stylistic dividers like normal AI does. Use standard spacing or numbers.
+RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a workout plan, ALWAYS use the save_workout_template tool to save it as a reusable template. Never just describe a workout in text — always call the tool. Use the user's profile (fitnessGoal, equipment preferences, experience) to personalize the workout. Only ask for missing info that you genuinely cannot infer.
 
 === END RULES ===`;
 
@@ -183,6 +184,19 @@ RULE 12 — NO HYPHENS: Do NOT use hyphens ("-") as bullet points or stylistic d
                                             targetDate: { type: "STRING", description: "Target date in YYYY-MM-DD format." }
                                         },
                                         required: ["title", "targetDate"]
+                                    }
+                                },
+                                {
+                                    name: "add_goal",
+                                    description: "Create a long-term macro goal for the user in the Execution OS framework. Use when a user declares a long-term goal.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            title: { type: "STRING", description: "The title of the goal (e.g. 'Lose 10 lbs', 'Launch startup')." },
+                                            life_area: { type: "STRING", description: "Must be exactly one of: 'Fitness', 'Career', 'Learning', 'Personal', 'Finance', 'Health'." },
+                                            target_date: { type: "STRING", description: "Target completion date in YYYY-MM-DD format. Optional." }
+                                        },
+                                        required: ["title", "life_area"]
                                     }
                                 },
                                 {
@@ -349,6 +363,32 @@ RULE 12 — NO HYPHENS: Do NOT use hyphens ("-") as bullet points or stylistic d
                                             confidence_score: { type: "NUMBER", description: "AI's confidence in this pattern (0-100)." }
                                         },
                                         required: ["pattern_description", "confidence_score"]
+                                    }
+                                },
+                                {
+                                    name: "save_workout_template",
+                                    description: "Generate and save a complete, structured workout plan as a reusable template in the user's workout library. ALWAYS use this when the user asks you to create, generate, or build a workout plan. Do NOT just describe the workout in text. Ask for: target muscle groups, duration, equipment, experience level, and training goal if not already in the profile.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            name: { type: "STRING", description: "The workout template name (e.g. 'Push Hypertrophy A', 'Full Body Beginner', '30-min Dumbbell Circuit')." },
+                                            description: { type: "STRING", description: "A brief description of the workout (e.g. 'Chest, shoulders, triceps focused on volume hypertrophy')." },
+                                            exercises: {
+                                                type: "ARRAY",
+                                                description: "The ordered list of exercises in this workout.",
+                                                items: {
+                                                    type: "OBJECT",
+                                                    properties: {
+                                                        name: { type: "STRING", description: "Exercise name (e.g. 'Barbell Bench Press', 'Pull-ups', 'Plank')." },
+                                                        sets: { type: "STRING", description: "Sets and reps/duration string (e.g. '3 sets x 10 reps', '4 sets x 8-10 reps', '3 sets x 45s')." },
+                                                        notes: { type: "STRING", description: "Optional coaching notes (e.g. 'Slow eccentric, 2 sec down', 'Rest 90s between sets')." },
+                                                        order: { type: "NUMBER", description: "Exercise order starting from 0." }
+                                                    },
+                                                    required: ["name", "sets", "order"]
+                                                }
+                                            }
+                                        },
+                                        required: ["name", "exercises"]
                                     }
                                 }
                             ]

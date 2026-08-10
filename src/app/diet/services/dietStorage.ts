@@ -1,5 +1,6 @@
 import { MealItem, MacroGoals, MealCategory } from '../types';
 import { supabase } from '@/lib/supabase/client';
+import { XPService } from '@/lib/xpService';
 
 export const formatDateKey = (date: Date): string => {
     const year = date.getFullYear();
@@ -192,6 +193,20 @@ export const addWaterLog = async (dateKey: string, amount: number, type: string 
     if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('workout_os_water_updated'));
         window.dispatchEvent(new Event('storage'));
+    }
+
+    // Check if water goal is met
+    const { data: profile } = await supabase.from('profiles').select('water_goal_ml').eq('id', user.id).maybeSingle();
+    const waterGoal = profile?.water_goal_ml || 3000;
+    
+    if (newTotal >= waterGoal) {
+        await XPService.awardXP(
+            user.id,
+            'daily_water_goal',
+            15,
+            `water_goal_met_${dateKey}`,
+            { date: dateKey, total: newTotal, goal: waterGoal }
+        );
     }
 
     return { totalMl: newTotal, logs: newLogs };

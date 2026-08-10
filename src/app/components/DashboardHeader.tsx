@@ -1,18 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, User, Bell } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/lib/supabase/client';
-import CommandCenterOverlay from '@/app/components/modals/CommandCenterOverlay';
 import { useCommandCenterEngine } from '@/hooks/useCommandCenterEngine';
 import { useReminderEngine } from '@/hooks/useReminderEngine';
-import { useDailySnapshot } from '@/hooks/useDailySnapshot';
 import QUOTES from '@/data/quotes.json';
-import { Sparkles } from 'lucide-react';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -27,10 +22,7 @@ export default function DashboardHeader() {
     const { t } = useLanguage();
     const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
-    const [showCommandCenter, setShowCommandCenter] = useState(false);
     const [dailyQuote, setDailyQuote] = useState(QUOTES[0]);
-    
-    const { snapshot } = useDailySnapshot();
     
     // Initialize the engine to generate AI insights behind the scenes
     useCommandCenterEngine();
@@ -54,9 +46,8 @@ export default function DashboardHeader() {
         else if (h < 17) setGreeting(t('nav.greeting.afternoon'));
         else setGreeting(t('nav.greeting.evening'));
         
-        // Pick a consistent quote for the day based on the date
-        const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
-        setDailyQuote(QUOTES[dayOfYear % QUOTES.length]);
+        // Pick a random quote on mount
+        setDailyQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     }, [t]);
 
     return (
@@ -70,7 +61,7 @@ export default function DashboardHeader() {
                             {greeting}, {displayName}
                         </h1>
                         <p className="text-sm font-medium text-on-surface-variant italic mt-1 hidden sm:block">
-                            {dailyQuote.text} {dailyQuote.subtext}
+                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^[—\-\s]+/, '')}
                         </p>
                         <div className="flex items-center gap-3 mt-2 sm:mt-1.5 flex-wrap">
                             <div className="flex items-center gap-2">
@@ -95,34 +86,6 @@ export default function DashboardHeader() {
                             
                         </div>
                     </div>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowCommandCenter(true)}
-                            className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors relative"
-                        >
-                            <Bell size={18} />
-                        </button>
-                        
-                        <CommandCenterOverlay 
-                            isOpen={showCommandCenter} 
-                            onClose={() => setShowCommandCenter(false)} 
-                        />
-                    </div>
-                    
-                    <Link
-                        href="/profile"
-                        aria-label="Open profile"
-                        className="w-10 h-10 rounded-full bg-primary flex items-center justify-center active:scale-90 transition-transform shadow-sm"
-                    >
-                        {userProfile ? (
-                            <span className="text-on-primary text-sm font-bold tabular-nums">{initial}</span>
-                        ) : (
-                            <User size={18} className="text-on-primary" />
-                        )}
-                    </Link>
                 </div>
             </div>
         </div>

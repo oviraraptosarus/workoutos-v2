@@ -4,10 +4,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { Orbit } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import { useState } from 'react';
+import CommandCenterOverlay from '@/app/components/modals/CommandCenterOverlay';
+import AvaLogo from '@/components/ui/AvaLogo';
 
 export function TopNav() {
   const { userProfile } = useAuth();
+  const [showCommandCenter, setShowCommandCenter] = useState(false);
+  
   const displayName = userProfile?.fullName ? userProfile.fullName.split(' ')[0] : (userProfile?.username || 'User');
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -22,13 +27,27 @@ export function TopNav() {
           <span className="font-bold text-lg text-on-surface tracking-tight group-hover:text-secondary transition-colors">Workout OS</span>
         </Link>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
-            className="w-9 h-9 rounded-full bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 flex items-center justify-center active:scale-90 transition-transform shadow-sm border border-[#0a84ff]/20 group"
-            aria-label="Open AI Copilot"
-          >
-            <Orbit size={18} className="text-[#0a84ff] group-hover:rotate-90 transition-transform duration-500" />
-          </button>
+          <div className="relative flex items-center">
+            <button
+              onClick={() => setShowCommandCenter(true)}
+              className="w-9 h-9 rounded-full bg-white/5 dark:bg-black/20 hover:bg-white/10 dark:hover:bg-black/40 flex items-center justify-center active:scale-90 transition-transform shadow-sm border border-black/5 dark:border-white/10 text-on-surface mr-3 group"
+              aria-label="Open Command Center"
+            >
+              <Bell size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+            </button>
+            <CommandCenterOverlay 
+                isOpen={showCommandCenter} 
+                onClose={() => setShowCommandCenter(false)} 
+            />
+
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
+              className="w-9 h-9 rounded-full bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 flex items-center justify-center active:scale-90 transition-transform shadow-sm border border-[#0a84ff]/20 group"
+              aria-label="Open AI Copilot"
+            >
+              <AvaLogo size={20} className="group-hover:rotate-90 transition-transform duration-500" />
+            </button>
+          </div>
 
           <Link
             href="/profile"

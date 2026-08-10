@@ -126,12 +126,13 @@ export default function WelcomePage() {
             {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center z-30 pointer-events-none">
                 <div key={currentSlide} className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-lg">
-                    <h1 className={clsx("text-4xl sm:text-5xl font-display font-bold leading-tight tracking-tight mb-6", slide.textColor)}>
-                        {slide.text}
-                    </h1>
+                    <h2 className={`font-display-md font-bold leading-tight ${slide.textColor} drop-shadow-xl text-3xl sm:text-4xl md:text-5xl px-4`}>
+                        "{slide.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}"
+                    </h2>
                     {slide.subtext && (
-                        <p className={clsx("text-xl font-body", slide.subtextColor)}>
-                            {slide.subtext}
+                        <p className={slide.subtextColor}>
+                            <span className="opacity-80">— </span>
+                            {slide.subtext.replace(/^[—\-\s]+/, '')}
                         </p>
                     )}
                 </div>

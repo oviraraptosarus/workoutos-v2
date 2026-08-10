@@ -66,9 +66,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     if (snapshot.sleepProgress.current < snapshot.sleepProgress.target) bottlenecks.push('Sleep was suboptimal. Prioritize recovery.');
     if (completedTasks === 0 && snapshot.plannerState.total > 0) bottlenecks.push('Execution rate was low. Focus on one task at a time.');
 
-    const now = new Date();
-    const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
-    const dailyQuote = QUOTES[dayOfYear % QUOTES.length];
+    const [dailyQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
     return (
         <div className={`fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -120,10 +118,10 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                 <div className="bg-surface-container-low p-4 rounded-2xl border border-white/5 relative">
                                     <Quote size={16} className="absolute top-3 left-3 text-white/10" />
                                     <p className="text-on-surface font-semibold text-sm italic pl-6 pr-2">
-                                        {dailyQuote.text.replace(/^"|"$/g, "'")}
+                                        "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}"
                                     </p>
                                     <p className="text-on-surface-variant text-xs font-bold text-right mt-2">
-                                        {dailyQuote.subtext}
+                                        — {dailyQuote.subtext.replace(/^[—\-\s]+/, '')}
                                     </p>
                                 </div>
                             </div>
