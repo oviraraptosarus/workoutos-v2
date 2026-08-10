@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2 } from 'lucide-react';
+import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2, Bookmark } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
@@ -789,8 +789,8 @@ export default function ExecutionOSPage() {
                             <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="flex items-center gap-4 border-b border-surface-variant pb-6">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 border border-white/5">
-                                        <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-blue-400" />
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
+                                        <Bookmark className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white/20" />
                                     </div>
                                     <div>
                                         <h2 className="text-xl sm:text-3xl font-black tracking-tight font-display">Content Vault</h2>

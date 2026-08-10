@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sparkles, Loader2, Play, CheckCircle2 } from 'lucide-react';
+import { Bookmark, Loader2, Play, CheckCircle2 } from 'lucide-react';
 
 export default function VaultWidget() {
     const { user } = useAuth();
@@ -72,8 +72,8 @@ export default function VaultWidget() {
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
             
             <div className="flex items-center gap-3 border-b border-surface-variant pb-4">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 border border-white/5">
-                    <Sparkles className="w-4 h-4 text-blue-400" />
+                <div className="w-8 h-8 rounded-[10px] bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
+                    <Bookmark className="w-4 h-4 text-white fill-white/20" />
                 </div>
                 <div>
                     <h2 className="text-xl font-black tracking-tight font-display">Content Vault</h2>

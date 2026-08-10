@@ -152,14 +152,14 @@ export default function CreateWorkoutModal({ isOpen, editTemplate, onClose, onSa
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-[#111] border border-white/10 rounded-t-[32px] sm:rounded-[28px] w-full sm:max-w-lg max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300">
+            <div className="bg-surface-container-lowest dark:bg-[#111] border border-surface-variant dark:border-white/10 rounded-t-[32px] sm:rounded-[28px] w-full sm:max-w-lg max-h-[92vh] flex flex-col shadow-2xl animate-in slide-in-from-bottom-8 duration-300">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-white/5 shrink-0">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-surface-variant dark:border-white/5 shrink-0">
                     <div>
-                        <h2 className="text-lg font-bold text-white tracking-tight">{isEditing ? 'Edit Workout' : 'Create Workout'}</h2>
-                        <p className="text-[12px] text-white/40 mt-0.5">Build your reusable routine</p>
+                        <h2 className="text-lg font-bold text-on-surface dark:text-white tracking-tight">{isEditing ? 'Edit Workout' : 'Create Workout'}</h2>
+                        <p className="text-[12px] text-on-surface-variant dark:text-white/40 mt-0.5">Build your reusable routine</p>
                     </div>
-                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-surface-container dark:bg-white/5 flex items-center justify-center text-on-surface-variant dark:text-white/60 hover:text-on-surface dark:text-white hover:bg-surface-container-high dark:bg-white/10 transition-colors">
                         <X size={16} />
                     </button>
                 </div>
@@ -168,78 +168,78 @@ export default function CreateWorkoutModal({ isOpen, editTemplate, onClose, onSa
                 <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                     {/* Name */}
                     <div>
-                        <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5 block">Workout Name *</label>
+                        <label className="text-[11px] font-bold text-on-surface-variant dark:text-white/50 uppercase tracking-wider mb-1.5 block">Workout Name *</label>
                         <input
                             type="text"
                             value={name}
                             onChange={e => setName(e.target.value)}
                             placeholder="e.g. Push Hypertrophy"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/30 focus:outline-none focus:border-white/25 transition-colors"
+                            className="w-full bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/10 rounded-xl px-4 py-3 text-on-surface dark:text-white text-sm placeholder-on-surface-variant/50 dark:placeholder-white/30 focus:outline-none focus:border-white/25 transition-colors"
                         />
                     </div>
 
                     {/* Description */}
                     <div>
-                        <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5 block">Description <span className="font-normal text-white/30">(optional)</span></label>
+                        <label className="text-[11px] font-bold text-on-surface-variant dark:text-white/50 uppercase tracking-wider mb-1.5 block">Description <span className="font-normal text-on-surface-variant dark:text-white/30">(optional)</span></label>
                         <input
                             type="text"
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             placeholder="e.g. Chest, shoulders, triceps for hypertrophy"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/30 focus:outline-none focus:border-white/25 transition-colors"
+                            className="w-full bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/10 rounded-xl px-4 py-3 text-on-surface dark:text-white text-sm placeholder-on-surface-variant/50 dark:placeholder-white/30 focus:outline-none focus:border-white/25 transition-colors"
                         />
                     </div>
 
                     {/* Exercises */}
                     <div>
-                        <label className="text-[11px] font-bold text-white/50 uppercase tracking-wider mb-2 block">Exercises *</label>
+                        <label className="text-[11px] font-bold text-on-surface-variant dark:text-white/50 uppercase tracking-wider mb-2 block">Exercises *</label>
                         <div className="space-y-2">
                             {rows.map((row, idx) => (
-                                <div key={row.tempId} className="bg-white/5 border border-white/8 rounded-2xl p-3 space-y-2">
+                                <div key={row.tempId} className="bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/8 rounded-2xl p-3 space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[11px] text-white/30 font-bold w-5 text-center shrink-0">{idx + 1}</span>
+                                        <span className="text-[11px] text-on-surface-variant dark:text-white/30 font-bold w-5 text-center shrink-0">{idx + 1}</span>
                                         <input
                                             type="text"
                                             placeholder="Exercise name (e.g. Bench Press)"
                                             value={row.name}
                                             onChange={e => updateRow(row.tempId, 'name', e.target.value)}
-                                            className="flex-1 min-w-0 bg-transparent text-white text-sm placeholder-white/25 focus:outline-none"
+                                            className="flex-1 min-w-0 bg-transparent text-on-surface dark:text-white text-sm placeholder-white/25 focus:outline-none"
                                         />
                                         <div className="flex items-center gap-1 shrink-0">
-                                            <button onClick={() => moveRow(row.tempId, -1)} disabled={idx === 0} className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 transition-colors"><ChevronUp size={13} /></button>
-                                            <button onClick={() => moveRow(row.tempId, 1)} disabled={idx === rows.length - 1} className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 transition-colors"><ChevronDown size={13} /></button>
-                                            <button onClick={() => removeRow(row.tempId)} className="p-1 rounded text-white/30 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
+                                            <button onClick={() => moveRow(row.tempId, -1)} disabled={idx === 0} className="p-1 rounded text-on-surface-variant dark:text-white/30 hover:text-on-surface dark:text-white disabled:opacity-20 transition-colors"><ChevronUp size={13} /></button>
+                                            <button onClick={() => moveRow(row.tempId, 1)} disabled={idx === rows.length - 1} className="p-1 rounded text-on-surface-variant dark:text-white/30 hover:text-on-surface dark:text-white disabled:opacity-20 transition-colors"><ChevronDown size={13} /></button>
+                                            <button onClick={() => removeRow(row.tempId)} className="p-1 rounded text-on-surface-variant dark:text-white/30 hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
                                         </div>
                                     </div>
                                     <div className="flex gap-2 pl-7">
                                         <div className="flex-1">
-                                            <label className="text-[9px] text-white/30 uppercase tracking-wider">Sets</label>
+                                            <label className="text-[9px] text-on-surface-variant dark:text-white/30 uppercase tracking-wider">Sets</label>
                                             <input
                                                 type="number"
                                                 min="1"
                                                 value={row.sets}
                                                 onChange={e => updateRow(row.tempId, 'sets', e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs text-center focus:outline-none focus:border-white/25"
+                                                className="w-full bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/10 rounded-lg px-2 py-1.5 text-on-surface dark:text-white text-xs text-center focus:outline-none focus:border-white/25"
                                             />
                                         </div>
                                         <div className="flex-[2]">
-                                            <label className="text-[9px] text-white/30 uppercase tracking-wider">Reps / Duration</label>
+                                            <label className="text-[9px] text-on-surface-variant dark:text-white/30 uppercase tracking-wider">Reps / Duration</label>
                                             <input
                                                 type="text"
                                                 placeholder="10 reps or 45s"
                                                 value={row.reps}
                                                 onChange={e => updateRow(row.tempId, 'reps', e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-white/25 placeholder-white/20"
+                                                className="w-full bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/10 rounded-lg px-2 py-1.5 text-on-surface dark:text-white text-xs focus:outline-none focus:border-white/25 placeholder-white/20"
                                             />
                                         </div>
                                         <div className="flex-[2]">
-                                            <label className="text-[9px] text-white/30 uppercase tracking-wider">Notes</label>
+                                            <label className="text-[9px] text-on-surface-variant dark:text-white/30 uppercase tracking-wider">Notes</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g. Slow eccentric"
                                                 value={row.notes}
                                                 onChange={e => updateRow(row.tempId, 'notes', e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-white/25 placeholder-white/20"
+                                                className="w-full bg-surface-container dark:bg-white/5 border border-surface-variant dark:border-white/10 rounded-lg px-2 py-1.5 text-on-surface dark:text-white text-xs focus:outline-none focus:border-white/25 placeholder-white/20"
                                             />
                                         </div>
                                     </div>
@@ -247,7 +247,7 @@ export default function CreateWorkoutModal({ isOpen, editTemplate, onClose, onSa
                             ))}
                         </div>
 
-                        <button onClick={addRow} className="mt-2 w-full py-2.5 border border-dashed border-white/15 rounded-xl text-white/40 hover:text-white/70 hover:border-white/30 text-sm flex items-center justify-center gap-2 transition-colors">
+                        <button onClick={addRow} className="mt-2 w-full py-2.5 border border-dashed border-white/15 rounded-xl text-on-surface-variant dark:text-white/40 hover:text-white/70 hover:border-white/30 text-sm flex items-center justify-center gap-2 transition-colors">
                             <Plus size={15} /> Add Exercise
                         </button>
                     </div>
@@ -260,14 +260,14 @@ export default function CreateWorkoutModal({ isOpen, editTemplate, onClose, onSa
                 </div>
 
                 {/* Footer */}
-                <div className="flex gap-3 px-6 pb-6 pt-4 border-t border-white/5 shrink-0">
-                    <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-white/5 text-white/60 hover:bg-white/10 text-sm font-semibold transition-colors">
+                <div className="flex gap-3 px-6 pb-6 pt-4 border-t border-surface-variant dark:border-white/5 shrink-0">
+                    <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-surface-container dark:bg-white/5 text-on-surface-variant dark:text-white/60 hover:bg-surface-container-high dark:bg-white/10 text-sm font-semibold transition-colors">
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex-1 py-3 rounded-xl bg-white text-black text-sm font-bold hover:bg-white/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 py-3 rounded-xl bg-primary dark:bg-white text-on-primary dark:text-black text-sm font-bold hover:bg-white/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {saving ? <><Loader2 size={15} className="animate-spin" /> Saving...</> : (isEditing ? 'Save Changes' : 'Create Workout')}
                     </button>

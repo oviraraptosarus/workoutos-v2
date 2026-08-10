@@ -9,6 +9,21 @@ export async function GET(request: Request) {
     }
 
     try {
+        // Special handler for YouTube using oEmbed
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+            const ytRes = await fetch(oEmbedUrl);
+            if (ytRes.ok) {
+                const ytData = await ytRes.json();
+                return NextResponse.json({
+                    url,
+                    title: ytData.title,
+                    image: ytData.thumbnail_url,
+                    description: ytData.author_name
+                });
+            }
+        }
+
         const response = await fetch(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',

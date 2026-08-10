@@ -43,7 +43,7 @@ export default function TDEEDeficitCard({
     const weeklyPaceKg = ((absoluteDiff * 7) / 7700).toFixed(2);
 
     return (
-        <div className="bg-surface-container-lowest/80 backdrop-blur-2xl border border-white/10 dark:border-white/5 p-8 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden">
+        <div className="bg-surface-container-lowest/80 backdrop-blur-2xl border border-surface-variant p-8 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden">
             
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
@@ -100,12 +100,12 @@ export default function TDEEDeficitCard({
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-                <div className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="bg-surface-container/50 rounded-2xl p-4 border border-surface-variant/50 text-center">
                     <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Consumed</span>
                     <span className="text-lg font-semibold text-on-surface tabular-nums">{totalCalories}</span>
                 </div>
                 <div 
-                    className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center cursor-pointer hover:bg-surface-container transition-colors group relative"
+                    className="bg-surface-container/50 rounded-2xl p-4 border border-surface-variant/50 text-center cursor-pointer hover:bg-surface-container transition-colors group relative"
                     onClick={onOpenActivityModal}
                 >
                     <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1 group-hover:text-primary transition-colors">Burned</span>
@@ -114,7 +114,7 @@ export default function TDEEDeficitCard({
                         <Zap size={14} />
                     </div>
                 </div>
-                <div className="bg-surface-container/50 rounded-2xl p-4 border border-white/5 text-center">
+                <div className="bg-surface-container/50 rounded-2xl p-4 border border-surface-variant/50 text-center">
                     <span className={`text-[10px] font-bold uppercase tracking-widest block mb-1 ${isDeficit ? 'text-emerald-500/80' : 'text-rose-500/80'}`}>
                         {isDeficit ? 'Deficit' : 'Surplus'}
                     </span>
