@@ -200,7 +200,8 @@ export default function GlobalAICopilot() {
                 'ExecProfile': { loaded: false, query: "supabase.from('execution_profiles')" },
                 'ExecGoals': { loaded: false, query: "supabase.from('execution_goals')" },
                 'TaskScores': { loaded: false, query: "supabase.from('task_execution_scores')" },
-                'Behaviors': { loaded: false, query: "supabase.from('behavior_patterns')" }
+                'Behaviors': { loaded: false, query: "supabase.from('behavior_patterns')" },
+                'Vault': { loaded: false, query: "supabase.from('content_vault')" }
             };
 
             const { data: { user } } = await supabase.auth.getUser();
@@ -231,7 +232,8 @@ export default function GlobalAICopilot() {
                     execGoalsRes,
                     taskScoresRes,
                     behaviorsRes,
-                    recentDailyLogsRes
+                    recentDailyLogsRes,
+                    vaultRes
                 ] = await Promise.all([
                     supabase.from('daily_logs').select('*').eq('user_id', user.id).eq('date', dateKey).maybeSingle().then(res => res, e => ({ data: null, error: e })),
                     supabase.from('tasks').select('*').eq('user_id', user.id).eq('completed', false).then(res => res, e => ({ data: null, error: e })),
@@ -248,7 +250,8 @@ export default function GlobalAICopilot() {
                     supabase.from('execution_goals').select('*').eq('user_id', user.id).eq('status', 'active').then(res => res, e => ({ data: null, error: e })),
                     supabase.from('task_execution_scores').select('*').eq('user_id', user.id).then(res => res, e => ({ data: null, error: e })),
                     supabase.from('behavior_patterns').select('*').eq('user_id', user.id).eq('is_active', true).then(res => res, e => ({ data: null, error: e })),
-                    supabase.from('daily_logs').select('date, sleep_hours, water_ml_total, mood_rating, weight_kg').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e }))
+                    supabase.from('daily_logs').select('date, sleep_hours, water_ml_total, mood_rating, weight_kg').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('content_vault').select('*').eq('user_id', user.id).eq('status', 'unread').then(res => res, e => ({ data: null, error: e }))
                 ]);
 
                 // Dashboard / Daily Logs
@@ -310,6 +313,14 @@ export default function GlobalAICopilot() {
                 } else {
                     contextStatus['Behaviors'].error = behaviorsRes.error?.message;
                 }
+                
+                if (!vaultRes.error && vaultRes.data) {
+                    currentAppState.contentVault = vaultRes.data;
+                    contextStatus['Vault'].loaded = true;
+                } else {
+                    contextStatus['Vault'].error = vaultRes.error?.message;
+                }
+
 
                 // Habits
                 if (!habitsRes.error && habitsRes.data) {

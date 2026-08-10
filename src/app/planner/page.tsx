@@ -16,9 +16,12 @@ export default function ExecutionOSPage() {
     const { userProfile } = useAuth();
     const { requestWakeLock, releaseWakeLock } = useWakeLock();
     
-    const [activeTab, setActiveTab] = useState<'now' | 'brain' | 'goals' | 'reflect'>('now');
+    const [activeTab, setActiveTab] = useState<'now' | 'brain' | 'goals' | 'reflect' | 'vault'>('now');
     const [tasks, setTasks] = useState<any[]>([]);
     const [goals, setGoals] = useState<any[]>([]);
+    const [vaultItems, setVaultItems] = useState<any[]>([]);
+    const [newVaultUrl, setNewVaultUrl] = useState('');
+    const [isAddingVault, setIsAddingVault] = useState(false);
     const [isAddingGoal, setIsAddingGoal] = useState(false);
     const [newGoalTitle, setNewGoalTitle] = useState('');
     const [newGoalArea, setNewGoalArea] = useState('Fitness');
@@ -120,6 +123,11 @@ export default function ExecutionOSPage() {
         if (goalData) {
             setGoals(goalData);
         }
+        
+        const { data: vaultData } = await supabase.from('content_vault').select('*').eq('user_id', user.id).eq('status', 'unread').order('created_at', { ascending: false });
+        if (vaultData) {
+            setVaultItems(vaultData);
+        }
     };
 
     const handleAddGoal = async () => {
@@ -153,6 +161,49 @@ export default function ExecutionOSPage() {
             console.error("Failed to delete goal:", error);
             alert("Failed to delete goal.");
         }
+    };
+
+    const handleAddVaultItem = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newVaultUrl.trim()) return;
+        setIsAddingVault(true);
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            
+            // Fetch metadata
+            const res = await fetch(`/api/metadata?url=${encodeURIComponent(newVaultUrl)}`);
+            const meta = await res.json();
+            
+            let contentType = 'link';
+            if (newVaultUrl.includes('youtube.com') || newVaultUrl.includes('youtu.be')) contentType = 'video';
+            else if (newVaultUrl.includes('reddit.com')) contentType = 'social';
+
+            const { error } = await supabase.from('content_vault').insert({
+                user_id: user.id,
+                url: newVaultUrl,
+                title: meta.title || newVaultUrl,
+                thumbnail_url: meta.image || null,
+                content_type: contentType
+            });
+            
+            if (!error) {
+                setNewVaultUrl('');
+                loadTasks();
+            } else {
+                alert("Failed to save item.");
+            }
+        } catch (e: any) {
+            alert("Error: " + e.message);
+        } finally {
+            setIsAddingVault(false);
+        }
+    };
+
+    const handleMarkVaultConsumed = async (id: string) => {
+        const { error } = await supabase.from('content_vault').update({ status: 'consumed' }).eq('id', id);
+        if (!error) loadTasks();
     };
 
     const handleCatalyzeGoal = async (goal: any) => {
@@ -440,7 +491,7 @@ export default function ExecutionOSPage() {
                 </header>
 
                 <div className="flex bg-white/5 dark:bg-black/20 backdrop-blur-2xl p-1.5 rounded-[1.25rem] mb-10 border border-white/10 dark:border-white/5 shadow-inner relative z-10 w-full overflow-hidden">
-                    {(['now', 'brain', 'goals', 'reflect'] as const).map(tab => (
+                    {(['now', 'brain', 'goals', 'vault', 'reflect'] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -728,6 +779,84 @@ export default function ExecutionOSPage() {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* VAULT HUB */}
+                    {activeTab === 'vault' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 relative overflow-hidden group">
+                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="flex items-center gap-4 border-b border-surface-variant pb-6">
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shrink-0 border border-white/5">
+                                        <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl sm:text-3xl font-black tracking-tight font-display">Content Vault</h2>
+                                        <p className="text-on-surface-variant text-xs sm:text-sm mt-1">Videos, articles, and posts to revisit.</p>
+                                    </div>
+                                </div>
+
+                                <form onSubmit={handleAddVaultItem} className="flex gap-2">
+                                    <input
+                                        type="url"
+                                        placeholder="Paste YouTube or URL here..."
+                                        className="flex-1 bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-white/20"
+                                        value={newVaultUrl}
+                                        onChange={(e) => setNewVaultUrl(e.target.value)}
+                                        required
+                                    />
+                                    <button 
+                                        type="submit" 
+                                        disabled={isAddingVault}
+                                        className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                                    >
+                                        {isAddingVault ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+                                    </button>
+                                </form>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                    {vaultItems.map(item => (
+                                        <div key={item.id} className="bg-surface-container border border-surface-variant rounded-2xl overflow-hidden hover:border-white/20 transition-all group flex flex-col">
+                                            {item.thumbnail_url && (
+                                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative aspect-video bg-black/20 overflow-hidden">
+                                                    <img src={item.thumbnail_url} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+                                                    {item.content_type === 'video' && (
+                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                            <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
+                                                                <Play className="w-4 h-4 text-white fill-white ml-1" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </a>
+                                            )}
+                                            <div className="p-4 flex flex-col flex-1">
+                                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-bold text-sm line-clamp-2 leading-tight hover:text-blue-400 transition-colors">
+                                                    {item.title || item.url}
+                                                </a>
+                                                <div className="mt-auto pt-4 flex items-center justify-between">
+                                                    <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold bg-white/5 px-2 py-1 rounded-md">
+                                                        {item.content_type}
+                                                    </span>
+                                                    <button 
+                                                        onClick={(e) => { e.preventDefault(); handleMarkVaultConsumed(item.id); }}
+                                                        className="text-on-surface-variant hover:text-green-400 transition-colors"
+                                                        title="Mark Consumed"
+                                                    >
+                                                        <CheckCircle2 className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {vaultItems.length === 0 && (
+                                        <div className="col-span-full py-12 text-center text-on-surface-variant border-2 border-dashed border-surface-variant rounded-2xl">
+                                            <p className="font-bold">Vault is empty</p>
+                                            <p className="text-sm mt-1">Paste a link above to save it for later.</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
