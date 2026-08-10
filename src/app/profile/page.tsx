@@ -335,21 +335,23 @@ export default function ProfileHub() {
         return (
             <div className="flex flex-col items-center pt-8 pb-6 animate-fade-in relative">
                 {/* Level Badge */}
-                <div className="relative mb-6 group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-gradient-xy"></div>
-                    <div className="relative w-28 h-28 rounded-full bg-surface-container-lowest border-[3px] border-surface-variant flex items-center justify-center shadow-2xl overflow-hidden">
-                        {formData.avatarPath ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={formData.avatarPath} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-5xl font-display-lg text-primary">
-                                {formData.fullName ? formData.fullName.charAt(0).toUpperCase() : 'U'}
-                            </span>
-                        )}
+                <div className="relative mb-8 group flex flex-col items-center">
+                    <div className="relative">
+                        <div className="absolute -inset-1 bg-gradient-to-tr from-primary via-secondary to-primary rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 animate-gradient-xy"></div>
+                        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-surface-container-lowest border-4 border-background flex items-center justify-center shadow-xl overflow-hidden ring-1 ring-surface-variant/50">
+                            {formData.avatarPath ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={formData.avatarPath} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-5xl sm:text-6xl font-black text-primary drop-shadow-sm">
+                                    {formData.fullName ? formData.fullName.charAt(0).toUpperCase() : 'U'}
+                                </span>
+                            )}
+                        </div>
                         
-                        {/* Current Level Overlay at bottom of circle */}
-                        <div className="absolute bottom-0 inset-x-0 h-1/3 bg-black/40 backdrop-blur-md flex items-center justify-center">
-                            <span className="text-white text-xs font-bold tracking-widest uppercase">Lvl {currentLevel}</span>
+                        {/* Premium Floating Level Badge */}
+                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background/80 dark:bg-surface-container-high/80 border border-surface-variant/50 backdrop-blur-xl px-4 py-1.5 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] z-10 flex items-center justify-center">
+                            <span className="text-on-surface text-[10px] sm:text-xs font-black tracking-[0.2em] uppercase whitespace-nowrap">LVL {currentLevel}</span>
                         </div>
                     </div>
                 </div>
