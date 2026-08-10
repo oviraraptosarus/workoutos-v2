@@ -1,19 +1,39 @@
 import webpush from 'web-push';
 import { createClient } from '@supabase/supabase-js';
 
-webpush.setVapidDetails(
-    'mailto:support@workoutos.example.com',
-    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-);
+let vapidInitialized = false;
+
+function initVapid() {
+    if (vapidInitialized) return;
+    
+    const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const privateKey = process.env.VAPID_PRIVATE_KEY;
+    
+    if (publicKey && privateKey) {
+        try {
+            webpush.setVapidDetails(
+                'mailto:support@workoutos.example.com',
+                publicKey,
+                privateKey
+            );
+            vapidInitialized = true;
+        } catch (e) {
+            console.error('Failed to initialize VAPID details:', e);
+        }
+    } else {
+        console.warn('VAPID keys are missing. Push notifications will be disabled.');
+    }
+}
 
 // Admin client to bypass RLS for background processing
 export const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fake-key'
 );
 
 export async function sendPushNotification(userId: string, payload: any) {
+    initVapid();
+    
     // 1. Get all subscriptions for this user
     const { data: subscriptions, error } = await supabaseAdmin
         .from('push_subscriptions')
