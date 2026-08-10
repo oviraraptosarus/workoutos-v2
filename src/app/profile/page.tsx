@@ -487,25 +487,7 @@ export default function ProfileHub() {
                                 ))}
                             </div>
                         </div>
-                        <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">{t('profile.theme') || 'Theme'}</label>
-                            <select 
-                                value={formData.theme || 'system'}
-                                onChange={e => {
-                                    handleInputSave('theme', e.target.value);
-                                    if (e.target.value === 'light' || e.target.value === 'dark' || e.target.value === 'system') {
-                                        // Wait, ThemeContext might not have setTheme. Let's rely on AuthContext.
-                                        // If toggleTheme just toggles dark/light, maybe I should just use toggleTheme.
-                                        // Actually, if AuthContext saves it, the whole app re-renders.
-                                    }
-                                }}
-                                className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
-                            >
-                                <option value="system">System</option>
-                                <option value="dark">Dark</option>
-                                <option value="light">Light</option>
-                            </select>
-                        </div>
+
                         <div className="p-4 flex items-center justify-between">
                             <label className="font-medium text-sm text-on-surface">{t('profile.language')}</label>
                             <select 

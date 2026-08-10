@@ -54,13 +54,13 @@ export default function DashboardHeader() {
         <div className="space-y-4">
 
             {/* Header Main Row */}
-            <div className="flex items-center justify-between gap-2 pt-2 pb-4">
+            <div className="flex items-center justify-between gap-2 pt-10 sm:pt-2 pb-4">
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                     <div className="flex flex-col items-start min-w-0 w-full">
-                        <h1 className="text-2xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
+                        <h1 className="text-3xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
-                        <p className="text-sm font-medium text-on-surface-variant italic mt-1 hidden sm:block">
+                        <p className="text-xs sm:text-sm font-medium text-on-surface-variant italic mt-1.5 opacity-80 line-clamp-2">
                             "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^[—\-\s]+/, '')}
                         </p>
                         <div className="flex items-center gap-3 mt-2 sm:mt-1.5 flex-wrap">

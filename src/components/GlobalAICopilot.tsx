@@ -894,12 +894,12 @@ export default function GlobalAICopilot() {
                                                     {msg.requestId && isDevMode && <span className="text-[10px] text-purple-400 font-mono ml-auto">{msg.requestId}</span>}
                                                 </div>
                                                 <div className={`rounded-2xl rounded-tl-sm px-4 py-3 text-[15px] leading-relaxed ${msg.text.startsWith('⚠️') ? 'text-red-400 border border-red-500/30 bg-red-500/5' : 'text-on-surface bg-surface-container-low border border-white/5 backdrop-blur-xl'}`}>
-                                                    <div className="prose prose-invert max-w-none
-                                                        prose-headings:text-primary-light prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
-                                                        prose-p:text-primary-light/90 prose-p:leading-relaxed prose-p:my-1
-                                                        prose-li:text-primary-light/90 prose-li:my-0.5
-                                                        prose-strong:text-white prose-strong:font-bold prose-strong:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]
-                                                        prose-hr:border-primary/20 prose-hr:my-3">
+                                                    <div className="prose dark:prose-invert max-w-none
+                                                        prose-headings:text-on-surface prose-headings:font-bold prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-wider prose-headings:mt-3 prose-headings:mb-1
+                                                        prose-p:text-on-surface prose-p:leading-relaxed prose-p:my-1
+                                                        prose-li:text-on-surface prose-li:my-0.5
+                                                        prose-strong:text-on-surface prose-strong:font-bold
+                                                        prose-hr:border-surface-variant prose-hr:my-3">
                                                         {msg.text.startsWith('⚠️') ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
                                                     </div>
                                                 </div>
