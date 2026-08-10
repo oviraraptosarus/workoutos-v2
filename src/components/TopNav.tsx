@@ -42,7 +42,7 @@ export function TopNav() {
 
             <button
               onClick={() => window.dispatchEvent(new Event('open-ai-copilot'))}
-              className="w-9 h-9 rounded-full bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 flex items-center justify-center active:scale-90 transition-transform shadow-sm border border-[#0a84ff]/20 group"
+              className="w-9 h-9 rounded-full bg-black dark:bg-[#0a84ff]/10 hover:bg-zinc-800 dark:hover:bg-[#0a84ff]/20 flex items-center justify-center active:scale-90 transition-all shadow-md border border-black dark:border-[#0a84ff]/20 group"
               aria-label="Open AI Copilot"
             >
               <AvaLogo size={20} className="group-hover:rotate-90 transition-transform duration-500" />
