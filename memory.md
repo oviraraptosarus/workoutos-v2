@@ -112,3 +112,18 @@
 *   **Why It Was a Stupid Decision:** The AI assumed that aesthetic minimalism superseded functional density without validating the utility of those specific widgets with the user. Weight tracking, daily nudges, and time widgets form the core operational view for the user's daily habits. Removing them actively degraded the product's utility in favor of an arbitrary 'clean' look. A dashboard's purpose is information density; hiding core metrics forces the user to dig for them, violating the core principle of a 'low-friction Relentless AI Execution Coach'.
 *   **The Resolution:** The dashboard changes were immediately reverted via git checkout src/app/dashboard/page.tsx. All widgets were restored to their original positions.
 *   **The Lesson (Never Repeat This):** NEVER remove functional components, widgets, or data-tracking cards from the UI solely for the sake of 'simplifying' or 'decluttering' the layout, unless explicitly directed by the user to remove that *specific* component. Aesthetic improvements must ONLY alter CSS/styling (e.g., glassmorphism, padding, colors) and NEVER alter the functional architecture or data visibility of a page.
+
+## 11. Cutthroat Precision & Anti-Hallucination Framework
+*   **Mandatory Critical Thinking:** Agents MUST NOT blindly generate code. Before invoking any file-modification tools, you must execute a "Mental Sandbox" trace: 
+    1. **Factual Grounding:** Do I have the precise schema/types? Have I run a `grep_search` to verify the variable names?
+    2. **Task Adherence:** Does my planned solution *exactly* address the user's prompt without introducing unsolicited "improvements" or hallucinating missing features?
+    3. **Tool Validation:** Am I using the absolute most specific tool? Am I avoiding nested bash hacks (`cat` inside `bash`)?
+*   **Zero-Hallucination Output:**
+    *   Do not invent UI elements, placeholder data, or "Coming soon" blocks unless explicitly requested.
+    *   If a requirement is ambiguous, STOP and ask the user rather than guessing and building a convoluted hallucinated architecture.
+    *   When returning outputs, be cutthroat and concise. State exactly what was changed, the architectural reason, and how to verify it. Avoid fluff.
+*   **Database & Migration Discipline:**
+    *   All new Supabase SQL changes must be strictly written to a correctly timestamped file in `supabase/migrations/` (e.g., `YYYYMMDDHHMMSS_description.sql`).
+    *   Do not leave loose `.sql` files in the project root or scattered in `src/`.
+    *   Ensure all new SQL functions (RPC) and tables have corresponding Row Level Security (RLS) policies explicitly defined in the same migration file.
+    *   Never assume existing tables; always verify with `seed.sql` or existing migrations.
