@@ -19,11 +19,10 @@ export default function EndOfDayReflection() {
     const [isEditingTranscript, setIsEditingTranscript] = useState(false);
     const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [showSavePrompt, setShowSavePrompt] = useState(false);
-    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
-    const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
-    const [selectedLog, setSelectedLog] = useState<any>(null);
     const [expandedLogDate, setExpandedLogDate] = useState<string | null>(null);
     const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
+    const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
 
     const handleCopyLog = () => {
         if (!selectedLog) return;
@@ -66,7 +65,7 @@ export default function EndOfDayReflection() {
 
     useEffect(() => {
         let isMounted = true;
-        const fetchReflection = async () => {
+        const init = async () => {
             if (!user) return;
             setState('idle');
             setRawTranscript('');
@@ -74,31 +73,13 @@ export default function EndOfDayReflection() {
             setIsEditingTranscript(false);
             setIsEditingSummary(false);
             setShowSavePrompt(false);
-
-            const { data } = await supabase
-                .from('daily_logs')
-                .select('reflection, raw_transcript')
-                .eq('user_id', user.id)
-                .eq('date', selectedDate)
-                .single();
-
-            if (isMounted && data && data.reflection) {
-                let parsedSummary = data.reflection;
-                if (typeof parsedSummary === 'string' && parsedSummary.trim().startsWith('{')) {
-                    try {
-                        const obj = JSON.parse(parsedSummary);
-                        parsedSummary = obj.reflection || obj.summary || obj.raw_voice || parsedSummary;
-                    } catch (e) { }
-                }
-                setAvaSummary(parsedSummary);
-                setRawTranscript(data.raw_transcript || '');
-                setState('viewing');
-            }
+            setIsSummaryExpanded(true);
+            setIsTranscriptExpanded(false);
         };
-        fetchReflection();
+        init();
         fetchHistory();
         return () => { isMounted = false; };
-    }, [selectedDate, user]);
+    }, [user, selectedDate]);
 
     useEffect(() => {
         return () => {
@@ -236,10 +217,14 @@ export default function EndOfDayReflection() {
 
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
             fetchHistory();
-            setState('viewing');
+            setState('idle');
+            setRawTranscript('');
+            setAvaSummary('');
             setIsEditingTranscript(false);
             setIsEditingSummary(false);
             setShowSavePrompt(false);
+            setIsSummaryExpanded(true);
+            setIsTranscriptExpanded(false);
         } catch (e: any) {
             alert('Error saving reflection: ' + e.message);
         }
@@ -300,12 +285,6 @@ export default function EndOfDayReflection() {
                     <h2 className="text-[11px] font-black text-on-surface-variant uppercase tracking-widest">
                         Daily Journal
                     </h2>
-                    {state === 'viewing' && (
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
-                            <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider">Synced</span>
-                        </div>
-                    )}
                 </div>
 
                 {/* States */}
@@ -377,43 +356,46 @@ export default function EndOfDayReflection() {
                         </div>
                     )}
 
-                    {/* STATE 4: DONE or VIEWING */}
-                    {(state === 'done' || state === 'viewing') && (
+                    {/* STATE 4: DONE */}
+                    {state === 'done' && (
                         <div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                            {/* Ava's Summary — single clean card */}
+                            {/* Ava's Summary — Collapsible Accordion */}
                             <div className="bg-secondary/10 border border-secondary/20 rounded-2xl overflow-hidden">
-                                <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                                <button
+                                    onClick={() => setIsSummaryExpanded(prev => !prev)}
+                                    className="w-full flex items-center justify-between px-4 py-3 focus:outline-none hover:bg-white/5 transition-colors"
+                                >
                                     <div className="flex items-center gap-1.5 text-secondary">
                                         <Sparkles className="w-3.5 h-3.5" />
                                         <span className="text-[11px] font-bold uppercase tracking-wider">Ava's Summary</span>
                                     </div>
-                                    <button
-                                        onClick={() => {
-                                            if (isEditingSummary) {
-                                                setIsEditingSummary(false);
-                                                if (state === 'viewing') setShowSavePrompt(true);
-                                            } else {
-                                                setIsEditingSummary(true);
-                                            }
-                                        }}
-                                        className="text-secondary text-[11px] font-bold hover:opacity-70 transition-opacity"
-                                    >
-                                        {isEditingSummary ? 'Done' : 'Edit'}
-                                    </button>
-                                </div>
-                                <div className="px-4 pb-4">
-                                    {isEditingSummary ? (
-                                        <textarea
-                                            value={avaSummary}
-                                            onChange={(e) => setAvaSummary(e.target.value)}
-                                            className="w-full min-h-[100px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
-                                        />
-                                    ) : (
-                                        <p className="text-sm font-medium leading-relaxed text-on-surface">
-                                            {avaSummary}
-                                        </p>
-                                    )}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-secondary transition-transform duration-300 ${isSummaryExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                                <div className={`grid transition-all duration-400 ease-in-out ${isSummaryExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                    <div className="overflow-hidden">
+                                        <div className="px-4 pb-4">
+                                            <div className="flex justify-end mb-2">
+                                                <button
+                                                    onClick={() => setIsEditingSummary(!isEditingSummary)}
+                                                    className="text-secondary text-[11px] font-bold hover:opacity-70 transition-opacity"
+                                                >
+                                                    {isEditingSummary ? 'Done' : 'Edit'}
+                                                </button>
+                                            </div>
+                                            {isEditingSummary ? (
+                                                <textarea
+                                                    value={avaSummary}
+                                                    onChange={(e) => setAvaSummary(e.target.value)}
+                                                    className="w-full min-h-[100px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
+                                                />
+                                            ) : (
+                                                <p className="text-sm font-medium leading-relaxed text-on-surface text-left">
+                                                    {avaSummary}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -421,16 +403,16 @@ export default function EndOfDayReflection() {
                             {rawTranscript.trim() && (
                                 <div className="bg-surface-container-low border border-surface-variant/40 rounded-2xl overflow-hidden">
                                     <button
-                                        onClick={() => setIsEditingTranscript(prev => !prev)}
+                                        onClick={() => setIsTranscriptExpanded(prev => !prev)}
                                         className="w-full flex items-center justify-between px-4 py-3 focus:outline-none hover:bg-white/5 transition-colors"
                                     >
                                         <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Your Words</span>
                                         <div className="flex items-center gap-2">
                                             <span className="text-[10px] text-on-surface-variant/60 font-semibold">{wordCount}w</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isEditingTranscript ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isTranscriptExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
                                         </div>
                                     </button>
-                                    <div className={`grid transition-all duration-400 ease-in-out ${isEditingTranscript ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                    <div className={`grid transition-all duration-400 ease-in-out ${isTranscriptExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                         <div className="overflow-hidden">
                                             <p className="text-sm font-medium leading-relaxed text-on-surface/75 whitespace-pre-wrap px-4 pb-4">
                                                 {rawTranscript}
