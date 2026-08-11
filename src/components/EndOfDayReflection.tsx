@@ -142,7 +142,7 @@ export default function EndOfDayReflection() {
                 }
                 if (isRecordingRef.current) {
                     try {
-                        recognition.start(); // seamless restart
+                        spawnRecognition(); // seamless restart with FRESH instance
                     } catch {}
                 }
             };

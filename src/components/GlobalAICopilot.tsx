@@ -756,64 +756,66 @@ export default function GlobalAICopilot() {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SpeechRecognition) { alert('Speech recognition is not supported in this browser.'); return; }
         
-        if (recognitionRef.current) {
-            recognitionRef.current.onresult = null;
-            recognitionRef.current.onerror = null;
-            recognitionRef.current.onend = null;
-            recognitionRef.current.abort();
-        }
+        let currentSessionTranscript = '';
         
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-IN';
-        const existing = promptRef.current ? promptRef.current + ' ' : '';
-        let finalSessionText = '';
-
-        recognition.onstart = () => setIsListening(true);
-        recognition.onresult = (event: any) => {
-            if (!isListeningRef.current) return;
-
-            // KEY: iterate from resultIndex, not 0, to avoid double-accumulating confirmed chunks
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const chunk = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalSessionText += chunk + ' ';
-                }
+        const spawnRecognition = () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.onresult = null;
+                recognitionRef.current.onerror = null;
+                recognitionRef.current.onend = null;
+                try { recognitionRef.current.abort(); } catch {}
             }
-            // Get the latest interim result (last non-final)
-            let interim = '';
-            for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
-                if (!event.results[i].isFinal) { interim = event.results[i][0].transcript; break; }
-            }
-
-            const full = (existing + finalSessionText + interim).trim();
-            setPrompt(full);
-
-            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-            debounceTimerRef.current = setTimeout(() => {
+            
+            const recognition = new SpeechRecognition();
+            recognitionRef.current = recognition;
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => setIsListening(true);
+            recognition.onresult = (e: any) => {
                 if (!isListeningRef.current) return;
+                
+                let sessionText = '';
+                for (let i = 0; i < e.results.length; i++) {
+                    sessionText += e.results[i][0].transcript + ' ';
+                }
+                currentSessionTranscript = sessionText.trim();
+                
+                const existing = promptRef.current ? promptRef.current + ' ' : '';
+                const full = (existing + currentSessionTranscript).trim();
+                setPrompt(full);
+                
+                if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+                debounceTimerRef.current = setTimeout(() => {
+                    if (!isListeningRef.current) return;
+                    setIsListening(false);
+                    if (recognitionRef.current) recognitionRef.current.stop();
+                    if (full) handleSend(full);
+                }, 3500);
+            };
+            
+            recognition.onerror = (e: any) => {
+                if (e.error === 'no-speech' || e.error === 'aborted') return;
                 setIsListening(false);
-                if (recognitionRef.current) recognitionRef.current.stop();
-                const finalFull = (existing + finalSessionText).trim() || full;
-                if (finalFull) handleSend(finalFull);
-            }, 3500);
+            };
+            
+            recognition.onend = () => {
+                if (currentSessionTranscript) {
+                    promptRef.current = (promptRef.current ? promptRef.current + ' ' : '') + currentSessionTranscript;
+                    currentSessionTranscript = '';
+                    setPrompt(promptRef.current);
+                }
+                
+                if (isListeningRef.current) {
+                    try { spawnRecognition(); } catch {}
+                }
+            };
+            
+            recognition.start();
         };
-        recognition.onerror = (e: any) => {
-            // no-speech is expected on iOS — just let onend restart it
-            if (e.error === 'no-speech' || e.error === 'aborted') return;
-            setIsListening(false);
-        };
-        recognition.onend = () => {
-            // Auto-restart on iOS which doesn't honour continuous=true
-            if (isListeningRef.current) {
-                try { recognition.start(); } catch { /* already started */ }
-            } else {
-                setIsListening(false);
-            }
-        };
-        recognition.start();
+        
+        spawnRecognition();
     };
 
     const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
