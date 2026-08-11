@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, Square, CheckCircle2, Sparkles, Loader2, Edit3, RefreshCw, History } from 'lucide-react';
+import { Mic, Square, CheckCircle2, Sparkles, Loader2, Edit3, RefreshCw, History, Copy, Share, Trash2, AlignLeft } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,6 +22,31 @@ export default function EndOfDayReflection() {
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
     const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
     const [selectedLog, setSelectedLog] = useState<any>(null);
+    const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
+
+    const handleCopyLog = () => {
+        if (!selectedLog) return;
+        const text = modalTab === 'summary' ? selectedLog.reflection : selectedLog.raw_transcript;
+        navigator.clipboard.writeText(text || '');
+        alert('Copied to clipboard');
+    };
+
+    const handleShareLog = async () => {
+        if (!selectedLog) return;
+        const text = modalTab === 'summary' ? selectedLog.reflection : selectedLog.raw_transcript;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Journal Entry',
+                    text: text || ''
+                });
+            } catch (e) {
+                console.log('Share canceled or failed', e);
+            }
+        } else {
+            handleCopyLog();
+        }
+    };
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -560,7 +585,7 @@ export default function EndOfDayReflection() {
                             <div className="w-12 h-1.5 bg-surface-variant rounded-full opacity-50"></div>
                         </div>
                         
-                        <div className="flex items-center justify-between px-6 pb-4 pt-2 sm:pt-6 border-b border-surface-variant/50">
+                        <div className="flex items-center justify-between px-5 pb-3 pt-2 sm:pt-5 border-b border-surface-variant/50">
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
                                 <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
@@ -574,10 +599,66 @@ export default function EndOfDayReflection() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </div>
-                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1 pb-safe">
-                            <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
-                                {selectedLog.reflection}
+                        
+                        {/* Segmented Control */}
+                        {selectedLog.raw_transcript && (
+                            <div className="px-5 py-3 border-b border-surface-variant/30">
+                                <div className="flex bg-surface-variant/30 p-1 rounded-xl w-full max-w-xs mx-auto">
+                                    <button
+                                        onClick={() => setModalTab('summary')}
+                                        className={clsx(
+                                            "flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                            modalTab === 'summary' ? "bg-surface-container text-on-surface shadow-sm" : "text-on-surface-variant hover:text-on-surface"
+                                        )}
+                                    >
+                                        <Sparkles className="w-3 h-3" /> Summary
+                                    </button>
+                                    <button
+                                        onClick={() => setModalTab('raw')}
+                                        className={clsx(
+                                            "flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                            modalTab === 'raw' ? "bg-surface-container text-on-surface shadow-sm" : "text-on-surface-variant hover:text-on-surface"
+                                        )}
+                                    >
+                                        <AlignLeft className="w-3 h-3" /> Raw Text
+                                    </button>
+                                </div>
                             </div>
+                        )}
+
+                        <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 pb-safe relative">
+                            <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
+                                {modalTab === 'summary' ? selectedLog.reflection : (selectedLog.raw_transcript || selectedLog.reflection)}
+                            </div>
+                        </div>
+
+                        {/* Action Bar */}
+                        <div className="p-4 border-t border-surface-variant/50 flex items-center justify-between bg-surface-container-low rounded-b-none sm:rounded-b-[2rem] pb-safe-offset-4">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCopyLog}
+                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                    title="Copy Text"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={handleShareLog}
+                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                    title="Share"
+                                >
+                                    <Share className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    handleDeleteLog(selectedLog.date);
+                                    setSelectedLog(null);
+                                }}
+                                className="px-4 py-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" /> Delete
+                            </button>
                         </div>
                     </div>
                 </div>
