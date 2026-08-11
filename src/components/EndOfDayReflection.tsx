@@ -507,6 +507,7 @@ export default function EndOfDayReflection() {
                                     
                                     <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                         <div className="overflow-hidden">
+                                            <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
                                                 {logs.map((log: any) => {
                                                     return (
                                                         <button
