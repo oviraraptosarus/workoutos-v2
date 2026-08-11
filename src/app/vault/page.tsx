@@ -47,7 +47,6 @@ export default function VaultPage() {
                 user_id: user.id,
                 url: newUrl,
                 title: meta.title || newUrl,
-                description: meta.description || '',
                 thumbnail_url: meta.image || null,
                 content_type: meta.url?.includes('youtube.com') || meta.url?.includes('youtu.be') ? 'video' 
                            : meta.url?.includes('reddit.com') ? 'post' 
