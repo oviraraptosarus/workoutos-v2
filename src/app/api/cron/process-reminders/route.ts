@@ -136,7 +136,7 @@ export async function GET(request: Request) {
                             const res = await sendPushNotification(userId, {
                                 title: 'End of Day Check-in',
                                 description: 'Time to wrap up! Don\'t forget to log your sleep and journal your day.',
-                                url: '/sleep'
+                                url: '/planner?tab=reflect'
                             });
 
                             if (res.success || res.reason === 'No subscriptions found') {
