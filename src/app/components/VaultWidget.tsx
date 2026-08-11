@@ -108,7 +108,7 @@ export default function VaultWidget() {
                 <button 
                     type="submit" 
                     disabled={isAddingVault || isSuccess}
-                    className={`${isSuccess ? 'bg-green-500 text-white' : 'bg-primary text-primary-foreground'} px-4 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shrink-0 min-w-[90px]`}
+                    className={`${isSuccess ? 'bg-green-500 text-white' : 'bg-blue-500 text-white hover:bg-blue-600'} px-4 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shrink-0 min-w-[90px]`}
                 >
                     {isAddingVault ? <Loader2 className="w-4 h-4 animate-spin" /> : isSuccess ? <><CheckCircle2 className="w-4 h-4 mr-1.5" /> Saved!</> : 'Save'}
                 </button>
