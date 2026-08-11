@@ -1,34 +1,20 @@
-# WORKOUT OS: MASTER AI RULEBOOK
+# Debugging Rules
 
-> **CRITICAL DIRECTIVE:** Before you write a single line of code, read this document carefully. This is your mental framework for building Workout OS.
+- **Native UI Alerts for Debugging:** Whenever we debug a client-side issue or add temporary runtime instrumentation to catch an error, we MUST use native browser `alert()` pop-ups to surface the error directly on the screen (e.g., `alert("Error: " + error.message)`). This ensures the user can see the exact error message immediately in the UI without needing to open the browser console.
 
-## 1. Do Not Break What Works (The "Mental Sandbox")
-Before modifying ANY file, you MUST execute a "Mental Sandbox" trace.
-- **Trace the Data Flow:** Does it use a store? Does it fetch via `supabase.from()`?
-- **Assess the Blast Radius:** Will changing this React state break the mobile layout? Will removing this prop break a dashboard widget?
-- **Read `.agents/architecture.md`:** If you are touching the **Content Vault**, **End of Day Review**, **Brain Dump**, or **Voice-to-Text**, read the architecture blueprint first. DO NOT blindly overwrite complex, solved logic (like the `SpeechRecognition` concatenation flow).
+- **Apple Design Philosophy:** Ask yourself: Is this something Apple, a multi-trillion dollar company, would do in terms of UI organization? If a feature's UI is unorganized, clumsy, or overly complicated, nobody will use it. It will just look like a bunch of digital junk. Prioritize premium, clean, spaced-out formatting and intuitive organization over cramming elements together.
 
-## 2. Apple Design Philosophy & Strict iOS Guidelines
-Workout OS is an intelligent operating system for personal performance. It must feel premium, calm, and fast.
-- **Widgets & Layout:** Widget headers MUST float OUTSIDE the `glass-card-premium` background. Prioritize extreme, clean, spaced-out formatting over cramming elements together.
-- **Colors:** Do NOT hardcode colors (e.g., `slate-900`, plain red). Use semantic tokens and native iOS blues (`#0a84ff`) for primary actions (e.g. `bg-blue-500`). Ensure components look flawless in BOTH Light and Dark modes.
-- **Typography:** Restrained, tightly tracked, small but highly legible fonts.
+- **Strict iOS UI Guidelines:** When creating or modifying widgets/cards, you MUST consult the `premium-ios-design` skill. Specifically, ensure that widget headers FLOAT OUTSIDE the glass-card-premium background, buttons use the native iOS blue (#0a84ff) for active actions, typography is extremely restrained (small, tightly tracked), and every glass card has the standard top/inner gradient washes to simulate glass.
 
-## 3. UI/UX Interaction Rules
-- **Dashboard as a Launchpad:** ALL dashboard widgets must act as hyperlinks (or contain hyperlinked wrappers) that route the user to their full-page sections (e.g., clicking the Sleep Trends widget routes to `/sleep`).
-- **Date Navigation:** Use sleek, native date pickers styled as pills (hidden `<input type="date">`). NEVER include `<` or `>` arrow buttons next to global date pickers.
-- **Chart Pagination:** For historical data charts (Sleep, Weight), include localized pagination controls (`<` and `>`) directly above the chart. Do NOT tie chart pagination exclusively to the global page date picker.
-- **Settings Buttons:** "Customize Dashboard" or similar configuration buttons must go at the BOTTOM of the page, below all content, to preserve clean top headers.
+- **Multi-Provider AI Architecture:** To completely prevent rate limiting, NEVER hardcode a single LLM provider for core operations. Always use a cascading orchestrator fallback strategy. Specifically, prioritize OpenRouter endpoints combined with native API keys (e.g., Gemini Native -> OpenRouter Gemini -> OpenRouter Llama/Auto). When choosing fallback models on OpenRouter, prioritize powerful open-source models (like Llama 3.3 70B) over closed-source secondary options (like Claude Haiku). To mitigate hallucination risk from 'Auto' routing or open models, you MUST enforce a strict Anti-Hallucination Framework in the system instructions (Factual Grounding, Task Adherence, and Tool Validation).
 
-## 4. Cutthroat Precision & Anti-Hallucination
-- Verify exact schemas. Ensure 100% adherence to the user's prompt without introducing unsolicited fluff or placeholder UI.
-- Do NOT guess ambiguous requirements; STOP and ask. Outputs must be concise, cutthroat, and precise.
-- When generating AI output (e.g., saving a workout template), DO NOT just return "Done." Provide conversational confirmation and route the user to the relevant page (e.g., `/workout`) to preview it.
+- **Cutthroat Precision & Anti-Hallucination Framework:** Agents MUST execute a 'Mental Sandbox' trace before modifying files. Verify exact schemas, ensure 100% adherence to the user's prompt without introducing unsolicited fluff or placeholder UI, and use the most specific tool for the job. Do not guess ambiguous requirements; STOP and ask. Outputs must be concise, cutthroat, and precise.
+- **Database & Migration Discipline:** All Supabase SQL changes MUST be written to a correctly timestamped file in supabase/migrations/ (e.g., YYYYMMDDHHMMSS_description.sql). Ensure RLS policies are explicitly defined. Never leave loose SQL files scattered in the project.
 
-## 5. Backend & AI Architecture
-- **Supabase Discipline:** All SQL changes MUST be written to a correctly timestamped file in `supabase/migrations/` (e.g., `YYYYMMDDHHMMSS_description.sql`). Ensure RLS policies are explicitly defined.
-- **Multi-Provider Strategy:** NEVER hardcode a single LLM provider for core operations. Always use the cascading orchestrator (`src/lib/llm-orchestrator/Orchestrator.ts`).
-
-## 6. Strict Memory Protocol
-- You MUST automatically log all significant UI changes, bug fixes, and feature additions into `memory.md` at the end of every task or interaction, WITHOUT requiring a reminder from the user.
-- **KEEP `memory.md` CLEAN:** It is a chronological changelog, NOT a dumping ground for generic rules (those belong here).
+# User UI/UX Preferences (Global Memory)
+- **Calendar & Date Navigation**: Use sleek, native date pickers styled as a pill (e.g., hidden <input type="date"> overlaid on a nice label). NEVER include < or > arrow buttons next to global date pickers for navigation; let the user use the native calendar UI to jump around.
+- **Data Trends & Charts**: For historical data (Sleep, Weight, etc.), ALWAYS include localized pagination controls (e.g., a pill with < and > Chevrons) directly above the chart to shift the time window (e.g., this week, last week). Do NOT tie chart pagination exclusively to the global page date picker.
+- **Layout Management & Settings Buttons**: "Customize Dashboard" or similar configuration buttons must NEVER clutter the top header. They should be placed at the very bottom of the page, below all widgets and content. Keep top margins tight and minimal to avoid wasted empty space above the greeting.
+- **AI Agent (Ava) Feedback**: When Ava executes a tool/function call successfully (e.g., saving a workout template, logging a meal), DO NOT just return "Done.". The orchestrator or UI must provide conversational confirmation (e.g., "I've generated that workout plan for you!"). For major artifact generation (like a workout), automatically navigate the user to the relevant page (e.g., /workout) to preview it.
+- **Dashboard Widget Interaction**: ALL dashboard widgets must act as hyperlinks (or contain hyperlinked headers/wrappers) that route the user to their respective full-page sections (e.g., clicking the Content Vault widget or its header routes to /vault, clicking Sleep Trends routes to /sleep). The dashboard should act as a launchpad, not a dead end.
+- **Strict Memory Protocol**: You MUST automatically log all significant UI changes, bug fixes, and feature additions into memory.md at the end of every task or interaction, WITHOUT requiring a reminder from the user. Proactive memory management is mandatory.
