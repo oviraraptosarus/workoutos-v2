@@ -19,6 +19,9 @@ export default function EndOfDayReflection() {
     const [isEditingTranscript, setIsEditingTranscript] = useState(false);
     const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [showSavePrompt, setShowSavePrompt] = useState(false);
+    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
+    const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
+    const [selectedLog, setSelectedLog] = useState<any>(null);
     const [expandedLogDate, setExpandedLogDate] = useState<string | null>(null);
     const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
