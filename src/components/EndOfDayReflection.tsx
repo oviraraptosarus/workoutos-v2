@@ -282,11 +282,14 @@ export default function EndOfDayReflection() {
     }, {} as Record<string, any[]>);
     const monthKeys = Object.keys(groupedLogs);
     
+    const hasExpandedInitialRef = useRef(false);
+    
     useEffect(() => {
-        if (monthKeys.length > 0 && !expandedMonth) {
+        if (monthKeys.length > 0 && !hasExpandedInitialRef.current) {
             setExpandedMonth(monthKeys[0]);
+            hasExpandedInitialRef.current = true;
         }
-    }, [monthKeys, expandedMonth]);
+    }, [monthKeys]);
 
     return (
         <div className="flex flex-col gap-6">
