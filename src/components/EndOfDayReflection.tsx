@@ -53,6 +53,7 @@ export default function EndOfDayReflection() {
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
+    const isRecordingRef = useRef(false);  // source of truth for "should I be recording?"
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const animationFrameRef = useRef<number | null>(null);
@@ -109,34 +110,47 @@ export default function EndOfDayReflection() {
         setIsEditingSummary(false);
         setShowSavePrompt(false);
 
-        const recognition = new SR();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
+        const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-        recognition.onresult = (e: any) => {
-            let interim = '';
-            for (let i = e.resultIndex; i < e.results.length; i++) {
-                const chunk = e.results[i][0].transcript;
-                if (e.results[i].isFinal) finalRef.current += chunk + ' ';
-                else interim = chunk;
-            }
-            setRawTranscript((finalRef.current + interim).trim());
+        const spawnRecognition = () => {
+            const recognition = new SR();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (e: any) => {
+                let interim = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    const chunk = e.results[i][0].transcript;
+                    if (e.results[i].isFinal) finalRef.current += chunk + ' ';
+                    else interim = chunk;
+                }
+                setRawTranscript((finalRef.current + interim).trim());
+            };
+
+            recognition.onerror = (e: any) => {
+                if (e.error === 'no-speech' || e.error === 'aborted') return; // handled by onend restart
+                alert('Microphone error: ' + e.error);
+                isRecordingRef.current = false;
+                stopRecording(false);
+            };
+
+            // KEY FIX: auto-restart on end if we still intend to record
+            recognition.onend = () => {
+                if (isRecordingRef.current) {
+                    try {
+                        recognition.start(); // seamless restart
+                    } catch {
+                        // recognition already started in some edge case, ignore
+                    }
+                }
+            };
+
+            recognitionRef.current = recognition;
+            recognition.start();
         };
 
-        recognition.onerror = (e: any) => {
-            if (e.error !== 'aborted') alert('Microphone error: ' + e.error);
-            stopRecording(false);
-        };
-
-        recognition.onend = () => {
-            if (state === 'recording') {
-                stopRecording(true);
-            }
-        };
-
-        recognitionRef.current = recognition;
-        recognition.start();
+        spawnRecognition();
 
         // Start real mic waveform via Web Audio API
         try {
@@ -169,10 +183,12 @@ export default function EndOfDayReflection() {
             // mic access failed — waveform will stay flat, speech recognition still works
         }
 
+        isRecordingRef.current = true;
         setState('recording');
     };
 
     const stopRecording = (shouldProcess: boolean = true) => {
+        isRecordingRef.current = false;  // prevent auto-restart in onend
         recognitionRef.current?.stop();
 
         // Tear down audio context and mic stream
