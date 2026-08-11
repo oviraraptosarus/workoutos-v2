@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -55,10 +55,10 @@ export default function DataExportImport() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = workout-os-export-.json;
+            a.download = `workout-os-export-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            setExportSize(${(blob.size / 1024).toFixed(1)} KB);
+            setExportSize(`${(blob.size / 1024).toFixed(1)} KB`);
             setExportStatus('success');
             setTimeout(() => setExportStatus('idle'), 4000);
         } catch (e: any) {
@@ -89,10 +89,10 @@ export default function DataExportImport() {
                 if (!Array.isArray(rows) || rows.length === 0) continue;
                 const stamped = rows.map((r) => ({ ...r, user_id: user.id }));
                 const { error } = await supabase.from(key).upsert(stamped, { ignoreDuplicates: false });
-                if (error) errors.push(${key}: );
+                if (error) errors.push(`${key}: ${error.message}`);
                 else totalRows += stamped.length;
             }
-            setImportMessage(Imported  records.);
+            setImportMessage(`Imported ${totalRows} records.${errors.length ? ' Some tables had errors.' : ''}`);
             setImportStatus('success');
             setTimeout(() => { setImportStatus('idle'); setImportMessage(''); }, 6000);
         } catch (err: any) {
@@ -142,7 +142,7 @@ export default function DataExportImport() {
                         <p className="text-sm font-bold text-on-surface">
                             {exportStatus === 'loading' ? 'Preparing export...' : exportStatus === 'success' ? 'Downloaded!' : 'Export All Data'}
                         </p>
-                        <p className="text-[11px] text-on-surface-variant">{exportSize ? ${exportSize} JSON file : 'Downloads a .json backup file'}</p>
+                        <p className="text-[11px] text-on-surface-variant">{exportSize ? `${exportSize} JSON file` : 'Downloads a .json backup file'}</p>
                     </div>
                 </div>
                 <FileJson className="w-4 h-4 text-secondary/50" />
