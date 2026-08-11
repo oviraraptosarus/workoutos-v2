@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2, Bookmark } from 'lucide-react';
+import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2, Bookmark, Trophy, Zap } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
@@ -513,14 +513,14 @@ export default function ExecutionOSPage() {
                     {/* NOW HUB */}
                     {activeTab === 'now' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] group">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center justify-between gap-4 relative z-10">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
+                                            <Zap className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
                                         <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
                                     </div>
@@ -615,7 +615,7 @@ export default function ExecutionOSPage() {
                                 <div className="flex items-center justify-between relative z-10">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
+                                            <Trophy className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
                                         <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
                                     </div>

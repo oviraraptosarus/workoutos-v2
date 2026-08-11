@@ -27,3 +27,4 @@
     All colors completely rely on semantic tokens (secondary, surface-container, on-surface) for flawless Dark/Light mode integration.
 - **Daily Journal UI Enhancements**: Upgraded the action buttons to use iOS native pill shapes, added the ability to edit Ava's Summary, added an explicit "Save Edits" feature in viewing mode, and added a delete button to Recent Journals.
 - **Unified UI Theme**: Applied the premium 'Brain Dump' header and container styling (gradient borders, squircle icons, large typography) across the Content Vault and Daily Journal components for a completely unified, Apple-like dashboard experience.
+- **Execution OS Icons & Quests Styling**: Changed the generic Target icon to specialized ones for Daily Quests (Zap / lightning) and Macro Goals (Trophy). Fully applied the premium 'Brain Dump' container styling (frosted glass, gradients) to the Daily Quests tab to match the rest of the interface perfectly.
