@@ -153,8 +153,7 @@ export default function EndOfDayReflection() {
 
             setState('done');
             setTimeout(() => {
-                setState('idle');
-                setRawTranscript('');
+                setState('viewing');
             }, 3000);
 
         } catch (e: any) {
