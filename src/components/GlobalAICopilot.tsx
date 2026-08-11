@@ -399,9 +399,23 @@ export default function GlobalAICopilot() {
             const data = await res.json();
 
             if (data.result || data.functionCall) {
+                let finalResponseText = data.result || "Done.";
+                
                 if (data.functionCall && user) {
                     const fn = data.functionCall.name;
                     const args = data.functionCall.args;
+                    
+                    if (finalResponseText === 'Done.') {
+                        if (fn === 'save_workout_template') {
+                            finalResponseText = "I've generated that workout plan for you! You can find it in your Workout library.";
+                        } else if (fn === 'navigate_to') {
+                            finalResponseText = "Navigating you there now.";
+                        } else if (fn === 'log_workout' || fn === 'log_nutrition' || fn === 'log_sleep' || fn === 'log_water') {
+                            finalResponseText = "Got it! I've logged that for you.";
+                        } else if (fn === 'add_task') {
+                            finalResponseText = "I've added that to your tasks.";
+                        }
+                    }
                     if (fn === 'add_task') {
                         const { data: newTask, error } = await supabase.from('tasks').insert({ 
                             user_id: user.id, 
@@ -646,24 +660,29 @@ export default function GlobalAICopilot() {
                                 exercises: validatedExercises,
                             }
                         }));
+                        
+                        setTimeout(() => {
+                            router.push('/workout');
+                            setIsOpen(false);
+                        }, 1500);
                     }
                 }
 
                 const avaMsg: ChatMessage = {
                     id: `a-${Date.now()}`,
                     sender: 'ava',
-                    text: data.result || "I've added that.",
+                    text: finalResponseText,
                     timestamp: formatTime(new Date()),
                     requestId: data.requestId,
                 };
                 setMessages(prev => [...prev, avaMsg]);
-                setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: data.result || "I've added that." }]);
-                setChips(deriveChips(data.result || ''));
+                setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: finalResponseText }]);
+                setChips(deriveChips(finalResponseText));
                 triggerSuccess();
 
-                if (data.result && data.result.length < 200) {
+                if (finalResponseText && finalResponseText.length < 200) {
                     if (isConversationModeRef.current) {
-                        const utterance = new SpeechSynthesisUtterance(data.result.replace(/[#*•]/g, ''));
+                        const utterance = new SpeechSynthesisUtterance(finalResponseText.replace(/[#*•]/g, ''));
                         utterance.lang = 'en-IN';
                         const voices = window.speechSynthesis.getVoices();
                         const inVoice = voices.find(v => v.lang === 'en-IN') || voices.find(v => v.lang.startsWith('en'));
