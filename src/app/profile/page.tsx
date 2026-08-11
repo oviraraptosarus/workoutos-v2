@@ -15,6 +15,7 @@ import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGaller
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
 import { getLevelProgress, getNametagForLevel } from '@/lib/leveling';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
+import DataExportImport from '@/components/DataExportImport';
 
 // ─── Settings Row Component ───────────────────────────────────────────────────
 function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightContent }: any) {
@@ -777,21 +778,7 @@ export default function ProfileHub() {
                     </div>
 
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 px-2">{t('profile.dataManagement')}</h3>
-                    <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40 mb-8">
-                        <button onClick={handleExport} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <div className="flex items-center gap-3">
-                                <Download size={18} className="text-secondary" />
-                                <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.exportData')}</label>
-                            </div>
-                        </button>
-                        <input type="file" accept=".json" ref={importRef} onChange={handleImport} className="hidden" />
-                        <button onClick={() => importRef.current?.click()} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
-                            <div className="flex items-center gap-3">
-                                <Upload size={18} className="text-on-surface-variant" />
-                                <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.importBackup')}</label>
-                            </div>
-                        </button>
-                    </div>
+                    <DataExportImport />
 
                     <div className="bg-error/5 rounded-2xl overflow-hidden divide-y divide-error/10 border border-error/20">
                         <button onClick={handleSignOut} className="w-full p-4 flex items-center gap-3 hover:bg-error/10 transition-colors text-left text-error font-medium">
@@ -898,6 +885,12 @@ export default function ProfileHub() {
                         label={t('profile.aiSettings')} 
                         value={formData.voiceEnabled ? 'Voice On' : 'Voice Off'}
                         onClick={() => setActiveSection('ai_settings')} 
+                    />
+                    <SettingsRow 
+                        icon="database" 
+                        label="Data & Backup" 
+                        value="Export / Import"
+                        onClick={() => setActiveSection('account')} 
                         isLast
                     />
                 </div>
