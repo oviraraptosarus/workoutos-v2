@@ -80,6 +80,13 @@ export default function VaultPage() {
         await supabase.from('content_vault').delete().eq('id', id);
     };
 
+    const handleClearAllConsumed = async () => {
+        if (!confirm('Are you sure you want to delete all consumed items? This cannot be undone.')) return;
+        if (!user) return;
+        setItems(prev => prev.filter(item => item.status !== 'consumed'));
+        await supabase.from('content_vault').delete().eq('user_id', user.id).eq('status', 'consumed');
+    };
+
     const displayItems = items.filter(item => item.status === activeTab);
 
     if (!user) return <AppLayout><div className="p-8 text-center">Loading Vault...</div></AppLayout>;
@@ -140,6 +147,18 @@ export default function VaultPage() {
                         Consumed ({items.filter(i => i.status === 'consumed').length})
                     </button>
                 </div>
+
+                {activeTab === 'consumed' && displayItems.length > 0 && (
+                    <div className="flex justify-end px-2 pt-2 -mb-2">
+                        <button 
+                            onClick={handleClearAllConsumed}
+                            className="text-xs font-bold text-red-400 hover:text-red-300 flex items-center gap-1 bg-red-400/10 hover:bg-red-400/20 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Clear All Consumed
+                        </button>
+                    </div>
+                )}
 
                 {/* Grid */}
                 {isLoading ? (
