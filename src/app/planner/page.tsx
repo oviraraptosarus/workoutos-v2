@@ -732,19 +732,23 @@ export default function ExecutionOSPage() {
                     {/* VAULT HUB */}
                     {activeTab === 'vault' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 relative overflow-hidden group">
+                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="flex items-center gap-4 border-b border-surface-variant pb-6">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] bg-blue-500 flex items-center justify-center shrink-0 shadow-sm">
-                                        <Bookmark className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white/20" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                                
+                                <div className="flex flex-col gap-2 relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-blue-500/20 flex items-center justify-center border border-blue-500/30 text-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] backdrop-blur-md shrink-0">
+                                            <Bookmark className="w-5 h-5 sm:w-7 sm:h-7" />
+                                        </div>
+                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Content Vault</h2>
                                     </div>
-                                    <div>
-                                        <h2 className="text-xl sm:text-3xl font-black tracking-tight font-display">Content Vault</h2>
-                                        <p className="text-on-surface-variant text-xs sm:text-sm mt-1">Videos, articles, and posts to revisit.</p>
-                                    </div>
+                                    <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed mt-2 sm:mt-4">
+                                        Videos, articles, and posts to revisit.
+                                    </p>
                                 </div>
 
-                                <form onSubmit={handleAddVaultItem} className="flex gap-2">
+                                <form onSubmit={handleAddVaultItem} className="flex gap-2 relative z-10">
                                     <input
                                         type="url"
                                         placeholder="Paste YouTube or URL here..."

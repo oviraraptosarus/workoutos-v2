@@ -227,20 +227,30 @@ export default function EndOfDayReflection() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="glass-card-premium p-6 sm:p-8 relative min-h-[300px] flex flex-col justify-center transition-all duration-500">
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
-                    <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
-                        Daily Journal
-                    </h2>
+            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                
+                <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
+                            <Mic className="w-5 h-5 sm:w-7 sm:h-7" />
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Journal</h2>
+                    </div>
                     {state === 'viewing' && (
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
-                            <span className="text-xs font-bold text-on-surface uppercase tracking-wider">Synced</span>
+                        <div className="flex items-center gap-2 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
+                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)] animate-pulse" />
+                            <span className="text-xs font-bold text-secondary uppercase tracking-wider">Synced</span>
                         </div>
                     )}
                 </div>
+                
+                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                    Reflect on your day, log your progress, and let Ava summarize your thoughts.
+                </p>
 
-                <div className="flex-1 flex flex-col items-center justify-center w-full mt-12 mb-4">
+                <div className="flex-1 flex flex-col items-center justify-center w-full mt-4 mb-4 relative z-10">
                     {/* STATE 1: IDLE */}
                     {state === 'idle' && (
                         <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in zoom-in duration-300">
