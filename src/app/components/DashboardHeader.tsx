@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -72,9 +72,26 @@ export default function DashboardHeader() {
                             >
                                 <ChevronLeft size={12} />
                             </button>
-                            <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none">
+                            <label className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none cursor-pointer flex items-center gap-1.5 relative hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant/50 shadow-sm">
+                                <Calendar size={12} className="text-on-surface-variant" />
                                 {isToday ? t('nav.today') : ''}{dateStr || 'Loading...'}
-                            </p>
+                                <input 
+                                    type="date"
+                                    value={selectedDate || ''}
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const newDate = new Date(e.target.value);
+                                            const today = new Date();
+                                            today.setHours(0,0,0,0);
+                                            newDate.setHours(0,0,0,0);
+                                            const diffTime = Math.round((newDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                                            setOffsetDays(Math.min(0, Math.max(-14, diffTime)));
+                                        }
+                                    }}
+                                    className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
+                                    max={new Date().toISOString().split('T')[0]}
+                                />
+                            </label>
                             <button 
                                 onClick={() => setOffsetDays(Math.min(offsetDays + 1, 0))}
                                 disabled={isToday}
