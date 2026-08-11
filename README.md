@@ -131,5 +131,6 @@ Workout OS strictly adheres to a **Premium Apple iOS Design Philosophy**:
   <br />
   <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" alt="Rainbow Line" width="100%" />
   <br /><br />
-  <i>Built with absolute cutthroat precision.</i>
+  <i>Built with absolute cutthroat precision.</i><br /><br />
+  <strong>Built by <a href="https://github.com/oviraraptosarus">OVIRARAPTOSARUS</a></strong>
 </div>
