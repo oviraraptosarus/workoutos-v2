@@ -550,12 +550,17 @@ export default function EndOfDayReflection() {
                 </div>
             )}
 
-            {/* Apple-style Full Log Modal */}
+            {/* Apple-style Full Log Modal (Bottom Sheet on Mobile) */}
             {selectedLog && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[99999] flex flex-col justify-end sm:items-center sm:justify-center p-0 sm:p-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSelectedLog(null)}></div>
-                    <div className="bg-surface-container border border-surface-variant rounded-[2rem] shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
-                        <div className="flex items-center justify-between p-6 border-b border-surface-variant/50">
+                    <div className="bg-surface-container border border-surface-variant rounded-t-[2rem] sm:rounded-[2rem] shadow-[0_-10px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl w-full max-w-2xl h-[90vh] sm:h-auto sm:max-h-[85vh] flex flex-col relative z-10 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-500 ease-out">
+                        {/* Drag Handle for Mobile */}
+                        <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                            <div className="w-12 h-1.5 bg-surface-variant rounded-full opacity-50"></div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between px-6 pb-4 pt-2 sm:pt-6 border-b border-surface-variant/50">
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
                                 <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
@@ -564,12 +569,12 @@ export default function EndOfDayReflection() {
                             </div>
                             <button
                                 onClick={() => setSelectedLog(null)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/30 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all"
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/30 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all active:scale-95"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </div>
-                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1 pb-safe">
                             <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
                                 {selectedLog.reflection}
                             </div>
