@@ -56,6 +56,14 @@ export default function ExecutionOSPage() {
         setIsClient(true);
         loadTasks();
 
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const tabParam = params.get('tab');
+            if (tabParam === 'reflect' || tabParam === 'now' || tabParam === 'brain' || tabParam === 'goals' || tabParam === 'vault') {
+                setActiveTab(tabParam as any);
+            }
+        }
+
         // Setup Speech Recognition
         if (typeof window !== 'undefined') {
             const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
