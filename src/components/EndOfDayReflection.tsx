@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
+import { Mic, MicOff, CheckCircle2, Sparkles, Loader2, Edit3, RefreshCw, History } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import clsx from 'clsx';
 
-type JournalState = 'idle' | 'recording' | 'processing' | 'done' | 'viewing';
+type JournalState = 'idle' | 'recording' | 'editing' | 'processing' | 'viewing';
 
 export default function EndOfDayReflection() {
     const { selectedDate, isToday } = useDate();
@@ -17,6 +17,7 @@ export default function EndOfDayReflection() {
     const [rawTranscript, setRawTranscript] = useState('');
     const [avaSummary, setAvaSummary] = useState('');
     const [elapsed, setElapsed] = useState(0);
+    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -28,6 +29,18 @@ export default function EndOfDayReflection() {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
+
+    const fetchHistory = async () => {
+        if (!user) return;
+        const { data } = await supabase
+            .from('daily_logs')
+            .select('date, reflection, raw_transcript')
+            .eq('user_id', user.id)
+            .not('reflection', 'is', null)
+            .order('date', { ascending: false })
+            .limit(5);
+        if (data) setHistoryLogs(data);
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -45,12 +58,21 @@ export default function EndOfDayReflection() {
                 .single();
 
             if (isMounted && data && data.reflection) {
-                setAvaSummary(data.reflection);
+                // Handle legacy JSON strings
+                let parsedSummary = data.reflection;
+                if (typeof parsedSummary === 'string' && parsedSummary.trim().startsWith('{')) {
+                    try {
+                        const obj = JSON.parse(parsedSummary);
+                        parsedSummary = obj.reflection || obj.summary || obj.raw_voice || parsedSummary;
+                    } catch(e) {}
+                }
+                setAvaSummary(parsedSummary);
                 setRawTranscript(data.raw_transcript || '');
                 setState('viewing');
             }
         };
         fetchReflection();
+        fetchHistory();
         return () => { isMounted = false; };
     }, [selectedDate, user]);
 
@@ -101,11 +123,6 @@ export default function EndOfDayReflection() {
         setState('idle');
     };
 
-    const toggleRecording = () => {
-        if (state === 'recording') stopRecording();
-        else startRecording();
-    };
-
     const handleReflect = async () => {
         if (!rawTranscript.trim()) return;
         setState('processing');
@@ -122,15 +139,14 @@ export default function EndOfDayReflection() {
             });
 
             if (!res.ok) throw new Error('AI processing failed');
-            const data = await res.json();
-            const summary = data.summary;
+            const aiData = await res.json();
+            const summary = aiData.summary;
             setAvaSummary(summary);
 
             // 2. Save to Supabase
             if (user) {
                 const dateKey = selectedDate;
                 
-                // Merge with existing log to not overwrite sleep hours
                 const { data: existingLog } = await supabase
                     .from('daily_logs')
                     .select('*')
@@ -139,7 +155,7 @@ export default function EndOfDayReflection() {
                     .single();
 
                 const { error } = await supabase.from('daily_logs').upsert({
-                    id: existingLog?.id, // include ID if updating existing row
+                    id: existingLog?.id, 
                     user_id: user.id,
                     date: dateKey,
                     raw_transcript: rawTranscript,
@@ -149,103 +165,160 @@ export default function EndOfDayReflection() {
                 
                 if (error) throw error;
                 window.dispatchEvent(new Event('workout_os_reflection_saved'));
+                fetchHistory();
             }
 
-            setState('done');
-            setTimeout(() => {
-                setState('viewing');
-            }, 3000);
-
+            setState('viewing');
         } catch (e: any) {
             alert('Error: ' + e.message);
-            setState('idle');
+            setState(rawTranscript ? 'idle' : 'viewing');
         }
     };
 
-    return (
-        <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+    const wordCount = rawTranscript.trim() ? rawTranscript.trim().split(/\s+/).length : 0;
 
-            <div className="flex items-center gap-4 relative z-10">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
-                    <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7" />
+    return (
+        <div className="flex flex-col gap-8">
+            {/* Main Daily Journal Card */}
+            <div className="bg-[#0f0f11] dark:bg-[#0f0f11] bg-white border border-surface-variant p-6 rounded-[2rem] shadow-xl flex flex-col gap-6 relative">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest mb-1">Daily Journal</h2>
+                        <span className="text-xs font-semibold text-on-surface-variant/70">
+                            {state === 'recording' ? 'Recording...' :
+                             state === 'processing' ? 'Analyzing entry...' :
+                             state === 'viewing' ? 'Entry recorded' : 'Ready to record'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className={clsx("w-2 h-2 rounded-full", 
+                            state === 'recording' ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" :
+                            state === 'processing' ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)] animate-pulse" :
+                            state === 'viewing' ? "bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" :
+                            "bg-surface-variant"
+                        )} />
+                        <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                            {state === 'viewing' ? 'Synced' : state === 'recording' ? 'Live' : 'Local'}
+                        </span>
+                    </div>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
-            </div>
-            <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
-                Did you win the day? Log your daily wrap-up, bottlenecks, and wins. Ava will process this reflection to identify your behavioral patterns, suggest course corrections, and adjust tomorrow's targets.
-            </p>
-            
-            <div className="relative mb-4 z-10 flex-1 flex flex-col">
-                <textarea
-                    value={rawTranscript}
-                    onChange={(e) => setRawTranscript(e.target.value)}
-                    disabled={state === 'recording' || state === 'processing' || state === 'done' || !isToday}
-                    placeholder="e.g. Executed well on work tasks, but skipped the gym because I slept poorly. Need to fix sleep hygiene."
-                    className="w-full h-full min-h-[160px] bg-surface-container border border-surface-variant rounded-[1.25rem] p-6 pb-16 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md resize-none disabled:opacity-70"
-                />
-                
-                {state === 'done' ? (
-                    <div className="absolute inset-0 bg-surface-container/80 backdrop-blur-sm rounded-[1.25rem] flex flex-col items-center justify-center text-primary gap-3">
-                        <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                            <CheckCircle2 className="w-8 h-8" />
-                        </div>
-                        <span className="font-bold text-center px-4">Reflection logged and analyzed!</span>
-                    </div>
-                ) : state === 'viewing' ? (
-                    <div className="absolute inset-0 bg-surface-container rounded-[1.25rem] p-6 overflow-y-auto text-on-surface text-sm border border-surface-variant flex flex-col">
-                        <div className="flex items-center gap-2 text-primary font-bold mb-4">
-                            <Sparkles className="w-5 h-5" /> Ava's Analysis
-                        </div>
-                        <p className="leading-relaxed whitespace-pre-wrap">
-                            {(() => {
-                                let display = avaSummary;
-                                if (typeof display === 'string' && display.trim().startsWith('{')) {
-                                    try {
-                                        const parsed = JSON.parse(display);
-                                        display = parsed.reflection || parsed.summary || parsed.raw_voice || display;
-                                    } catch(e) {}
-                                } else if (typeof display === 'object' && display !== null) {
-                                    display = (display as any).reflection || (display as any).summary || (display as any).raw_voice || JSON.stringify(display);
-                                }
-                                return typeof display === 'string' ? display : JSON.stringify(display);
-                            })()}
-                        </p>
-                    </div>
-                ) : (
-                    <button 
-                        onClick={toggleRecording}
-                        disabled={state === 'processing' || !isToday}
-                        className={clsx(
-                            "absolute bottom-4 right-4 p-3 rounded-full transition-all shadow-md flex items-center gap-2",
-                            state === 'recording' ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" : "bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 disabled:opacity-50"
+
+                {/* Your Words */}
+                <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">Your Words</h3>
+                        {(state === 'idle' || state === 'viewing' || state === 'editing') && (
+                            <button 
+                                onClick={() => setState(state === 'editing' ? (rawTranscript ? 'idle' : 'viewing') : 'editing')}
+                                className="flex items-center gap-1.5 text-blue-500 hover:text-blue-400 transition-colors text-sm font-bold"
+                            >
+                                <Edit3 className="w-4 h-4" /> {state === 'editing' ? 'Done' : 'Edit'}
+                            </button>
                         )}
-                    >
+                    </div>
+
+                    <div className="bg-[#161618] dark:bg-[#161618] bg-gray-50 border border-surface-variant/50 rounded-[1.25rem] p-5 min-h-[200px] flex flex-col relative transition-all">
+                        {state === 'recording' && !rawTranscript ? (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-on-surface-variant gap-4">
+                                <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center animate-pulse">
+                                    <Mic className="w-8 h-8 text-red-500" />
+                                </div>
+                                <span className="font-bold text-sm">Listening...</span>
+                            </div>
+                        ) : (
+                            <textarea
+                                value={rawTranscript}
+                                onChange={(e) => setRawTranscript(e.target.value)}
+                                disabled={state !== 'editing' && state !== 'recording'}
+                                placeholder={state === 'recording' ? "Listening..." : "What happened today?"}
+                                className="w-full h-full min-h-[160px] bg-transparent text-on-surface focus:outline-none resize-none font-medium text-[15px] leading-relaxed disabled:opacity-100 placeholder:text-on-surface-variant/50"
+                            />
+                        )}
+                    </div>
+                    
+                    <div className="text-xs font-semibold text-on-surface-variant/60 px-2">{wordCount} words</div>
+                </div>
+
+                {/* Action Buttons */}
+                {state !== 'processing' && state !== 'viewing' && (
+                    <div className="flex gap-4 mt-2">
                         {state === 'recording' ? (
-                            <>
-                                <MicOff className="w-5 h-5" />
-                                <span className="text-sm font-bold pr-1">Stop ({Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, '0')})</span>
-                            </>
+                            <button 
+                                onClick={stopRecording}
+                                className="flex-1 py-4 rounded-[1.25rem] font-bold flex items-center justify-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                            >
+                                <MicOff className="w-5 h-5" /> Stop ({Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, '0')})
+                            </button>
                         ) : (
                             <>
-                                <Mic className="w-5 h-5" />
-                                <span className="text-sm font-bold pr-1">Speak</span>
+                                {rawTranscript ? (
+                                    <button 
+                                        onClick={startRecording}
+                                        className="px-6 py-4 rounded-[1.25rem] font-bold flex items-center justify-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors"
+                                    >
+                                        <RefreshCw className="w-5 h-5" /> Re-record
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={startRecording}
+                                        disabled={!isToday}
+                                        className="flex-1 py-4 rounded-[1.25rem] font-bold flex items-center justify-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors disabled:opacity-50"
+                                    >
+                                        <Mic className="w-5 h-5" /> Start Journal
+                                    </button>
+                                )}
+
+                                {rawTranscript && (
+                                    <button 
+                                        onClick={handleReflect}
+                                        className="flex-1 py-4 rounded-[1.25rem] font-bold flex items-center justify-center gap-2 bg-[#1a75ff] text-white hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
+                                    >
+                                        <CheckCircle2 className="w-5 h-5" /> Save Entry
+                                    </button>
+                                )}
                             </>
                         )}
-                    </button>
+                    </div>
+                )}
+
+                {state === 'processing' && (
+                    <div className="mt-2 py-4 rounded-[1.25rem] font-bold flex items-center justify-center gap-2 bg-surface-container text-on-surface">
+                        <Loader2 className="w-5 h-5 animate-spin" /> Analyzing Entry...
+                    </div>
+                )}
+                
+                {/* Ava's Analysis - shown when viewing if available */}
+                {state === 'viewing' && avaSummary && (
+                    <div className="mt-4 pt-6 border-t border-surface-variant">
+                        <h3 className="text-xs font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" /> Ava's Insights
+                        </h3>
+                        <p className="text-sm font-medium leading-relaxed text-on-surface whitespace-pre-wrap">{avaSummary}</p>
+                    </div>
                 )}
             </div>
-            
-            {state !== 'done' && state !== 'viewing' && (
-                <button 
-                    onClick={handleReflect}
-                    disabled={!rawTranscript.trim() || state === 'recording' || state === 'processing'}
-                    className="relative z-10 w-full py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary shadow-[0_4px_16px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_8px_24px_rgba(var(--c-primary)/0.6)] disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 mt-auto"
-                >
-                    {state === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                    {state === 'processing' ? 'Processing...' : 'Analyze & Store'}
-                </button>
+
+            {/* Recent History Logs */}
+            {historyLogs.length > 0 && (
+                <div className="bg-surface-container-lowest border border-surface-variant p-6 rounded-[2rem] shadow-sm flex flex-col gap-6">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2">
+                        <History size={18} className="text-on-surface-variant" /> Recent Logs
+                    </h3>
+                    <div className="flex flex-col gap-4">
+                        {historyLogs.map(log => (
+                            <div key={log.date} className="bg-surface-container border border-surface-variant/50 rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden group">
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500/50 rounded-l-2xl"></div>
+                                <h4 className="font-bold text-on-surface text-sm ml-2">{log.date}</h4>
+                                {log.raw_transcript && (
+                                    <p className="text-xs text-on-surface-variant line-clamp-2 ml-2 leading-relaxed">
+                                        "{log.raw_transcript}"
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

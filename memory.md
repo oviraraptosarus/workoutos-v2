@@ -17,3 +17,4 @@
     - Starting at 6:00 PM, the system reminds the user to log sleep and journal entries every 2 hours until fulfilled.
 - **Architecture Overhaul**: Cleaned up scattered `.md` files in the root directory into a unified `.agents/AGENTS.md` master rulebook and a `.agents/architecture.md` blueprint.
 - **View Past Reflections**: Upgraded the EndOfDayReflection component to fetch and display the user's saved reflection from Supabase when they navigate to past dates using the global Date Picker, introducing a read-only 'viewing' state.
+- **Daily Journal UI Restoration**: Completely redesigned the Reflect Hub (EndOfDayReflection.tsx) to restore the preferred premium UI. Re-introduced the "DAILY JOURNAL" card layout with an editable "YOUR WORDS" inset box, distinct Re-record/Save buttons, a word counter, and a "Recent Logs" list fetching the last 5 entries directly from the database.
