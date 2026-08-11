@@ -757,11 +757,11 @@ export default function ExecutionOSPage() {
                                     </p>
                                 </div>
 
-                                <form onSubmit={handleAddVaultItem} className="flex gap-2 relative z-10">
+                                <form onSubmit={handleAddVaultItem} className="flex gap-2 relative z-10 min-w-0 w-full">
                                     <input
                                         type="url"
                                         placeholder="Paste YouTube or URL here..."
-                                        className="flex-1 bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-white/20"
+                                        className="flex-1 bg-surface-container border border-surface-variant rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-white/20 min-w-0"
                                         value={newVaultUrl}
                                         onChange={(e) => setNewVaultUrl(e.target.value)}
                                         required
@@ -769,7 +769,7 @@ export default function ExecutionOSPage() {
                                     <button 
                                         type="submit" 
                                         disabled={isAddingVault}
-                                        className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                                        className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shrink-0"
                                     >
                                         {isAddingVault ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
                                     </button>

@@ -109,11 +109,11 @@ export default function VaultPage() {
                 </div>
 
                 {/* Add Input */}
-                <div className="glass-card-premium p-2 pr-2 rounded-2xl flex items-center gap-2 sticky top-[88px] z-30 mx-2">
-                    <div className="pl-4 text-on-surface-variant">
+                <div className="glass-card-premium p-2 rounded-2xl flex items-center gap-2 sticky top-[88px] z-30 mx-2">
+                    <div className="pl-4 text-on-surface-variant shrink-0">
                         <Link2 className="w-5 h-5" />
                     </div>
-                    <form onSubmit={handleAdd} className="flex-1 flex gap-2">
+                    <form onSubmit={handleAdd} className="flex-1 flex gap-2 min-w-0">
                         <input
                             type="url"
                             placeholder="Paste a YouTube video, article, or URL..."
