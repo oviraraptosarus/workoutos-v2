@@ -410,7 +410,7 @@ export default function EndOfDayReflection() {
                                             className="w-full min-h-[100px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
                                         />
                                     ) : (
-                                        <p className="text-sm font-medium leading-relaxed text-on-surface line-clamp-4">
+                                        <p className="text-sm font-medium leading-relaxed text-on-surface">
                                             {avaSummary}
                                         </p>
                                     )}
