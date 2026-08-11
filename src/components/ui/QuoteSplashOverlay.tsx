@@ -10,7 +10,12 @@ export default function QuoteSplashOverlay() {
     const [isFadingOut, setIsFadingOut] = useState(false);
 
     useEffect(() => {
-        // Show on every page load / reload
+        // Show only once per session
+        if (sessionStorage.getItem('workout_os_splash_seen')) {
+            return; // Already seen
+        }
+        sessionStorage.setItem('workout_os_splash_seen', 'true');
+
         const chosen = QUOTES[Math.floor(Math.random() * QUOTES.length)];
         setQuote(chosen);
         // Persist so DashboardHeader shows the same quote

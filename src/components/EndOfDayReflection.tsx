@@ -110,6 +110,7 @@ export default function EndOfDayReflection() {
         setIsEditingSummary(false);
         setShowSavePrompt(false);
 
+        let currentSessionTranscript = '';
         const spawnRecognition = () => {
             const recognition = new SR();
             recognition.continuous = true;
@@ -117,13 +118,12 @@ export default function EndOfDayReflection() {
             recognition.lang = 'en-US';
 
             recognition.onresult = (e: any) => {
-                let interim = '';
-                for (let i = e.resultIndex; i < e.results.length; i++) {
-                    const chunk = e.results[i][0].transcript;
-                    if (e.results[i].isFinal) finalRef.current += chunk + ' ';
-                    else interim = chunk;
+                let sessionText = '';
+                for (let i = 0; i < e.results.length; i++) {
+                    sessionText += e.results[i][0].transcript + ' ';
                 }
-                setRawTranscript((finalRef.current + interim).trim());
+                currentSessionTranscript = sessionText;
+                setRawTranscript((finalRef.current + ' ' + currentSessionTranscript).trim());
             };
 
             recognition.onerror = (e: any) => {
@@ -133,14 +133,17 @@ export default function EndOfDayReflection() {
                 stopRecording(false);
             };
 
-            // KEY FIX: auto-restart on end if we still intend to record
+            // KEY FIX: auto-restart on end if we still intend to record, and commit session text
             recognition.onend = () => {
+                if (currentSessionTranscript.trim()) {
+                    finalRef.current = (finalRef.current + ' ' + currentSessionTranscript).trim();
+                    currentSessionTranscript = '';
+                    setRawTranscript(finalRef.current);
+                }
                 if (isRecordingRef.current) {
                     try {
                         recognition.start(); // seamless restart
-                    } catch {
-                        // recognition already started in some edge case, ignore
-                    }
+                    } catch {}
                 }
             };
 
@@ -405,11 +408,23 @@ export default function EndOfDayReflection() {
                                 ))}
                             </div>
 
-                            {/* Live Transcript */}
-                            <div className="text-center w-full max-w-xl mx-auto px-4">
-                                <p className="text-sm font-medium text-on-surface/80 leading-relaxed min-h-[40px] transition-all">
-                                    {rawTranscript || "Listening..."}
-                                </p>
+                            {/* Live Transcript / Manual Typing */}
+                            <div className="text-center w-full max-w-xl mx-auto px-4 relative group">
+                                <textarea
+                                    className="w-full bg-transparent text-sm font-medium text-on-surface/80 leading-relaxed min-h-[60px] text-center resize-none focus:outline-none focus:ring-0 placeholder:text-on-surface/30"
+                                    value={rawTranscript}
+                                    onFocus={() => {
+                                        // Pause speech recognition if they tap to type
+                                        isRecordingRef.current = false;
+                                        if (recognitionRef.current) recognitionRef.current.stop();
+                                        setWaveformBars(Array.from({ length: 40 }, () => 4));
+                                    }}
+                                    onChange={(e) => {
+                                        setRawTranscript(e.target.value);
+                                        finalRef.current = e.target.value;
+                                    }}
+                                    placeholder="Listening... or tap here to type manually"
+                                />
                             </div>
 
                             <div className="flex items-center gap-3">

@@ -40,3 +40,7 @@
 - **FOUC & Splash Quote Fixes**: 
     - Fixed a Light Mode Flash of Unstyled Content (FOUC) on initial load by injecting a synchronous, blocking `<script>` tag in `layout.tsx` to read the theme from `localStorage` before React hydrates.
     - Fixed the Daily Quote mismatch between the Splash Screen and the Dashboard Header by syncing the randomly chosen quote to `sessionStorage`.
+    - Prevented the Splash Screen from triggering on every page load by persisting a `workout_os_splash_seen` flag in `sessionStorage`.
+- **Reflect Hub Enhancements**:
+    - Re-architected the `SpeechRecognition` loop in `EndOfDayReflection.tsx` for iOS. It now commits full unconfirmed chunks at `onend` instead of manually tracking `isFinal` over multiple loops, preventing text duplication.
+    - Converted the Live Transcript view into an interactive `<textarea>`. Users can now tap the text at any point while recording to pause the microphone and seamlessly switch to manual typing, mimicking the native iOS dictation keyboard experience.
