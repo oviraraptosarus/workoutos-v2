@@ -19,3 +19,9 @@
 - **View Past Reflections**: Upgraded the EndOfDayReflection component to fetch and display the user's saved reflection from Supabase when they navigate to past dates using the global Date Picker, introducing a read-only 'viewing' state.
 - **Daily Journal UI Restoration**: Completely redesigned the Reflect Hub (EndOfDayReflection.tsx) to restore the preferred premium UI. Re-introduced the "DAILY JOURNAL" card layout with an editable "YOUR WORDS" inset box, distinct Re-record/Save buttons, a word counter, and a "Recent Logs" list fetching the last 5 entries directly from the database.
 - **iOS Voice Message Re-design**: Replaced the Daily Journal text-area form with a sleek, audio-only iOS-style Voice Message bubble widget in EndOfDayReflection.tsx. Features native Apple blue coloring, a CSS-animated waveform, and automatic background processing to strictly adhere to the premium-ios-design philosophy.
+- **Restored Voice-First Daily Journal**: Fully restored the EXACT Voice-First Daily Journal design and architecture built by Claude, per user request. Restored the 4 distinct states:
+    - **Idle**: Big glowing microphone button.
+    - **Recording**: Real-time dancing CSS waveform with live transcript overlay underneath, and a red stop button.
+    - **Processing**: Ava's sparkles pulse while summarizing the raw voice input.
+    - **Done**: Side-by-side cards (Ava's Summary vs Your Words) with Edit capabilities.
+    All colors completely rely on semantic tokens (secondary, surface-container, on-surface) for flawless Dark/Light mode integration.
