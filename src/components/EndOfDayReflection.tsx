@@ -21,16 +21,7 @@ export default function EndOfDayReflection() {
     const [showSavePrompt, setShowSavePrompt] = useState(false);
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
     const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
-    const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set());
-
-    const toggleEntry = (date: string) => {
-        setExpandedEntries(prev => {
-            const next = new Set(prev);
-            if (next.has(date)) next.delete(date);
-            else next.add(date);
-            return next;
-        });
-    };
+    const [selectedLog, setSelectedLog] = useState<any>(null);
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -516,42 +507,36 @@ export default function EndOfDayReflection() {
                                     
                                     <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                         <div className="overflow-hidden">
-                                            <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
                                                 {logs.map((log: any) => {
-                                                    const isEntryExpanded = expandedEntries.has(log.date);
                                                     return (
-                                                        <div key={log.date} className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log hover:border-secondary/40 transition-all">
-                                                            {/* Tappable header row */}
-                                                            <button
-                                                                onClick={() => toggleEntry(log.date)}
-                                                                className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-white/5 transition-colors focus:outline-none"
-                                                            >
+                                                        <button
+                                                            key={log.date} 
+                                                            onClick={() => setSelectedLog(log)}
+                                                            className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log hover:border-secondary/40 transition-all text-left w-full flex flex-col hover:shadow-md"
+                                                        >
+                                                            {/* Header row */}
+                                                            <div className="w-full flex items-center justify-between p-4 sm:p-5 pb-2">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
                                                                     <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <button
+                                                                    <div
                                                                         onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
-                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100"
+                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100 cursor-pointer"
                                                                         title="Delete Journal"
                                                                     >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                                                    </button>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isEntryExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                                                </div>
-                                                            </button>
-                                                            {/* Collapsible body */}
-                                                            <div className={`grid transition-all duration-400 ease-in-out ${isEntryExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                                                                <div className="overflow-hidden">
-                                                                    {log.reflection && (
-                                                                        <p className="text-sm text-on-surface/90 ml-3.5 leading-relaxed font-medium whitespace-pre-wrap px-4 pb-4 sm:px-5 sm:pb-5">
-                                                                            {log.reflection}
-                                                                        </p>
-                                                                    )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                            {/* Preview body */}
+                                                            {log.reflection && (
+                                                                <p className="text-sm text-on-surface/70 ml-3.5 leading-relaxed font-medium px-4 pb-4 sm:px-5 sm:pb-5 line-clamp-3">
+                                                                    {log.reflection}
+                                                                </p>
+                                                            )}
+                                                        </button>
                                                     );
                                                 })}
                                             </div>
@@ -560,6 +545,34 @@ export default function EndOfDayReflection() {
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {/* Apple-style Full Log Modal */}
+            {selectedLog && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSelectedLog(null)}></div>
+                    <div className="bg-surface-container border border-surface-variant rounded-[2rem] shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center justify-between p-6 border-b border-surface-variant/50">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
+                                <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
+                                    {new Date(selectedLog.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                                </h2>
+                            </div>
+                            <button
+                                onClick={() => setSelectedLog(null)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/30 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                            <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
+                                {selectedLog.reflection}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
