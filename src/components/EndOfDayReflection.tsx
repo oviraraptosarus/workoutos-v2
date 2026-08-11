@@ -110,8 +110,6 @@ export default function EndOfDayReflection() {
         setIsEditingSummary(false);
         setShowSavePrompt(false);
 
-        const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
         const spawnRecognition = () => {
             const recognition = new SR();
             recognition.continuous = true;
