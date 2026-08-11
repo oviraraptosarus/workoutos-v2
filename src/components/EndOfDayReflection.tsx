@@ -383,12 +383,20 @@ export default function EndOfDayReflection() {
                                 </p>
                             </div>
 
-                            <button
-                                onClick={() => stopRecording(true)}
-                                className="px-6 py-3 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 flex items-center gap-2 font-bold text-sm tracking-wide transition-all"
-                            >
-                                <Square className="w-3.5 h-3.5 fill-current" /> Stop
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => stopRecording(false)}
+                                    className="px-5 py-3 rounded-full bg-surface-variant/30 text-on-surface-variant border border-surface-variant/40 hover:bg-surface-variant/50 flex items-center gap-2 font-bold text-sm tracking-wide transition-all active:scale-95"
+                                >
+                                    <RefreshCw className="w-3.5 h-3.5" /> Restart
+                                </button>
+                                <button
+                                    onClick={() => stopRecording(true)}
+                                    className="px-6 py-3 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 flex items-center gap-2 font-bold text-sm tracking-wide transition-all active:scale-95"
+                                >
+                                    <Square className="w-3.5 h-3.5 fill-current" /> Stop
+                                </button>
+                            </div>
                         </div>
                     )}
 
