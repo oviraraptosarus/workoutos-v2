@@ -20,7 +20,7 @@ This document is the definitive technical blueprint for Workout OS. **Read this 
 - **Location:** Integrated into the dashboard's `planner/page.tsx` on the "Reflect" tab.
 - **Voice-to-Text Logic (CRITICAL):** 
   - Uses native `SpeechRecognition` API.
-  - To prevent duplicated/repeating transcripts, we use a `finalRef` approach. **DO NOT edit this voice concatenation logic unless specifically instructed.**
+  - MUST use the Platform-Aware State Machine. Desktop Chrome and iOS Safari use the standard W3C `resultIndex` loop. Android Chrome REQUIRES an `isAndroid` branch that exclusively extracts the last array item (`e.results[e.results.length - 1][0].transcript`) and DOES NOT auto-restart on `onend`, to prevent catastrophic audio-buffer replays and index duplication.
 - **Backend:** Saves into the `daily_logs` table (upserting via `user_id, date`). Requires `raw_transcript` (Text) and `reflection` (Text). The LLM orchestrator parses the raw transcript into a structured reflection.
 
 ### Brain Dump
