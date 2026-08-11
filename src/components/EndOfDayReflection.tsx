@@ -18,6 +18,7 @@ export default function EndOfDayReflection() {
     const [avaSummary, setAvaSummary] = useState('');
     const [isEditingTranscript, setIsEditingTranscript] = useState(false);
     const [isEditingSummary, setIsEditingSummary] = useState(false);
+    const [showSavePrompt, setShowSavePrompt] = useState(false);
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
 
     const recognitionRef = useRef<any>(null);
@@ -44,6 +45,7 @@ export default function EndOfDayReflection() {
             setAvaSummary('');
             setIsEditingTranscript(false);
             setIsEditingSummary(false);
+            setShowSavePrompt(false);
             
             const { data } = await supabase
                 .from('daily_logs')
@@ -88,6 +90,7 @@ export default function EndOfDayReflection() {
         setAvaSummary('');
         setIsEditingTranscript(false);
         setIsEditingSummary(false);
+        setShowSavePrompt(false);
 
         const recognition = new SR();
         recognition.continuous = true;
@@ -159,7 +162,7 @@ export default function EndOfDayReflection() {
         }
     };
 
-    const handleSave = async () => {
+    const handleSave = async (format: 'ava' | 'raw') => {
         if (!user || !rawTranscript.trim() || !avaSummary.trim()) return;
         
         try {
@@ -175,8 +178,8 @@ export default function EndOfDayReflection() {
                 id: existingLog?.id, 
                 user_id: user.id,
                 date: dateKey,
-                raw_transcript: rawTranscript,
-                reflection: avaSummary,
+                raw_transcript: format === 'ava' ? rawTranscript : null,
+                reflection: format === 'ava' ? avaSummary : rawTranscript,
                 sleep_hours: existingLog?.sleep_hours || 0,
             }, { onConflict: 'user_id,date' });
             
@@ -187,6 +190,7 @@ export default function EndOfDayReflection() {
             setState('viewing');
             setIsEditingTranscript(false);
             setIsEditingSummary(false);
+            setShowSavePrompt(false);
         } catch (e: any) {
             alert('Error saving reflection: ' + e.message);
         }
@@ -321,7 +325,7 @@ export default function EndOfDayReflection() {
                                                 if (isEditingSummary) {
                                                     // If we are currently editing and click "Done", we should save it if it's already in viewing state
                                                     setIsEditingSummary(false);
-                                                    if (state === 'viewing') handleSave();
+                                                    if (state === 'viewing') setShowSavePrompt(true);
                                                 } else {
                                                     setIsEditingSummary(true);
                                                 }
@@ -353,7 +357,7 @@ export default function EndOfDayReflection() {
                                             onClick={() => {
                                                 if (isEditingTranscript) {
                                                     setIsEditingTranscript(false);
-                                                    if (state === 'viewing') handleSave();
+                                                    if (state === 'viewing') setShowSavePrompt(true);
                                                 } else {
                                                     setIsEditingTranscript(true);
                                                 }
@@ -392,7 +396,7 @@ export default function EndOfDayReflection() {
                                 
                                 {state === 'done' ? (
                                     <button 
-                                        onClick={handleSave}
+                                        onClick={() => setShowSavePrompt(true)}
                                         className="flex-[2] py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
                                     >
                                         <CheckCircle2 className="w-5 h-5" /> Save Entry
@@ -410,7 +414,7 @@ export default function EndOfDayReflection() {
                                         {/* If we are editing in viewing mode, show an explicit Save button */}
                                         {(isEditingTranscript || isEditingSummary) && (
                                             <button 
-                                                onClick={handleSave}
+                                                onClick={() => setShowSavePrompt(true)}
                                                 className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
                                             >
                                                 Save Edits
@@ -419,6 +423,36 @@ export default function EndOfDayReflection() {
                                     </div>
                                 )}
                             </div>
+                            
+                            {/* Save Prompt Overlay */}
+                            {showSavePrompt && (
+                                <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
+                                    <h3 className="text-xl font-black text-on-surface mb-2 tracking-tight">Save Journal Entry</h3>
+                                    <p className="text-on-surface-variant text-sm font-medium mb-8 text-center max-w-[260px]">
+                                        Which version of the journal would you like to keep?
+                                    </p>
+                                    <div className="flex flex-col gap-3 w-full max-w-[260px]">
+                                        <button 
+                                            onClick={() => handleSave('ava')}
+                                            className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-all active:scale-[0.98] shadow-md"
+                                        >
+                                            <Sparkles className="w-4 h-4" /> Save Ava's Summary
+                                        </button>
+                                        <button 
+                                            onClick={() => handleSave('raw')}
+                                            className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high text-on-surface hover:bg-surface-variant transition-all active:scale-[0.98]"
+                                        >
+                                            Save My Words
+                                        </button>
+                                        <button 
+                                            onClick={() => setShowSavePrompt(false)}
+                                            className="w-full py-3 mt-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
