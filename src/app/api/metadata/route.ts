@@ -37,10 +37,11 @@ export async function GET(request: Request) {
 
         const html = await response.text();
 
-        // Simple regex extraction for OpenGraph and basic meta tags
+        // Regex extraction for OpenGraph and basic meta tags
         const getMetaTag = (html: string, property: string) => {
-            const regex = new RegExp(`<meta\\s+(?:property|name)=["'](?:${property})["']\\s+content=["']([^"']+)["']`, 'i');
-            const match = html.match(regex);
+            const regex1 = new RegExp(`<meta\\s+(?:property|name)=["'](?:${property})["']\\s+content=["']([^"']+)["']`, 'i');
+            const regex2 = new RegExp(`<meta\\s+content=["']([^"']+)["']\\s+(?:property|name)=["'](?:${property})["']`, 'i');
+            const match = html.match(regex1) || html.match(regex2);
             return match ? match[1] : null;
         };
 
@@ -52,6 +53,17 @@ export async function GET(request: Request) {
         if (!title) {
             const titleMatch = html.match(/<title>([^<]+)<\/title>/i);
             title = titleMatch ? titleMatch[1] : null;
+            // Clean up YouTube titles that just say "YouTube" due to consent pages
+            if (title === 'YouTube' || title === 'Before you continue to YouTube') title = null;
+        }
+
+        // Fallback for YouTube thumbnail if HTML scrape missed it (e.g. consent page or missing OG tags)
+        if (!image && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+            if (match && match[1]) {
+                image = `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg`;
+                if (!title) title = 'YouTube Video'; // Provide a generic fallback title if totally blocked
+            }
         }
 
         return NextResponse.json({
