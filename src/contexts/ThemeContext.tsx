@@ -14,7 +14,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const { userProfile, updateUserProfile } = useAuth();
-    const [theme, setTheme] = useState<Theme>('light');
+    // Initialize from localStorage if possible to avoid hydration mismatch
+    const [theme, setTheme] = useState<Theme>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('workout_os_theme');
+            if (saved === 'dark' || saved === 'light') return saved;
+        }
+        return 'light';
+    });
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -24,6 +31,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (userProfile?.theme) {
             setTheme(userProfile.theme as Theme);
+            localStorage.setItem('workout_os_theme', userProfile.theme);
         }
     }, [userProfile?.theme]);
 
@@ -40,6 +48,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
+        localStorage.setItem('workout_os_theme', newTheme);
         if (userProfile) {
             updateUserProfile({ theme: newTheme });
         }
