@@ -25,3 +25,4 @@
     - **Processing**: Ava's sparkles pulse while summarizing the raw voice input.
     - **Done**: Side-by-side cards (Ava's Summary vs Your Words) with Edit capabilities.
     All colors completely rely on semantic tokens (secondary, surface-container, on-surface) for flawless Dark/Light mode integration.
+- **Daily Journal UI Enhancements**: Upgraded the action buttons to use iOS native pill shapes, added the ability to edit Ava's Summary, added an explicit "Save Edits" feature in viewing mode, and added a delete button to Recent Journals.

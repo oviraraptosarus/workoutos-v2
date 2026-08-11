@@ -16,7 +16,8 @@ export default function EndOfDayReflection() {
     const [state, setState] = useState<JournalState>('idle');
     const [rawTranscript, setRawTranscript] = useState('');
     const [avaSummary, setAvaSummary] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditingTranscript, setIsEditingTranscript] = useState(false);
+    const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
 
     const recognitionRef = useRef<any>(null);
@@ -41,7 +42,8 @@ export default function EndOfDayReflection() {
             setState('idle');
             setRawTranscript('');
             setAvaSummary('');
-            setIsEditing(false);
+            setIsEditingTranscript(false);
+            setIsEditingSummary(false);
             
             const { data } = await supabase
                 .from('daily_logs')
@@ -84,7 +86,8 @@ export default function EndOfDayReflection() {
         finalRef.current = '';
         setRawTranscript('');
         setAvaSummary('');
-        setIsEditing(false);
+        setIsEditingTranscript(false);
+        setIsEditingSummary(false);
 
         const recognition = new SR();
         recognition.continuous = true;
@@ -182,9 +185,37 @@ export default function EndOfDayReflection() {
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
             fetchHistory();
             setState('viewing');
-            setIsEditing(false);
+            setIsEditingTranscript(false);
+            setIsEditingSummary(false);
         } catch (e: any) {
             alert('Error saving reflection: ' + e.message);
+        }
+    };
+
+    const handleDeleteLog = async (dateToDelete: string) => {
+        if (!user) return;
+        if (!confirm('Are you sure you want to delete this journal entry?')) return;
+        
+        try {
+            const { error } = await supabase.from('daily_logs').update({
+                raw_transcript: null,
+                reflection: null,
+            }).eq('user_id', user.id).eq('date', dateToDelete);
+            
+            if (error) throw error;
+            
+            if (dateToDelete === selectedDate) {
+                setState('idle');
+                setRawTranscript('');
+                setAvaSummary('');
+                setIsEditingTranscript(false);
+                setIsEditingSummary(false);
+            }
+            
+            fetchHistory();
+            window.dispatchEvent(new Event('workout_os_reflection_saved'));
+        } catch (e: any) {
+            alert('Error deleting: ' + e.message);
         }
     };
 
@@ -279,69 +310,113 @@ export default function EndOfDayReflection() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                                 
                                 {/* Ava's Summary */}
-                                <div className="bg-secondary/10 border border-secondary/20 rounded-2xl p-5 flex flex-col">
-                                    <div className="flex items-center gap-2 mb-3 text-secondary">
-                                        <Sparkles className="w-4 h-4" />
-                                        <h3 className="text-xs font-bold uppercase tracking-wider">Ava's Summary</h3>
-                                    </div>
-                                    <p className="text-sm font-medium leading-relaxed text-on-surface whitespace-pre-wrap flex-1">
-                                        {avaSummary}
-                                    </p>
-                                </div>
-
-                                {/* Your Words */}
-                                <div className="bg-surface-container-low border border-surface-variant rounded-2xl p-5 flex flex-col">
+                                <div className="bg-secondary/10 border border-secondary/20 rounded-3xl p-5 flex flex-col shadow-sm">
                                     <div className="flex items-center justify-between mb-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Your Words</h3>
+                                        <div className="flex items-center gap-2 text-secondary">
+                                            <Sparkles className="w-4 h-4" />
+                                            <h3 className="text-xs font-bold uppercase tracking-wider">Ava's Summary</h3>
+                                        </div>
                                         <button 
-                                            onClick={() => setIsEditing(!isEditing)}
-                                            className="flex items-center gap-1.5 text-secondary hover:text-secondary-fixed transition-colors text-xs font-bold"
+                                            onClick={() => {
+                                                if (isEditingSummary) {
+                                                    // If we are currently editing and click "Done", we should save it if it's already in viewing state
+                                                    setIsEditingSummary(false);
+                                                    if (state === 'viewing') handleSave();
+                                                } else {
+                                                    setIsEditingSummary(true);
+                                                }
+                                            }}
+                                            className="flex items-center gap-1 text-secondary hover:text-secondary-fixed transition-colors text-xs font-bold"
                                         >
-                                            <Edit3 className="w-3.5 h-3.5" /> {isEditing ? 'Done' : 'Edit'}
+                                            {isEditingSummary ? 'Done' : 'Edit'}
                                         </button>
                                     </div>
                                     
-                                    {isEditing ? (
+                                    {isEditingSummary ? (
+                                        <textarea
+                                            value={avaSummary}
+                                            onChange={(e) => setAvaSummary(e.target.value)}
+                                            className="w-full flex-1 min-h-[120px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
+                                        />
+                                    ) : (
+                                        <p className="text-[15px] font-medium leading-relaxed text-on-surface whitespace-pre-wrap flex-1">
+                                            {avaSummary}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Your Words */}
+                                <div className="bg-surface-container-low border border-surface-variant rounded-3xl p-5 flex flex-col shadow-sm">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Your Words</h3>
+                                        <button 
+                                            onClick={() => {
+                                                if (isEditingTranscript) {
+                                                    setIsEditingTranscript(false);
+                                                    if (state === 'viewing') handleSave();
+                                                } else {
+                                                    setIsEditingTranscript(true);
+                                                }
+                                            }}
+                                            className="flex items-center gap-1 text-secondary hover:text-secondary-fixed transition-colors text-xs font-bold"
+                                        >
+                                            {isEditingTranscript ? 'Done' : 'Edit'}
+                                        </button>
+                                    </div>
+                                    
+                                    {isEditingTranscript ? (
                                         <textarea
                                             value={rawTranscript}
                                             onChange={(e) => setRawTranscript(e.target.value)}
-                                            className="w-full flex-1 min-h-[100px] bg-surface-container border border-surface-variant rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
+                                            className="w-full flex-1 min-h-[120px] bg-surface-container border border-surface-variant rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
                                         />
                                     ) : (
-                                        <p className="text-sm font-medium leading-relaxed text-on-surface/80 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[150px] custom-scrollbar">
+                                        <p className="text-[15px] font-medium leading-relaxed text-on-surface/80 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[200px] custom-scrollbar">
                                             {rawTranscript}
                                         </p>
                                     )}
-                                    <div className="text-[10px] font-bold text-on-surface-variant/60 mt-3 text-right">
+                                    <div className="text-[11px] font-semibold text-on-surface-variant/60 mt-3 text-right">
                                         {wordCount} words
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex gap-4 w-full max-w-md mx-auto pt-2">
+                            {/* Action Buttons (iOS Native Style) */}
+                            <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
                                 <button 
                                     onClick={startRecording}
-                                    className="flex-1 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors"
+                                    className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-[0.98]"
                                 >
                                     <RefreshCw className="w-4 h-4" /> Re-record
                                 </button>
-                                {state === 'done' && (
+                                
+                                {state === 'done' ? (
                                     <button 
                                         onClick={handleSave}
-                                        className="flex-[2] py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-colors shadow-lg shadow-secondary/20"
+                                        className="flex-[2] py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
                                     >
-                                        <CheckCircle2 className="w-4 h-4" /> Save Entry
+                                        <CheckCircle2 className="w-5 h-5" /> Save Entry
                                     </button>
-                                )}
-                                {state === 'viewing' && (
-                                    <button 
-                                        onClick={() => processWithAva(rawTranscript)}
-                                        disabled={!rawTranscript.trim()}
-                                        className="flex-[2] py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 bg-secondary/20 text-secondary border border-secondary/30 hover:bg-secondary/30 transition-colors"
-                                    >
-                                        <Sparkles className="w-4 h-4" /> Re-Analyze
-                                    </button>
+                                ) : (
+                                    <div className="flex-[2] flex gap-3">
+                                        <button 
+                                            onClick={() => processWithAva(rawTranscript)}
+                                            disabled={!rawTranscript.trim()}
+                                            className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary/15 text-secondary hover:bg-secondary/25 transition-all active:scale-[0.98]"
+                                        >
+                                            <Sparkles className="w-4 h-4" /> Re-Analyze
+                                        </button>
+                                        
+                                        {/* If we are editing in viewing mode, show an explicit Save button */}
+                                        {(isEditingTranscript || isEditingSummary) && (
+                                            <button 
+                                                onClick={handleSave}
+                                                className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
+                                            >
+                                                Save Edits
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -359,9 +434,18 @@ export default function EndOfDayReflection() {
                         {historyLogs.map(log => (
                             <div key={log.date} className="bg-surface-container border border-surface-variant/50 rounded-2xl p-4 flex flex-col gap-1.5 relative overflow-hidden group hover:border-secondary/30 transition-colors">
                                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary/50 rounded-l-2xl"></div>
-                                <h4 className="font-bold text-on-surface text-xs tracking-wider uppercase ml-2 opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric'})}</h4>
+                                <div className="flex items-start justify-between">
+                                    <h4 className="font-bold text-on-surface text-xs tracking-wider uppercase ml-2 opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric'})}</h4>
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
+                                        className="text-on-surface-variant hover:text-red-500 transition-colors p-1"
+                                        title="Delete Journal"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    </button>
+                                </div>
                                 {log.reflection && (
-                                    <p className="text-sm text-on-surface line-clamp-2 ml-2 leading-relaxed font-medium">
+                                    <p className="text-[15px] text-on-surface line-clamp-2 ml-2 leading-relaxed font-medium">
                                         {log.reflection}
                                     </p>
                                 )}
