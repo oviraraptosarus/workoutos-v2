@@ -22,6 +22,7 @@ export default function EndOfDayReflection() {
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
     const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
     const [selectedLog, setSelectedLog] = useState<any>(null);
+    const [expandedLogDate, setExpandedLogDate] = useState<string | null>(null);
     const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
 
     const handleCopyLog = () => {
@@ -537,14 +538,17 @@ export default function EndOfDayReflection() {
                                         <div className="overflow-hidden">
                                             <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
                                                 {logs.map((log: any) => {
+                                                    const isLogExpanded = expandedLogDate === log.date;
                                                     return (
-                                                        <button
+                                                        <div
                                                             key={log.date} 
-                                                            onClick={() => setSelectedLog(log)}
-                                                            className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log hover:border-secondary/40 transition-all text-left w-full flex flex-col hover:shadow-md"
+                                                            className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log transition-all w-full flex flex-col shadow-sm hover:border-surface-variant/60"
                                                         >
-                                                            {/* Header row */}
-                                                            <div className="w-full flex items-center justify-between p-4 sm:p-5 pb-2">
+                                                            {/* Header row (Click to expand) */}
+                                                            <button 
+                                                                onClick={() => setExpandedLogDate(isLogExpanded ? null : log.date)}
+                                                                className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-white/5 transition-colors focus:outline-none"
+                                                            >
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
                                                                     <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
@@ -552,20 +556,36 @@ export default function EndOfDayReflection() {
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div
                                                                         onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
-                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100 cursor-pointer"
+                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100 cursor-pointer mr-1"
                                                                         title="Delete Journal"
                                                                     >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                     </div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isLogExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                                </div>
+                                                            </button>
+                                                            
+                                                            {/* Cascading Preview body */}
+                                                            <div className={`grid transition-all duration-300 ease-in-out ${isLogExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                                                <div className="overflow-hidden">
+                                                                    {log.reflection && (
+                                                                        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1">
+                                                                            <p className="text-sm text-on-surface/70 ml-3.5 leading-relaxed font-medium line-clamp-3 text-left">
+                                                                                {log.reflection}
+                                                                            </p>
+                                                                            <div className="flex justify-start ml-3.5 mt-3">
+                                                                                <button 
+                                                                                    onClick={() => setSelectedLog(log)} 
+                                                                                    className="px-4 py-1.5 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 text-[11px] font-bold tracking-wide uppercase transition-colors"
+                                                                                >
+                                                                                    Read Full Entry
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             </div>
-                                                            {/* Preview body */}
-                                                            {log.reflection && (
-                                                                <p className="text-sm text-on-surface/70 ml-3.5 leading-relaxed font-medium px-4 pb-4 sm:px-5 sm:pb-5 line-clamp-3">
-                                                                    {log.reflection}
-                                                                </p>
-                                                            )}
-                                                        </button>
+                                                        </div>
                                                     );
                                                 })}
                                             </div>
