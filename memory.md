@@ -42,5 +42,7 @@
     - Fixed the Daily Quote mismatch between the Splash Screen and the Dashboard Header by syncing the randomly chosen quote to `sessionStorage`.
     - Prevented the Splash Screen from triggering on every page load by persisting a `workout_os_splash_seen` flag in `sessionStorage`.
 - **Reflect Hub Enhancements**:
-    - Re-architected the `SpeechRecognition` loop in `EndOfDayReflection.tsx` for iOS. It now commits full unconfirmed chunks at `onend` instead of manually tracking `isFinal` over multiple loops, preventing text duplication.
     - Converted the Live Transcript view into an interactive `<textarea>`. Users can now tap the text at any point while recording to pause the microphone and seamlessly switch to manual typing, mimicking the native iOS dictation keyboard experience.
+- **Dictation Platform-Aware Architecture**:
+    - Discovered and neutralized a fatal event flaw in Android Chrome where `continuous=true` fails to advance `resultIndex`, falsely marks historical interim snapshots as `isFinal=true`, and appends them to `e.results` recursively. 
+    - Completely replaced the standard Web Speech loop with a Platform-Aware State Machine across all 5 dictation interfaces. On Desktop, it preserves standard behavior. On Android, it exclusively reads the final index and disables `auto-restart` to prevent Android's background speech service from compounding the audio buffer upon reconnection.
