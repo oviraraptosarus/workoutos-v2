@@ -46,7 +46,7 @@ export default function EndOfDayReflection() {
             setIsEditingTranscript(false);
             setIsEditingSummary(false);
             setShowSavePrompt(false);
-            
+
             const { data } = await supabase
                 .from('daily_logs')
                 .select('reflection, raw_transcript')
@@ -60,7 +60,7 @@ export default function EndOfDayReflection() {
                     try {
                         const obj = JSON.parse(parsedSummary);
                         parsedSummary = obj.reflection || obj.summary || obj.raw_voice || parsedSummary;
-                    } catch(e) {}
+                    } catch (e) { }
                 }
                 setAvaSummary(parsedSummary);
                 setRawTranscript(data.raw_transcript || '');
@@ -125,7 +125,7 @@ export default function EndOfDayReflection() {
 
     const stopRecording = (shouldProcess: boolean = true) => {
         recognitionRef.current?.stop();
-        
+
         if (shouldProcess) {
             const finalString = (finalRef.current || rawTranscript).trim();
             if (finalString.length > 0) {
@@ -141,7 +141,7 @@ export default function EndOfDayReflection() {
 
     const processWithAva = async (transcriptToProcess: string) => {
         setState('processing');
-        
+
         try {
             const res = await fetch('/api/ai/daily-summary', {
                 method: 'POST',
@@ -164,7 +164,7 @@ export default function EndOfDayReflection() {
 
     const handleSave = async (format: 'ava' | 'raw') => {
         if (!user || !rawTranscript.trim() || !avaSummary.trim()) return;
-        
+
         try {
             const dateKey = selectedDate;
             const { data: existingLog } = await supabase
@@ -175,16 +175,16 @@ export default function EndOfDayReflection() {
                 .single();
 
             const { error } = await supabase.from('daily_logs').upsert({
-                id: existingLog?.id, 
+                id: existingLog?.id,
                 user_id: user.id,
                 date: dateKey,
                 raw_transcript: format === 'ava' ? rawTranscript : null,
                 reflection: format === 'ava' ? avaSummary : rawTranscript,
                 sleep_hours: existingLog?.sleep_hours || 0,
             }, { onConflict: 'user_id,date' });
-            
+
             if (error) throw error;
-            
+
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
             fetchHistory();
             setState('viewing');
@@ -199,15 +199,15 @@ export default function EndOfDayReflection() {
     const handleDeleteLog = async (dateToDelete: string) => {
         if (!user) return;
         if (!confirm('Are you sure you want to delete this journal entry?')) return;
-        
+
         try {
             const { error } = await supabase.from('daily_logs').update({
                 raw_transcript: null,
                 reflection: null,
             }).eq('user_id', user.id).eq('date', dateToDelete);
-            
+
             if (error) throw error;
-            
+
             if (dateToDelete === selectedDate) {
                 setState('idle');
                 setRawTranscript('');
@@ -215,7 +215,7 @@ export default function EndOfDayReflection() {
                 setIsEditingTranscript(false);
                 setIsEditingSummary(false);
             }
-            
+
             fetchHistory();
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
         } catch (e: any) {
@@ -227,34 +227,24 @@ export default function EndOfDayReflection() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                
-                <div className="flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
-                            <Mic className="w-5 h-5 sm:w-7 sm:h-7" />
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Journal</h2>
-                    </div>
+            <div className="glass-card-premium p-6 sm:p-8 relative min-h-[300px] flex flex-col justify-center transition-all duration-500">
+                <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                    <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
+                        Daily Journal
+                    </h2>
                     {state === 'viewing' && (
-                        <div className="flex items-center gap-2 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
-                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)] animate-pulse" />
-                            <span className="text-xs font-bold text-secondary uppercase tracking-wider">Synced</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
+                            <span className="text-xs font-bold text-on-surface uppercase tracking-wider">Synced</span>
                         </div>
                     )}
                 </div>
-                
-                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
-                    Reflect on your day, log your progress, and let Ava summarize your thoughts.
-                </p>
 
-                <div className="flex-1 flex flex-col items-center justify-center w-full mt-4 mb-4 relative z-10">
+                <div className="flex-1 flex flex-col items-center justify-center w-full mt-12 mb-4">
                     {/* STATE 1: IDLE */}
                     {state === 'idle' && (
                         <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in zoom-in duration-300">
-                            <button 
+                            <button
                                 onClick={startRecording}
                                 disabled={!isToday}
                                 className="relative group disabled:opacity-50"
@@ -277,17 +267,17 @@ export default function EndOfDayReflection() {
                             {/* Animated Waveform */}
                             <div className="flex items-center justify-center gap-1.5 h-16 w-full max-w-sm">
                                 {Array.from({ length: 40 }).map((_, i) => (
-                                    <div 
-                                        key={i} 
+                                    <div
+                                        key={i}
                                         className="w-1.5 bg-secondary rounded-full animate-waveform shadow-[0_0_10px_rgba(var(--c-secondary)/0.5)]"
-                                        style={{ 
+                                        style={{
                                             height: `${Math.max(10, Math.random() * 100)}%`,
-                                            animationDelay: `${i * 0.05}s` 
+                                            animationDelay: `${i * 0.05}s`
                                         }}
                                     />
                                 ))}
                             </div>
-                            
+
                             {/* Live Transcript below waveform */}
                             <div className="text-center w-full max-w-xl mx-auto px-4">
                                 <p className="text-lg md:text-xl font-medium text-on-surface leading-relaxed min-h-[60px] opacity-90 transition-all">
@@ -295,7 +285,7 @@ export default function EndOfDayReflection() {
                                 </p>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={() => stopRecording(true)}
                                 className="mt-4 px-8 py-4 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 flex items-center gap-2 font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(239,68,68,0.15)]"
                             >
@@ -322,7 +312,7 @@ export default function EndOfDayReflection() {
                         <div className="w-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Side-by-Side Cards (Stack on mobile) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                                
+
                                 {/* Ava's Summary */}
                                 <div className="bg-secondary/10 border border-secondary/20 rounded-3xl p-5 flex flex-col shadow-sm">
                                     <div className="flex items-center justify-between mb-3">
@@ -330,7 +320,7 @@ export default function EndOfDayReflection() {
                                             <Sparkles className="w-4 h-4" />
                                             <h3 className="text-xs font-bold uppercase tracking-wider">Ava's Summary</h3>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 if (isEditingSummary) {
                                                     // If we are currently editing and click "Done", we should save it if it's already in viewing state
@@ -345,7 +335,7 @@ export default function EndOfDayReflection() {
                                             {isEditingSummary ? 'Done' : 'Edit'}
                                         </button>
                                     </div>
-                                    
+
                                     {isEditingSummary ? (
                                         <textarea
                                             value={avaSummary}
@@ -363,7 +353,7 @@ export default function EndOfDayReflection() {
                                 <div className="bg-surface-container-low border border-surface-variant rounded-3xl p-5 flex flex-col shadow-sm">
                                     <div className="flex items-center justify-between mb-3">
                                         <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Your Words</h3>
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 if (isEditingTranscript) {
                                                     setIsEditingTranscript(false);
@@ -377,7 +367,7 @@ export default function EndOfDayReflection() {
                                             {isEditingTranscript ? 'Done' : 'Edit'}
                                         </button>
                                     </div>
-                                    
+
                                     {isEditingTranscript ? (
                                         <textarea
                                             value={rawTranscript}
@@ -397,15 +387,15 @@ export default function EndOfDayReflection() {
 
                             {/* Action Buttons (iOS Native Style) */}
                             <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
-                                <button 
+                                <button
                                     onClick={startRecording}
                                     className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-[0.98]"
                                 >
                                     <RefreshCw className="w-4 h-4" /> Re-record
                                 </button>
-                                
+
                                 {state === 'done' ? (
-                                    <button 
+                                    <button
                                         onClick={() => setShowSavePrompt(true)}
                                         className="flex-[2] py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
                                     >
@@ -413,17 +403,17 @@ export default function EndOfDayReflection() {
                                     </button>
                                 ) : (
                                     <div className="flex-[2] flex gap-3">
-                                        <button 
+                                        <button
                                             onClick={() => processWithAva(rawTranscript)}
                                             disabled={!rawTranscript.trim()}
                                             className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary/15 text-secondary hover:bg-secondary/25 transition-all active:scale-[0.98]"
                                         >
                                             <Sparkles className="w-4 h-4" /> Re-Analyze
                                         </button>
-                                        
+
                                         {/* If we are editing in viewing mode, show an explicit Save button */}
                                         {(isEditingTranscript || isEditingSummary) && (
-                                            <button 
+                                            <button
                                                 onClick={() => setShowSavePrompt(true)}
                                                 className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
                                             >
@@ -433,7 +423,7 @@ export default function EndOfDayReflection() {
                                     </div>
                                 )}
                             </div>
-                            
+
                             {/* Save Prompt Overlay */}
                             {showSavePrompt && (
                                 <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
@@ -442,19 +432,19 @@ export default function EndOfDayReflection() {
                                         Which version of the journal would you like to keep?
                                     </p>
                                     <div className="flex flex-col gap-3 w-full max-w-[260px]">
-                                        <button 
+                                        <button
                                             onClick={() => handleSave('ava')}
                                             className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-all active:scale-[0.98] shadow-md"
                                         >
                                             <Sparkles className="w-4 h-4" /> Save Ava's Summary
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleSave('raw')}
                                             className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high text-on-surface hover:bg-surface-variant transition-all active:scale-[0.98]"
                                         >
                                             Save My Words
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => setShowSavePrompt(false)}
                                             className="w-full py-3 mt-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-colors"
                                         >
@@ -479,8 +469,8 @@ export default function EndOfDayReflection() {
                             <div key={log.date} className="bg-surface-container border border-surface-variant/50 rounded-2xl p-4 flex flex-col gap-1.5 relative overflow-hidden group hover:border-secondary/30 transition-colors">
                                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary/50 rounded-l-2xl"></div>
                                 <div className="flex items-start justify-between">
-                                    <h4 className="font-bold text-on-surface text-xs tracking-wider uppercase ml-2 opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric'})}</h4>
-                                    <button 
+                                    <h4 className="font-bold text-on-surface text-xs tracking-wider uppercase ml-2 opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h4>
+                                    <button
                                         onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
                                         className="text-on-surface-variant hover:text-red-500 transition-colors p-1"
                                         title="Delete Journal"

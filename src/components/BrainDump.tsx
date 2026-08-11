@@ -146,7 +146,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
             
-            <div className="flex items-center gap-4 relative z-10">
+            <div className="flex items-center gap-3 relative z-10">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
                     <BrainCircuit className="w-5 h-5 sm:w-7 sm:h-7" />
                 </div>

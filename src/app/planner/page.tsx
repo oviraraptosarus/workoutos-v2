@@ -517,9 +517,9 @@ export default function ExecutionOSPage() {
                                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
-                                <div className="flex items-center justify-between gap-4 relative z-10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary dark:text-white shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
+                                <div className="flex items-center justify-between gap-3 relative z-10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
                                             <Zap className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
                                         <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
@@ -737,8 +737,8 @@ export default function ExecutionOSPage() {
                                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex flex-col gap-2 relative z-10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-blue-500/20 flex items-center justify-center border border-blue-500/30 text-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] backdrop-blur-md shrink-0">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
                                             <Bookmark className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
                                         <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Content Vault</h2>
