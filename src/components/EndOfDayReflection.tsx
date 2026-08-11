@@ -118,12 +118,29 @@ export default function EndOfDayReflection() {
             recognition.lang = 'en-US';
 
             recognition.onresult = (e: any) => {
-                let sessionText = '';
+                let finalSessionText = '';
+                let interimSessionText = '';
+                
                 for (let i = 0; i < e.results.length; i++) {
-                    sessionText += e.results[i][0].transcript + ' ';
+                    if (e.results[i].isFinal) {
+                        finalSessionText += e.results[i][0].transcript + ' ';
+                    }
                 }
-                currentSessionTranscript = sessionText;
-                setRawTranscript((finalRef.current + ' ' + currentSessionTranscript).trim());
+                
+                for (let i = e.results.length - 1; i >= 0; i--) {
+                    if (!e.results[i].isFinal) {
+                        interimSessionText = e.results[i][0].transcript;
+                        break;
+                    }
+                }
+                
+                currentSessionTranscript = (finalSessionText + interimSessionText).trim();
+                const newFull = (finalRef.current + ' ' + currentSessionTranscript).trim();
+                setRawTranscript(newFull);
+                
+                if (process.env.NEXT_PUBLIC_DEBUG_DICTATION === 'true') {
+                    setDebugInfo({ interim: interimSessionText, final: finalSessionText, full: newFull });
+                }
             };
 
             recognition.onerror = (e: any) => {
@@ -370,6 +387,15 @@ export default function EndOfDayReflection() {
 
                 {/* States */}
                 <div className="flex flex-col items-center justify-center w-full">
+                    
+                    {process.env.NEXT_PUBLIC_DEBUG_DICTATION === 'true' && state === 'recording' && (
+                        <div className="absolute top-0 right-0 m-4 p-4 bg-black/80 text-green-400 font-mono text-xs rounded-xl border border-green-500/30 max-w-sm z-50 pointer-events-none">
+                            <div className="font-bold text-white mb-2">DICTATION DEBUG</div>
+                            <div>Final: {debugInfo.final || '(empty)'}</div>
+                            <div className="mt-1">Interim: {debugInfo.interim || '(empty)'}</div>
+                            <div className="mt-1 text-blue-300">Total: {debugInfo.full || '(empty)'}</div>
+                        </div>
+                    )}
 
                     {/* STATE 1: IDLE */}
                     {state === 'idle' && (

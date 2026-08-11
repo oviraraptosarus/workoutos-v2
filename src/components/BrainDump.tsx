@@ -46,13 +46,23 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         recognition.lang = 'en-US';
 
         recognition.onresult = (e: any) => {
-            let interim = '';
-            for (let i = e.resultIndex; i < e.results.length; i++) {
-                const chunk = e.results[i][0].transcript;
-                if (e.results[i].isFinal) finalRef.current += chunk + ' ';
-                else interim = chunk;
+            let finalSessionText = '';
+            let interimSessionText = '';
+            
+            for (let i = 0; i < e.results.length; i++) {
+                if (e.results[i].isFinal) {
+                    finalSessionText += e.results[i][0].transcript + ' ';
+                }
             }
-            setTranscript((finalRef.current + interim).trim());
+            
+            for (let i = e.results.length - 1; i >= 0; i--) {
+                if (!e.results[i].isFinal) {
+                    interimSessionText = e.results[i][0].transcript;
+                    break;
+                }
+            }
+            
+            setTranscript((finalSessionText + interimSessionText).trim());
         };
 
         recognition.onerror = (e: any) => {

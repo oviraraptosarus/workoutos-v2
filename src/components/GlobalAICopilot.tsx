@@ -776,11 +776,23 @@ export default function GlobalAICopilot() {
             recognition.onresult = (e: any) => {
                 if (!isListeningRef.current) return;
                 
-                let sessionText = '';
+                let finalSessionText = '';
+                let interimSessionText = '';
+                
                 for (let i = 0; i < e.results.length; i++) {
-                    sessionText += e.results[i][0].transcript + ' ';
+                    if (e.results[i].isFinal) {
+                        finalSessionText += e.results[i][0].transcript + ' ';
+                    }
                 }
-                currentSessionTranscript = sessionText.trim();
+                
+                for (let i = e.results.length - 1; i >= 0; i--) {
+                    if (!e.results[i].isFinal) {
+                        interimSessionText = e.results[i][0].transcript;
+                        break;
+                    }
+                }
+                
+                currentSessionTranscript = (finalSessionText + interimSessionText).trim();
                 
                 const existing = promptRef.current ? promptRef.current + ' ' : '';
                 const full = (existing + currentSessionTranscript).trim();
