@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Play, BrainCircuit, Target, CheckCircle2, Loader2, Sparkles, Mic, MicOff, X, Check, Trash2, Bookmark, Trophy, Zap } from 'lucide-react';
+import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap } from 'lucide-react';
+import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
@@ -775,11 +776,13 @@ export default function ExecutionOSPage() {
                                 </form>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                                    {vaultItems.map(item => (
+                                    {vaultItems.map(item => {
+                                        const thumb = getFallbackThumbnail(item.url, item.thumbnail_url);
+                                        return (
                                         <div key={item.id} className="bg-surface-container border border-surface-variant rounded-2xl overflow-hidden hover:border-white/20 transition-all group flex flex-col">
-                                            {item.thumbnail_url && (
+                                            {thumb && (
                                                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative aspect-video bg-black/20 overflow-hidden">
-                                                    <img src={item.thumbnail_url} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+                                                    <img src={thumb} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
                                                     {item.content_type === 'video' && (
                                                         <div className="absolute inset-0 flex items-center justify-center">
                                                             <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
@@ -807,7 +810,7 @@ export default function ExecutionOSPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
+                                    )})}
                                     {vaultItems.length === 0 && (
                                         <div className="col-span-full py-12 text-center text-on-surface-variant border-2 border-dashed border-surface-variant rounded-2xl">
                                             <p className="font-bold">Vault is empty</p>

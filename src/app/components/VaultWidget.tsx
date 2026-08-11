@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Bookmark, Loader2, Play, CheckCircle2 } from 'lucide-react';
+import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import Link from 'next/link';
 
 export default function VaultWidget() {
@@ -116,11 +117,13 @@ export default function VaultWidget() {
             {vaultItems.length > 0 && (
                 <div className="flex flex-col gap-2 mt-2 w-full relative z-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-                        {vaultItems.slice(0, 3).map(item => (
+                        {vaultItems.slice(0, 3).map(item => {
+                            const thumb = getFallbackThumbnail(item.url, item.thumbnail_url);
+                            return (
                             <div key={item.id} className="bg-surface-container border border-surface-variant rounded-xl overflow-hidden hover:border-white/20 transition-all group flex items-stretch min-h-[72px] sm:min-h-[80px] w-full">
-                                {item.thumbnail_url && (
+                                {thumb && (
                                     <a href={item.url} target="_blank" rel="noopener noreferrer" className="relative w-20 sm:w-24 bg-black/20 overflow-hidden shrink-0 block">
-                                        <img src={item.thumbnail_url} alt={item.title || 'Thumbnail'} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+                                        <img src={thumb} alt={item.title || 'Thumbnail'} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
                                         {item.content_type === 'video' && (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="w-6 h-6 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/20">
@@ -148,7 +151,7 @@ export default function VaultWidget() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                     {vaultItems.length > 3 && (
                         <Link href="/vault" className="text-xs font-bold text-blue-400 hover:text-blue-300 w-fit pt-1">

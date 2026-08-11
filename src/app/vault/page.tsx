@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AppLayout from '@/components/AppLayout';
-import { Bookmark, Play, CheckCircle2, Trash2, Loader2, Link2, ExternalLink } from 'lucide-react';
+import { Loader2, Trash2, CheckCircle2, Bookmark, ExternalLink, Play, Link2 } from 'lucide-react';
+import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import { toast } from 'sonner'; // Assuming sonner is used for toasts, if not I'll just use native alert or no toast. Wait, let's use a simple inline message or standard alert just in case.
 
 export default function VaultPage() {
@@ -161,11 +162,13 @@ export default function VaultPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
-                        {displayItems.map(item => (
+                        {displayItems.map(item => {
+                            const thumb = getFallbackThumbnail(item.url, item.thumbnail_url);
+                            return (
                             <div key={item.id} className="glass-card-premium rounded-[24px] overflow-hidden group flex flex-col transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 border border-white/5">
-                                {item.thumbnail_url && (
+                                {thumb && (
                                     <a href={item.url} target="_blank" rel="noopener noreferrer" className="relative w-full aspect-video bg-black/20 overflow-hidden shrink-0 block">
-                                        <img src={item.thumbnail_url} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700 ease-out" />
+                                        <img src={thumb} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700 ease-out" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60"></div>
                                         
                                         {item.content_type === 'video' && (
@@ -229,7 +232,7 @@ export default function VaultPage() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                 )}
             </div>
