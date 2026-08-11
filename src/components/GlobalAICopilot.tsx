@@ -813,8 +813,8 @@ export default function GlobalAICopilot() {
             setIsListening(false);
         };
         recognition.onend = () => {
-            // Auto-restart on iOS which doesn't honour continuous=true
-            if (isListeningRef.current) {
+            // Auto-restart on iOS which doesn't honour continuous=true. NEVER auto-restart on Android due to buffer replay bug.
+            if (isListeningRef.current && !isAndroid) {
                 try { recognition.start(); } catch { /* already started */ }
             } else {
                 setIsListening(false);
