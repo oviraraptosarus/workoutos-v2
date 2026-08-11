@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import clsx from 'clsx';
 
-type JournalState = 'idle' | 'recording' | 'processing' | 'done';
+type JournalState = 'idle' | 'recording' | 'processing' | 'done' | 'viewing';
 
 export default function EndOfDayReflection() {
     const { selectedDate, isToday } = useDate();
@@ -28,6 +28,31 @@ export default function EndOfDayReflection() {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchReflection = async () => {
+            if (!user) return;
+            setState('idle');
+            setRawTranscript('');
+            setAvaSummary('');
+            
+            const { data } = await supabase
+                .from('daily_logs')
+                .select('reflection, raw_transcript')
+                .eq('user_id', user.id)
+                .eq('date', selectedDate)
+                .single();
+
+            if (isMounted && data && data.reflection) {
+                setAvaSummary(data.reflection);
+                setRawTranscript(data.raw_transcript || '');
+                setState('viewing');
+            }
+        };
+        fetchReflection();
+        return () => { isMounted = false; };
+    }, [selectedDate, user]);
 
     const startRecording = () => {
         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -169,6 +194,13 @@ export default function EndOfDayReflection() {
                         </div>
                         <span className="font-bold text-center px-4">Reflection logged and analyzed!</span>
                     </div>
+                ) : state === 'viewing' ? (
+                    <div className="absolute inset-0 bg-surface-container rounded-[1.25rem] p-6 overflow-y-auto text-on-surface text-sm border border-surface-variant flex flex-col">
+                        <div className="flex items-center gap-2 text-primary font-bold mb-4">
+                            <Sparkles className="w-5 h-5" /> Ava's Analysis
+                        </div>
+                        <p className="leading-relaxed whitespace-pre-wrap">{avaSummary}</p>
+                    </div>
                 ) : (
                     <button 
                         onClick={toggleRecording}
@@ -193,7 +225,7 @@ export default function EndOfDayReflection() {
                 )}
             </div>
             
-            {state !== 'done' && (
+            {state !== 'done' && state !== 'viewing' && (
                 <button 
                     onClick={handleReflect}
                     disabled={!rawTranscript.trim() || state === 'recording' || state === 'processing'}

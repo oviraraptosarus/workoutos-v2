@@ -16,3 +16,4 @@
     - If a task passes its deadline, the system reminds the user every 4 hours until it's completed.
     - Starting at 6:00 PM, the system reminds the user to log sleep and journal entries every 2 hours until fulfilled.
 - **Architecture Overhaul**: Cleaned up scattered `.md` files in the root directory into a unified `.agents/AGENTS.md` master rulebook and a `.agents/architecture.md` blueprint.
+- **View Past Reflections**: Upgraded the EndOfDayReflection component to fetch and display the user's saved reflection from Supabase when they navigate to past dates using the global Date Picker, introducing a read-only 'viewing' state.
