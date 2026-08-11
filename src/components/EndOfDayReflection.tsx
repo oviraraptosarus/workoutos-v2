@@ -111,35 +111,49 @@ export default function EndOfDayReflection() {
         setShowSavePrompt(false);
 
         let currentSessionTranscript = '';
+        let sessionCounter = 0;
+        let eventCounter = 0;
+        let currentSessionId = 0;
+
         const spawnRecognition = () => {
+            sessionCounter++;
+            currentSessionId = sessionCounter;
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`[DICTATION START] session=${currentSessionId}`);
+            }
             const recognition = new SR();
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'en-US';
 
             recognition.onresult = (e: any) => {
-                let finalSessionText = '';
-                let interimSessionText = '';
-                
-                for (let i = 0; i < e.results.length; i++) {
-                    if (e.results[i].isFinal) {
-                        finalSessionText += e.results[i][0].transcript + ' ';
-                    }
+                let interim = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    const chunk = e.results[i][0].transcript;
+                    if (e.results[i].isFinal) finalRef.current += chunk + ' ';
+                    else interim = chunk;
                 }
-                
-                for (let i = e.results.length - 1; i >= 0; i--) {
-                    if (!e.results[i].isFinal) {
-                        interimSessionText = e.results[i][0].transcript;
-                        break;
-                    }
-                }
-                
-                currentSessionTranscript = (finalSessionText + interimSessionText).trim();
-                const newFull = (finalRef.current + ' ' + currentSessionTranscript).trim();
+                const newFull = (finalRef.current + interim).trim();
                 setRawTranscript(newFull);
                 
-                if (process.env.NEXT_PUBLIC_DEBUG_DICTATION === 'true') {
-                    setDebugInfo({ interim: interimSessionText, final: finalSessionText, full: newFull });
+                if (process.env.NODE_ENV === 'development') {
+                    eventCounter++;
+                    console.log(`[DICTATION FORENSIC]
+session=${currentSessionId}
+event=${eventCounter}
+resultIndex=${e.resultIndex}
+resultsLength=${e.results.length}
+
+${Array.from(e.results).map((r: any, idx) => `result[${idx}]\nisFinal=${r.isFinal}\ntext="${r[0].transcript}"`).join('\n\n')}
+
+CURRENT FINAL:
+"${finalRef.current}"
+
+CURRENT INTERIM:
+"${interim}"
+
+DISPLAY:
+"${newFull}"`);
                 }
             };
 
@@ -152,14 +166,12 @@ export default function EndOfDayReflection() {
 
             // KEY FIX: auto-restart on end if we still intend to record, and commit session text
             recognition.onend = () => {
-                if (currentSessionTranscript.trim()) {
-                    finalRef.current = (finalRef.current + ' ' + currentSessionTranscript).trim();
-                    currentSessionTranscript = '';
-                    setRawTranscript(finalRef.current);
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`[DICTATION STOP] session=${currentSessionId}`);
                 }
                 if (isRecordingRef.current) {
                     try {
-                        spawnRecognition(); // seamless restart with FRESH instance
+                        recognition.start(); // seamless restart
                     } catch {}
                 }
             };
@@ -387,15 +399,6 @@ export default function EndOfDayReflection() {
 
                 {/* States */}
                 <div className="flex flex-col items-center justify-center w-full">
-                    
-                    {process.env.NEXT_PUBLIC_DEBUG_DICTATION === 'true' && state === 'recording' && (
-                        <div className="absolute top-0 right-0 m-4 p-4 bg-black/80 text-green-400 font-mono text-xs rounded-xl border border-green-500/30 max-w-sm z-50 pointer-events-none">
-                            <div className="font-bold text-white mb-2">DICTATION DEBUG</div>
-                            <div>Final: {debugInfo.final || '(empty)'}</div>
-                            <div className="mt-1">Interim: {debugInfo.interim || '(empty)'}</div>
-                            <div className="mt-1 text-blue-300">Total: {debugInfo.full || '(empty)'}</div>
-                        </div>
-                    )}
 
                     {/* STATE 1: IDLE */}
                     {state === 'idle' && (

@@ -75,23 +75,16 @@ export default function GeminiFoodAssistant() {
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            let finalSessionText = '';
-            let interimSessionText = '';
-            
-            for (let i = 0; i < event.results.length; i++) {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    finalSessionText += event.results[i][0].transcript + ' ';
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
                 }
             }
             
-            for (let i = event.results.length - 1; i >= 0; i--) {
-                if (!event.results[i].isFinal) {
-                    interimSessionText = event.results[i][0].transcript;
-                    break;
-                }
-            }
-            
-            setPrompt((existing + finalSessionText + interimSessionText).trim());
+            setPrompt((existing + finalTranscript + interimTranscript).trim());
 
             if (debounceTimer) clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
