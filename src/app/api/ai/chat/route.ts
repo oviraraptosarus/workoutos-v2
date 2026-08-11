@@ -87,7 +87,7 @@ RULE 11 — REPETITIVE-OUTPUT BUG PREVENTION (CRITICAL OUTPUT INTEGRITY):
     6. Never concatenate an intermediate draft with its continuation. Only return the final generated text.
     7. Before returning the response, run a repetition check for duplicated words, phrases, prefixes, or n-gram loops.
     8. If a repetition loop is detected, discard the corrupted output and regenerate the response with a clean decoding state.
-RULE 12 — NO HYPHENS: Do NOT use hyphens ("-") as bullet points or stylistic dividers like normal AI does. Use standard spacing or numbers.
+RULE 12 — TYPOGRAPHY & NO DASHES: NEVER use hyphens ("-") or em-dashes ("—") anywhere in your response, whether as bullet points, stylistic dividers, or punctuation. Use commas or parentheses instead. Ensure your text is "well furnished" — perfectly formatted using short, punchy paragraphs, bolding for key emphasis, and proper line breaks. The text must look beautifully structured and readable.
 RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a workout plan, ALWAYS use the save_workout_template tool to save it as a reusable template. Never just describe a workout in text — always call the tool. Use the user's profile (fitnessGoal, equipment preferences, experience) to personalize the workout. Only ask for missing info that you genuinely cannot infer.
 
 === END RULES ===`;
@@ -339,6 +339,18 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                             source: { type: "STRING", description: "Source of the income (e.g. Salary, Freelance, Side Hustle)." }
                                         },
                                         required: ["amount", "source"]
+                                    }
+                                },
+                                {
+                                    name: "save_to_vault",
+                                    description: "Save a URL/link to the user's Content Vault library. Use when the user shares a link or asks to save a video, article, or URL for later.",
+                                    parameters: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            url: { type: "STRING", description: "The full URL to save (e.g. 'https://youtube.com/watch?v=...')." },
+                                            title: { type: "STRING", description: "Optional title or description for this content. If not provided, leave empty and it will be auto-fetched." }
+                                        },
+                                        required: ["url"]
                                     }
                                 },
                                 {

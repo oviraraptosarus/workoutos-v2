@@ -130,9 +130,6 @@ export default function MoodEnergyCard() {
             </div>
 
             <div className="glass-card-premium p-4 sm:p-5 transition-all relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex flex-col flex-1 border border-white/10">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                
                 <div className="space-y-3 relative z-10">
                 <div className="flex items-center gap-3">
                     <div className="w-[68px] flex items-center gap-1.5 text-on-surface-variant shrink-0">

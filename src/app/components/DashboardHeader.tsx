@@ -61,7 +61,7 @@ export default function DashboardHeader() {
                             {greeting}, {displayName}
                         </h1>
                         <p className="text-xs sm:text-sm font-medium text-on-surface-variant italic mt-1.5 opacity-80 line-clamp-2">
-                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^["\-\s]+/, '')}
+                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^["\-\s\u2014]+/, '')}
                         </p>
                         <div className="flex items-center gap-3 mt-3 flex-wrap">
                             <label className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none cursor-pointer flex items-center gap-1.5 relative hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant/50 shadow-sm">

@@ -10,6 +10,7 @@ interface EnhancedSleepLoggerProps {
 
 export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerProps) {
     const { t } = useLanguage();
+    const [sessionType, setSessionType] = useState<'Night Sleep' | 'Nap' | 'Rest'>('Night Sleep');
     const [bedtime, setBedtime] = useState('23:00');
     const [waketime, setWaketime] = useState('07:00');
     const [hours, setHours] = useState('8');
@@ -41,7 +42,7 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
         const logData = {
             id: Date.now(),
             amount: numHours,
-            type: 'Night Sleep',
+            type: sessionType,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             details: {
                 bedtime,
@@ -66,8 +67,31 @@ export default function EnhancedSleepLogger({ onLogSaved }: EnhancedSleepLoggerP
     return (
         <div className="glass-card-premium p-4 sm:p-5 space-y-4 transition-colors">
             <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2 mb-2">
-                <Moon size={18} className="text-secondary" /> Advanced Sleep Log
+                <Moon size={18} className="text-secondary" /> Sleep Logger
             </h2>
+
+            {/* Session type pill selector */}
+            <div className="flex gap-2">
+                {(['Night Sleep', 'Nap', 'Rest'] as const).map(type => (
+                    <button
+                        key={type}
+                        onClick={() => {
+                            setSessionType(type);
+                            // Adjust default times per session type
+                            if (type === 'Night Sleep') { setBedtime('23:00'); setWaketime('07:00'); setHours('8'); }
+                            if (type === 'Nap') { setBedtime('13:00'); setWaketime('14:00'); setHours('1'); }
+                            if (type === 'Rest') { setBedtime('15:00'); setWaketime('15:30'); setHours('0.5'); }
+                        }}
+                        className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-wide transition-all ${
+                            sessionType === type
+                                ? 'bg-secondary text-on-secondary shadow-sm'
+                                : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                        }`}
+                    >
+                        {type === 'Night Sleep' ? '🌙 Night' : type === 'Nap' ? '😴 Nap' : '🛋️ Rest'}
+                    </button>
+                ))}
+            </div>
 
             {/* Bed & Wake times */}
             <div className="grid grid-cols-2 gap-4">

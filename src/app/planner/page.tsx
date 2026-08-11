@@ -10,6 +10,8 @@ import clsx from 'clsx';
 import confetti from 'canvas-confetti';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
 import TaskItem from './components/TaskItem';
+import BrainDump from '@/components/BrainDump';
+import EndOfDayReflection from '@/components/EndOfDayReflection';
 
 export default function ExecutionOSPage() {
     const { t } = useLanguage();
@@ -599,63 +601,7 @@ export default function ExecutionOSPage() {
                     {/* BRAIN HUB */}
                     {activeTab === 'brain' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                                
-                                <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
-                                        <BrainCircuit className="w-5 h-5 sm:w-7 sm:h-7" />
-                                    </div>
-                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
-                                </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
-                                    Use the Brain Dump when your mind is cluttered. Instead of manually organizing, just dump all your thoughts, ideas, or to-dos here (type or speak). Ava will analyze the chaos, extract the actionable tasks, and put them straight into your execution pipeline.
-                                </p>
-                                
-                                <div className="relative mb-4 z-10">
-                                    <textarea
-                                        value={brainInput}
-                                        onChange={(e) => setBrainInput(e.target.value)}
-                                        placeholder="e.g., I need to buy groceries tomorrow, finish the TPS report, and email John about the project..."
-                                        className="w-full h-48 bg-surface-container border border-surface-variant rounded-[1.25rem] p-6 pb-16 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md resize-none"
-                                    />
-                                    <button 
-                                        onClick={toggleRecording}
-                                        className={clsx(
-                                            "absolute bottom-4 right-4 p-3 rounded-full transition-all shadow-md flex items-center gap-2",
-                                            isRecording ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" : "bg-surface-variant text-on-surface hover:bg-surface-variant/80"
-                                        )}
-                                    >
-                                        {isRecording ? (
-                                            <>
-                                                <MicOff className="w-5 h-5" />
-                                                <span className="text-sm font-bold pr-1">Stop</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Mic className="w-5 h-5" />
-                                                <span className="text-sm font-bold pr-1">Speak</span>
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                                
-                                <button 
-                                    onClick={handleBrainDump}
-                                    disabled={isParsing || !brainInput.trim()}
-                                    className="relative z-10 bg-secondary text-on-secondary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-secondary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-secondary)/0.6)] flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
-                                >
-                                    {isParsing ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
-                                    {isParsing ? 'Parsing with AI...' : 'Parse & Execute'}
-                                </button>
-
-                                {brainResponse && (
-                                    <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-on-surface">
-                                        {brainResponse}
-                                    </div>
-                                )}
-                            </div>
+                            <BrainDump onTasksSaved={loadTasks} />
                         </div>
                     )}
 
@@ -864,63 +810,7 @@ export default function ExecutionOSPage() {
                     {/* REFLECT HUB */}
                     {activeTab === 'reflect' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-
-                                <div className="flex items-center gap-4 relative z-10">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-primary/20 flex items-center justify-center border border-primary/30 text-primary shadow-[0_0_20px_rgba(var(--c-primary)/0.3)] backdrop-blur-md shrink-0">
-                                        <CheckCircle2 className="w-5 h-5 sm:w-7 sm:h-7" />
-                                    </div>
-                                    <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">End of Day Review</h2>
-                                </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
-                                    Did you win the day? Log your daily wrap-up, bottlenecks, and wins. Ava will process this reflection to identify your behavioral patterns, suggest course corrections, and adjust tomorrow's targets.
-                                </p>
-                                
-                                <div className="relative mb-4 z-10">
-                                    <textarea
-                                        value={reflectInput}
-                                        onChange={(e) => setReflectInput(e.target.value)}
-                                        placeholder="e.g. Executed well on work tasks, but skipped the gym because I slept poorly. Need to fix sleep hygiene."
-                                        className="w-full h-32 bg-surface-container border border-surface-variant rounded-[1.25rem] p-6 pb-16 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md resize-none"
-                                    />
-                                    <button 
-                                        onClick={toggleRecording}
-                                        className={clsx(
-                                            "absolute bottom-4 right-4 p-3 rounded-full transition-all shadow-md flex items-center gap-2",
-                                            isRecording ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" : "bg-white/5 border border-white/10 text-on-surface hover:bg-white/10"
-                                        )}
-                                    >
-                                        {isRecording ? (
-                                            <>
-                                                <MicOff className="w-5 h-5" />
-                                                <span className="text-sm font-bold pr-1">Stop</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Mic className="w-5 h-5" />
-                                                <span className="text-sm font-bold pr-1">Speak</span>
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                                
-                                <button 
-                                    onClick={handleReflect}
-                                    disabled={isReflecting || !reflectInput.trim()}
-                                    className="relative z-10 bg-primary text-on-primary px-8 py-4 rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
-                                >
-                                    {isReflecting ? <Loader2 className="w-6 h-6 animate-spin" /> : <Sparkles className="w-6 h-6" />}
-                                    {isReflecting ? 'Processing...' : 'Analyze & Store'}
-                                </button>
-
-                                {reflectResponse && (
-                                    <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-on-surface whitespace-pre-wrap">
-                                        {reflectResponse}
-                                    </div>
-                                )}
-                            </div>
+                            <EndOfDayReflection />
                         </div>
                     )}
                 </div>

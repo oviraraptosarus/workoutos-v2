@@ -612,6 +612,27 @@ export default function GlobalAICopilot() {
                     } else if (fn === 'add_income') {
                         await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.source || 'Income', source: args.source || 'Other', amount: Number(args.amount) || 0, type: 'one-time' }, 'income');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
+                    } else if (fn === 'save_to_vault') {
+                        const vaultUrl = (args.url || '').trim();
+                        if (!vaultUrl) throw new Error('No URL provided to save to vault.');
+                        // Auto-fetch title if not provided
+                        let vaultTitle = (args.title || '').trim();
+                        if (!vaultTitle) {
+                            try {
+                                const metaRes = await fetch(`/api/metadata?url=${encodeURIComponent(vaultUrl)}`);
+                                const metaJson = await metaRes.json();
+                                vaultTitle = metaJson.title || vaultUrl;
+                            } catch { vaultTitle = vaultUrl; }
+                        }
+                        const { error: vaultError } = await supabase.from('content_vault').insert({
+                            user_id: user.id,
+                            url: vaultUrl,
+                            title: vaultTitle,
+                            status: 'unread',
+                        });
+                        if (vaultError) throw new Error(`Failed to save to vault: ${vaultError.message}`);
+                        window.dispatchEvent(new Event('workout_os_vault_updated'));
+                        finalResponseText = `Saved to your Content Vault! "${vaultTitle}" is ready to read whenever you are.`;
                     } else if (fn === 'save_ai_memory') {
                         const { error } = await supabase.from('ai_memories').insert({
                             user_id: user.id,
@@ -745,29 +766,36 @@ export default function GlobalAICopilot() {
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = 'en-IN';
         const existing = promptRef.current ? promptRef.current + ' ' : '';
-        let sessionTranscript = '';
-        
+        let finalSessionText = '';
+
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return;
-            
-            let currentTranscript = '';
-            for (let i = 0; i < event.results.length; ++i) {
-                currentTranscript += event.results[i][0].transcript;
+
+            // Only process new results from resultIndex onwards to prevent duplication
+            let interimText = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const chunk = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalSessionText += chunk + ' ';
+                } else {
+                    interimText = chunk;
+                }
             }
-            
-            const full = (existing + currentTranscript).trim();
+
+            const full = (existing + finalSessionText + interimText).trim();
             setPrompt(full);
-            
+
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
                 if (!isListeningRef.current) return;
                 setIsListening(false);
                 if (recognitionRef.current) recognitionRef.current.stop();
-                if (full) handleSend(full);
+                const finalFull = (existing + finalSessionText).trim() || full;
+                if (finalFull) handleSend(finalFull);
             }, 3500);
         };
         recognition.onerror = () => setIsListening(false);

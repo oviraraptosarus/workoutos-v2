@@ -10,7 +10,6 @@ import { useDate } from '@/contexts/DateContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/lib/supabase/client';
 import EnhancedSleepLogger from './components/EnhancedSleepLogger';
-import EndOfDayReflection from './components/EndOfDayReflection';
 
 export default function SleepPage() {
     const { t } = useLanguage();
@@ -170,6 +169,12 @@ export default function SleepPage() {
 
     const avgSleep = chartData.reduce((acc, curr) => acc + curr.hours, 0) / (chartData.length || 1);
     const isTrendingUp = (chartData[chartData.length - 1]?.hours || 0) >= (chartData[chartData.length - 2]?.hours || 0);
+    
+    const weekEndDate = new Date(selectedDate);
+    if (selectedDate) {
+        weekEndDate.setDate(weekEndDate.getDate() + (chartWeekOffset * 7));
+    }
+    const monthYearStr = weekEndDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
 
     if (!isClient) return null;
 
@@ -237,7 +242,9 @@ export default function SleepPage() {
                                 >
                                     <ChevronLeft size={16} />
                                 </button>
-                                <div className="w-1.5 h-1.5 rounded-full bg-surface-variant mx-1"></div>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant px-1">
+                                    {monthYearStr}
+                                </span>
                                 <button 
                                     onClick={() => setChartWeekOffset(prev => Math.min(0, prev + 1))}
                                     disabled={chartWeekOffset >= 0}
@@ -270,8 +277,22 @@ export default function SleepPage() {
                                         tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 600 }}
                                     />
                                     <Tooltip 
-                                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
                                         cursor={{ stroke: '#e5e7eb', strokeWidth: 2, strokeDasharray: '5 5' }}
+                                        content={({ active, payload }) => {
+                                            if (active && payload && payload.length) {
+                                                const rawDate = payload[0].payload.rawDate;
+                                                const d = new Date(rawDate);
+                                                const formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+                                                
+                                                return (
+                                                    <div className="bg-surface-container-high border border-surface-variant p-3 rounded-2xl shadow-xl flex flex-col gap-1 min-w-[100px]">
+                                                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">{formattedDate}</span>
+                                                        <span className="text-sm font-black text-on-surface">{payload[0].value} <span className="text-xs text-on-surface-variant font-medium">hrs</span></span>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        }}
                                     />
                                     <Area 
                                         type="monotone" 
@@ -304,9 +325,20 @@ export default function SleepPage() {
                                 ) : (
                                     logs.map((log) => (
                                         <div key={log.id} className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-4 flex items-center justify-between shadow-sm group">
-                                            <div>
-                                                <p className="font-black text-on-surface text-sm">{log.amount} hrs</p>
-                                                <p className="text-[10px] font-bold text-on-surface-variant uppercase">{log.type} • {log.time}</p>
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0 ${
+                                                    log.type === 'Nap' ? 'bg-amber-500/10' :
+                                                    log.type === 'Rest' ? 'bg-purple-500/10' :
+                                                    'bg-secondary/10'
+                                                }`}>
+                                                    {log.type === 'Nap' ? '😴' : log.type === 'Rest' ? '🛋️' : '🌙'}
+                                                </div>
+                                                <div>
+                                                    <p className="font-black text-on-surface text-sm">{log.amount} hrs</p>
+                                                    <p className="text-[10px] font-bold text-on-surface-variant uppercase">
+                                                        {log.type} • {log.details?.bedtime && log.details?.waketime ? `${log.details.bedtime} → ${log.details.waketime}` : log.time}
+                                                    </p>
+                                                </div>
                                             </div>
                                             <button 
                                                 onClick={() => handleDelete(log.id, log.amount)}
@@ -322,9 +354,6 @@ export default function SleepPage() {
 
                     </div>
                 </div>
-
-                <EndOfDayReflection />
-
             </div>
         </AppLayout>
     );
