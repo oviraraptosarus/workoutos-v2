@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { CheckCircle2, ChevronRight, Camera } from 'lucide-react';
+import { CheckCircle2, ChevronRight, ChevronLeft, Camera } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,6 +28,7 @@ export default function WeightLogCard() {
     const [errorMsg, setErrorMsg] = useState('');
     
     const [chartData, setChartData] = useState<WeightEntry[]>([]);
+    const [chartWeekOffset, setChartWeekOffset] = useState(0);
 
     // Progress photos state
     const [photos, setPhotos] = useState<ProgressPhotoItem[]>([]);
@@ -79,8 +80,9 @@ export default function WeightLogCard() {
             const target = userProfile?.targetWeight || 75;
             const createdAt = userProfile?.createdAt ? new Date(userProfile.createdAt) : null;
             
-            // Generate the current week (Monday to Sunday)
+            // Generate the week based on chartWeekOffset (Monday to Sunday)
             const today = new Date();
+            today.setDate(today.getDate() + (chartWeekOffset * 7));
             const currentDay = today.getDay();
             const diffToMonday = currentDay === 0 ? 6 : currentDay - 1;
             
@@ -103,16 +105,16 @@ export default function WeightLogCard() {
             const logMap = new Map();
             if (data) {
                 data.forEach(d => {
-                    const localDate = new Date(d.date);
-                    const formattedDate = localDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+                    // use UTC to match supabase date
+                    const formattedDate = new Date(d.date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
                     logMap.set(formattedDate, d.weight_kg);
                 });
             }
 
             const currentWeekLogs: any[] = [];
             for (let i = 0; i < 7; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() - diffToMonday + i);
+                const d = new Date(startDate);
+                d.setDate(startDate.getDate() + i);
                 const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
                 currentWeekLogs.push({
@@ -126,7 +128,7 @@ export default function WeightLogCard() {
         load();
         window.addEventListener('storage', load);
         return () => window.removeEventListener('storage', load);
-    }, [userProfile?.currentWeight, userProfile?.targetWeight]);
+    }, [userProfile?.currentWeight, userProfile?.targetWeight, chartWeekOffset]);
 
     const handleLog = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -221,6 +223,28 @@ export default function WeightLogCard() {
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                 <div className="relative z-10 flex flex-col h-full">
+
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+                        {chartWeekOffset === 0 ? "This Week" : chartWeekOffset === -1 ? "Last Week" : `${Math.abs(chartWeekOffset)} Weeks Ago`}
+                    </span>
+                    <div className="flex items-center gap-1 bg-surface-container-low rounded-full border border-surface-variant/50 p-0.5 shadow-sm">
+                        <button 
+                            onClick={() => setChartWeekOffset(prev => prev - 1)}
+                            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface"
+                        >
+                            <ChevronLeft size={14} />
+                        </button>
+                        <div className="w-1 h-1 rounded-full bg-surface-variant mx-0.5"></div>
+                        <button 
+                            onClick={() => setChartWeekOffset(prev => Math.min(0, prev + 1))}
+                            disabled={chartWeekOffset >= 0}
+                            className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:hover:bg-transparent"
+                        >
+                            <ChevronRight size={14} />
+                        </button>
+                    </div>
+                </div>
 
             <div className="h-40 w-full mb-4">
                 <ResponsiveContainer width="100%" height="100%">

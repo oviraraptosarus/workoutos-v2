@@ -98,10 +98,10 @@ export default function DashboardEditModal({ isOpen, onClose, onSave }: Dashboar
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-6 pb-8">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
             
-            <div className="relative w-full max-w-sm bg-surface-container-lowest border border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300">
+            <div className="relative w-full max-w-sm bg-surface-container-lowest border border-white/10 rounded-3xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 mb-8 sm:mb-0">
                 
                 <div className="flex items-center justify-between p-4 border-b border-white/10 bg-surface-container-lowest sticky top-0 z-10">
                     <div>

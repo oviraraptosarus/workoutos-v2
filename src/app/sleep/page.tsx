@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
-import { Moon, ArrowLeft, History, Plus, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
+import { Moon, ArrowLeft, History, Plus, Trash2, TrendingUp, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,6 +23,8 @@ export default function SleepPage() {
     
     const [logs, setLogs] = useState<any[]>([]);
 
+    const [chartWeekOffset, setChartWeekOffset] = useState(0);
+
     const targetSleep = 7.5; // Could be from userProfile
 
     // Load and sync with Supabase
@@ -34,20 +36,22 @@ export default function SleepPage() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // Fetch last 7 days of sleep from Supabase
-            const dEnd = new Date();
-            const dStart = new Date();
-            dStart.setDate(dStart.getDate() - 6);
+            // Fetch last 7 days of sleep from Supabase, offset by chartWeekOffset
+            // chartWeekOffset = 0 means the 7 days ending on selectedDate
+            const dEnd = new Date(selectedDate);
+            dEnd.setDate(dEnd.getDate() + (chartWeekOffset * 7));
+            const dStart = new Date(selectedDate);
+            dStart.setDate(dStart.getDate() + (chartWeekOffset * 7) - 6);
             
             const startStr = dStart.getFullYear() + '-' + String(dStart.getMonth() + 1).padStart(2, '0') + '-' + String(dStart.getDate()).padStart(2, '0');
             const endStr = dEnd.getFullYear() + '-' + String(dEnd.getMonth() + 1).padStart(2, '0') + '-' + String(dEnd.getDate()).padStart(2, '0');
 
+            // Fetch chart range AND the currently selected date to ensure header stats don't disappear
             const { data: dbLogs } = await supabase
                 .from('daily_logs')
                 .select('date, sleep_hours, sleep_logs')
                 .eq('user_id', user.id)
-                .gte('date', startStr)
-                .lte('date', endStr);
+                .or(`date.eq.${selectedDate},and(date.gte.${startStr},date.lte.${endStr})`);
 
             const dbMap = new Map();
             if (dbLogs) {
@@ -63,8 +67,8 @@ export default function SleepPage() {
 
             const data = [];
             for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
+                const d = new Date(selectedDate);
+                d.setDate(d.getDate() + (chartWeekOffset * 7) - i);
                 const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                 
                 data.push({
@@ -86,7 +90,7 @@ export default function SleepPage() {
         const handleAvaSync = () => loadSleepData();
         window.addEventListener('workout_os_sleep_updated', handleAvaSync);
         return () => window.removeEventListener('workout_os_sleep_updated', handleAvaSync);
-    }, [selectedDate]);
+    }, [selectedDate, chartWeekOffset]);
 
     const saveToSupabase = async (newTotal: number, newLogs: any[], bedtime?: string, waketime?: string) => {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -222,9 +226,27 @@ export default function SleepPage() {
                     
                     {/* Graph Section */}
                     <div className="md:col-span-2 glass-card-premium p-4 sm:p-5 transition-colors">
-                        <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2 mb-6">
-                            <History size={18} className="text-secondary" /> 7-Day Sleep Trends
-                        </h2>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2">
+                                <History size={18} className="text-secondary" /> 7-Day Sleep Trends
+                            </h2>
+                            <div className="flex items-center gap-1 bg-surface-container-low rounded-full border border-surface-variant/50 p-1 shadow-sm">
+                                <button 
+                                    onClick={() => setChartWeekOffset(prev => prev - 1)}
+                                    className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface"
+                                >
+                                    <ChevronLeft size={16} />
+                                </button>
+                                <div className="w-1.5 h-1.5 rounded-full bg-surface-variant mx-1"></div>
+                                <button 
+                                    onClick={() => setChartWeekOffset(prev => Math.min(0, prev + 1))}
+                                    disabled={chartWeekOffset >= 0}
+                                    className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface disabled:opacity-30 disabled:hover:bg-transparent"
+                                >
+                                    <ChevronRight size={16} />
+                                </button>
+                            </div>
+                        </div>
                         <div className="h-[280px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

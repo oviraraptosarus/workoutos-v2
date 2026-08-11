@@ -113,14 +113,23 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="flex flex-col w-full gap-4 sm:gap-6 pb-8 animate-fade-in relative">
-        <div className="flex items-center justify-between">
-            <div className="flex-1">
+        <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
                 <DashboardHeader />
+            </div>
+            <div className="pt-4 sm:pt-5 pr-1">
+                <button 
+                    onClick={() => setShowEditModal(true)}
+                    className="p-2 rounded-full bg-surface-container-low hover:bg-surface-container border border-surface-variant text-on-surface-variant hover:text-on-surface transition-all active:scale-95 shadow-sm flex items-center justify-center"
+                    title="Customize Dashboard"
+                >
+                    <Settings2 size={18} />
+                </button>
             </div>
         </div>
 
         {/* Dynamic Layout Rendering */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-2">
             {activeWidgets.map(w => {
                 const Component = WIDGET_COMPONENTS[w.id];
                 if (!Component) return null;
@@ -133,17 +142,6 @@ export default function Dashboard() {
                     </div>
                 );
             })}
-        </div>
-
-        {/* Edit Layout Button at Bottom */}
-        <div className="mt-8 flex justify-center">
-            <button 
-                onClick={() => setShowEditModal(true)}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-surface-container-low hover:bg-surface-container border border-surface-variant text-sm font-bold text-on-surface-variant hover:text-on-surface transition-all active:scale-95 shadow-sm"
-            >
-                <Settings2 size={16} />
-                Customize Dashboard
-            </button>
         </div>
       </div>
 
