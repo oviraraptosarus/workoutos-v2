@@ -53,6 +53,11 @@ export default function EndOfDayReflection() {
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const animationFrameRef = useRef<number | null>(null);
+    const micStreamRef = useRef<MediaStream | null>(null);
+    const [waveformBars, setWaveformBars] = useState<number[]>(Array(40).fill(4));
 
     const fetchHistory = async () => {
         if (!user) return;
@@ -90,7 +95,7 @@ export default function EndOfDayReflection() {
         };
     }, []);
 
-    const startRecording = () => {
+    const startRecording = async () => {
         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SR) {
             alert('Speech recognition is not supported in this browser. Please use Chrome or Safari.');
@@ -132,11 +137,52 @@ export default function EndOfDayReflection() {
 
         recognitionRef.current = recognition;
         recognition.start();
+
+        // Start real mic waveform via Web Audio API
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            micStreamRef.current = stream;
+            const audioCtx = new AudioContext();
+            audioContextRef.current = audioCtx;
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 128;
+            analyserRef.current = analyser;
+            const source = audioCtx.createMediaStreamSource(stream);
+            source.connect(analyser);
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            const BAR_COUNT = 40;
+
+            const tick = () => {
+                analyser.getByteFrequencyData(dataArray);
+                const bucketSize = Math.floor(dataArray.length / BAR_COUNT);
+                const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
+                    const slice = dataArray.slice(i * bucketSize, (i + 1) * bucketSize);
+                    const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
+                    return Math.max(4, (avg / 255) * 100);
+                });
+                setWaveformBars(bars);
+                animationFrameRef.current = requestAnimationFrame(tick);
+            };
+            animationFrameRef.current = requestAnimationFrame(tick);
+        } catch {
+            // mic access failed — waveform will stay flat, speech recognition still works
+        }
+
         setState('recording');
     };
 
     const stopRecording = (shouldProcess: boolean = true) => {
         recognitionRef.current?.stop();
+
+        // Tear down audio context and mic stream
+        if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+        audioContextRef.current?.close();
+        micStreamRef.current?.getTracks().forEach(t => t.stop());
+        audioContextRef.current = null;
+        analyserRef.current = null;
+        micStreamRef.current = null;
+        setWaveformBars(Array(40).fill(4));
 
         if (shouldProcess) {
             const finalString = (finalRef.current || rawTranscript).trim();
@@ -317,14 +363,14 @@ export default function EndOfDayReflection() {
                     {state === 'recording' && (
                         <div className="flex flex-col items-center justify-center gap-5 w-full py-4 animate-in fade-in zoom-in duration-300">
                             {/* Animated Waveform */}
-                            <div className="flex items-center justify-center gap-1 h-10 w-full max-w-xs">
-                                {Array.from({ length: 32 }).map((_, i) => (
+                            <div className="flex items-center justify-center gap-[3px] h-14 w-full max-w-xs">
+                                {waveformBars.map((h, i) => (
                                     <div
                                         key={i}
-                                        className="w-1 bg-secondary rounded-full animate-waveform shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"
+                                        className="w-1 bg-secondary rounded-full shadow-[0_0_6px_rgba(10,132,255,0.6)] transition-all"
                                         style={{
-                                            height: `${Math.max(10, Math.random() * 100)}%`,
-                                            animationDelay: `${i * 0.05}s`
+                                            height: `${h}%`,
+                                            transitionDuration: '60ms',
                                         }}
                                     />
                                 ))}
