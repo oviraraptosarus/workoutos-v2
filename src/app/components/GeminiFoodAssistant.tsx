@@ -71,20 +71,29 @@ export default function GeminiFoodAssistant() {
 
         let finalTranscript = '';
         const existing = typeof prompt === 'string' ? prompt + ' ' : '';
+        const isAndroid = /Android/i.test(navigator.userAgent);
         let debounceTimer: NodeJS.Timeout;
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
+            let full = '';
+
+            if (isAndroid) {
+                const currentSessionText = event.results[event.results.length - 1][0].transcript;
+                full = (existing + currentSessionText).trim();
+            } else {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
                 }
+                full = (existing + finalTranscript + interimTranscript).trim();
             }
             
-            setPrompt((existing + finalTranscript + interimTranscript).trim());
+            setPrompt(full);
 
             if (debounceTimer) clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {

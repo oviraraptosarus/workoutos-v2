@@ -770,25 +770,32 @@ export default function GlobalAICopilot() {
         recognition.lang = 'en-IN';
         const existing = promptRef.current ? promptRef.current + ' ' : '';
         let finalSessionText = '';
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        let currentSessionText = '';
 
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return;
+            
+            let full = '';
 
-            // KEY: iterate from resultIndex, not 0, to avoid double-accumulating confirmed chunks
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const chunk = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalSessionText += chunk + ' ';
+            if (isAndroid) {
+                currentSessionText = event.results[event.results.length - 1][0].transcript;
+                full = (existing + currentSessionText).trim();
+            } else {
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const chunk = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalSessionText += chunk + ' ';
+                    }
                 }
-            }
-            // Get the latest interim result (last non-final)
-            let interim = '';
-            for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
-                if (!event.results[i].isFinal) { interim = event.results[i][0].transcript; break; }
+                let interim = '';
+                for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
+                    if (!event.results[i].isFinal) { interim = event.results[i][0].transcript; break; }
+                }
+                full = (existing + finalSessionText + interim).trim();
             }
 
-            const full = (existing + finalSessionText + interim).trim();
             setPrompt(full);
 
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -796,7 +803,7 @@ export default function GlobalAICopilot() {
                 if (!isListeningRef.current) return;
                 setIsListening(false);
                 if (recognitionRef.current) recognitionRef.current.stop();
-                const finalFull = (existing + finalSessionText).trim() || full;
+                const finalFull = isAndroid ? full : ((existing + finalSessionText).trim() || full);
                 if (finalFull) handleSend(finalFull);
             }, 3500);
         };

@@ -109,8 +109,10 @@ export default function EndOfDayReflection() {
         setIsEditingTranscript(false);
         setIsEditingSummary(false);
         setShowSavePrompt(false);
+        setShowSavePrompt(false);
 
-        let currentSessionTranscript = '';
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        let currentSessionText = '';
         let sessionCounter = 0;
         let eventCounter = 0;
         let currentSessionId = 0;
@@ -127,14 +129,22 @@ export default function EndOfDayReflection() {
             recognition.lang = 'en-US';
 
             recognition.onresult = (e: any) => {
-                let interim = '';
-                for (let i = e.resultIndex; i < e.results.length; i++) {
-                    const chunk = e.results[i][0].transcript;
-                    if (e.results[i].isFinal) finalRef.current += chunk + ' ';
-                    else interim = chunk;
+                let newFull = '';
+                
+                if (isAndroid) {
+                    currentSessionText = e.results[e.results.length - 1][0].transcript;
+                    newFull = (finalRef.current + ' ' + currentSessionText).trim();
+                    setRawTranscript(newFull);
+                } else {
+                    let interim = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        const chunk = e.results[i][0].transcript;
+                        if (e.results[i].isFinal) finalRef.current += chunk + ' ';
+                        else interim = chunk;
+                    }
+                    newFull = (finalRef.current + interim).trim();
+                    setRawTranscript(newFull);
                 }
-                const newFull = (finalRef.current + interim).trim();
-                setRawTranscript(newFull);
                 
                 if (process.env.NODE_ENV === 'development') {
                     eventCounter++;
@@ -149,9 +159,6 @@ ${Array.from(e.results).map((r: any, idx) => `result[${idx}]\nisFinal=${r.isFina
 CURRENT FINAL:
 "${finalRef.current}"
 
-CURRENT INTERIM:
-"${interim}"
-
 DISPLAY:
 "${newFull}"`);
                 }
@@ -164,8 +171,14 @@ DISPLAY:
                 stopRecording(false);
             };
 
-            // KEY FIX: auto-restart on end if we still intend to record, and commit session text
+            // Platform-aware onend: Android needs to commit the last snapshot
             recognition.onend = () => {
+                if (isAndroid && currentSessionText.trim()) {
+                    finalRef.current = (finalRef.current + ' ' + currentSessionText).trim();
+                    currentSessionText = '';
+                    setRawTranscript(finalRef.current);
+                }
+                
                 if (process.env.NODE_ENV === 'development') {
                     console.log(`[DICTATION STOP] session=${currentSessionId}`);
                 }

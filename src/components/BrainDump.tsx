@@ -44,15 +44,26 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
+        
+        const isAndroid = /Android/i.test(navigator.userAgent);
 
         recognition.onresult = (e: any) => {
-            let interim = '';
-            for (let i = e.resultIndex; i < e.results.length; i++) {
-                const chunk = e.results[i][0].transcript;
-                if (e.results[i].isFinal) finalRef.current += chunk + ' ';
-                else interim = chunk;
+            let full = '';
+            
+            if (isAndroid) {
+                const currentSessionText = e.results[e.results.length - 1][0].transcript;
+                full = (finalRef.current + ' ' + currentSessionText).trim();
+            } else {
+                let interim = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    const chunk = e.results[i][0].transcript;
+                    if (e.results[i].isFinal) finalRef.current += chunk + ' ';
+                    else interim = chunk;
+                }
+                full = (finalRef.current + interim).trim();
             }
-            setTranscript((finalRef.current + interim).trim());
+            
+            setTranscript(full);
         };
 
         recognition.onerror = (e: any) => {
@@ -60,7 +71,12 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             stopRecording();
         };
 
-        recognition.onend = () => stopRecording();
+        recognition.onend = () => {
+            if (isAndroid && transcript.trim()) {
+                finalRef.current = transcript;
+            }
+            stopRecording();
+        };
 
         recognitionRef.current = recognition;
         recognition.start();

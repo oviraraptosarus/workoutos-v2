@@ -70,23 +70,32 @@ export default function RawDataAITransformerModal({
         recognitionRef.current = recognition;
         recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.lang = 'en-IN';
+        recognition.lang = 'en-US';
 
-        let finalTranscript = '';
-        const existing = typeof rawText === 'string' ? rawText + ' ' : '';
+        const existing = rawText ? rawText + ' ' : '';
+        const isAndroid = /Android/i.test(navigator.userAgent);
         
         recognition.onstart = () => setIsListening(true);
         recognition.onresult = (event: any) => {
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
+            let full = '';
+
+            if (isAndroid) {
+                const currentSessionText = event.results[event.results.length - 1][0].transcript;
+                full = (existing + currentSessionText).trim();
+            } else {
+                let finalTranscript = '';
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
                 }
+                full = (existing + finalTranscript + interimTranscript).trim();
             }
             
-            setRawText((existing + finalTranscript + interimTranscript).trim());
+            setRawText(full);
             
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
             debounceTimerRef.current = setTimeout(() => {
