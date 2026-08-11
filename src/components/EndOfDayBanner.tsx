@@ -52,7 +52,7 @@ export default function EndOfDayBanner() {
     };
 
     const handleGoLog = () => {
-        router.push('/sleep');
+        router.push('/planner?tab=reflect');
         setVisible(false);
     };
 
