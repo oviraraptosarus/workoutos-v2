@@ -20,6 +20,7 @@ export default function EndOfDayReflection() {
     const [isEditingSummary, setIsEditingSummary] = useState(false);
     const [showSavePrompt, setShowSavePrompt] = useState(false);
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
+    const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -32,7 +33,7 @@ export default function EndOfDayReflection() {
             .eq('user_id', user.id)
             .not('reflection', 'is', null)
             .order('date', { ascending: false })
-            .limit(5);
+            .limit(365);
         if (data) setHistoryLogs(data);
     };
 
@@ -174,12 +175,33 @@ export default function EndOfDayReflection() {
                 .eq('date', dateKey)
                 .single();
 
+            const timeString = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const newReflection = format === 'ava' ? avaSummary : rawTranscript;
+            const newRaw = format === 'ava' ? rawTranscript : null;
+
+            let finalReflection = newReflection;
+            let finalRaw = newRaw;
+
+            // If we just recorded a new entry ('done' state), append it to the existing log for the day
+            if (state === 'done' && existingLog?.reflection) {
+                finalReflection = `${existingLog.reflection}\n\n[${timeString}]\n${newReflection}`;
+                
+                if (newRaw && existingLog?.raw_transcript) {
+                    finalRaw = `${existingLog.raw_transcript}\n\n[${timeString}]\n${newRaw}`;
+                } else if (!newRaw && existingLog?.raw_transcript) {
+                    finalRaw = existingLog.raw_transcript;
+                }
+            } else if (state === 'done' && !existingLog?.reflection) {
+                finalReflection = `[${timeString}]\n${newReflection}`;
+                if (newRaw) finalRaw = `[${timeString}]\n${newRaw}`;
+            }
+
             const { error } = await supabase.from('daily_logs').upsert({
                 id: existingLog?.id,
                 user_id: user.id,
                 date: dateKey,
-                raw_transcript: format === 'ava' ? rawTranscript : null,
-                reflection: format === 'ava' ? avaSummary : rawTranscript,
+                raw_transcript: finalRaw,
+                reflection: finalReflection,
                 sleep_hours: existingLog?.sleep_hours || 0,
             }, { onConflict: 'user_id,date' });
 
@@ -224,6 +246,21 @@ export default function EndOfDayReflection() {
     };
 
     const wordCount = rawTranscript.trim() ? rawTranscript.trim().split(/\s+/).length : 0;
+
+    const groupedLogs = historyLogs.reduce((acc, log) => {
+        const dateObj = new Date(log.date);
+        const monthYear = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (!acc[monthYear]) acc[monthYear] = [];
+        acc[monthYear].push(log);
+        return acc;
+    }, {} as Record<string, any[]>);
+    const monthKeys = Object.keys(groupedLogs);
+    
+    useEffect(() => {
+        if (monthKeys.length > 0 && !expandedMonth) {
+            setExpandedMonth(monthKeys[0]);
+        }
+    }, [monthKeys, expandedMonth]);
 
     return (
         <div className="flex flex-col gap-6">
@@ -460,31 +497,58 @@ export default function EndOfDayReflection() {
 
             {/* Recent History Logs */}
             {historyLogs.length > 0 && (
-                <div className="glass-card-premium p-6 rounded-[2rem] shadow-sm flex flex-col gap-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2">
-                        <History size={18} className="text-secondary" /> Recent Journals
+                <div className="flex flex-col gap-4 mt-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant flex items-center gap-2 pl-2">
+                        <History size={16} className="text-secondary" /> Journal Archive
                     </h3>
                     <div className="flex flex-col gap-3">
-                        {historyLogs.map(log => (
-                            <div key={log.date} className="bg-surface-container border border-surface-variant/50 rounded-2xl p-4 flex flex-col gap-1.5 relative overflow-hidden group hover:border-secondary/30 transition-colors">
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary/50 rounded-l-2xl"></div>
-                                <div className="flex items-start justify-between">
-                                    <h4 className="font-bold text-on-surface text-xs tracking-wider uppercase ml-2 opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h4>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
-                                        className="text-on-surface-variant hover:text-red-500 transition-colors p-1"
-                                        title="Delete Journal"
+                        {monthKeys.map((month) => {
+                            const isExpanded = expandedMonth === month;
+                            const logs = groupedLogs[month];
+                            return (
+                                <div key={month} className="glass-card-premium rounded-[2rem] overflow-hidden shadow-sm flex flex-col transition-all duration-300">
+                                    <button 
+                                        onClick={() => setExpandedMonth(isExpanded ? null : month)}
+                                        className="w-full flex items-center justify-between p-5 sm:p-6 hover:bg-white/5 transition-colors focus:outline-none group"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                        <div className="flex items-center gap-3">
+                                            <h4 className="font-bold text-on-surface text-sm sm:text-base group-hover:text-secondary transition-colors">{month}</h4>
+                                            <span className="bg-surface-variant/50 text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold">{logs.length}</span>
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
                                     </button>
+                                    
+                                    <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                        <div className="overflow-hidden">
+                                            <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
+                                                {logs.map((log: any) => (
+                                                    <div key={log.date} className="bg-surface-container-low border border-surface-variant/30 rounded-2xl p-4 sm:p-5 flex flex-col gap-2 relative group/log hover:border-secondary/40 hover:bg-surface-container transition-all hover:shadow-md cursor-pointer">
+                                                        <div className="flex items-start justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
+                                                                <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
+                                                            </div>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
+                                                                className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100"
+                                                                title="Delete Journal"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                            </button>
+                                                        </div>
+                                                        {log.reflection && (
+                                                            <p className="text-sm text-on-surface/90 line-clamp-3 ml-3.5 leading-relaxed font-medium">
+                                                                {log.reflection}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                {log.reflection && (
-                                    <p className="text-[15px] text-on-surface line-clamp-2 ml-2 leading-relaxed font-medium">
-                                        {log.reflection}
-                                    </p>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             )}

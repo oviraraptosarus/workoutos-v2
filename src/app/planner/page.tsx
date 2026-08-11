@@ -615,7 +615,7 @@ export default function ExecutionOSPage() {
                                 <div className="flex items-center justify-between relative z-10">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Trophy className="w-5 h-5 sm:w-7 sm:h-7" />
+                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
                                         </div>
                                         <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
                                     </div>

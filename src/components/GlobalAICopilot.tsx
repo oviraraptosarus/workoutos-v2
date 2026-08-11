@@ -250,7 +250,7 @@ export default function GlobalAICopilot() {
                     supabase.from('execution_goals').select('*').eq('user_id', user.id).eq('status', 'active').then(res => res, e => ({ data: null, error: e })),
                     supabase.from('task_execution_scores').select('*').eq('user_id', user.id).then(res => res, e => ({ data: null, error: e })),
                     supabase.from('behavior_patterns').select('*').eq('user_id', user.id).eq('is_active', true).then(res => res, e => ({ data: null, error: e })),
-                    supabase.from('daily_logs').select('date, sleep_hours, water_ml_total, mood_rating, weight_kg').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('daily_logs').select('date, sleep_hours, water_ml_total, mood_rating, weight_kg, reflection, raw_transcript').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
                     supabase.from('content_vault').select('*').eq('user_id', user.id).eq('status', 'unread').then(res => res, e => ({ data: null, error: e }))
                 ]);
 
@@ -775,18 +775,18 @@ export default function GlobalAICopilot() {
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return;
 
-            // Only process new results from resultIndex onwards to prevent duplication
-            let interimText = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
+            let currentSessionFinal = '';
+            let currentSessionInterim = '';
+            for (let i = 0; i < event.results.length; i++) {
                 const chunk = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    finalSessionText += chunk + ' ';
+                    currentSessionFinal += chunk + ' ';
                 } else {
-                    interimText = chunk;
+                    currentSessionInterim += chunk;
                 }
             }
 
-            const full = (existing + finalSessionText + interimText).trim();
+            const full = (existing + currentSessionFinal + currentSessionInterim).trim();
             setPrompt(full);
 
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -794,7 +794,7 @@ export default function GlobalAICopilot() {
                 if (!isListeningRef.current) return;
                 setIsListening(false);
                 if (recognitionRef.current) recognitionRef.current.stop();
-                const finalFull = (existing + finalSessionText).trim() || full;
+                const finalFull = (existing + currentSessionFinal).trim() || full;
                 if (finalFull) handleSend(finalFull);
             }, 3500);
         };

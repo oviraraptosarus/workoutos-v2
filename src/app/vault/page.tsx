@@ -118,7 +118,7 @@ export default function VaultPage() {
                         <button 
                             type="submit" 
                             disabled={isAdding}
-                            className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shrink-0"
+                            className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shrink-0"
                         >
                             {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
                         </button>
@@ -129,13 +129,13 @@ export default function VaultPage() {
                 <div className="flex gap-2 px-2">
                     <button 
                         onClick={() => setActiveTab('unread')}
-                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'unread' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
+                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'unread' ? 'bg-white text-black shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
                     >
                         Unread ({items.filter(i => i.status === 'unread').length})
                     </button>
                     <button 
                         onClick={() => setActiveTab('consumed')}
-                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'consumed' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
+                        className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'consumed' ? 'bg-white text-black shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
                     >
                         Consumed ({items.filter(i => i.status === 'consumed').length})
                     </button>
