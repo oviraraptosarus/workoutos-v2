@@ -54,24 +54,16 @@ export default function DashboardHeader() {
         <div className="space-y-4">
 
             {/* Header Main Row */}
-            <div className="flex items-center justify-between gap-2 pt-10 sm:pt-2 pb-4">
+            <div className="flex items-center justify-between gap-2 pt-4 sm:pt-2 pb-2">
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                     <div className="flex flex-col items-start min-w-0 w-full">
                         <h1 className="text-3xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
                         <p className="text-xs sm:text-sm font-medium text-on-surface-variant italic mt-1.5 opacity-80 line-clamp-2">
-                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^[—\-\s]+/, '')}
+                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^["\-\s]+/, '')}
                         </p>
-                        <div className="flex items-center gap-3 mt-2 sm:mt-1.5 flex-wrap">
-                            <div className="flex items-center gap-2">
-                                <button 
-                                    onClick={() => setOffsetDays(Math.max(offsetDays - 1, -14))}
-                                disabled={offsetDays <= -14}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high disabled:opacity-30 transition-colors text-on-surface-variant dark:text-on-surface-variant"
-                            >
-                                <ChevronLeft size={12} />
-                            </button>
+                        <div className="flex items-center gap-3 mt-3 flex-wrap">
                             <label className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none cursor-pointer flex items-center gap-1.5 relative hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant/50 shadow-sm">
                                 <Calendar size={12} className="text-on-surface-variant" />
                                 {isToday ? t('nav.today') : ''}{dateStr || 'Loading...'}
@@ -82,25 +74,18 @@ export default function DashboardHeader() {
                                         if (e.target.value) {
                                             const newDate = new Date(e.target.value);
                                             const today = new Date();
-                                            today.setHours(0,0,0,0);
-                                            newDate.setHours(0,0,0,0);
-                                            const diffTime = Math.round((newDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                                            setOffsetDays(Math.min(0, Math.max(-14, diffTime)));
+                                            const diffTime = newDate.getTime() - today.getTime();
+                                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                            if (diffDays <= 0 && diffDays >= -14) {
+                                                setOffsetDays(diffDays);
+                                            }
                                         }
                                     }}
-                                    className="opacity-0 absolute inset-0 cursor-pointer w-full h-full"
+                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                     max={new Date().toISOString().split('T')[0]}
+                                    min={new Date(new Date().setDate(new Date().getDate() - 14)).toISOString().split('T')[0]}
                                 />
                             </label>
-                            <button 
-                                onClick={() => setOffsetDays(Math.min(offsetDays + 1, 0))}
-                                disabled={isToday}
-                                className="w-5 h-5 flex items-center justify-center rounded hover:bg-surface-container-high dark:hover:bg-surface-container-high disabled:opacity-30 transition-colors text-on-surface-variant dark:text-on-surface-variant"
-                            >
-                                <ChevronRight size={12} />
-                            </button>
-                            </div>
-                            
                         </div>
                     </div>
                 </div>
