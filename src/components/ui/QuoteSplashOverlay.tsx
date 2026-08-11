@@ -10,25 +10,17 @@ export default function QuoteSplashOverlay() {
     const [isFadingOut, setIsFadingOut] = useState(false);
 
     useEffect(() => {
-        // Only show once per session when the app opens
-        const hasShown = sessionStorage.getItem('workout_os_quote_shown');
-        
-        if (!hasShown) {
-            // Pick a random quote
-            setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-            setIsVisible(true);
+        // Show on every page load / reload
+        setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        setIsVisible(true);
 
-            // Hide after 3 seconds
-            const timer = setTimeout(() => {
-                setIsFadingOut(true);
-                setTimeout(() => {
-                    setIsVisible(false);
-                    sessionStorage.setItem('workout_os_quote_shown', 'true');
-                }, 800); // Wait for fade out animation
-            }, 3000);
+        // Fade out after 3 seconds
+        const timer = setTimeout(() => {
+            setIsFadingOut(true);
+            setTimeout(() => setIsVisible(false), 800);
+        }, 3000);
 
-            return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timer);
     }, []);
 
     if (!isVisible) return null;
