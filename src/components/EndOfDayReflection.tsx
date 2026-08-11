@@ -21,6 +21,16 @@ export default function EndOfDayReflection() {
     const [showSavePrompt, setShowSavePrompt] = useState(false);
     const [historyLogs, setHistoryLogs] = useState<any[]>([]);
     const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
+    const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set());
+
+    const toggleEntry = (date: string) => {
+        setExpandedEntries(prev => {
+            const next = new Set(prev);
+            if (next.has(date)) next.delete(date);
+            else next.add(date);
+            return next;
+        });
+    };
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -264,23 +274,26 @@ export default function EndOfDayReflection() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="glass-card-premium p-6 sm:p-8 relative min-h-[300px] flex flex-col justify-center transition-all duration-500">
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
-                    <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
+            <div className="glass-card-premium p-5 sm:p-6 relative flex flex-col gap-4 transition-all duration-500">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-[11px] font-black text-on-surface-variant uppercase tracking-widest">
                         Daily Journal
                     </h2>
                     {state === 'viewing' && (
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
-                            <span className="text-xs font-bold text-on-surface uppercase tracking-wider">Synced</span>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
+                            <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider">Synced</span>
                         </div>
                     )}
                 </div>
 
-                <div className="flex-1 flex flex-col items-center justify-center w-full mt-12 mb-4">
+                {/* States */}
+                <div className="flex flex-col items-center justify-center w-full">
+
                     {/* STATE 1: IDLE */}
                     {state === 'idle' && (
-                        <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in zoom-in duration-300">
+                        <div className="flex flex-col items-center justify-center gap-5 py-6 animate-in fade-in zoom-in duration-300">
                             <button
                                 onClick={startRecording}
                                 disabled={!isToday}
@@ -288,11 +301,11 @@ export default function EndOfDayReflection() {
                             >
                                 <div className="absolute inset-0 bg-secondary/20 rounded-full blur-xl group-hover:bg-secondary/40 transition-all duration-500 group-hover:scale-125"></div>
                                 <div className="absolute inset-0 bg-secondary/40 rounded-full animate-ping opacity-20"></div>
-                                <div className="relative w-24 h-24 rounded-full bg-secondary shadow-[0_0_40px_rgba(var(--c-secondary)/0.6)] flex items-center justify-center text-on-secondary transform group-hover:scale-105 transition-transform">
-                                    <Mic className="w-10 h-10" />
+                                <div className="relative w-20 h-20 rounded-full bg-secondary shadow-[0_0_40px_rgba(var(--c-secondary)/0.6)] flex items-center justify-center text-on-secondary transform group-hover:scale-105 transition-transform">
+                                    <Mic className="w-8 h-8" />
                                 </div>
                             </button>
-                            <span className="text-on-surface-variant font-bold text-sm tracking-wide">
+                            <span className="text-on-surface-variant font-bold text-xs tracking-wide">
                                 {isToday ? "Tap to start speaking" : "Cannot log past days"}
                             </span>
                         </div>
@@ -300,13 +313,13 @@ export default function EndOfDayReflection() {
 
                     {/* STATE 2: RECORDING */}
                     {state === 'recording' && (
-                        <div className="flex flex-col items-center justify-center gap-8 w-full animate-in fade-in zoom-in duration-300">
+                        <div className="flex flex-col items-center justify-center gap-5 w-full py-4 animate-in fade-in zoom-in duration-300">
                             {/* Animated Waveform */}
-                            <div className="flex items-center justify-center gap-1.5 h-16 w-full max-w-sm">
-                                {Array.from({ length: 40 }).map((_, i) => (
+                            <div className="flex items-center justify-center gap-1 h-10 w-full max-w-xs">
+                                {Array.from({ length: 32 }).map((_, i) => (
                                     <div
                                         key={i}
-                                        className="w-1.5 bg-secondary rounded-full animate-waveform shadow-[0_0_10px_rgba(var(--c-secondary)/0.5)]"
+                                        className="w-1 bg-secondary rounded-full animate-waveform shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"
                                         style={{
                                             height: `${Math.max(10, Math.random() * 100)}%`,
                                             animationDelay: `${i * 0.05}s`
@@ -315,18 +328,18 @@ export default function EndOfDayReflection() {
                                 ))}
                             </div>
 
-                            {/* Live Transcript below waveform */}
+                            {/* Live Transcript */}
                             <div className="text-center w-full max-w-xl mx-auto px-4">
-                                <p className="text-lg md:text-xl font-medium text-on-surface leading-relaxed min-h-[60px] opacity-90 transition-all">
+                                <p className="text-sm font-medium text-on-surface/80 leading-relaxed min-h-[40px] transition-all">
                                     {rawTranscript || "Listening..."}
                                 </p>
                             </div>
 
                             <button
                                 onClick={() => stopRecording(true)}
-                                className="mt-4 px-8 py-4 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 flex items-center gap-2 font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(239,68,68,0.15)]"
+                                className="px-6 py-3 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 flex items-center gap-2 font-bold text-sm tracking-wide transition-all"
                             >
-                                <Square className="w-4 h-4 fill-current" /> Stop Recording
+                                <Square className="w-3.5 h-3.5 fill-current" /> Stop
                             </button>
                         </div>
                     )}
@@ -346,113 +359,96 @@ export default function EndOfDayReflection() {
 
                     {/* STATE 4: DONE or VIEWING */}
                     {(state === 'done' || state === 'viewing') && (
-                        <div className="w-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {/* Side-by-Side Cards (Stack on mobile) */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                                {/* Ava's Summary */}
-                                <div className="bg-secondary/10 border border-secondary/20 rounded-3xl p-5 flex flex-col shadow-sm">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2 text-secondary">
-                                            <Sparkles className="w-4 h-4" />
-                                            <h3 className="text-xs font-bold uppercase tracking-wider">Ava's Summary</h3>
-                                        </div>
-                                        <button
-                                            onClick={() => {
-                                                if (isEditingSummary) {
-                                                    // If we are currently editing and click "Done", we should save it if it's already in viewing state
-                                                    setIsEditingSummary(false);
-                                                    if (state === 'viewing') setShowSavePrompt(true);
-                                                } else {
-                                                    setIsEditingSummary(true);
-                                                }
-                                            }}
-                                            className="flex items-center gap-1 text-secondary hover:text-secondary-fixed transition-colors text-xs font-bold"
-                                        >
-                                            {isEditingSummary ? 'Done' : 'Edit'}
-                                        </button>
+                            {/* Ava's Summary — single clean card */}
+                            <div className="bg-secondary/10 border border-secondary/20 rounded-2xl overflow-hidden">
+                                <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                                    <div className="flex items-center gap-1.5 text-secondary">
+                                        <Sparkles className="w-3.5 h-3.5" />
+                                        <span className="text-[11px] font-bold uppercase tracking-wider">Ava's Summary</span>
                                     </div>
-
+                                    <button
+                                        onClick={() => {
+                                            if (isEditingSummary) {
+                                                setIsEditingSummary(false);
+                                                if (state === 'viewing') setShowSavePrompt(true);
+                                            } else {
+                                                setIsEditingSummary(true);
+                                            }
+                                        }}
+                                        className="text-secondary text-[11px] font-bold hover:opacity-70 transition-opacity"
+                                    >
+                                        {isEditingSummary ? 'Done' : 'Edit'}
+                                    </button>
+                                </div>
+                                <div className="px-4 pb-4">
                                     {isEditingSummary ? (
                                         <textarea
                                             value={avaSummary}
                                             onChange={(e) => setAvaSummary(e.target.value)}
-                                            className="w-full flex-1 min-h-[120px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
+                                            className="w-full min-h-[100px] bg-white/5 border border-secondary/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
                                         />
                                     ) : (
-                                        <p className="text-[15px] font-medium leading-relaxed text-on-surface whitespace-pre-wrap flex-1">
+                                        <p className="text-sm font-medium leading-relaxed text-on-surface line-clamp-4">
                                             {avaSummary}
                                         </p>
                                     )}
                                 </div>
-
-                                {/* Your Words */}
-                                <div className="bg-surface-container-low border border-surface-variant rounded-3xl p-5 flex flex-col shadow-sm">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Your Words</h3>
-                                        <button
-                                            onClick={() => {
-                                                if (isEditingTranscript) {
-                                                    setIsEditingTranscript(false);
-                                                    if (state === 'viewing') setShowSavePrompt(true);
-                                                } else {
-                                                    setIsEditingTranscript(true);
-                                                }
-                                            }}
-                                            className="flex items-center gap-1 text-secondary hover:text-secondary-fixed transition-colors text-xs font-bold"
-                                        >
-                                            {isEditingTranscript ? 'Done' : 'Edit'}
-                                        </button>
-                                    </div>
-
-                                    {isEditingTranscript ? (
-                                        <textarea
-                                            value={rawTranscript}
-                                            onChange={(e) => setRawTranscript(e.target.value)}
-                                            className="w-full flex-1 min-h-[120px] bg-surface-container border border-surface-variant rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-secondary transition-colors resize-none custom-scrollbar"
-                                        />
-                                    ) : (
-                                        <p className="text-[15px] font-medium leading-relaxed text-on-surface/80 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[200px] custom-scrollbar">
-                                            {rawTranscript}
-                                        </p>
-                                    )}
-                                    <div className="text-[11px] font-semibold text-on-surface-variant/60 mt-3 text-right">
-                                        {wordCount} words
-                                    </div>
-                                </div>
                             </div>
 
-                            {/* Action Buttons (iOS Native Style) */}
-                            <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
+                            {/* Your Words — collapsed by default */}
+                            {rawTranscript.trim() && (
+                                <div className="bg-surface-container-low border border-surface-variant/40 rounded-2xl overflow-hidden">
+                                    <button
+                                        onClick={() => setIsEditingTranscript(prev => !prev)}
+                                        className="w-full flex items-center justify-between px-4 py-3 focus:outline-none hover:bg-white/5 transition-colors"
+                                    >
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Your Words</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-on-surface-variant/60 font-semibold">{wordCount}w</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isEditingTranscript ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </div>
+                                    </button>
+                                    <div className={`grid transition-all duration-400 ease-in-out ${isEditingTranscript ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                        <div className="overflow-hidden">
+                                            <p className="text-sm font-medium leading-relaxed text-on-surface/75 whitespace-pre-wrap px-4 pb-4">
+                                                {rawTranscript}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Compact action row */}
+                            <div className="flex items-center gap-2 pt-1">
                                 <button
                                     onClick={startRecording}
-                                    className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-[0.98]"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-95"
                                 >
-                                    <RefreshCw className="w-4 h-4" /> Re-record
+                                    <RefreshCw className="w-3.5 h-3.5" /> Re-record
                                 </button>
 
                                 {state === 'done' ? (
                                     <button
                                         onClick={() => setShowSavePrompt(true)}
-                                        className="flex-[2] py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
+                                        className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95 ml-auto"
                                     >
-                                        <CheckCircle2 className="w-5 h-5" /> Save Entry
+                                        <CheckCircle2 className="w-3.5 h-3.5" /> Save Entry
                                     </button>
                                 ) : (
-                                    <div className="flex-[2] flex gap-3">
+                                    <div className="flex items-center gap-2 ml-auto">
                                         <button
                                             onClick={() => processWithAva(rawTranscript)}
                                             disabled={!rawTranscript.trim()}
-                                            className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary/15 text-secondary hover:bg-secondary/25 transition-all active:scale-[0.98]"
+                                            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-secondary/15 text-secondary hover:bg-secondary/25 transition-all active:scale-95 disabled:opacity-40"
                                         >
-                                            <Sparkles className="w-4 h-4" /> Re-Analyze
+                                            <Sparkles className="w-3.5 h-3.5" /> Re-Analyze
                                         </button>
-
-                                        {/* If we are editing in viewing mode, show an explicit Save button */}
-                                        {(isEditingTranscript || isEditingSummary) && (
+                                        {(isEditingSummary) && (
                                             <button
                                                 onClick={() => setShowSavePrompt(true)}
-                                                className="flex-1 py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-[0.98]"
+                                                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95"
                                             >
                                                 Save Edits
                                             </button>
@@ -464,26 +460,26 @@ export default function EndOfDayReflection() {
                             {/* Save Prompt Overlay */}
                             {showSavePrompt && (
                                 <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
-                                    <h3 className="text-xl font-black text-on-surface mb-2 tracking-tight">Save Journal Entry</h3>
-                                    <p className="text-on-surface-variant text-sm font-medium mb-8 text-center max-w-[260px]">
-                                        Which version of the journal would you like to keep?
+                                    <h3 className="text-lg font-black text-on-surface mb-1 tracking-tight">Save Journal Entry</h3>
+                                    <p className="text-on-surface-variant text-xs font-medium mb-6 text-center max-w-[220px]">
+                                        Which version would you like to keep?
                                     </p>
-                                    <div className="flex flex-col gap-3 w-full max-w-[260px]">
+                                    <div className="flex flex-col gap-2.5 w-full max-w-[220px]">
                                         <button
                                             onClick={() => handleSave('ava')}
-                                            className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-all active:scale-[0.98] shadow-md"
+                                            className="w-full py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-all active:scale-[0.98] shadow-md"
                                         >
-                                            <Sparkles className="w-4 h-4" /> Save Ava's Summary
+                                            <Sparkles className="w-3.5 h-3.5" /> Ava's Summary
                                         </button>
                                         <button
                                             onClick={() => handleSave('raw')}
-                                            className="w-full py-4 rounded-full font-semibold text-[15px] flex items-center justify-center gap-2 bg-surface-container-high text-on-surface hover:bg-surface-variant transition-all active:scale-[0.98]"
+                                            className="w-full py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 bg-surface-container-high text-on-surface hover:bg-surface-variant transition-all active:scale-[0.98]"
                                         >
-                                            Save My Words
+                                            My Words
                                         </button>
                                         <button
                                             onClick={() => setShowSavePrompt(false)}
-                                            className="w-full py-3 mt-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                                            className="w-full py-2.5 mt-1 rounded-full font-bold text-xs text-on-surface-variant hover:text-on-surface transition-colors"
                                         >
                                             Cancel
                                         </button>
@@ -521,28 +517,43 @@ export default function EndOfDayReflection() {
                                     <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                         <div className="overflow-hidden">
                                             <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
-                                                {logs.map((log: any) => (
-                                                    <div key={log.date} className="bg-surface-container-low border border-surface-variant/30 rounded-2xl p-4 sm:p-5 flex flex-col gap-2 relative group/log hover:border-secondary/40 hover:bg-surface-container transition-all hover:shadow-md cursor-pointer">
-                                                        <div className="flex items-start justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
-                                                                <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
-                                                            </div>
+                                                {logs.map((log: any) => {
+                                                    const isEntryExpanded = expandedEntries.has(log.date);
+                                                    return (
+                                                        <div key={log.date} className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log hover:border-secondary/40 transition-all">
+                                                            {/* Tappable header row */}
                                                             <button
-                                                                onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
-                                                                className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100"
-                                                                title="Delete Journal"
+                                                                onClick={() => toggleEntry(log.date)}
+                                                                className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-white/5 transition-colors focus:outline-none"
                                                             >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
+                                                                    <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h5>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.date); }}
+                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100"
+                                                                        title="Delete Journal"
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                                    </button>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isEntryExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                                </div>
                                                             </button>
+                                                            {/* Collapsible body */}
+                                                            <div className={`grid transition-all duration-400 ease-in-out ${isEntryExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                                                <div className="overflow-hidden">
+                                                                    {log.reflection && (
+                                                                        <p className="text-sm text-on-surface/90 ml-3.5 leading-relaxed font-medium whitespace-pre-wrap px-4 pb-4 sm:px-5 sm:pb-5">
+                                                                            {log.reflection}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        {log.reflection && (
-                                                            <p className="text-sm text-on-surface/90 line-clamp-3 ml-3.5 leading-relaxed font-medium">
-                                                                {log.reflection}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </div>
