@@ -577,9 +577,9 @@ export default function EndOfDayReflection() {
 
             {/* Apple-style Full Log Modal (Bottom Sheet on Mobile) */}
             {selectedLog && (
-                <div className="fixed inset-0 z-[99999] flex flex-col justify-end sm:items-center sm:justify-center p-0 sm:p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[99999] flex flex-col justify-end sm:items-center sm:justify-center p-0 pb-[90px] pt-[70px] sm:p-6 sm:pb-6 sm:pt-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSelectedLog(null)}></div>
-                    <div className="bg-surface-container border border-surface-variant rounded-t-[2rem] sm:rounded-[2rem] shadow-[0_-10px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl w-full max-w-2xl h-[90vh] sm:h-auto sm:max-h-[85vh] flex flex-col relative z-10 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-500 ease-out">
+                    <div className="bg-surface-container border border-surface-variant rounded-[2rem] sm:rounded-[2rem] shadow-[0_-10px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl w-full max-w-2xl h-full sm:h-auto sm:max-h-[85vh] flex flex-col relative z-10 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-500 ease-out">
                         {/* Drag Handle for Mobile */}
                         <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
                             <div className="w-12 h-1.5 bg-surface-variant rounded-full opacity-50"></div>
