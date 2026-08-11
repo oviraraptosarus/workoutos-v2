@@ -150,35 +150,50 @@ export default function EndOfDayReflection() {
 
         spawnRecognition();
 
-        // Start real mic waveform via Web Audio API
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            micStreamRef.current = stream;
-            const audioCtx = new AudioContext();
-            audioContextRef.current = audioCtx;
-            const analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 128;
-            analyserRef.current = analyser;
-            const source = audioCtx.createMediaStreamSource(stream);
-            source.connect(analyser);
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            const BAR_COUNT = 40;
-
-            const tick = () => {
-                analyser.getByteFrequencyData(dataArray);
-                const bucketSize = Math.floor(dataArray.length / BAR_COUNT);
-                const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
-                    const slice = dataArray.slice(i * bucketSize, (i + 1) * bucketSize);
-                    const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
-                    return Math.max(4, (avg / 255) * 100);
-                });
-                setWaveformBars(bars);
-                animationFrameRef.current = requestAnimationFrame(tick);
+        if (isMobile) {
+            let lastUpdate = 0;
+            const animateFakeWaveform = (timestamp: number) => {
+                if (!isRecordingRef.current) return;
+                if (timestamp - lastUpdate > 100) {
+                    setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
+                    lastUpdate = timestamp;
+                }
+                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
             };
-            animationFrameRef.current = requestAnimationFrame(tick);
-        } catch {
-            // mic access failed — waveform will stay flat, speech recognition still works
+            animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+        } else {
+            // Start real mic waveform via Web Audio API
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micStreamRef.current = stream;
+                const audioCtx = new AudioContext();
+                audioContextRef.current = audioCtx;
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 128;
+                analyserRef.current = analyser;
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyser);
+
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                const BAR_COUNT = 40;
+
+                const tick = () => {
+                    analyser.getByteFrequencyData(dataArray);
+                    const bucketSize = Math.floor(dataArray.length / BAR_COUNT);
+                    const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
+                        const slice = dataArray.slice(i * bucketSize, (i + 1) * bucketSize);
+                        const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
+                        return Math.max(4, (avg / 255) * 100);
+                    });
+                    setWaveformBars(bars);
+                    animationFrameRef.current = requestAnimationFrame(tick);
+                };
+                animationFrameRef.current = requestAnimationFrame(tick);
+            } catch {
+                // mic access failed — waveform will stay flat, speech recognition still works
+            }
         }
 
         isRecordingRef.current = true;
@@ -504,7 +519,7 @@ export default function EndOfDayReflection() {
 
                                 {state === 'done' ? (
                                     <button
-                                        onClick={() => setShowSavePrompt(true)}
+                                        onClick={() => handleSave(avaSummary ? 'ava' : 'raw')}
                                         className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95 ml-auto"
                                     >
                                         <CheckCircle2 className="w-3.5 h-3.5" /> Save Entry
