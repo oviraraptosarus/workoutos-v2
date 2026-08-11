@@ -11,7 +11,10 @@ export default function QuoteSplashOverlay() {
 
     useEffect(() => {
         // Show on every page load / reload
-        setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        const chosen = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+        setQuote(chosen);
+        // Persist so DashboardHeader shows the same quote
+        try { sessionStorage.setItem('workout_os_daily_quote', JSON.stringify(chosen)); } catch {}
         setIsVisible(true);
 
         // Fade out after 3 seconds

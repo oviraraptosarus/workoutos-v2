@@ -46,8 +46,13 @@ export default function DashboardHeader() {
         else if (h < 17) setGreeting(t('nav.greeting.afternoon'));
         else setGreeting(t('nav.greeting.evening'));
         
-        // Pick a random quote on mount
-        setDailyQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        // Pick a quote: use the same one the splash showed, or fall back to random
+        try {
+            const stored = sessionStorage.getItem('workout_os_daily_quote');
+            setDailyQuote(stored ? JSON.parse(stored) : QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        } catch {
+            setDailyQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+        }
     }, [t]);
 
     return (

@@ -775,18 +775,20 @@ export default function GlobalAICopilot() {
         recognition.onresult = (event: any) => {
             if (!isListeningRef.current) return;
 
-            let currentSessionFinal = '';
-            let currentSessionInterim = '';
-            for (let i = 0; i < event.results.length; i++) {
+            // KEY: iterate from resultIndex, not 0, to avoid double-accumulating confirmed chunks
+            for (let i = event.resultIndex; i < event.results.length; i++) {
                 const chunk = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    currentSessionFinal += chunk + ' ';
-                } else {
-                    currentSessionInterim += chunk;
+                    finalSessionText += chunk + ' ';
                 }
             }
+            // Get the latest interim result (last non-final)
+            let interim = '';
+            for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
+                if (!event.results[i].isFinal) { interim = event.results[i][0].transcript; break; }
+            }
 
-            const full = (existing + currentSessionFinal + currentSessionInterim).trim();
+            const full = (existing + finalSessionText + interim).trim();
             setPrompt(full);
 
             if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -794,12 +796,23 @@ export default function GlobalAICopilot() {
                 if (!isListeningRef.current) return;
                 setIsListening(false);
                 if (recognitionRef.current) recognitionRef.current.stop();
-                const finalFull = (existing + currentSessionFinal).trim() || full;
+                const finalFull = (existing + finalSessionText).trim() || full;
                 if (finalFull) handleSend(finalFull);
             }, 3500);
         };
-        recognition.onerror = () => setIsListening(false);
-        recognition.onend = () => setIsListening(false);
+        recognition.onerror = (e: any) => {
+            // no-speech is expected on iOS — just let onend restart it
+            if (e.error === 'no-speech' || e.error === 'aborted') return;
+            setIsListening(false);
+        };
+        recognition.onend = () => {
+            // Auto-restart on iOS which doesn't honour continuous=true
+            if (isListeningRef.current) {
+                try { recognition.start(); } catch { /* already started */ }
+            } else {
+                setIsListening(false);
+            }
+        };
         recognition.start();
     };
 

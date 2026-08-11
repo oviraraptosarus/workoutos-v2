@@ -32,3 +32,11 @@
 - **Journal Archive Redesign**: Replaced the standard 5-item list with a Notion-style grouped accordion UI. Journal logs are now grouped by Month/Year (e.g., "August 2026") and the header floats outside the widget glass container per Apple guidelines.
 - **Multiple Journals per Day**: Upgraded the Reflect Hub's save mechanism to support multiple entries on the same day by appending new entries with a timestamp instead of overwriting existing ones.
 - **AI Context Integration**: Added `reflection` and `raw_transcript` fields to the Global AI Copilot's `daily_logs` fetch, granting the AI access to read past journal entries.
+- **Data Export & Import**: Built a comprehensive `DataExportImport` component in the Profile settings that seamlessly exports all major Supabase tables (journals, sleep, workouts, tasks, meals, AI memories) to a JSON backup file and supports upserting data from a backup.
+- **Mobile Voice & Auto-Save Fixes**: 
+    - Resolved a critical bug where `SpeechRecognition` failed to transcribe on mobile devices (iOS/Android). The issue was caused by `getUserMedia` locking the microphone to render the real-time CSS waveform. Implemented a user-agent check to bypass Web Audio API on mobile and simulate the waveform, allowing native dictation to take exclusive mic access.
+    - Simplified the "Save Entry" flow by removing the prompt popup and auto-accepting Ava's summary directly to reduce friction.
+    - Fixed a bug in the global AI Copilot's voice handler where the `onresult` listener double-accumulated previously confirmed voice chunks on mobile.
+- **FOUC & Splash Quote Fixes**: 
+    - Fixed a Light Mode Flash of Unstyled Content (FOUC) on initial load by injecting a synchronous, blocking `<script>` tag in `layout.tsx` to read the theme from `localStorage` before React hydrates.
+    - Fixed the Daily Quote mismatch between the Splash Screen and the Dashboard Header by syncing the randomly chosen quote to `sessionStorage`.
