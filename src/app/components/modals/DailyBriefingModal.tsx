@@ -17,6 +17,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     const { user } = useAuth();
     const [isVisible, setIsVisible] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [dailyQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     const { snapshot } = useDailySnapshot();
 
     useEffect(() => {
@@ -65,8 +66,6 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     if (!waterMet) bottlenecks.push('Fell short on hydration. Drink more water.');
     if (snapshot.sleepProgress.current < snapshot.sleepProgress.target) bottlenecks.push('Sleep was suboptimal. Prioritize recovery.');
     if (completedTasks === 0 && snapshot.plannerState.total > 0) bottlenecks.push('Execution rate was low. Focus on one task at a time.');
-
-    const [dailyQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
     return (
         <div className={`fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
