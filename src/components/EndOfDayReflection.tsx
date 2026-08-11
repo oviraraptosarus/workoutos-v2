@@ -198,7 +198,20 @@ export default function EndOfDayReflection() {
                         <div className="flex items-center gap-2 text-primary font-bold mb-4">
                             <Sparkles className="w-5 h-5" /> Ava's Analysis
                         </div>
-                        <p className="leading-relaxed whitespace-pre-wrap">{avaSummary}</p>
+                        <p className="leading-relaxed whitespace-pre-wrap">
+                            {(() => {
+                                let display = avaSummary;
+                                if (typeof display === 'string' && display.trim().startsWith('{')) {
+                                    try {
+                                        const parsed = JSON.parse(display);
+                                        display = parsed.reflection || parsed.summary || parsed.raw_voice || display;
+                                    } catch(e) {}
+                                } else if (typeof display === 'object' && display !== null) {
+                                    display = (display as any).reflection || (display as any).summary || (display as any).raw_voice || JSON.stringify(display);
+                                }
+                                return typeof display === 'string' ? display : JSON.stringify(display);
+                            })()}
+                        </p>
                     </div>
                 ) : (
                     <button 
