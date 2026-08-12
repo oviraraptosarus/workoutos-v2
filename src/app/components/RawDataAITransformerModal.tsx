@@ -24,6 +24,7 @@ interface ParsedResult {
         fat: number;
         sugar: number;
         icon: string;
+        ingredients?: { name: string; quantity: string; calories: number }[];
     }[];
     waterMl: number;
     workoutNote?: string;
@@ -155,6 +156,10 @@ export default function RawDataAITransformerModal({
                         fat: 10,
                         sugar: 2,
                         icon: '🥚',
+                        ingredients: [
+                            { name: 'Eggs', quantity: '2 large', calories: 140 },
+                            { name: 'Sourdough Toast', quantity: '1 slice', calories: 120 }
+                        ]
                     });
                 } else if (sLower.includes('chicken') || sLower.includes('rice') || sLower.includes('bowl') || sLower.includes('lunch')) {
                     result.meals.push({
@@ -167,6 +172,10 @@ export default function RawDataAITransformerModal({
                         fat: 12,
                         sugar: 3,
                         icon: '🥗',
+                        ingredients: [
+                            { name: 'Grilled Chicken', quantity: '150g', calories: 240 },
+                            { name: 'Quinoa & Veggies', quantity: '1 cup', calories: 210 }
+                        ]
                     });
                 } else if (sLower.includes('bar') || sLower.includes('protein bar') || sLower.includes('snack') || sLower.includes('apple')) {
                     result.meals.push({
@@ -179,6 +188,9 @@ export default function RawDataAITransformerModal({
                         fat: 6,
                         sugar: 4,
                         icon: '🍎',
+                        ingredients: [
+                            { name: 'Protein Snack Bar', quantity: '1 piece', calories: 200 }
+                        ]
                     });
                 } else if (sLower.includes('steak') || sLower.includes('salmon') || sLower.includes('dinner') || sLower.includes('curry')) {
                     result.meals.push({
@@ -191,6 +203,10 @@ export default function RawDataAITransformerModal({
                         fat: 18,
                         sugar: 3,
                         icon: '🥦',
+                        ingredients: [
+                            { name: 'Salmon', quantity: '200g', calories: 410 },
+                            { name: 'Roasted Veggies', quantity: '1 cup', calories: 70 }
+                        ]
                     });
                 } else if (sLower.includes('run') || sLower.includes('workout') || sLower.includes('gym') || sLower.includes('treadmill')) {
                     result.workoutNote = sentence.trim();

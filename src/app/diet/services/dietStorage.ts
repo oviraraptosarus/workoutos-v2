@@ -51,7 +51,8 @@ export const getMealsForDate = async (dateKey: string): Promise<MealItem[]> => {
         fat: Number(row.fat),
         sugar: Number(row.sugar),
         fiber: 0,
-        icon: '🍽️'
+        icon: row.icon || '🍽️',
+        ingredients: row.ingredients || []
     }));
 };
 
@@ -72,6 +73,8 @@ export const saveMealsForDate = async (dateKey: string, meals: MealItem[]): Prom
             carbs: m.carbs,
             fat: m.fat,
             sugar: m.sugar,
+            icon: m.icon || '🍽️',
+            ingredients: m.ingredients || []
         }));
         await supabase.from('meal_entries').insert(payload);
     }
