@@ -35,7 +35,10 @@ export function usePushNotifications() {
             const registration = await navigator.serviceWorker.register('/sw.js');
             
             // Note: In production you'd fetch this public key dynamically
-            const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BM-s-x-e-c-y-e-e-k-p-u-b-l-i-c-k-e-y'; 
+            const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY; 
+            if (!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY === 'BM-s-x-e-c-y-e-e-k-p-u-b-l-i-c-k-e-y') {
+                throw new Error("Missing VAPID Public Key in Vercel. Please generate one and add NEXT_PUBLIC_VAPID_PUBLIC_KEY to your environment variables.");
+            }
             
             // Helper function to convert base64 to Uint8Array
             const urlBase64ToUint8Array = (base64String: string) => {

@@ -129,6 +129,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         if (!data) {
             const fallbackBase = { ...base };
             delete (fallbackBase as any).priority;
+            delete (fallbackBase as any).recurrence_rule;
             ({ data } = await supabase.from('tasks').insert(fallbackBase).select().single());
         }
         if (data) {
