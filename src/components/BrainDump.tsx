@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, BrainCircuit, Loader2, Check, CheckSquare, Square } from 'lucide-react';
+import { Mic, MicOff, BrainCircuit, Loader2, Check, CheckSquare, Square, Lightbulb } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import clsx from 'clsx';
@@ -14,6 +14,8 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
     const [transcript, setTranscript] = useState('');
     const [parsedTasks, setParsedTasks] = useState<string[]>([]);
     const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
+    const [parsedReadings, setParsedReadings] = useState<string[]>([]);
+    const [selectedReadingIndices, setSelectedReadingIndices] = useState<Set<number>>(new Set());
     const [elapsed, setElapsed] = useState(0);
 
     const recognitionRef = useRef<any>(null);
@@ -38,6 +40,8 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         setTranscript('');
         setParsedTasks([]);
         setSelectedIndices(new Set());
+        setParsedReadings([]);
+        setSelectedReadingIndices(new Set());
         setElapsed(0);
 
         const recognition = new SR();
@@ -106,12 +110,19 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                 body: JSON.stringify({ rawTranscript: textToProcess })
             });
             const data = await res.json();
-            if (data.tasks && data.tasks.length > 0) {
-                setParsedTasks(data.tasks);
-                setSelectedIndices(new Set(data.tasks.map((_: any, i: number) => i)));
+            const hasTasks = data.tasks && data.tasks.length > 0;
+            const hasReadings = data.readings && data.readings.length > 0;
+            
+            if (hasTasks || hasReadings) {
+                setParsedTasks(data.tasks || []);
+                setSelectedIndices(new Set((data.tasks || []).map((_: any, i: number) => i)));
+                
+                setParsedReadings(data.readings || []);
+                setSelectedReadingIndices(new Set((data.readings || []).map((_: any, i: number) => i)));
+                
                 setState('selecting');
             } else {
-                alert("No actionable tasks found.");
+                alert("No actionable tasks or insights found.");
                 setState('idle');
             }
         } catch (e: any) {
@@ -140,24 +151,48 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         setSelectedIndices(newSet);
     };
 
+    const toggleReadingSelection = (index: number) => {
+        const newSet = new Set(selectedReadingIndices);
+        if (newSet.has(index)) newSet.delete(index);
+        else newSet.add(index);
+        setSelectedReadingIndices(newSet);
+    };
+
     const handleSaveTasks = async () => {
-        if (!user || selectedIndices.size === 0) return;
+        if (!user || (selectedIndices.size === 0 && selectedReadingIndices.size === 0)) return;
         
         setState('processing');
         const todayStr = new Date().toLocaleDateString('en-CA');
+        let hasError = false;
         
-        const tasksToInsert = Array.from(selectedIndices).map(idx => ({
-            user_id: user.id,
-            title: parsedTasks[idx],
-            priority: 'medium',
-            completed: false,
-            date: todayStr
-        }));
-
-        const { error } = await supabase.from('tasks').insert(tasksToInsert);
+        if (selectedIndices.size > 0) {
+            const tasksToInsert = Array.from(selectedIndices).map(idx => ({
+                user_id: user.id,
+                title: parsedTasks[idx],
+                priority: 'medium',
+                completed: false,
+                date: todayStr
+            }));
+            const { error } = await supabase.from('tasks').insert(tasksToInsert);
+            if (error) {
+                alert('Failed to save tasks: ' + error.message);
+                hasError = true;
+            }
+        }
         
-        if (error) {
-            alert('Failed to save tasks: ' + error.message);
+        if (selectedReadingIndices.size > 0) {
+            const readingsToInsert = Array.from(selectedReadingIndices).map(idx => ({
+                user_id: user.id,
+                content: parsedReadings[idx]
+            }));
+            const { error } = await supabase.from('brain_readings').insert(readingsToInsert);
+            if (error) {
+                alert('Failed to save readings: ' + error.message);
+                hasError = true;
+            }
+        }
+        
+        if (hasError) {
             setState('selecting');
         } else {
             setState('done');
@@ -165,6 +200,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                 setState('idle');
                 setTranscript('');
                 setParsedTasks([]);
+                setParsedReadings([]);
                 if (onTasksSaved) onTasksSaved();
             }, 2000);
         }
@@ -186,36 +222,72 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             </p>
             
             {state === 'selecting' ? (
-                <div className="relative z-10 space-y-4">
-                    <h3 className="font-bold text-on-surface">Extracted Tasks</h3>
-                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                        {parsedTasks.map((task, i) => (
-                            <div 
-                                key={i} 
-                                onClick={() => toggleTaskSelection(i)}
-                                className={clsx(
-                                    "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
-                                    selectedIndices.has(i) ? "bg-secondary/10 border-secondary/30 text-on-surface" : "bg-surface-container border-surface-variant text-on-surface-variant/70"
-                                )}
-                            >
-                                {selectedIndices.has(i) ? <CheckSquare className="text-secondary w-5 h-5" /> : <Square className="w-5 h-5" />}
-                                <span className="font-medium text-sm">{task}</span>
+                <div className="relative z-10 space-y-6">
+                    {parsedTasks.length > 0 && (
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-on-surface flex items-center gap-2">
+                                <CheckSquare className="w-5 h-5 text-secondary" />
+                                Extracted Tasks
+                            </h3>
+                            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                                {parsedTasks.map((task, i) => (
+                                    <div 
+                                        key={i} 
+                                        onClick={() => toggleTaskSelection(i)}
+                                        className={clsx(
+                                            "flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                                            selectedIndices.has(i) ? "bg-secondary/10 border-secondary/30 text-on-surface" : "bg-surface-container border-surface-variant text-on-surface-variant/70"
+                                        )}
+                                    >
+                                        <div className="mt-0.5 shrink-0">
+                                            {selectedIndices.has(i) ? <CheckSquare className="text-secondary w-5 h-5" /> : <Square className="w-5 h-5" />}
+                                        </div>
+                                        <span className="font-medium text-sm leading-relaxed">{task}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    <div className="flex gap-3 pt-4">
+                        </div>
+                    )}
+
+                    {parsedReadings.length > 0 && (
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-on-surface flex items-center gap-2">
+                                <Lightbulb className="w-5 h-5 text-primary" />
+                                Extracted Insights & Readings
+                            </h3>
+                            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                                {parsedReadings.map((reading, i) => (
+                                    <div 
+                                        key={`reading-${i}`} 
+                                        onClick={() => toggleReadingSelection(i)}
+                                        className={clsx(
+                                            "flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                                            selectedReadingIndices.has(i) ? "bg-primary/10 border-primary/30 text-on-surface" : "bg-surface-container border-surface-variant text-on-surface-variant/70"
+                                        )}
+                                    >
+                                        <div className="mt-0.5 shrink-0">
+                                            {selectedReadingIndices.has(i) ? <CheckSquare className="text-primary w-5 h-5" /> : <Square className="w-5 h-5" />}
+                                        </div>
+                                        <span className="font-medium text-sm leading-relaxed">{reading}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div className="flex gap-3 pt-2">
                         <button 
                             onClick={() => setState('idle')}
-                            className="flex-1 py-3 rounded-xl border border-surface-variant text-on-surface-variant font-bold hover:bg-surface-container"
+                            className="flex-1 py-3 rounded-xl border border-surface-variant text-on-surface-variant font-bold hover:bg-surface-container transition-colors"
                         >
-                            Discard
+                            Discard All
                         </button>
                         <button 
                             onClick={handleSaveTasks}
-                            disabled={selectedIndices.size === 0}
-                            className="flex-[2] py-3 rounded-xl bg-secondary text-on-secondary font-bold hover:bg-secondary/90 disabled:opacity-50"
+                            disabled={selectedIndices.size === 0 && selectedReadingIndices.size === 0}
+                            className="flex-[2] py-3 rounded-xl bg-secondary text-on-secondary font-bold hover:bg-secondary/90 disabled:opacity-50 transition-colors shadow-lg"
                         >
-                            Save {selectedIndices.size} Tasks
+                            Save {selectedIndices.size + selectedReadingIndices.size} Items
                         </button>
                     </div>
                 </div>
@@ -234,7 +306,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                             <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center">
                                 <Check className="w-8 h-8" />
                             </div>
-                            <span className="font-bold">Tasks Saved!</span>
+                            <span className="font-bold">Items Saved!</span>
                         </div>
                     ) : (
                         <button 
@@ -268,7 +340,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                     className="relative z-10 w-full py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-secondary to-tertiary text-on-secondary shadow-[0_4px_16px_rgba(var(--c-secondary)/0.4)] hover:shadow-[0_8px_24px_rgba(var(--c-secondary)/0.6)] disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 mt-auto"
                 >
                     {state === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <BrainCircuit className="w-5 h-5" />}
-                    {state === 'processing' ? 'Extracting Tasks...' : 'Parse & Execute'}
+                    {state === 'processing' ? 'Extracting Items...' : 'Parse & Execute'}
                 </button>
             )}
         </div>
