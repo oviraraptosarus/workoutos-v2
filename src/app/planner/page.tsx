@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap } from 'lucide-react';
+import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap, Check } from 'lucide-react';
 import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
