@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import clsx from 'clsx';
 import { X, Bell, Zap, Calendar, HeartPulse, Dumbbell, Utensils, DollarSign, Brain, Activity, Check, Clock, ExternalLink, Target, TrendingUp, Sparkles, Moon, Droplets, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SnoozeSheet from '@/app/components/modals/SnoozeSheet';
