@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat } from 'lucide-react';
+import { Sun, SunDim, Moon, Apple, Plus, Edit3, Trash2, ChevronDown, ChevronUp, Copy, Check, Search, Share2, ChefHat, Sparkles } from 'lucide-react';
 import { MealItem, MealCategory } from '../types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
