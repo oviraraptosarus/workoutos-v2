@@ -971,16 +971,6 @@ export default function GlobalAICopilot() {
                             )}
                         </div>
                         <div className="flex items-center gap-2">
-                            {hasMessages && (
-                                <button
-                                    onClick={clearChat}
-                                    aria-label="Clear conversation"
-                                    title="Clear conversation"
-                                    className="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            )}
                             <button
                                 onClick={() => setShowHistory(true)}
                                 aria-label="Past Conversations"
