@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit } from 'lucide-react';
+import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIDebugDashboard } from './AIDebugDashboard';
 import AvaLogo from './ui/AvaLogo';
@@ -90,6 +90,10 @@ export default function GlobalAICopilot() {
     // Conversation history — persists across open/close within the same session
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [apiHistory, setApiHistory] = useState<{ role: string; text: string }[]>([]);
+    const [conversations, setConversations] = useState<any[]>([]);
+    const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+    const [showHistory, setShowHistory] = useState(false);
+    
     const [isConversationMode, setIsConversationMode] = useState(false);
     const isConversationModeRef = useRef(false);
     isConversationModeRef.current = isConversationMode;
@@ -134,10 +138,75 @@ export default function GlobalAICopilot() {
     }, [isOpen]);
 
     const clearChat = () => {
+        if (!currentConversationId && conversations.length >= 10) {
+            alert("Maximum of 10 conversations reached. Please delete an existing conversation from History to start a new one.");
+            return;
+        }
         setMessages([]);
         setApiHistory([]);
         setChips([]);
         setPrompt('');
+        setCurrentConversationId(null);
+    };
+
+    const loadConversations = useCallback(async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase.from('ai_conversations')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false });
+        if (data) setConversations(data);
+    }, []);
+
+    useEffect(() => {
+        if (isOpen) loadConversations();
+    }, [isOpen, loadConversations]);
+
+    const loadConversation = (conv: any) => {
+        setCurrentConversationId(conv.id);
+        setMessages(conv.messages || []);
+        // Reconstruct apiHistory from messages
+        const newApiHist: any[] = [];
+        (conv.messages || []).forEach((m: any) => {
+            if (m.sender === 'user') newApiHist.push({ role: 'user', text: m.text });
+            else newApiHist.push({ role: 'model', text: m.text });
+        });
+        setApiHistory(newApiHist);
+        setShowHistory(false);
+    };
+
+    const deleteConversation = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        await supabase.from('ai_conversations').delete().eq('id', id);
+        setConversations(prev => prev.filter(c => c.id !== id));
+        if (currentConversationId === id) {
+            setCurrentConversationId(null);
+            setMessages([]);
+            setApiHistory([]);
+        }
+    };
+
+    const saveConversation = async (newMessages: ChatMessage[], firstMessageText: string) => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        if (currentConversationId) {
+            await supabase.from('ai_conversations')
+                .update({ messages: newMessages, updated_at: new Date().toISOString() })
+                .eq('id', currentConversationId);
+            setConversations(prev => prev.map(c => c.id === currentConversationId ? { ...c, messages: newMessages, updated_at: new Date().toISOString() } : c));
+        } else {
+            const title = firstMessageText.slice(0, 30) + (firstMessageText.length > 30 ? '...' : '');
+            const { data } = await supabase.from('ai_conversations')
+                .insert({ user_id: user.id, title, messages: newMessages })
+                .select()
+                .single();
+            if (data) {
+                setCurrentConversationId(data.id);
+                setConversations(prev => [data, ...prev]);
+            }
+        }
     };
 
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -158,6 +227,11 @@ export default function GlobalAICopilot() {
 
         const q = (overrideText ?? promptRef.current).trim();
         if (!q && !selectedImage) return;
+
+        if (!currentConversationId && conversations.length >= 10) {
+            alert("Maximum of 10 past conversations reached. Please delete an existing conversation from History to start a new one.");
+            return;
+        }
 
         isSendingRef.current = true;
         const currentImage = selectedImage;
@@ -696,9 +770,15 @@ export default function GlobalAICopilot() {
                     timestamp: formatTime(new Date()),
                     requestId: data.requestId,
                 };
-                setMessages(prev => [...prev, avaMsg]);
+                
+                const updatedMessages = [...messages, userMsg, avaMsg];
+                setMessages(updatedMessages);
                 setApiHistory(prev => [...prev, { role: 'user', text: q }, { role: 'model', text: finalResponseText }]);
                 setChips(deriveChips(finalResponseText));
+                
+                // Save conversation to backend
+                await saveConversation(updatedMessages, userMsg.text);
+                
                 triggerSuccess();
 
                 if (finalResponseText && finalResponseText.length < 200) {
@@ -856,6 +936,9 @@ export default function GlobalAICopilot() {
 
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
+                            <button onClick={() => setShowHistory(true)} className="p-2 -ml-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" aria-label="Past Conversations">
+                                <Clock size={20} />
+                            </button>
                             <AvaLogo size={24} className="rounded-full overflow-hidden" />
                             <span className="text-on-surface font-semibold text-[17px] tracking-tight ml-1">Ava</span>
                             {isDevMode && (
@@ -887,7 +970,36 @@ export default function GlobalAICopilot() {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-5 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-5 scrollbar-hide relative">
+
+                        {showHistory && (
+                            <div className="absolute inset-y-0 left-0 w-64 bg-surface-container-highest/95 backdrop-blur-xl border-r border-surface-variant z-50 flex flex-col shadow-2xl animate-in slide-in-from-left-4 duration-300">
+                                <div className="p-4 border-b border-surface-variant flex items-center justify-between shrink-0">
+                                    <h3 className="font-bold text-on-surface flex items-center gap-2">
+                                        <Clock size={16} className="text-secondary"/> History
+                                    </h3>
+                                    <button onClick={() => setShowHistory(false)} className="p-1 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container"><X size={16} /></button>
+                                </div>
+                                <div className="p-3 shrink-0">
+                                    <button onClick={clearChat} className="w-full py-2.5 bg-secondary text-on-secondary rounded-xl font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                                        <MessageSquare size={16} /> New Chat
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-hide">
+                                    {conversations.length === 0 && (
+                                        <div className="text-center text-sm text-on-surface-variant mt-4 font-medium">No past conversations.</div>
+                                    )}
+                                    {conversations.map(c => (
+                                        <div key={c.id} onClick={() => loadConversation(c)} className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${currentConversationId === c.id ? 'bg-secondary/20 text-secondary' : 'hover:bg-surface-container text-on-surface-variant hover:text-on-surface'}`}>
+                                            <div className="truncate text-sm font-semibold flex-1 pr-2">{c.title}</div>
+                                            <button onClick={(e) => deleteConversation(c.id, e)} className="opacity-0 group-hover:opacity-100 text-red-500/50 hover:text-red-500 transition-all p-1">
+                                                <Trash2 size={14}/>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {!hasMessages && (
                             <div className="flex flex-col items-center justify-center h-full min-h-[30vh] text-center px-4 animate-in fade-in duration-300">
