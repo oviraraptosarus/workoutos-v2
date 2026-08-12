@@ -524,7 +524,10 @@ export default function GlobalAICopilot() {
                             description: args.description || '', 
                             completed: false,
                             due_date: args.dueDate || '',
-                            due_time: args.dueTime || null
+                            due_time: args.dueTime || null,
+                            reminder_time: args.reminderTime || null,
+                            recurrence_rule: args.recurrenceRule || null,
+                            priority: args.priority || 'none'
                         }).select().single();
                         
                         if (error) throw new Error(`Tool Execution Failed (add_task base): ${error.message}`);

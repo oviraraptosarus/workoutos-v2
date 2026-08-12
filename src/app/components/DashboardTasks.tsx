@@ -8,15 +8,21 @@ import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
+import { usePersonalizationStore } from '@/store/usePersonalizationStore';
 
-export default function DashboardTasks() {
-    const { selectedDate } = useDate();
+interface DashboardTasksProps {
+    selectedDate?: string;
+}
+
+export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
     const { t } = useLanguage();
-    const { tasks, fetchTasks, toggleTask, addTask } = useTaskStore();
-    const { triggerTap, triggerSuccess } = useRewardSystem();
+    const { tasks, fetchTasks, toggleTask, addTask, fetchUpcomingReminders } = useTaskStore();
+    const { triggerSuccess } = useRewardSystem();
+    const { isSmartMode } = usePersonalizationStore();
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -53,11 +59,54 @@ export default function DashboardTasks() {
 
     const handleAddTask = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newTaskTitle.trim()) return;
-        await addTask({ title: newTaskTitle.trim(), priority: 'none' });
-        setNewTaskTitle('');
-        // Let the store handle the local update optimistically, or fetch again
-        fetchTasks(selectedDate || new Date().toLocaleDateString('en-CA'));
+        const input = newTaskTitle.trim();
+        if (!input) return;
+        
+        setIsGenerating(true);
+        try {
+            if (isSmartMode) {
+                const res = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: `Add task: ${input}`,
+                        appState: { 
+                            localTime: new Date().toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
+                        },
+                        currentDateTime: new Date().toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+                    })
+                });
+
+                if (!res.ok) throw new Error('Failed to set task');
+                const data = await res.json();
+                
+                if (data.functionCall && data.functionCall.name === 'add_task') {
+                    const args = data.functionCall.arguments || {};
+                    await addTask({
+                        title: args.title || input,
+                        due_date: args.dueDate || selectedDate || new Date().toLocaleDateString('en-CA'),
+                        due_time: args.dueTime || null,
+                        reminder_time: args.reminderTime || null,
+                        recurrenceRule: args.recurrenceRule || null,
+                        priority: args.priority || 'none',
+                        category: args.category || 'General'
+                    });
+                } else {
+                    await addTask({ title: input, priority: 'none' });
+                }
+            } else {
+                await addTask({ title: input, priority: 'none' });
+            }
+            
+            setNewTaskTitle('');
+            fetchTasks(selectedDate || new Date().toLocaleDateString('en-CA'));
+            setTimeout(() => fetchUpcomingReminders(), 500);
+        } catch (err: any) {
+            alert('Failed to add task: ' + err.message);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     if (!isClient) return null;
@@ -118,11 +167,6 @@ export default function DashboardTasks() {
                                         <Calendar size={10} /> Due: {new Date(task.due_date).toLocaleDateString()}
                                     </div>
                                 )}
-                                {task.subTasks && task.subTasks.length > 0 && (
-                                    <div className="font-label-sm text-[11px] text-on-surface-variant mt-1 flex items-center gap-1">
-                                        <Target size={10} /> {task.subTasks.filter(st => st.completed).length} / {task.subTasks.length} sub-tasks
-                                    </div>
-                                )}
                             </div>
                         </div>
                     ))
@@ -141,15 +185,19 @@ export default function DashboardTasks() {
                         type="text" 
                         value={newTaskTitle}
                         onChange={(e) => setNewTaskTitle(e.target.value)}
-                        placeholder="Add a new task..." 
-                        className="glass-input-premium flex-1 rounded-[1rem] px-4 py-3 text-sm text-on-surface"
+                        placeholder={t('tasks.addNew')}
+                        disabled={isGenerating}
+                        className="glass-input-premium flex-1 rounded-[1rem] px-4 py-3 text-sm text-on-surface disabled:opacity-50"
                     />
-                    <button type="submit" disabled={!newTaskTitle.trim()} className="glass-button-premium px-4 py-3 rounded-[1rem] text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                        Add
+                    <button 
+                        type="submit"
+                        disabled={!newTaskTitle.trim() || isGenerating}
+                        className="glass-button-premium px-4 py-3 rounded-[1rem] text-sm disabled:opacity-50 flex items-center justify-center min-w-[70px]"
+                    >
+                        {isGenerating ? <Loader2 size={16} className="animate-spin" /> : t('common.add')}
                     </button>
                 </form>
             </div>
         </section>
     );
-}
 
