@@ -150,13 +150,22 @@ export default function GlobalAICopilot() {
     };
 
     const loadConversations = useCallback(async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        const { data } = await supabase.from('ai_conversations')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('updated_at', { ascending: false });
-        if (data) setConversations(data);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            const { data, error } = await supabase.from('ai_conversations')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('updated_at', { ascending: false });
+            
+            if (error) {
+                alert("Load History Error: " + error.message);
+                return;
+            }
+            if (data) setConversations(data);
+        } catch (err: any) {
+            alert("Load History Exception: " + err.message);
+        }
     }, []);
 
     useEffect(() => {
@@ -188,24 +197,38 @@ export default function GlobalAICopilot() {
     };
 
     const saveConversation = async (newMessages: ChatMessage[], firstMessageText: string) => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-        if (currentConversationId) {
-            await supabase.from('ai_conversations')
-                .update({ messages: newMessages, updated_at: new Date().toISOString() })
-                .eq('id', currentConversationId);
-            setConversations(prev => prev.map(c => c.id === currentConversationId ? { ...c, messages: newMessages, updated_at: new Date().toISOString() } : c));
-        } else {
-            const title = firstMessageText.slice(0, 30) + (firstMessageText.length > 30 ? '...' : '');
-            const { data } = await supabase.from('ai_conversations')
-                .insert({ user_id: user.id, title, messages: newMessages })
-                .select()
-                .single();
-            if (data) {
-                setCurrentConversationId(data.id);
-                setConversations(prev => [data, ...prev]);
+            if (currentConversationId) {
+                const { error } = await supabase.from('ai_conversations')
+                    .update({ messages: newMessages, updated_at: new Date().toISOString() })
+                    .eq('id', currentConversationId);
+                
+                if (error) {
+                    alert("Update Conversation Error: " + error.message);
+                    return;
+                }
+                setConversations(prev => prev.map(c => c.id === currentConversationId ? { ...c, messages: newMessages, updated_at: new Date().toISOString() } : c));
+            } else {
+                const title = firstMessageText.slice(0, 30) + (firstMessageText.length > 30 ? '...' : '');
+                const { data, error } = await supabase.from('ai_conversations')
+                    .insert({ user_id: user.id, title, messages: newMessages })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    alert("Save Conversation Error: " + error.message);
+                    return;
+                }
+                if (data) {
+                    setCurrentConversationId(data.id);
+                    setConversations(prev => [data, ...prev]);
+                }
             }
+        } catch (err: any) {
+            alert("Save Conversation Exception: " + err.message);
         }
     };
 
