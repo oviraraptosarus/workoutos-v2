@@ -14,8 +14,8 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
     const [transcript, setTranscript] = useState('');
     const [parsedTasks, setParsedTasks] = useState<string[]>([]);
     const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
-    const [parsedReadings, setParsedReadings] = useState<string[]>([]);
-    const [selectedReadingIndices, setSelectedReadingIndices] = useState<Set<number>>(new Set());
+    const [summary, setSummary] = useState('');
+    const [saveSummary, setSaveSummary] = useState(true);
     const [elapsed, setElapsed] = useState(0);
 
     const recognitionRef = useRef<any>(null);
@@ -40,8 +40,8 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         setTranscript('');
         setParsedTasks([]);
         setSelectedIndices(new Set());
-        setParsedReadings([]);
-        setSelectedReadingIndices(new Set());
+        setSummary('');
+        setSaveSummary(true);
         setElapsed(0);
 
         const recognition = new SR();
@@ -111,14 +111,15 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             });
             const data = await res.json();
             const hasTasks = data.tasks && data.tasks.length > 0;
-            const hasReadings = data.readings && data.readings.length > 0;
+            const hasSummary = !!data.summary;
             
-            if (hasTasks || hasReadings) {
+            if (hasTasks || hasSummary) {
                 setParsedTasks(data.tasks || []);
-                setSelectedIndices(new Set((data.tasks || []).map((_: any, i: number) => i)));
+                // By default, tasks are UNCHECKED so the user only adds them if they want to
+                setSelectedIndices(new Set());
                 
-                setParsedReadings(data.readings || []);
-                setSelectedReadingIndices(new Set((data.readings || []).map((_: any, i: number) => i)));
+                setSummary(data.summary || '');
+                setSaveSummary(true);
                 
                 setState('selecting');
             } else {
@@ -151,15 +152,8 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         setSelectedIndices(newSet);
     };
 
-    const toggleReadingSelection = (index: number) => {
-        const newSet = new Set(selectedReadingIndices);
-        if (newSet.has(index)) newSet.delete(index);
-        else newSet.add(index);
-        setSelectedReadingIndices(newSet);
-    };
-
     const handleSaveTasks = async () => {
-        if (!user || (selectedIndices.size === 0 && selectedReadingIndices.size === 0)) return;
+        if (!user || (selectedIndices.size === 0 && (!saveSummary || !summary))) return;
         
         setState('processing');
         const todayStr = new Date().toLocaleDateString('en-CA');
@@ -180,14 +174,13 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             }
         }
         
-        if (selectedReadingIndices.size > 0) {
-            const readingsToInsert = Array.from(selectedReadingIndices).map(idx => ({
+        if (saveSummary && summary) {
+            const { error } = await supabase.from('brain_readings').insert([{
                 user_id: user.id,
-                content: parsedReadings[idx]
-            }));
-            const { error } = await supabase.from('brain_readings').insert(readingsToInsert);
+                content: summary
+            }]);
             if (error) {
-                alert('Failed to save readings: ' + error.message);
+                alert('Failed to save summary: ' + error.message);
                 hasError = true;
             }
         }
@@ -221,54 +214,61 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                 Use the Brain Dump when your mind is cluttered. Instead of manually organizing, just dump all your thoughts, ideas, or to-dos here (type or speak). Ava will analyze the chaos, extract the actionable tasks, and put them straight into your execution pipeline.
             </p>
             
-            {state === 'selecting' ? (
-                <div className="relative z-10 space-y-6">
-                    {parsedTasks.length > 0 && (
-                        <div className="space-y-4">
-                            <h3 className="font-bold text-on-surface flex items-center gap-2">
-                                <CheckSquare className="w-5 h-5 text-secondary" />
-                                Extracted Tasks
-                            </h3>
-                            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                                {parsedTasks.map((task, i) => (
-                                    <div 
-                                        key={i} 
-                                        onClick={() => toggleTaskSelection(i)}
-                                        className={clsx(
-                                            "flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
-                                            selectedIndices.has(i) ? "bg-secondary/10 border-secondary/30 text-on-surface" : "bg-surface-container border-surface-variant text-on-surface-variant/70"
-                                        )}
-                                    >
-                                        <div className="mt-0.5 shrink-0">
-                                            {selectedIndices.has(i) ? <CheckSquare className="text-secondary w-5 h-5" /> : <Square className="w-5 h-5" />}
-                                        </div>
-                                        <span className="font-medium text-sm leading-relaxed">{task}</span>
-                                    </div>
-                                ))}
+            {state === 'selecting' && (
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    
+                    {/* Summary Section */}
+                    {summary && (
+                        <div className="space-y-4 bg-white/5 dark:bg-white/5 backdrop-blur-md p-6 rounded-[2rem] border border-white/10 shadow-sm relative">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-label-sm text-sm font-semibold uppercase tracking-wider text-secondary flex items-center gap-2">
+                                    <Lightbulb size={18} /> Brain Summary
+                                </h3>
+                                <button 
+                                    onClick={() => setSaveSummary(!saveSummary)}
+                                    className={clsx(
+                                        "flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all border",
+                                        saveSummary ? "bg-activity-green/20 text-activity-green border-activity-green/30" : "bg-white/5 text-on-surface-variant border-white/10 hover:bg-white/10"
+                                    )}
+                                >
+                                    {saveSummary ? <Check size={14} /> : <Square size={14} />}
+                                    Save to Journal
+                                </button>
+                            </div>
+                            <div className="font-body-md text-sm text-on-surface/90 whitespace-pre-wrap leading-relaxed">
+                                {summary}
                             </div>
                         </div>
                     )}
 
-                    {parsedReadings.length > 0 && (
-                        <div className="space-y-4">
-                            <h3 className="font-bold text-on-surface flex items-center gap-2">
-                                <Lightbulb className="w-5 h-5 text-primary" />
-                                Extracted Insights & Readings
+                    {/* Tasks Section */}
+                    {parsedTasks.length > 0 && (
+                        <div className="space-y-4 relative z-10">
+                            <h3 className="font-label-sm text-sm font-semibold uppercase tracking-wider text-primary flex items-center gap-2 px-1">
+                                <CheckSquare size={18} /> Extracted Tasks
                             </h3>
-                            <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
-                                {parsedReadings.map((reading, i) => (
+                            <p className="text-xs text-on-surface-variant px-1 -mt-2 mb-2">Select the items you actually want to add as to-dos.</p>
+                            <div className="space-y-3">
+                                {parsedTasks.map((task, idx) => (
                                     <div 
-                                        key={`reading-${i}`} 
-                                        onClick={() => toggleReadingSelection(i)}
+                                        key={idx}
+                                        onClick={() => toggleTaskSelection(idx)}
                                         className={clsx(
-                                            "flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
-                                            selectedReadingIndices.has(i) ? "bg-primary/10 border-primary/30 text-on-surface" : "bg-surface-container border-surface-variant text-on-surface-variant/70"
+                                            "group flex items-start gap-3 p-4 rounded-[1.2rem] border cursor-pointer transition-all duration-300",
+                                            selectedIndices.has(idx) 
+                                                ? "bg-primary/10 border-primary/30 shadow-[0_4px_20px_rgba(var(--primary-rgb),0.15)]" 
+                                                : "bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10"
                                         )}
                                     >
-                                        <div className="mt-0.5 shrink-0">
-                                            {selectedReadingIndices.has(i) ? <CheckSquare className="text-primary w-5 h-5" /> : <Square className="w-5 h-5" />}
+                                        <div className={clsx(
+                                            "mt-0.5 flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all",
+                                            selectedIndices.has(idx)
+                                                ? "bg-primary border-primary text-on-primary"
+                                                : "border-on-surface-variant/40 group-hover:border-on-surface text-transparent"
+                                        )}>
+                                            <Check size={14} />
                                         </div>
-                                        <span className="font-medium text-sm leading-relaxed">{reading}</span>
+                                        <p className="font-body-md text-sm text-on-surface">{task}</p>
                                     </div>
                                 ))}
                             </div>
@@ -283,11 +283,12 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                             Discard All
                         </button>
                         <button 
+                            disabled={selectedIndices.size === 0 && (!saveSummary || !summary)}
                             onClick={handleSaveTasks}
-                            disabled={selectedIndices.size === 0 && selectedReadingIndices.size === 0}
-                            className="flex-[2] py-3 rounded-xl bg-secondary text-on-secondary font-bold hover:bg-secondary/90 disabled:opacity-50 transition-colors shadow-lg"
+                            className="px-6 py-4 rounded-full bg-primary text-on-primary font-bold text-sm uppercase tracking-wider hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-primary/20"
                         >
-                            Save {selectedIndices.size + selectedReadingIndices.size} Items
+                            <CheckSquare size={18} />
+                            Save Selected
                         </button>
                     </div>
                 </div>

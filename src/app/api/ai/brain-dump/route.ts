@@ -14,13 +14,13 @@ export async function POST(req: Request) {
 The user is doing a "Brain Dump" - pouring out their unstructured thoughts, ideas, and chaotic to-dos.
 Your goal is to parse this chaos and extract:
 1. "tasks": An array of distinct, actionable to-dos. If a task is extremely vague, clarify it slightly to make it actionable.
-2. "readings": An array of summarized key points, insights, or journal-like reflections from their thoughts.
+2. "summary": A single, cohesive markdown string summarizing their brain dump. Use bullet points and paragraphs to create a beautiful, structured journal entry.
 
-Output the result as a raw JSON object with two arrays: "tasks" and "readings". Do not use markdown, do not write a preamble, just return the JSON object.`;
+Output the result as a raw JSON object with two properties: "tasks" and "summary". Do not use markdown, do not write a preamble, just return the JSON object.`;
 
         const response = await orchestrator.generateContent({
             systemInstruction,
-            prompt: `Parse these thoughts into a JSON object containing "tasks" and "readings":\n\n"${rawTranscript}"`
+            prompt: `Parse these thoughts into a JSON object containing "tasks" and "summary":\n\n"${rawTranscript}"`
         });
 
         let outputStr = response.text || "[]";
@@ -29,14 +29,14 @@ Output the result as a raw JSON object with two arrays: "tasks" and "readings". 
         outputStr = outputStr.replace(/```json/g, '').replace(/```/g, '').trim();
 
         let tasks: string[] = [];
-        let readings: string[] = [];
+        let summary: string = "";
         try {
             const parsed = JSON.parse(outputStr);
             if (Array.isArray(parsed)) {
                 tasks = parsed;
             } else {
                 tasks = parsed.tasks || [];
-                readings = parsed.readings || [];
+                summary = parsed.summary || "";
             }
         } catch (e) {
             console.error("Failed to parse JSON object from AI:", outputStr);
@@ -44,7 +44,7 @@ Output the result as a raw JSON object with two arrays: "tasks" and "readings". 
             tasks = outputStr.split('\n').map(s => s.replace(/^- /, '').trim()).filter(Boolean);
         }
 
-        return NextResponse.json({ tasks, readings });
+        return NextResponse.json({ tasks, summary });
     } catch (err: any) {
         console.error('Brain dump error:', err);
         return NextResponse.json({ error: err.message }, { status: 500 });
