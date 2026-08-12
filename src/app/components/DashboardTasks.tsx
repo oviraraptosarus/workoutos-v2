@@ -8,7 +8,6 @@ import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
-import { usePersonalizationStore } from '@/store/usePersonalizationStore';
 
 interface DashboardTasksProps {
     selectedDate?: string;
@@ -18,7 +17,7 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
     const { t } = useLanguage();
     const { tasks, fetchTasks, toggleTask, addTask, fetchUpcomingReminders } = useTaskStore();
     const { triggerSuccess } = useRewardSystem();
-    const { isSmartMode } = usePersonalizationStore();
+    const isSmartMode = true;
     const [highlight, setHighlight] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -200,4 +199,4 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
             </div>
         </section>
     );
-
+}
