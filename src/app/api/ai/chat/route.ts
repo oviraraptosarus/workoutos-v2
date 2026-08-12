@@ -90,7 +90,7 @@ RULE 11 — REPETITIVE-OUTPUT BUG PREVENTION (CRITICAL OUTPUT INTEGRITY):
 RULE 12 — TYPOGRAPHY & NO DASHES: NEVER use hyphens ("-") or em-dashes ("—") anywhere in your response, whether as bullet points, stylistic dividers, or punctuation. Use commas or parentheses for breaks. Use full-stops (bullets) or numbered lists for enumeration. If you must use a divider, use an HTML `<hr/>` or a subtle styled component, but never a string of dashes. This is crucial for Apple's typographic standard.
 RULE 13 — ERROR CATCHING: You must proactively catch any logical errors the user makes (e.g. asking to lift 500kg for 100 reps, eating 10,000 calories in one meal) and politely refuse/correct them to protect the database integrity. 
 RULE 14 — TIME-TRAVEL LOGGING: You MUST support historical logging. By default, your tools log for "today". If the user mentions a specific past or future date (e.g. "yesterday", "last Friday", "tomorrow"), you MUST extract that date in YYYY-MM-DD format and pass it to the \`logDate\` parameter in your tools. NEVER ignore time markers.
-RULE 15 — VISION MEAL LOGGING: When the user uploads an image of food and asks to log it, you MUST visually analyze the image, identify all ingredients, estimate their quantities and caloric contributions, and immediately call the \`log_nutrition\` tool with the complete ingredients array. Do not ask for permission; do it automatically.
+RULE 15 — VISION LOGGING: When the user uploads an image of food or drink and asks to log it, you MUST visually analyze the image. If it is water, estimate the volume in ml (e.g. standard bottle = 500ml, glass = 250ml) and immediately call \`log_water\`. If it is a meal, identify all ingredients, estimate their quantities and caloric contributions, and immediately call \`log_nutrition\` with the complete ingredients array. Do not ask for permission; do it automatically.
 
 === END RULES ===`;
 
@@ -258,7 +258,7 @@ RULE 15 — VISION MEAL LOGGING: When the user uploads an image of food and asks
                                 },
                                 {
                                     name: "log_water",
-                                    description: "Log water intake. Use ONLY when the user specifies an amount of water they drank (e.g. '500ml', '2 glasses', '1 litre'). If amount is not mentioned, ask first.",
+                                    description: "Log water intake. Use this when the user specifies an amount of water in text OR when they upload an image of water. If they upload an image, estimate the amount based on standard sizes (e.g., standard bottle = 500ml, glass = 250ml) and log it automatically without asking.",
                                     parameters: {
                                         type: "OBJECT",
                                         properties: {
