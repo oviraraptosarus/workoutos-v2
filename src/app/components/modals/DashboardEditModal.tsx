@@ -15,7 +15,6 @@ const WIDGET_NAMES: Record<string, string> = {
     'TouchGrassNudge': 'Health Nudge',
     'WeightLogCard': 'Weight Tracker',
     'TimeProgressWidget': 'Time Progress',
-    'QuickNotes': 'Quick Notes',
     'DashboardTasks': 'Daily Tasks',
     'DashboardCountdowns': 'Countdowns',
     'VaultWidget': 'Content Vault'
@@ -26,7 +25,6 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TouchGrassNudge', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
-    { id: 'QuickNotes', visible: true },
     { id: 'DashboardTasks', visible: true },
     { id: 'DashboardCountdowns', visible: true },
     { id: 'VaultWidget', visible: true }

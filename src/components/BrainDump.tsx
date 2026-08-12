@@ -96,19 +96,19 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         else startRecording();
     };
 
-    const handleParse = async () => {
-        if (!transcript.trim()) return;
+    const processText = async (textToProcess: string) => {
+        if (!textToProcess.trim()) return;
         setState('processing');
         try {
             const res = await fetch('/api/ai/brain-dump', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rawTranscript: transcript })
+                body: JSON.stringify({ rawTranscript: textToProcess })
             });
             const data = await res.json();
             if (data.tasks && data.tasks.length > 0) {
                 setParsedTasks(data.tasks);
-                setSelectedIndices(new Set(data.tasks.map((_: any, i: number) => i))); // Select all by default
+                setSelectedIndices(new Set(data.tasks.map((_: any, i: number) => i)));
                 setState('selecting');
             } else {
                 alert("No actionable tasks found.");
@@ -119,6 +119,19 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             setState('idle');
         }
     };
+
+    const handleParse = async () => {
+        await processText(transcript);
+    };
+
+    useEffect(() => {
+        const pendingDump = localStorage.getItem('pending_brain_dump');
+        if (pendingDump) {
+            localStorage.removeItem('pending_brain_dump');
+            setTranscript(pendingDump);
+            processText(pendingDump);
+        }
+    }, []);
 
     const toggleTaskSelection = (index: number) => {
         const newSet = new Set(selectedIndices);

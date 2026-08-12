@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit, Clock } from 'lucide-react';
+import { Sparkles, Send, X, Mic, Camera, SlidersHorizontal, BookmarkPlus, Settings2, Trash2, MessageSquare, VolumeX, Image as ImageIcon, Orbit, Clock, Copy, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AIDebugDashboard } from './AIDebugDashboard';
 import AvaLogo from './ui/AvaLogo';
@@ -1082,6 +1082,28 @@ export default function GlobalAICopilot() {
                                                         {msg.text.startsWith('⚠️') ? msg.text : <ReactMarkdown>{msg.text}</ReactMarkdown>}
                                                     </div>
                                                 </div>
+                                                {!msg.text.startsWith('⚠️') && (
+                                                    <div className="flex items-center gap-2 mt-1 px-1">
+                                                        <button 
+                                                            onClick={() => navigator.clipboard.writeText(msg.text)} 
+                                                            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded hover:bg-surface-container"
+                                                            title="Copy text"
+                                                        >
+                                                            <Copy size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => {
+                                                                localStorage.setItem('pending_brain_dump', msg.text);
+                                                                setIsOpen(false);
+                                                                router.push('/planner?tab=brain');
+                                                            }}
+                                                            className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded hover:bg-surface-container"
+                                                            title="Dump to Brain Dump"
+                                                        >
+                                                            <BrainCircuit size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )

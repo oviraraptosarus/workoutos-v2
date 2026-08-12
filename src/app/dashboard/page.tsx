@@ -10,7 +10,6 @@ import BentoGrid from '@/app/components/BentoGrid';
 import TouchGrassNudge from '@/app/components/TouchGrassNudge';
 import WeightLogCard from '@/app/components/cards/WeightLogCard';
 import DashboardTasks from '@/app/components/DashboardTasks';
-import QuickNotes from '@/app/components/QuickNotes';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
 import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
@@ -24,7 +23,6 @@ const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
     'TouchGrassNudge': TouchGrassNudge,
     'WeightLogCard': WeightLogCard,
     'TimeProgressWidget': TimeProgressWidget,
-    'QuickNotes': QuickNotes,
     'DashboardTasks': DashboardTasks,
     'DashboardCountdowns': DashboardCountdowns,
     'VaultWidget': VaultWidget
@@ -35,7 +33,6 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TouchGrassNudge', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
-    { id: 'QuickNotes', visible: true },
     { id: 'DashboardTasks', visible: true },
     { id: 'DashboardCountdowns', visible: true },
     { id: 'VaultWidget', visible: true }
