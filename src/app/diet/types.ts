@@ -13,6 +13,13 @@ export interface MealItem {
     fiber: number;
     bites?: number;
     icon?: string;
+    ingredients?: MealIngredient[];
+}
+
+export interface MealIngredient {
+    name: string;
+    quantity?: string;
+    calories: number;
 }
 
 export interface MacroGoals {

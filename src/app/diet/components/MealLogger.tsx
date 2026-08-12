@@ -41,6 +41,7 @@ export default function MealLogger({
     onOpenAIMealModal,
 }: MealLoggerProps) {
     const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+    const [expandedIngredients, setExpandedIngredients] = useState<Record<string, boolean>>({});
     const [copiedNotice, setCopiedNotice] = useState(false);
     const [summaryCopied, setSummaryCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +50,11 @@ export default function MealLogger({
 
     const toggleCollapse = (catName: string) => {
         setCollapsed((prev) => ({ ...prev, [catName]: !prev[catName] }));
+    };
+
+    const toggleIngredientExpand = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setExpandedIngredients((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     const handleCopyYesterdayClick = () => {
@@ -218,54 +224,86 @@ export default function MealLogger({
                                     <div className="space-y-2 mt-6">
                                         {categoryMeals.length > 0 ? (
                                             categoryMeals.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    onClick={() => onEditMealClick(item)}
-                                                    className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-surface-container-low/50 hover:bg-surface-container border border-white/5 transition-all cursor-pointer gap-4"
-                                                >
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                            {item.icon || '🥗'}
+                                                <div key={item.id} className="flex flex-col bg-surface-container-low/50 hover:bg-surface-container border border-white/5 rounded-2xl overflow-hidden transition-all group">
+                                                    <div
+                                                        onClick={() => onEditMealClick(item)}
+                                                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 cursor-pointer gap-4"
+                                                    >
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                                                {item.icon || '🥗'}
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="text-sm font-semibold text-on-surface tracking-tight group-hover:text-primary transition-colors">
+                                                                    {item.name}
+                                                                </h4>
+                                                                <p className="text-xs font-medium text-on-surface-variant mt-1">
+                                                                    <strong className="text-on-surface tabular-nums">{item.bites ? `${item.bites} BITES` : `${item.calories} KCAL`}</strong> • {item.portion}
+                                                                    {item.protein ? ` • ${item.protein}g protein` : ''}
+                                                                    {item.fiber ? ` • ${item.fiber}g fiber` : ''}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <h4 className="text-sm font-semibold text-on-surface tracking-tight group-hover:text-primary transition-colors">
-                                                                {item.name}
-                                                            </h4>
-                                                            <p className="text-xs font-medium text-on-surface-variant mt-1">
-                                                                <strong className="text-on-surface tabular-nums">{item.bites ? `${item.bites} BITES` : `${item.calories} KCAL`}</strong> • {item.portion}
-                                                                {item.protein ? ` • ${item.protein}g protein` : ''}
-                                                                {item.fiber ? ` • ${item.fiber}g fiber` : ''}
-                                                            </p>
+
+                                                        {/* Action buttons */}
+                                                        <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity mt-2 sm:mt-0">
+                                                            {item.ingredients && item.ingredients.length > 0 && (
+                                                                <button
+                                                                    onClick={(e) => toggleIngredientExpand(item.id, e)}
+                                                                    className="p-1.5 text-on-surface-variant hover:text-on-surface bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-white/5"
+                                                                    title="View Ingredients"
+                                                                >
+                                                                    <ChevronDown size={16} className={`transition-transform duration-300 ${expandedIngredients[item.id] ? 'rotate-180' : ''}`} />
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    triggerTap();
+                                                                    onEditMealClick(item);
+                                                                }}
+                                                                className="p-1.5 text-on-surface-variant hover:text-primary bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-white/5"
+                                                                title="Edit"
+                                                            >
+                                                                <Edit3 size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    triggerPop();
+                                                                    onDeleteMeal(item.id);
+                                                                }}
+                                                                className="p-1.5 text-on-surface-variant hover:text-red-500 bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-red-500/20"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
                                                         </div>
                                                     </div>
 
-                                                    {/* Action buttons */}
-                                                    <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity mt-2 sm:mt-0">
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                triggerTap();
-                                                                onEditMealClick(item);
-                                                            }}
-                                                            className="p-1.5 text-on-surface-variant hover:text-primary bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-white/5"
-                                                            title="Edit Meal"
-                                                        >
-                                                            <Edit3 size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (confirm(`Remove ${item.name}?`)) {
-                                                                    triggerPop();
-                                                                    onDeleteMeal(item.id);
-                                                                }
-                                                            }}
-                                                            className="p-2 rounded-xl hover:bg-red-500/20 text-on-surface-variant hover:text-red-400 transition-colors"
-                                                            title="Remove meal item"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
+                                                    {/* Ingredients Cascade */}
+                                                    {expandedIngredients[item.id] && item.ingredients && item.ingredients.length > 0 && (
+                                                        <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
+                                                            <div className="p-3 bg-black/5 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5 space-y-2.5">
+                                                                <h5 className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1.5">
+                                                                    <Sparkles size={10} className="text-primary"/> Estimated Breakdown
+                                                                </h5>
+                                                                {item.ingredients.map((ing, idx) => (
+                                                                    <div key={idx} className="flex justify-between items-center text-xs">
+                                                                        <div className="flex flex-col">
+                                                                            <span className="font-semibold text-on-surface tracking-tight">{ing.name}</span>
+                                                                            {ing.quantity && <span className="text-[10px] font-medium text-on-surface-variant mt-0.5">{ing.quantity}</span>}
+                                                                        </div>
+                                                                        <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums bg-emerald-500/10 px-2 py-0.5 rounded-md">{ing.calories} kcal</span>
+                                                                    </div>
+                                                                ))}
+                                                                <div className="flex justify-between items-center text-xs border-t border-black/10 dark:border-white/10 pt-2.5 mt-2.5 font-bold text-on-surface">
+                                                                    <span className="tracking-wide">Total</span>
+                                                                    <span className="tabular-nums">{item.calories} kcal</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))
                                         ) : (

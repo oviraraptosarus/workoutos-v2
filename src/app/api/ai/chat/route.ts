@@ -300,9 +300,22 @@ RULE 14 — TIME-TRAVEL LOGGING: If a user specifies a past or future date (e.g.
                                             protein: { type: "NUMBER", description: "Estimated protein in grams." },
                                             carbs: { type: "NUMBER", description: "Estimated carbohydrates in grams." },
                                             fat: { type: "NUMBER", description: "Estimated fat in grams." },
-                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." },
+                                            ingredients: {
+                                                type: "ARRAY",
+                                                description: "A breakdown of the estimated ingredients in this meal, their quantities, and caloric contribution. ALWAYS provide this to estimate how you arrived at the total calories.",
+                                                items: {
+                                                    type: "OBJECT",
+                                                    properties: {
+                                                        name: { type: "STRING", description: "Ingredient name (e.g. 'Chicken Breast', 'Olive Oil')" },
+                                                        quantity: { type: "STRING", description: "Estimated quantity or percentage (e.g. '150g', '1 tbsp', '40%')" },
+                                                        calories: { type: "INTEGER", description: "Estimated calories for this specific ingredient" }
+                                                    },
+                                                    required: ["name", "calories"]
+                                                }
+                                            }
                                         },
-                                        required: ["mealName", "calories", "protein", "carbs", "fat"]
+                                        required: ["mealName", "calories", "protein", "carbs", "fat", "ingredients"]
                                     }
                                 },
                                 {

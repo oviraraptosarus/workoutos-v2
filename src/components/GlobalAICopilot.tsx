@@ -666,7 +666,8 @@ export default function GlobalAICopilot() {
                             fat: Number(args.fat) || 0,
                             sugar: 0,
                             fiber: 0,
-                            icon: '🤖'
+                            icon: '🤖',
+                            ingredients: args.ingredients || []
                         });
                         await saveMealsForDate(targetDate, meals);
                         window.dispatchEvent(new Event('storage'));
