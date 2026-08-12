@@ -221,12 +221,19 @@ export default function CommandCenterOverlay({ isOpen, onClose }: CommandCenterO
 
                     {/* Next Reminder Pill */}
                     {nextReminder !== "No reminders scheduled." ? (
-                        <div className="bg-surface-container border border-white/10 text-on-surface px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm group hover:border-white/20 transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3">
-                                <Clock size={18} className="text-on-surface-variant group-hover:text-on-surface transition-colors" />
-                                <span className="font-semibold text-sm">Next: {nextReminder}</span>
+                        <div className={clsx(
+                            "px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm group transition-colors cursor-pointer border",
+                            nextReminder.includes('🚨 Escalate:') 
+                                ? "bg-red-500/10 border-red-500/20 hover:border-red-500/40 text-red-400" 
+                                : "bg-surface-container border-outline/10 hover:border-outline/20 text-on-surface"
+                        )}>
+                            <div className="flex items-center gap-3 pr-4">
+                                <Clock size={18} className={nextReminder.includes('🚨 Escalate:') ? "text-red-400" : "text-on-surface-variant group-hover:text-on-surface transition-colors"} />
+                                <span className="font-semibold text-sm leading-snug">
+                                    {nextReminder.includes('🚨 Escalate:') ? nextReminder : `Next: ${nextReminder}`}
+                                </span>
                             </div>
-                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                         </div>
                     ) : (
                         <div className="bg-surface-container/50 border border-white/5 text-on-surface-variant px-5 py-4 rounded-3xl flex items-center justify-between shadow-sm">
