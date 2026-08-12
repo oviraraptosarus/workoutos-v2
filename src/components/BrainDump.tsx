@@ -292,7 +292,9 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                         </button>
                     </div>
                 </div>
-            ) : (
+            )}
+            
+            {state !== 'selecting' && (
                 <div className="relative mb-4 z-10 flex-1 flex flex-col">
                     <textarea
                         value={transcript}
