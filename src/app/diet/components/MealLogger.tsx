@@ -222,20 +222,20 @@ export default function MealLogger({
                                     <div className="space-y-2 mt-6">
                                         {categoryMeals.length > 0 ? (
                                             categoryMeals.map((item) => (
-                                                <div key={item.id} className="flex flex-col bg-surface-container-low/50 hover:bg-surface-container border border-white/5 rounded-2xl overflow-hidden transition-all group">
+                                                <div key={item.id} className="flex flex-col bg-surface-container-low/50 hover:bg-surface-container border border-white/5 rounded-2xl overflow-hidden transition-all group active:scale-[0.98]">
                                                     <div
                                                         onClick={() => onEditMealClick(item)}
-                                                        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 cursor-pointer gap-4"
+                                                        className="flex items-center justify-between p-4 cursor-pointer gap-3"
                                                     >
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-300">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-300 shrink-0">
                                                                 {item.icon || '🥗'}
                                                             </div>
-                                                            <div>
-                                                                <h4 className="text-sm font-semibold text-on-surface tracking-tight group-hover:text-primary transition-colors">
+                                                            <div className="min-w-0">
+                                                                <h4 className="text-sm font-semibold text-on-surface tracking-tight group-hover:text-primary transition-colors truncate">
                                                                     {item.name}
                                                                 </h4>
-                                                                <p className="text-xs font-medium text-on-surface-variant mt-1">
+                                                                <p className="text-xs font-medium text-on-surface-variant mt-1 truncate">
                                                                     <strong className="text-on-surface tabular-nums">{item.bites ? `${item.bites} BITES` : `${item.calories} KCAL`}</strong> • {item.portion}
                                                                     {item.protein ? ` • ${item.protein}g protein` : ''}
                                                                     {item.fiber ? ` • ${item.fiber}g fiber` : ''}
@@ -244,7 +244,7 @@ export default function MealLogger({
                                                         </div>
 
                                                         {/* Action buttons */}
-                                                        <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity mt-2 sm:mt-0">
+                                                        <div className="flex items-center gap-1 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                                                             {item.ingredients && item.ingredients.length > 0 && (
                                                                 <button
                                                                     onClick={(e) => toggleIngredientExpand(item.id, e)}
@@ -271,7 +271,7 @@ export default function MealLogger({
                                                                     triggerPop();
                                                                     onDeleteMeal(item.id);
                                                                 }}
-                                                                className="p-1.5 text-on-surface-variant hover:text-red-500 bg-surface-container hover:bg-white/10 rounded-full transition-all border border-transparent hover:border-red-500/20"
+                                                                className="p-1.5 text-on-surface-variant hover:text-red-500 active:scale-95 bg-surface-container hover:bg-red-500/10 rounded-full transition-all border border-transparent hover:border-red-500/20"
                                                                 title="Delete"
                                                             >
                                                                 <Trash2 size={16} />
@@ -281,23 +281,29 @@ export default function MealLogger({
 
                                                     {/* Ingredients Cascade */}
                                                     {expandedIngredients[item.id] && item.ingredients && item.ingredients.length > 0 && (
-                                                        <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-200">
-                                                            <div className="p-3 bg-black/5 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5 space-y-2.5">
-                                                                <h5 className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1.5">
-                                                                    <Sparkles size={10} className="text-primary"/> Estimated Breakdown
-                                                                </h5>
-                                                                {item.ingredients.map((ing, idx) => (
-                                                                    <div key={idx} className="flex justify-between items-center text-xs">
-                                                                        <div className="flex flex-col">
-                                                                            <span className="font-semibold text-on-surface tracking-tight">{ing.name}</span>
-                                                                            {ing.quantity && <span className="text-[10px] font-medium text-on-surface-variant mt-0.5">{ing.quantity}</span>}
+                                                        <div className="px-4 pb-4 animate-in slide-in-from-top-4 duration-300">
+                                                            <h5 className="text-[11px] uppercase tracking-wider font-bold text-on-surface-variant mb-2 flex items-center gap-1.5 ml-1">
+                                                                <Sparkles size={12} className="text-[#0a84ff]"/> Estimated Breakdown
+                                                            </h5>
+                                                            <div className="relative p-3 bg-black/5 dark:bg-black/30 rounded-2xl border border-black/5 dark:border-white/10 space-y-3 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+                                                                {/* Apple Glass Gradients */}
+                                                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                                                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                                                                
+                                                                <div className="relative z-10 space-y-2.5">
+                                                                    {item.ingredients.map((ing, idx) => (
+                                                                        <div key={idx} className="flex justify-between items-center text-xs group/ing">
+                                                                            <div className="flex flex-col min-w-0 pr-2">
+                                                                                <span className="font-semibold text-on-surface tracking-tight truncate">{ing.name}</span>
+                                                                                {ing.quantity && <span className="text-[10px] font-medium text-on-surface-variant mt-0.5 truncate">{ing.quantity}</span>}
+                                                                            </div>
+                                                                            <span className="shrink-0 font-bold text-on-surface tabular-nums bg-white/5 border border-white/10 px-2 py-0.5 rounded-md shadow-sm">{ing.calories} kcal</span>
                                                                         </div>
-                                                                        <span className="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums bg-emerald-500/10 px-2 py-0.5 rounded-md">{ing.calories} kcal</span>
+                                                                    ))}
+                                                                    <div className="flex justify-between items-center text-xs border-t border-black/10 dark:border-white/10 pt-3 mt-3 font-bold text-on-surface">
+                                                                        <span className="tracking-wide">Total</span>
+                                                                        <span className="tabular-nums text-[#0a84ff] text-sm">{item.calories} kcal</span>
                                                                     </div>
-                                                                ))}
-                                                                <div className="flex justify-between items-center text-xs border-t border-black/10 dark:border-white/10 pt-2.5 mt-2.5 font-bold text-on-surface">
-                                                                    <span className="tracking-wide">Total</span>
-                                                                    <span className="tabular-nums">{item.calories} kcal</span>
                                                                 </div>
                                                             </div>
                                                         </div>
