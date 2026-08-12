@@ -936,9 +936,6 @@ export default function GlobalAICopilot() {
 
                     <div className="flex items-center justify-between px-5 pt-14 pb-4 shrink-0">
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setShowHistory(true)} className="p-2 -ml-2 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" aria-label="Past Conversations">
-                                <Clock size={20} />
-                            </button>
                             <AvaLogo size={24} className="rounded-full overflow-hidden" />
                             <span className="text-on-surface font-semibold text-[17px] tracking-tight ml-1">Ava</span>
                             {isDevMode && (
@@ -962,6 +959,14 @@ export default function GlobalAICopilot() {
                                 </button>
                             )}
                             <button
+                                onClick={() => setShowHistory(true)}
+                                aria-label="Past Conversations"
+                                title="History"
+                                className="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+                            >
+                                <Clock size={16} />
+                            </button>
+                            <button
                                 onClick={() => setIsOpen(false)}
                                 className="w-9 h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors"
                             >
@@ -973,15 +978,15 @@ export default function GlobalAICopilot() {
                     <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-2 space-y-5 scrollbar-hide relative">
 
                         {showHistory && (
-                            <div className="absolute inset-y-0 left-0 w-64 bg-surface-container-highest/95 backdrop-blur-xl border-r border-surface-variant z-50 flex flex-col shadow-2xl animate-in slide-in-from-left-4 duration-300">
-                                <div className="p-4 border-b border-surface-variant flex items-center justify-between shrink-0">
-                                    <h3 className="font-bold text-on-surface flex items-center gap-2">
-                                        <Clock size={16} className="text-secondary"/> History
+                            <div className="absolute inset-y-0 left-0 w-64 bg-surface-container-lowest/60 backdrop-blur-3xl border-r border-white/5 z-50 flex flex-col shadow-[10px_0_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-left-4 duration-300">
+                                <div className="p-4 border-b border-white/10 flex items-center justify-between shrink-0">
+                                    <h3 className="font-semibold text-on-surface text-[15px] flex items-center gap-2">
+                                        History
                                     </h3>
-                                    <button onClick={() => setShowHistory(false)} className="p-1 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container"><X size={16} /></button>
+                                    <button onClick={() => setShowHistory(false)} className="p-1.5 text-on-surface-variant hover:text-on-surface rounded-full hover:bg-white/10 transition-colors"><X size={16} /></button>
                                 </div>
                                 <div className="p-3 shrink-0">
-                                    <button onClick={clearChat} className="w-full py-2.5 bg-secondary text-on-secondary rounded-xl font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                                    <button onClick={clearChat} className="w-full py-2.5 bg-[#0a84ff] text-white rounded-xl font-semibold text-[14px] hover:bg-[#0a84ff]/90 transition-colors shadow-sm flex items-center justify-center gap-2">
                                         <MessageSquare size={16} /> New Chat
                                     </button>
                                 </div>
@@ -990,9 +995,9 @@ export default function GlobalAICopilot() {
                                         <div className="text-center text-sm text-on-surface-variant mt-4 font-medium">No past conversations.</div>
                                     )}
                                     {conversations.map(c => (
-                                        <div key={c.id} onClick={() => loadConversation(c)} className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${currentConversationId === c.id ? 'bg-secondary/20 text-secondary' : 'hover:bg-surface-container text-on-surface-variant hover:text-on-surface'}`}>
-                                            <div className="truncate text-sm font-semibold flex-1 pr-2">{c.title}</div>
-                                            <button onClick={(e) => deleteConversation(c.id, e)} className="opacity-0 group-hover:opacity-100 text-red-500/50 hover:text-red-500 transition-all p-1">
+                                        <div key={c.id} onClick={() => loadConversation(c)} className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${currentConversationId === c.id ? 'bg-[#0a84ff]/10 text-[#0a84ff]' : 'hover:bg-white/5 text-on-surface-variant hover:text-on-surface'}`}>
+                                            <div className="truncate text-sm font-medium flex-1 pr-2 tracking-tight">{c.title}</div>
+                                            <button onClick={(e) => deleteConversation(c.id, e)} className="opacity-0 group-hover:opacity-100 text-red-500/70 hover:text-red-500 transition-all p-1.5 rounded-full hover:bg-white/10">
                                                 <Trash2 size={14}/>
                                             </button>
                                         </div>
