@@ -169,23 +169,23 @@ export default function EditFoodModal({
 
     const modalContent = (
         <div
-            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300"
+            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 dark:bg-black/70 backdrop-blur-md animate-in fade-in duration-300"
             onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <div
-                className="w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-[0_40px_80px_rgba(0,0,0,0.5)] bg-surface-container border border-white/10"
+                className="w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-2xl bg-surface-container border border-outline/10"
                 style={{ maxHeight: '92vh' }}
             >
                 {/* Drag pill (mobile) */}
                 <div className="flex justify-center pt-4 pb-2 sm:hidden">
-                    <div className="w-12 h-1.5 rounded-full bg-white/20" />
+                    <div className="w-12 h-1.5 rounded-full bg-on-surface/20" />
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/5">
+                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-outline/10">
                     <div className="flex items-center gap-4">
                         <div
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg bg-white/5 border border-white/10 text-on-surface"
+                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg bg-surface border border-outline/10 text-on-surface"
                         >
                             {initialData ? <Edit2 size={18} /> : <Plus size={20} />}
                         </div>
@@ -200,14 +200,14 @@ export default function EditFoodModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-on-surface active:scale-95 border border-white/10"
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-surface hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface active:scale-95 border border-outline/10"
                     >
                         <X size={16} />
                     </button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="px-6 pt-4 pb-3 relative border-b border-white/5">
+                <div className="px-6 pt-4 pb-3 relative border-b border-outline/10">
                     <div className="relative">
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
                         <input
@@ -216,24 +216,24 @@ export default function EditFoodModal({
                             onFocus={() => setShowPresets(true)}
                             onChange={(e) => { setSearchQuery(e.target.value); setShowPresets(true); }}
                             placeholder="Search food presets…"
-                            className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
+                            className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-outline/30"
                         />
                     </div>
 
                     {showPresets && (
-                        <div className="absolute top-full left-6 right-6 mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-48 overflow-y-auto bg-surface-container-high border border-white/10 backdrop-blur-xl">
-                            <div className="flex justify-between items-center px-4 py-2.5 border-b border-white/5 bg-white/5">
+                        <div className="absolute top-full left-6 right-6 mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-48 overflow-y-auto bg-surface-container-highest border border-outline/10 backdrop-blur-xl">
+                            <div className="flex justify-between items-center px-4 py-2.5 border-b border-outline/10 bg-surface-container-lowest">
                                 <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Presets</span>
-                                <button type="button" onClick={() => setShowPresets(false)} className="text-[10px] font-bold text-on-surface hover:text-white uppercase tracking-widest">Close</button>
+                                <button type="button" onClick={() => setShowPresets(false)} className="text-[10px] font-bold text-on-surface hover:text-primary uppercase tracking-widest">Close</button>
                             </div>
                             {filteredPresets.length > 0 ? filteredPresets.map((preset, idx) => (
                                 <div
                                     key={idx}
                                     onClick={() => applyPreset(preset)}
-                                    className="flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5 last:border-0 hover:bg-white/5"
+                                    className="flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-outline/5 last:border-0 hover:bg-surface-container"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-lg border border-white/5">
+                                        <div className="w-10 h-10 rounded-2xl bg-surface border border-outline/10 flex items-center justify-center text-lg">
                                             {preset.icon}
                                         </div>
                                         <div>
@@ -241,7 +241,7 @@ export default function EditFoodModal({
                                             <p className="text-[11px] font-medium text-on-surface-variant mt-0.5">{preset.portion}</p>
                                         </div>
                                     </div>
-                                    <div className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-white/10 text-on-surface border border-white/10">
+                                    <div className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-surface text-on-surface border border-outline/10">
                                         {preset.calories} kcal
                                     </div>
                                 </div>
@@ -269,8 +269,8 @@ export default function EditFoodModal({
                                         onClick={() => setCategory(cat)}
                                         className={`py-2.5 px-1 rounded-2xl text-xs font-semibold transition-all duration-300 flex flex-col items-center gap-1.5 border ${
                                             category === cat
-                                                ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                                                : 'bg-white/5 text-on-surface-variant border-white/10 hover:bg-white/10 hover:text-on-surface'
+                                                ? 'bg-on-surface text-surface border-on-surface shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                                : 'bg-surface text-on-surface-variant border-outline/10 hover:bg-surface-container-high hover:text-on-surface'
                                         }`}
                                     >
                                         <span className="text-lg opacity-90">{cfg.emoji}</span>
@@ -290,7 +290,7 @@ export default function EditFoodModal({
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="e.g. Dal Chawal or Oats"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
                                 />
                             </div>
                             <div>
@@ -298,7 +298,7 @@ export default function EditFoodModal({
                                 <select
                                     value={icon}
                                     onChange={(e) => setIcon(e.target.value)}
-                                    className="w-full rounded-2xl px-2 py-3.5 text-xl text-center font-bold outline-none transition-all cursor-pointer bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/20 appearance-none"
+                                    className="w-full rounded-2xl px-2 py-3.5 text-xl text-center font-bold outline-none transition-all cursor-pointer bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50 appearance-none"
                                 >
                                     {EMOJI_OPTIONS.map((emoji) => (
                                         <option key={emoji} value={emoji} className="bg-surface-container text-xl">{emoji}</option>
@@ -316,7 +316,7 @@ export default function EditFoodModal({
                                     value={portion}
                                     onChange={(e) => setPortion(e.target.value)}
                                     placeholder="e.g. 1 cup"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
                                 />
                             </div>
                             <div>
@@ -326,7 +326,7 @@ export default function EditFoodModal({
                                     value={bites}
                                     onChange={(e) => setBites(e.target.value === '' ? '' : Number(e.target.value))}
                                     placeholder="2"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-white/5 border border-white/10 text-on-surface placeholder:text-on-surface-variant focus:bg-white/10 focus:border-white/20"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
                                 />
                             </div>
                         </div>
@@ -351,7 +351,7 @@ export default function EditFoodModal({
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-2xl px-4 py-3 text-sm font-bold outline-none transition-all bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/30"
+                                            className="w-full rounded-2xl px-4 py-3 text-sm font-bold outline-none transition-all bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50"
                                         />
                                     </div>
                                 ))}
@@ -367,7 +367,7 @@ export default function EditFoodModal({
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-2xl px-3 py-3 text-sm font-bold outline-none transition-all bg-white/5 border border-white/10 text-on-surface focus:bg-white/10 focus:border-white/30"
+                                            className="w-full rounded-2xl px-3 py-3 text-sm font-bold outline-none transition-all bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50"
                                         />
                                     </div>
                                 ))}
@@ -376,7 +376,7 @@ export default function EditFoodModal({
                     </div>
 
                     {/* Footer actions */}
-                    <div className="flex items-center justify-between gap-3 px-6 py-5 border-t border-white/5 bg-surface-container">
+                    <div className="flex items-center justify-between gap-3 px-6 py-5 border-t border-outline/10 bg-surface-container-lowest mt-auto">
                         {initialData && onDelete ? (
                             <button
                                 type="button"
@@ -393,13 +393,13 @@ export default function EditFoodModal({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-5 py-3 rounded-2xl text-xs font-semibold transition-colors bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-on-surface border border-white/10 active:scale-95"
+                                className="px-5 py-3 rounded-2xl text-xs font-semibold transition-colors bg-surface hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline/10 active:scale-95"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-3 rounded-2xl text-xs font-bold text-black bg-white hover:bg-zinc-200 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all active:scale-95"
+                                className="px-6 py-3 rounded-2xl text-xs font-bold bg-on-surface text-surface hover:bg-on-surface/90 shadow-lg transition-all active:scale-95"
                             >
                                 {initialData ? 'Save Changes' : 'Add Food Item'}
                             </button>
