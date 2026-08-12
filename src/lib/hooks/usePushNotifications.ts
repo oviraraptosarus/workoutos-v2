@@ -15,7 +15,7 @@ export function usePushNotifications() {
 
     const checkSubscription = async () => {
         try {
-            const registration = await navigator.serviceWorker.ready;
+            const registration = await navigator.serviceWorker.register('/sw.js');
             const subscription = await registration.pushManager.getSubscription();
             setIsSubscribed(!!subscription);
         } catch (error) {
@@ -32,7 +32,7 @@ export function usePushNotifications() {
                 throw new Error('Notification permission not granted');
             }
 
-            const registration = await navigator.serviceWorker.ready;
+            const registration = await navigator.serviceWorker.register('/sw.js');
             
             // Note: In production you'd fetch this public key dynamically
             const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BM-s-x-e-c-y-e-e-k-p-u-b-l-i-c-k-e-y'; 
@@ -74,8 +74,9 @@ export function usePushNotifications() {
             
             setIsSubscribed(true);
             return true;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error subscribing to push:', error);
+            alert('Failed to enable notifications: ' + (error.message || String(error)));
             return false;
         }
     };

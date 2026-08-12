@@ -9,7 +9,7 @@ import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 import { usePushNotifications } from '@/lib/hooks/usePushNotifications';
 
 export default function DashboardReminders() {
-    const { upcomingReminders, fetchUpcomingReminders, toggleTask } = useTaskStore();
+    const { upcomingReminders, fetchUpcomingReminders, toggleTask, addTask } = useTaskStore();
     const { user } = useAuth();
     const { triggerSuccess } = useRewardSystem();
     const { isSupported, isSubscribed, subscribeToPush } = usePushNotifications();
@@ -49,6 +49,24 @@ export default function DashboardReminders() {
             });
 
             if (!res.ok) throw new Error('Failed to set reminder');
+            
+            const data = await res.json();
+            
+            // Execute the tool locally if the AI provided one
+            if (data.functionCall && data.functionCall.name === 'add_task') {
+                const args = data.functionCall.arguments || {};
+                await addTask({
+                    title: args.title || aiInput,
+                    due_date: args.dueDate || new Date().toLocaleDateString('en-CA'),
+                    due_time: args.dueTime || null,
+                    reminder_time: args.reminderTime || null,
+                    recurrenceRule: args.recurrenceRule || null,
+                    priority: args.priority || 'medium',
+                    category: args.category || 'General'
+                });
+            } else {
+                throw new Error("AI didn't understand the reminder format.");
+            }
             
             setAiInput('');
             setTimeout(() => fetchUpcomingReminders(), 1000);
