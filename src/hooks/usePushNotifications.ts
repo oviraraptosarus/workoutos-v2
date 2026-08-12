@@ -14,9 +14,15 @@ export function usePushNotifications() {
                 setPermission(Notification.permission);
                 
                 try {
-                    const registration = await navigator.serviceWorker.ready;
-                    const sub = await registration.pushManager.getSubscription();
-                    setSubscription(sub);
+                    let registration = await navigator.serviceWorker.getRegistration();
+                    if (!registration) {
+                        registration = await navigator.serviceWorker.register('/sw.js');
+                        await navigator.serviceWorker.ready;
+                    }
+                    if (registration) {
+                        const sub = await registration.pushManager.getSubscription();
+                        setSubscription(sub);
+                    }
                 } catch (e) {
                     console.error("Error getting push subscription:", e);
                 }
@@ -38,7 +44,12 @@ export function usePushNotifications() {
                 throw new Error("Permission not granted for notifications.");
             }
 
-            const registration = await navigator.serviceWorker.ready;
+            let registration = await navigator.serviceWorker.getRegistration();
+            if (!registration) {
+                registration = await navigator.serviceWorker.register('/sw.js');
+                await navigator.serviceWorker.ready;
+            }
+            if (!registration) throw new Error("Service Worker registration failed.");
             
             // Get VAPID public key
             const response = await fetch('/api/notifications/vapid-public-key');

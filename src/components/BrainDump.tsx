@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, BrainCircuit, Loader2, Check, CheckSquare, Square, Lightbulb } from 'lucide-react';
+import { Mic, MicOff, BrainCircuit, Loader2, Check, CheckSquare, Square, Lightbulb, History, Copy, Share, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import clsx from 'clsx';
@@ -17,6 +17,12 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
     const [summary, setSummary] = useState('');
     const [saveSummary, setSaveSummary] = useState(true);
     const [elapsed, setElapsed] = useState(0);
+    
+    // Archive States
+    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
+    const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
+    const [selectedLog, setSelectedLog] = useState<any>(null);
+    const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
     const recognitionRef = useRef<any>(null);
     const finalRef = useRef('');
@@ -28,6 +34,55 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
+
+    const fetchHistory = async () => {
+        if (!user) return;
+        const { data } = await supabase
+            .from('brain_readings')
+            .select('id, content, created_at')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(365);
+        if (data) setHistoryLogs(data);
+    };
+
+    useEffect(() => {
+        fetchHistory();
+    }, [user]);
+
+    const handleDeleteLog = async (idToDelete: string) => {
+        if (!user) return;
+        if (!confirm('Are you sure you want to delete this brain dump?')) return;
+        try {
+            const { error } = await supabase.from('brain_readings').delete().eq('id', idToDelete);
+            if (error) throw error;
+            fetchHistory();
+        } catch (e: any) {
+            alert('Error deleting: ' + e.message);
+        }
+    };
+
+    const handleCopyLog = () => {
+        if (!selectedLog) return;
+        navigator.clipboard.writeText(selectedLog.content || '');
+        alert('Copied to clipboard');
+    };
+
+    const handleShareLog = async () => {
+        if (!selectedLog) return;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Brain Dump Archive',
+                    text: selectedLog.content || ''
+                });
+            } catch (e) {
+                console.log('Share canceled or failed', e);
+            }
+        } else {
+            handleCopyLog();
+        }
+    };
 
     const startRecording = () => {
         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -188,6 +243,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         if (hasError) {
             setState('selecting');
         } else {
+            fetchHistory();
             setState('done');
             setTimeout(() => {
                 setState('idle');
@@ -199,8 +255,27 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
         }
     };
 
+    const groupedLogs = historyLogs.reduce((acc, log) => {
+        const dateObj = new Date(log.created_at);
+        const monthYear = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (!acc[monthYear]) acc[monthYear] = [];
+        acc[monthYear].push(log);
+        return acc;
+    }, {} as Record<string, any[]>);
+    const monthKeys = Object.keys(groupedLogs);
+    
+    const hasExpandedInitialRef = useRef(false);
+    
+    useEffect(() => {
+        if (monthKeys.length > 0 && !hasExpandedInitialRef.current) {
+            setExpandedMonth(monthKeys[0]);
+            hasExpandedInitialRef.current = true;
+        }
+    }, [monthKeys]);
+
     return (
-        <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
+        <div className="flex flex-col gap-6 w-full">
+            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group w-full">
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
             
@@ -232,7 +307,7 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                                     )}
                                 >
                                     {saveSummary ? <Check size={14} /> : <Square size={14} />}
-                                    Save to Journal
+                                    Save to Archive
                                 </button>
                             </div>
                             <div className="font-body-md text-sm text-on-surface/90 whitespace-pre-wrap leading-relaxed">
@@ -345,6 +420,157 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
                     {state === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <BrainCircuit className="w-5 h-5" />}
                     {state === 'processing' ? 'Extracting Items...' : 'Parse & Execute'}
                 </button>
+            )}
+            </div>
+
+            {/* Recent History Logs */}
+            {historyLogs.length > 0 && (
+                <div className="flex flex-col gap-4 mt-4 animate-in fade-in slide-in-from-bottom-8 duration-700 w-full">
+                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant flex items-center gap-2 pl-2">
+                        <History size={16} className="text-secondary" /> Brain Dump Archive
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                        {monthKeys.map((month) => {
+                            const isExpanded = expandedMonth === month;
+                            const logs = groupedLogs[month];
+                            return (
+                                <div key={month} className="glass-card-premium rounded-[2rem] overflow-hidden shadow-sm flex flex-col transition-all duration-300 w-full">
+                                    <button 
+                                        onClick={() => setExpandedMonth(isExpanded ? null : month)}
+                                        className="w-full flex items-center justify-between p-5 sm:p-6 hover:bg-white/5 transition-colors focus:outline-none group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <h4 className="font-bold text-on-surface text-sm sm:text-base group-hover:text-secondary transition-colors">{month}</h4>
+                                            <span className="bg-surface-variant/50 text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold">{logs.length}</span>
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </button>
+                                    
+                                    <div className={`grid transition-all duration-500 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                        <div className="overflow-hidden">
+                                            <div className="flex flex-col gap-3 px-5 pb-5 sm:px-6 sm:pb-6 pt-0">
+                                                {logs.map((log: any) => {
+                                                    const isLogExpanded = expandedLogId === log.id;
+                                                    return (
+                                                        <div
+                                                            key={log.id} 
+                                                            className="bg-surface-container-low border border-surface-variant/30 rounded-2xl overflow-hidden relative group/log transition-all w-full flex flex-col shadow-sm hover:border-surface-variant/60"
+                                                        >
+                                                            {/* Header row (Click to expand) */}
+                                                            <button 
+                                                                onClick={() => setExpandedLogId(isLogExpanded ? null : log.id)}
+                                                                className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-white/5 transition-colors focus:outline-none"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-secondary/70 shadow-[0_0_8px_rgba(var(--c-secondary)/0.5)]"></div>
+                                                                    <h5 className="font-bold text-on-surface text-[11px] sm:text-xs tracking-wider uppercase opacity-80">{new Date(log.created_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</h5>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div
+                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteLog(log.id); }}
+                                                                        className="text-on-surface-variant hover:text-red-500 hover:bg-red-500/10 rounded-full p-1.5 transition-all opacity-0 group-hover/log:opacity-100 cursor-pointer mr-1"
+                                                                        title="Delete Brain Dump"
+                                                                    >
+                                                                        <Trash2 size={13} />
+                                                                    </div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-on-surface-variant transition-transform duration-300 ${isLogExpanded ? 'rotate-180' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                                </div>
+                                                            </button>
+                                                            
+                                                            {/* Cascading Preview body */}
+                                                            <div className={`grid transition-all duration-300 ease-in-out ${isLogExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                                                <div className="overflow-hidden">
+                                                                    {log.content && (
+                                                                        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1">
+                                                                            <p className="text-sm text-on-surface/70 ml-3.5 leading-relaxed font-medium line-clamp-3 text-left">
+                                                                                {log.content}
+                                                                            </p>
+                                                                            <div className="flex justify-start ml-3.5 mt-3">
+                                                                                <button 
+                                                                                    onClick={() => setSelectedLog(log)} 
+                                                                                    className="px-4 py-1.5 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 text-[11px] font-bold tracking-wide uppercase transition-colors"
+                                                                                >
+                                                                                    Read Full Entry
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Apple-style Full Log Modal (Bottom Sheet on Mobile) */}
+            {selectedLog && (
+                <div className="fixed inset-0 z-[99999] flex flex-col justify-end sm:items-center sm:justify-center p-0 pb-[90px] pt-[70px] sm:p-6 sm:pb-6 sm:pt-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSelectedLog(null)}></div>
+                    <div className="bg-surface-container border border-surface-variant rounded-[2rem] overflow-hidden shadow-[0_-10px_50px_rgba(0,0,0,0.5)] sm:shadow-2xl w-full max-w-2xl h-full sm:h-auto sm:max-h-[85vh] flex flex-col relative z-10 animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-500 ease-out">
+                        {/* Drag Handle for Mobile */}
+                        <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                            <div className="w-12 h-1.5 bg-surface-variant rounded-full opacity-50"></div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between px-5 pb-3 pt-2 sm:pt-5 border-b border-surface-variant/50">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(var(--c-secondary)/0.8)]" />
+                                <h2 className="text-sm font-black text-on-surface-variant uppercase tracking-widest">
+                                    {new Date(selectedLog.created_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                </h2>
+                            </div>
+                            <button
+                                onClick={() => setSelectedLog(null)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant/30 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all active:scale-95"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                        
+                        <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 pb-safe relative">
+                            <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
+                                {selectedLog.content}
+                            </div>
+                        </div>
+
+                        {/* Action Bar */}
+                        <div className="p-4 border-t border-surface-variant/50 flex items-center justify-between bg-surface-container-low pb-safe-offset-4">
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCopyLog}
+                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                    title="Copy Text"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={handleShareLog}
+                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                    title="Share"
+                                >
+                                    <Share className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    handleDeleteLog(selectedLog.id);
+                                    setSelectedLog(null);
+                                }}
+                                className="px-4 py-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                            >
+                                <Trash2 className="w-3.5 h-3.5" /> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

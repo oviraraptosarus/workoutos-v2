@@ -298,7 +298,8 @@ export default function GlobalAICopilot() {
                 'ExecGoals': { loaded: false, query: "supabase.from('execution_goals')" },
                 'TaskScores': { loaded: false, query: "supabase.from('task_execution_scores')" },
                 'Behaviors': { loaded: false, query: "supabase.from('behavior_patterns')" },
-                'Vault': { loaded: false, query: "supabase.from('content_vault')" }
+                'Vault': { loaded: false, query: "supabase.from('content_vault')" },
+                'BrainDump': { loaded: false, query: "supabase.from('brain_readings')" }
             };
 
             const { data: { user } } = await supabase.auth.getUser();
@@ -330,7 +331,8 @@ export default function GlobalAICopilot() {
                     taskScoresRes,
                     behaviorsRes,
                     recentDailyLogsRes,
-                    vaultRes
+                    vaultRes,
+                    brainDumpRes
                 ] = await Promise.all([
                     supabase.from('daily_logs').select('*').eq('user_id', user.id).eq('date', dateKey).maybeSingle().then(res => res, e => ({ data: null, error: e })),
                     supabase.from('tasks').select('*').eq('user_id', user.id).eq('completed', false).then(res => res, e => ({ data: null, error: e })),
@@ -348,7 +350,8 @@ export default function GlobalAICopilot() {
                     supabase.from('task_execution_scores').select('*').eq('user_id', user.id).then(res => res, e => ({ data: null, error: e })),
                     supabase.from('behavior_patterns').select('*').eq('user_id', user.id).eq('is_active', true).then(res => res, e => ({ data: null, error: e })),
                     supabase.from('daily_logs').select('date, sleep_hours, water_ml_total, mood_rating, weight_kg, reflection, raw_transcript').eq('user_id', user.id).gte('date', sinceKey).order('date', { ascending: true }).then(res => res, e => ({ data: null, error: e })),
-                    supabase.from('content_vault').select('*').eq('user_id', user.id).eq('status', 'unread').then(res => res, e => ({ data: null, error: e }))
+                    supabase.from('content_vault').select('*').eq('user_id', user.id).eq('status', 'unread').then(res => res, e => ({ data: null, error: e })),
+                    supabase.from('brain_readings').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20).then(res => res, e => ({ data: null, error: e }))
                 ]);
 
                 // Dashboard / Daily Logs
@@ -418,6 +421,12 @@ export default function GlobalAICopilot() {
                     contextStatus['Vault'].error = vaultRes.error?.message;
                 }
 
+                if (!brainDumpRes.error && brainDumpRes.data) {
+                    currentAppState.brainDumps = brainDumpRes.data;
+                    contextStatus['BrainDump'].loaded = true;
+                } else {
+                    contextStatus['BrainDump'].error = brainDumpRes.error?.message;
+                }
 
                 // Habits
                 if (!habitsRes.error && habitsRes.data) {

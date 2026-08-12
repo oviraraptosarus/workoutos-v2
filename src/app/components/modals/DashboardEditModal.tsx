@@ -15,7 +15,6 @@ const WIDGET_NAMES: Record<string, string> = {
     'TouchGrassNudge': 'Health Nudge',
     'WeightLogCard': 'Weight Tracker',
     'TimeProgressWidget': 'Time Progress',
-    'DashboardReminders': 'AI Reminders',
     'DashboardTasks': 'Daily Tasks',
     'DashboardCountdowns': 'Countdowns',
     'VaultWidget': 'Content Vault'
@@ -26,7 +25,6 @@ export const WIDGET_OPTIONS = [
     { id: 'TouchGrassNudge', label: 'Anti-Rot Nudge' },
     { id: 'WeightLogCard', label: 'Weight & Body Metrics' },
     { id: 'TimeProgressWidget', label: 'Temporal Matrix' },
-    { id: 'DashboardReminders', label: 'AI Reminders' },
     { id: 'DashboardTasks', label: 'Daily Tasks' },
     { id: 'DashboardCountdowns', label: 'Upcoming Countdowns' },
     { id: 'VaultWidget', label: 'Content Vault' }
@@ -37,7 +35,6 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TouchGrassNudge', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
-    { id: 'DashboardReminders', visible: true },
     { id: 'DashboardTasks', visible: true },
     { id: 'DashboardCountdowns', visible: true },
     { id: 'VaultWidget', visible: true }

@@ -16,6 +16,7 @@ import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptM
 import { getLevelProgress, getNametagForLevel } from '@/lib/leveling';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
 import DataExportImport from '@/components/DataExportImport';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 // ─── Settings Row Component ───────────────────────────────────────────────────
 function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightContent }: any) {
@@ -41,7 +42,7 @@ function SettingsRow({ icon, label, value, onClick, isFirst, isLast, rightConten
     );
 }
 
-function ToggleRow({ icon, label, value, onChange }: { icon: string, label: string, value: boolean, onChange: (val: boolean) => void }) {
+function ToggleRow({ icon, label, value, onChange, disabled }: { icon: string, label: string, value: boolean, onChange: (val: boolean) => void, disabled?: boolean }) {
     return (
         <div className="flex items-center justify-between p-4 bg-card-white">
             <div className="flex items-center gap-3">
@@ -53,8 +54,9 @@ function ToggleRow({ icon, label, value, onChange }: { icon: string, label: stri
                 <span className="font-body-md text-on-surface font-medium">{label}</span>
             </div>
             <button
-                onClick={() => onChange(!value)}
-                className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${value ? 'bg-[#0a84ff]' : 'bg-surface-variant/50'}`}
+                onClick={() => !disabled && onChange(!value)}
+                disabled={disabled}
+                className={`w-12 h-6 rounded-full p-1 flex items-center transition-colors ${value ? 'bg-[#0a84ff]' : 'bg-surface-variant/50'} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
                 <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${value ? 'translate-x-6' : 'translate-x-0'}`} />
             </button>
@@ -72,6 +74,7 @@ export default function ProfileHub() {
     const { setLanguage } = useLanguage();
     const stats = useProfileStats();
     const { triggerSuccess } = useRewardSystem();
+    const { isSupported, permission, subscribeToPush, unsubscribeFromPush, isLoading: pushLoading } = usePushNotifications();
     
     // View state
     const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -132,16 +135,19 @@ export default function ProfileHub() {
     }, [user]);
 
     const updateNotifSetting = async (key: string, value: boolean) => {
-        if (key === 'push_enabled' && value === true) {
-            if (typeof window !== 'undefined' && 'Notification' in window) {
-                const permission = await Notification.requestPermission();
-                if (permission !== 'granted') {
-                    alert('You must allow notifications in your browser settings to receive push alerts.');
+        if (key === 'push_enabled') {
+            if (value === true) {
+                if (!isSupported) {
+                    alert("Push notifications are not supported in your browser.");
+                    return;
+                }
+                const result = await subscribeToPush();
+                if (result && !result.success) {
+                    alert(result.error || 'Failed to enable push notifications');
                     return;
                 }
             } else {
-                alert('Push notifications are not supported in your browser.');
-                return;
+                await unsubscribeFromPush();
             }
         }
 
@@ -507,18 +513,7 @@ export default function ProfileHub() {
                                 <option value="te">తెలుగు</option>
                             </select>
                         </div>
-                        <div className="p-4 flex items-center justify-between">
-                            <div className="flex flex-col">
-                                <label className="font-medium text-sm text-on-surface">{t('profile.notifications')}</label>
-                                <span className="text-xs text-on-surface-variant">{t('profile.dailyReminders')}</span>
-                            </div>
-                            <button
-                                onClick={() => handleInputSave('notificationsEnabled', !formData.notificationsEnabled)}
-                                className={`relative w-12 h-7 rounded-full transition-colors ${formData.notificationsEnabled ? 'bg-[#0a84ff]' : 'bg-surface-container-high'}`}
-                            >
-                                <span className={`absolute top-1 w-5 h-5 bg-card-white rounded-full transition-transform shadow ${formData.notificationsEnabled ? 'right-1' : 'left-1'}`} />
-                            </button>
-                        </div>
+
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex flex-col">
                                 <label className="font-medium text-sm text-on-surface">{t('profile.financialReminders')}</label>
@@ -793,11 +788,10 @@ export default function ProfileHub() {
         );
     }
 
-    return (
-        <AppLayout>
-            {/* Notifications & Alerts */}
-            {activeSection === 'notifications' && (
-                <div className="animate-in slide-in-from-right-4 duration-300 relative z-10 w-full h-full bg-background">
+    if (activeSection === 'notifications') {
+        return (
+            <AppLayout>
+                <div className="pb-12 animate-in slide-in-from-right-4 duration-200">
                     <div className="flex items-center gap-4 mb-6 sticky top-0 bg-background/90 backdrop-blur-md z-10 py-2 border-b border-surface-variant/30">
                         <button onClick={() => setActiveSection('main')} className="p-2 rounded-full hover:bg-surface-container active:scale-95 transition-all text-on-surface">
                             <ArrowLeft size={24} />
@@ -809,17 +803,17 @@ export default function ProfileHub() {
                     <div className="space-y-4 pb-20">
                         <div>
                             <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Delivery Methods</h3>
-                            <div className="bg-surface-container-low rounded-2xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                            <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                                 <ToggleRow icon="volume_up" label="Notification Sounds" value={notifSettings.notification_sound} onChange={(val) => updateNotifSetting('notification_sound', val)} />
                                 <ToggleRow icon="vibration" label="Vibration" value={notifSettings.vibration_enabled} onChange={(val) => updateNotifSetting('vibration_enabled', val)} />
-                                <ToggleRow icon="notifications_active" label="Push Notifications" value={notifSettings.push_enabled} onChange={(val) => updateNotifSetting('push_enabled', val)} />
+                                <ToggleRow icon="notifications_active" label="Push Notifications" value={notifSettings.push_enabled} onChange={(val) => updateNotifSetting('push_enabled', val)} disabled={pushLoading} />
                                 <ToggleRow icon="mail" label="Email Notifications" value={notifSettings.email_enabled} onChange={(val) => updateNotifSetting('email_enabled', val)} />
                             </div>
                         </div>
 
                         <div>
                             <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 px-2">Alert Types</h3>
-                            <div className="bg-surface-container-low rounded-2xl border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/30">
+                            <div className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden divide-y divide-surface-variant/40">
                                 <ToggleRow icon="task_alt" label="Planner Reminders" value={notifSettings.planner_reminders} onChange={(val) => updateNotifSetting('planner_reminders', val)} />
                                 <ToggleRow icon="loop" label="Habit Reminders" value={notifSettings.habit_reminders} onChange={(val) => updateNotifSetting('habit_reminders', val)} />
                                 <ToggleRow icon="account_balance_wallet" label="Budget Alerts" value={notifSettings.budget_alerts} onChange={(val) => updateNotifSetting('budget_alerts', val)} />
@@ -829,9 +823,13 @@ export default function ProfileHub() {
                         </div>
                     </div>
                 </div>
-            )}
+            </AppLayout>
+        );
+    }
 
-            {/* Help & Support */}
+    return (
+        <AppLayout>
+            {/* Help & Support Notice */}
             {savedNotice && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-activity-green text-white px-4 py-2 rounded-full shadow-lg animate-in fade-in slide-in-from-top-4 flex items-center gap-2 text-sm font-medium whitespace-nowrap">
                     <span className="material-symbols-outlined text-[18px]">check_circle</span>

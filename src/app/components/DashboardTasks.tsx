@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Target, CheckCircle2, Circle, Calendar, ChevronRight } from 'lucide-react';
+import { Target, CheckCircle2, Circle, Calendar, ChevronRight, Loader2, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { Task } from '@/store/useTaskStore';
 import { useDate } from '@/contexts/DateContext';
@@ -81,7 +81,7 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
                 const data = await res.json();
                 
                 if (data.functionCall && data.functionCall.name === 'add_task') {
-                    const args = data.functionCall.arguments || {};
+                    const args = data.functionCall.args || data.functionCall.arguments || {};
                     await addTask({
                         title: args.title || input,
                         due_date: args.dueDate || selectedDate || new Date().toLocaleDateString('en-CA'),
@@ -166,6 +166,11 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
                                         <Calendar size={10} /> Due: {new Date(task.due_date).toLocaleDateString()}
                                     </div>
                                 )}
+                                {task.reminder_time && (
+                                    <div className="flex items-center gap-1 font-label-sm text-[10px] text-secondary uppercase tracking-wider mt-1">
+                                        <Bell size={10} /> {new Date(task.reminder_time).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))
@@ -184,7 +189,7 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
                         type="text" 
                         value={newTaskTitle}
                         onChange={(e) => setNewTaskTitle(e.target.value)}
-                        placeholder={t('tasks.addNew')}
+                        placeholder="e.g. remind me to make bed at 9pm"
                         disabled={isGenerating}
                         className="glass-input-premium flex-1 rounded-[1rem] px-4 py-3 text-sm text-on-surface disabled:opacity-50"
                     />
@@ -193,7 +198,7 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
                         disabled={!newTaskTitle.trim() || isGenerating}
                         className="glass-button-premium px-4 py-3 rounded-[1rem] text-sm disabled:opacity-50 flex items-center justify-center min-w-[70px]"
                     >
-                        {isGenerating ? <Loader2 size={16} className="animate-spin" /> : t('common.add')}
+                        {isGenerating ? <Loader2 size={16} className="animate-spin" /> : (t('dash.add') || 'Add')}
                     </button>
                 </form>
             </div>

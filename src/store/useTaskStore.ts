@@ -13,6 +13,7 @@ export interface Task {
     id: string;
     title: string;
     full_title?: string;
+    description?: string;
     priority: 'low' | 'medium' | 'high' | 'none';
     category?: string;
     due_date?: string;
@@ -35,6 +36,7 @@ interface TaskState {
     toggleSubTask: (taskId: string, subTaskId: string) => Promise<void>;
     setPriority: (id: string, priority: Task['priority']) => Promise<void>;
     setDueDate: (id: string, dueDate: string, dueTime?: string) => Promise<void>;
+    updateTaskDetails: (id: string, details: Partial<Task>) => Promise<void>;
     deleteTask: (id: string) => Promise<void>;
 }
 
@@ -257,6 +259,26 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         if (error) {
             console.error("Failed to update due date:", error);
             alert("Error updating due date: " + error.message);
+            set({ tasks: previousTasks }); // Rollback
+        } else {
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    },
+
+    updateTaskDetails: async (id: string, details: Partial<Task>) => {
+        const previousTasks = get().tasks;
+        set(state => ({
+            tasks: state.tasks.map(t => t.id === id ? { ...t, ...details } : t)
+        }));
+        
+        const updateData = { ...details };
+        delete (updateData as any).id;
+        delete (updateData as any).subTasks;
+        
+        const { error } = await supabase.from('tasks').update(updateData).eq('id', id);
+        if (error) {
+            console.error("Failed to update task details:", error);
+            alert("Error updating task: " + error.message);
             set({ tasks: previousTasks }); // Rollback
         } else {
             window.dispatchEvent(new Event('workout_os_tasks_updated'));

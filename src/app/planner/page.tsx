@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap, Check } from 'lucide-react';
+import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap, Check, Bell } from 'lucide-react';
 import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
@@ -13,6 +13,7 @@ import { useWakeLock } from '@/lib/hooks/useWakeLock';
 import TaskItem from './components/TaskItem';
 import BrainDump from '@/components/BrainDump';
 import EndOfDayReflection from '@/components/EndOfDayReflection';
+import TaskReminderPopover from '@/app/components/modals/TaskReminderPopover';
 
 export default function ExecutionOSPage() {
     const { t } = useLanguage();
@@ -32,13 +33,19 @@ export default function ExecutionOSPage() {
     const [isClient, setIsClient] = useState(false);
     const [catalyzingId, setCatalyzingId] = useState<string | null>(null);
     
-    // Brain Hub State
     const [brainInput, setBrainInput] = useState('');
     const [isParsing, setIsParsing] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
     const [brainResponse, setBrainResponse] = useState('');
     const [isRecording, setIsRecording] = useState(false);
     const recognitionRef = useRef<any>(null);
     const activeTabRef = useRef(activeTab);
+
+    // Task quick add state
+    const [isReminderPopoverOpen, setIsReminderPopoverOpen] = useState(false);
+    const [quickTaskDate, setQuickTaskDate] = useState<string | null>(null);
+    const [quickTaskTime, setQuickTaskTime] = useState<string | null>(null);
+    const [quickTaskRecurrence, setQuickTaskRecurrence] = useState('none');
 
     useEffect(() => {
         activeTabRef.current = activeTab;
@@ -366,13 +373,20 @@ export default function ExecutionOSPage() {
         }
     };
 
+    const updateTaskDetails = async (taskId: string, details: any) => {
+        const { error } = await supabase.from('tasks').update(details).eq('id', taskId);
+        if (!error) {
+            loadTasks();
+            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        }
+    };
+
     const handleAddQuickTask = async (e: React.FormEvent) => {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const titleInput = form.elements.namedItem('taskInput') as HTMLInputElement;
         const prioritySelect = form.elements.namedItem('prioritySelect') as HTMLSelectElement;
         const goalSelect = form.elements.namedItem('goalSelect') as HTMLSelectElement;
-        const dueDateInput = form.elements.namedItem('dueDateInput') as HTMLInputElement;
         
         const title = titleInput.value.trim();
         if (!title) return;
@@ -380,22 +394,79 @@ export default function ExecutionOSPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         
-        const { error } = await supabase.from('tasks').insert({
-            user_id: user.id,
-            date: new Date().toLocaleDateString('en-CA'),
-            title: title,
-            priority: prioritySelect ? prioritySelect.value : 'none',
-            due_date: dueDateInput && dueDateInput.value ? dueDateInput.value : null,
-            goal_id: goalSelect && goalSelect.value !== 'none' ? goalSelect.value : null,
-        });
-        
-        if (!error) {
-            titleInput.value = '';
-            if (dueDateInput) dueDateInput.value = '';
-            if (prioritySelect) prioritySelect.value = 'none';
-            if (goalSelect) goalSelect.value = 'none';
-            loadTasks();
-            window.dispatchEvent(new Event('workout_os_tasks_updated'));
+        setIsGenerating(true);
+        try {
+            const res = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: `Add task: ${title}`,
+                    appState: { 
+                        localTime: new Date().toISOString(),
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
+                    },
+                    currentDateTime: new Date().toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+                })
+            });
+
+            let finalTitle = title;
+            let finalDueDate = quickTaskDate || new Date().toLocaleDateString('en-CA');
+            let finalDueTime = quickTaskTime || null;
+            let finalReminderTime: string | null = null;
+            let finalRecurrence = quickTaskRecurrence !== 'none' ? quickTaskRecurrence : null;
+            
+            // If user manually selected a date and time, construct a proper local ISO timestamp for the reminder
+            if (quickTaskDate && quickTaskTime) {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                // Construct a date string that represents the selected local time, then convert to ISO UTC
+                // e.g. '2026-08-13T08:00:00'
+                const localStr = `${quickTaskDate}T${quickTaskTime}:00`;
+                const d = new Date(localStr);
+                finalReminderTime = d.toISOString();
+            }
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.functionCall && data.functionCall.name === 'add_task') {
+                    const args = data.functionCall.args || data.functionCall.arguments || {};
+                    finalTitle = args.title || title;
+                    
+                    // AI overrides only if the user didn't explicitly pick a date/time in the popover
+                    if (!quickTaskDate && args.dueDate) finalDueDate = args.dueDate;
+                    if (!quickTaskTime && args.dueTime) finalDueTime = args.dueTime;
+                    if (!quickTaskDate && !quickTaskTime && args.reminderTime) finalReminderTime = args.reminderTime;
+                    if (quickTaskRecurrence === 'none' && args.recurrenceRule && args.recurrenceRule !== 'none') {
+                        finalRecurrence = args.recurrenceRule;
+                    }
+                }
+            }
+
+            const { error } = await supabase.from('tasks').insert({
+                user_id: user.id,
+                date: new Date().toLocaleDateString('en-CA'),
+                title: finalTitle,
+                priority: prioritySelect ? prioritySelect.value : 'none',
+                due_date: finalDueDate,
+                due_time: finalDueTime,
+                reminder_time: finalReminderTime,
+                recurrence_rule: finalRecurrence,
+                goal_id: goalSelect && goalSelect.value !== 'none' ? goalSelect.value : null,
+            });
+            
+            if (!error) {
+                titleInput.value = '';
+                setQuickTaskDate(null);
+                setQuickTaskTime(null);
+                setQuickTaskRecurrence('none');
+                if (prioritySelect) prioritySelect.value = 'none';
+                if (goalSelect) goalSelect.value = 'none';
+                loadTasks();
+                window.dispatchEvent(new Event('workout_os_tasks_updated'));
+            }
+        } catch (err: any) {
+            alert('Failed to add task: ' + err.message);
+        } finally {
+            setIsGenerating(false);
         }
     };
 
@@ -551,15 +622,31 @@ export default function ExecutionOSPage() {
                                     <input 
                                         name="taskInput"
                                         type="text" 
-                                        placeholder="Add a new task..." 
-                                        className="w-full bg-surface-container border border-surface-variant rounded-[1.25rem] px-5 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md"
+                                        placeholder="Add a new task (e.g. 'remind me to make exam plan tomorrow morning')..." 
+                                        disabled={isGenerating}
+                                        className="w-full bg-surface-container border border-surface-variant rounded-[1.25rem] px-5 py-4 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner backdrop-blur-md placeholder:text-on-surface-variant/50 font-body-md disabled:opacity-50"
                                     />
                                     <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:gap-3 w-full">
-                                        <input 
-                                            name="dueDateInput"
-                                            type="date"
-                                            className="col-span-1 w-full sm:flex-1 sm:min-w-[130px] bg-surface-container border border-surface-variant rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md"
-                                        />
+                                        <button 
+                                            type="button"
+                                            onClick={() => setIsReminderPopoverOpen(true)}
+                                            className={clsx(
+                                                "col-span-1 w-full sm:flex-1 sm:min-w-[130px] rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md flex items-center justify-between gap-2 border",
+                                                (quickTaskDate || quickTaskTime) 
+                                                    ? "bg-[#0a84ff]/10 border-[#0a84ff]/30 text-[#0a84ff]" 
+                                                    : "bg-surface-container border-surface-variant text-on-surface"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-2 truncate">
+                                                <Bell size={16} />
+                                                <span className="truncate">
+                                                    {(quickTaskDate || quickTaskTime) ? 'Reminder Set' : 'Remind Me'}
+                                                </span>
+                                            </div>
+                                            {(quickTaskDate || quickTaskTime) && (
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#0a84ff]"></div>
+                                            )}
+                                        </button>
                                         <select 
                                             name="prioritySelect"
                                             className="col-span-1 w-full sm:flex-1 sm:min-w-[110px] bg-surface-container border border-surface-variant rounded-xl sm:rounded-[1.25rem] px-3 py-3 sm:px-4 sm:py-4 text-sm sm:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-inner backdrop-blur-md font-body-md appearance-none"
@@ -578,8 +665,8 @@ export default function ExecutionOSPage() {
                                                 <option key={g.id} value={g.id}>{g.title}</option>
                                             ))}
                                         </select>
-                                        <button type="submit" className="col-span-2 w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5 mt-1 sm:mt-0">
-                                            Add Task
+                                        <button type="submit" disabled={isGenerating} className="col-span-2 w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-[1.25rem] font-black tracking-wide transition-all active:scale-95 shadow-[0_4px_20px_rgba(var(--c-primary)/0.4)] hover:shadow-[0_4px_30px_rgba(var(--c-primary)/0.6)] flex items-center justify-center hover:-translate-y-0.5 mt-1 sm:mt-0 disabled:opacity-50">
+                                            {isGenerating ? <Loader2 size={18} className="animate-spin" /> : 'Add Task'}
                                         </button>
                                     </div>
                                 </form>
@@ -598,6 +685,7 @@ export default function ExecutionOSPage() {
                                                 goals={goals} 
                                                 onComplete={completeTask} 
                                                 onSetPriority={setPriority} 
+                                                onUpdateDetails={updateTaskDetails}
                                                 onDelete={deleteTask} 
                                             />
                                         ))
@@ -830,7 +918,19 @@ export default function ExecutionOSPage() {
                     )}
                 </div>
             </div>
+            {/* Modals */}
+            <TaskReminderPopover 
+                isOpen={isReminderPopoverOpen}
+                onClose={() => setIsReminderPopoverOpen(false)}
+                onSave={(data) => {
+                    setQuickTaskDate(data.date);
+                    setQuickTaskTime(data.time);
+                    setQuickTaskRecurrence(data.recurrence);
+                }}
+                initialDate={quickTaskDate}
+                initialTime={quickTaskTime}
+                initialRecurrence={quickTaskRecurrence}
+            />
         </AppLayout>
     );
 }
-

@@ -15,10 +15,17 @@ export async function POST(request: Request) {
         
         const token = authHeader.replace('Bearer ', '');
         
-        // Create an admin client to fetch user from JWT
+        // Create a client and forward the user's JWT to pass RLS policies
         const supabase = createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                global: {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            }
         );
         
         const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
