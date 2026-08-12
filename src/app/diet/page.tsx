@@ -272,7 +272,6 @@ export default function DietPage() {
                     calorieGoal={macroGoals.calories}
                     activityBurned={activityBurned}
                     weeklyRemaining={Math.max(macroGoals.calories - totalCalories + activityBurned, 0)}
-                    onOpenAIMealModal={handleOpenAIModal}
                     onOpenBarcodeScanner={() => setIsBarcodeScannerOpen(true)}
                 />
 
