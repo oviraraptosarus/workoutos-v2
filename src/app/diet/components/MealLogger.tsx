@@ -195,17 +195,6 @@ export default function MealLogger({
                                                 {totalCategoryBites} BITES
                                             </span>
                                         )}
-
-                                        {name === 'Snacks' && onOpenAIMealModal && (
-                                            <button
-                                                onClick={onOpenAIMealModal}
-                                                className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm transition-all whitespace-nowrap"
-                                                title="AI Voice & Natural Language Meal Logger"
-                                            >
-                                                <Sparkles size={14} className="shrink-0" /> <span className="hidden sm:inline">AI Log</span>
-                                            </button>
-                                        )}
-
                                         <button
                                             id={name === 'Breakfast' ? 'tour-add-food' : undefined}
                                             onClick={() => onAddMealClick(name)}
