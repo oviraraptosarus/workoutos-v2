@@ -608,10 +608,12 @@ export default function GlobalAICopilot() {
                         router.push(args.path);
                         setTimeout(() => setIsOpen(false), 1000);
                     } else if (fn === 'log_water') {
+                        const targetDate = args.logDate || dateKey;
                         const { addWaterLog } = await import('@/app/diet/services/dietStorage');
-                        await addWaterLog(dateKey, Number(args.amount) || 0, 'Ava AI');
+                        await addWaterLog(targetDate, Number(args.amount) || 0, 'Ava AI');
                         window.dispatchEvent(new Event('workout_os_water_updated'));
                     } else if (fn === 'log_sleep') {
+                        const targetDate = args.logDate || dateKey;
                         const sleepHours = Number(args.hours) || 0;
 
                         const sleepLogEntry = {
@@ -636,7 +638,7 @@ export default function GlobalAICopilot() {
 
                         const sleepRow: any = {
                             user_id: user.id,
-                            date: dateKey,
+                            date: targetDate,
                             sleep_hours: sleepHours,
                             sleep_logs: updatedSleepLogs,
                         };
@@ -651,7 +653,8 @@ export default function GlobalAICopilot() {
                         window.dispatchEvent(new Event('storage'));
                         window.dispatchEvent(new Event('workout_os_sleep_updated'));
                     } else if (fn === 'log_nutrition') {
-                        const meals = await getMealsForDate(dateKey);
+                        const targetDate = args.logDate || dateKey;
+                        const meals = await getMealsForDate(targetDate);
                         meals.push({
                             id: Date.now().toString(),
                             name: args.mealName || 'AI Logged Meal',
@@ -665,10 +668,11 @@ export default function GlobalAICopilot() {
                             fiber: 0,
                             icon: '🤖'
                         });
-                        await saveMealsForDate(dateKey, meals);
+                        await saveMealsForDate(targetDate, meals);
                         window.dispatchEvent(new Event('storage'));
                         window.dispatchEvent(new Event('workout_os_diet_updated'));
                     } else if (fn === 'log_workout') {
+                        const targetDate = args.logDate || dateKey;
                         const getMET = (activity: string, level: string) => {
                             const mets: any = { 'Stationary Bike': { 'Light': 3.0, 'Moderate': 5.5, 'Vigorous': 7.0 }, 'Running': { 'Light': 6.0, 'Moderate': 8.3, 'Vigorous': 11.0 }, 'Walking': { 'Light': 2.8, 'Moderate': 3.5, 'Vigorous': 5.0 }, 'Swimming': { 'Light': 5.0, 'Moderate': 7.0, 'Vigorous': 9.8 }, 'Rowing': { 'Light': 3.5, 'Moderate': 7.0, 'Vigorous': 8.5 }, 'Elliptical': { 'Light': 4.5, 'Moderate': 5.0, 'Vigorous': 7.0 }, 'Other': { 'Light': 3.0, 'Moderate': 5.0, 'Vigorous': 7.0 } };
                             return mets[activity]?.[level] || 5.0;
@@ -682,7 +686,7 @@ export default function GlobalAICopilot() {
                         try {
                             await WorkoutLogger.logWorkout({
                                 userId: user.id,
-                                date: dateKey,
+                                date: targetDate,
                                 sessionType: activityType === 'Other' ? (args.customName || 'Custom Cardio') : activityType,
                                 customName: activityType === 'Other' ? args.customName : null,
                                 durationMinutes: Number(args.durationMinutes),
@@ -703,11 +707,13 @@ export default function GlobalAICopilot() {
                         } catch (error: any) {
                             console.error("Ava Workout Logging Failed:", error);
                         }
-} else if (fn === 'add_expense') {
-                        await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.category || 'Expense', category: args.category || 'Other', amount: Number(args.amount) || 0, protein: null, costPerG: null, type: 'essential' }, 'expense');
+                    } else if (fn === 'add_expense') {
+                        const txDate = args.logDate ? new Date(`${args.logDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        await addTransaction({ date: txDate, description: args.category || 'Expense', category: args.category || 'Other', amount: Number(args.amount) || 0, protein: null, costPerG: null, type: 'essential' }, 'expense');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
                     } else if (fn === 'add_income') {
-                        await addTransaction({ date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), description: args.source || 'Income', source: args.source || 'Other', amount: Number(args.amount) || 0, type: 'one-time' }, 'income');
+                        const txDate = args.logDate ? new Date(`${args.logDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        await addTransaction({ date: txDate, description: args.source || 'Income', source: args.source || 'Other', amount: Number(args.amount) || 0, type: 'one-time' }, 'income');
                         window.dispatchEvent(new Event('workout_os_budget_updated'));
                     } else if (fn === 'save_to_vault') {
                         const vaultUrl = (args.url || '').trim();

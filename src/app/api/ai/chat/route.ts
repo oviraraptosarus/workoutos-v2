@@ -89,6 +89,7 @@ RULE 11 — REPETITIVE-OUTPUT BUG PREVENTION (CRITICAL OUTPUT INTEGRITY):
     8. If a repetition loop is detected, discard the corrupted output and regenerate the response with a clean decoding state.
 RULE 12 — TYPOGRAPHY & NO DASHES: NEVER use hyphens ("-") or em-dashes ("—") anywhere in your response, whether as bullet points, stylistic dividers, or punctuation. Use commas or parentheses instead. Ensure your text is "well furnished" — perfectly formatted using short, punchy paragraphs, bolding for key emphasis, and proper line breaks. The text must look beautifully structured and readable.
 RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a workout plan, ALWAYS use the save_workout_template tool to save it as a reusable template. Never just describe a workout in text — always call the tool. Use the user's profile (fitnessGoal, equipment preferences, experience) to personalize the workout. Only ask for missing info that you genuinely cannot infer.
+RULE 14 — TIME-TRAVEL LOGGING: If a user specifies a past or future date (e.g. 'yesterday', 'last Friday', 'tomorrow') when asking to log something (water, sleep, workout, nutrition, expense), you MUST extract and provide the exact 'logDate' in YYYY-MM-DD format in the tool call. If they do not specify a date, you must omit the logDate parameter entirely.
 
 === END RULES ===`;
 
@@ -260,7 +261,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                     parameters: {
                                         type: "OBJECT",
                                         properties: {
-                                            amount: { type: "INTEGER", description: "Amount of water in milliliters. Convert glasses (1 glass = 250ml) or litres as needed." }
+                                            amount: { type: "INTEGER", description: "Amount of water in milliliters. Convert glasses (1 glass = 250ml) or litres as needed." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["amount"]
                                     }
@@ -280,7 +282,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                             stress: { type: "STRING", description: "Stress level. One of: 'low', 'moderate', 'high'. Default 'low' if not mentioned." },
                                             notes: { type: "STRING", description: "Any notes about the sleep (e.g. 'had trouble falling asleep', 'woke up once'). Optional." },
                                             dreams: { type: "STRING", description: "Any dream details the user mentioned. Optional." },
-                                            tags: { type: "STRING", description: "Comma-separated tags like 'late meal, hot room, stress'. Optional." }
+                                            tags: { type: "STRING", description: "Comma-separated tags like 'late meal, hot room, stress'. Optional." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["hours"]
                                     }
@@ -296,7 +299,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                             calories: { type: "INTEGER", description: "Estimated calories for this meal." },
                                             protein: { type: "NUMBER", description: "Estimated protein in grams." },
                                             carbs: { type: "NUMBER", description: "Estimated carbohydrates in grams." },
-                                            fat: { type: "NUMBER", description: "Estimated fat in grams." }
+                                            fat: { type: "NUMBER", description: "Estimated fat in grams." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["mealName", "calories", "protein", "carbs", "fat"]
                                     }
@@ -312,7 +316,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                             durationMinutes: { type: "NUMBER", description: "Duration in minutes. If unknown, ask the user." },
                                             intensity: { type: "STRING", description: "Must be 'Light', 'Moderate', or 'Vigorous'. Default to 'Moderate'." },
                                             metricValue: { type: "NUMBER", description: "Numeric metric value (e.g., 10000 for steps, 30 for laps)." },
-                                            metricLabel: { type: "STRING", description: "Label for the metric (e.g., 'Steps', 'Laps', 'Avg Cadence (RPM)')." }
+                                            metricLabel: { type: "STRING", description: "Label for the metric (e.g., 'Steps', 'Laps', 'Avg Cadence (RPM)')." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["activityType"]
                                     }
@@ -324,7 +329,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                         type: "OBJECT",
                                         properties: {
                                             amount: { type: "INTEGER", description: "The expense amount in the user's currency." },
-                                            category: { type: "STRING", description: "Category of the expense (e.g. Coffee, Groceries, Transport, Food)." }
+                                            category: { type: "STRING", description: "Category of the expense (e.g. Coffee, Groceries, Transport, Food)." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["amount", "category"]
                                     }
@@ -336,7 +342,8 @@ RULE 13 — WORKOUT GENERATION: When asked to create, generate, or build a worko
                                         type: "OBJECT",
                                         properties: {
                                             amount: { type: "INTEGER", description: "The income amount." },
-                                            source: { type: "STRING", description: "Source of the income (e.g. Salary, Freelance, Side Hustle)." }
+                                            source: { type: "STRING", description: "Source of the income (e.g. Salary, Freelance, Side Hustle)." },
+                                            logDate: { type: "STRING", description: "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date." }
                                         },
                                         required: ["amount", "source"]
                                     }

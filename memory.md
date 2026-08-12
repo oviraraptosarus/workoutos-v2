@@ -4,6 +4,11 @@
 
 ## Recent Milestones & Changes
 
+### August 12, 2026 - AI Copilot Persistence & Time-Travel Logging
+- **Persistent AI Conversations**: Built a backend infrastructure (`ai_conversations` table) with Row Level Security to persistently save all Ava AI chat logs. Added a sleek, iOS frosted glass History sidebar to the Global AI Copilot, allowing users to seamlessly view, resume, or clear past chats, resolving the issue of AI amnesia. Added strict idempotent protections to the SQL migration and a forced PostgREST cache refresh (`NOTIFY pgrst, 'reload schema'`) to prevent dashboard relation/column desync errors.
+- **Ava UI Polish**: Removed redundant UI elements (like duplicate close/delete buttons) from the Ava chat header. Implemented strict Apple Design philosophy by using authentic `#0a84ff` native blue buttons, subtle `backdrop-blur-3xl` deep glassmorphism effects, and highly refined typographic spacing for the History Sidebar. Added native UI `alert()` pop-ups to immediately catch any silent Supabase failures during chat saving/loading per debugging rules.
+- **Time-Travel Logging**: Discovered and fixed a critical limitation where Ava would blindly log activities to the *current day* even when the user specified "yesterday" or a past date. Injected a dynamic `logDate` parameter into the AI's core tool schemas (`log_workout`, `log_sleep`, `log_nutrition`, `log_water`, `add_expense`, `add_income`). Updated the `GlobalAICopilot.tsx` tool execution engine to intercept this date and properly override the global `dateKey`, enabling perfect historical tracking directly through chat.
+
 ### August 11, 2026 - Hub Restructuring & AI Enhancements
 - **Content Vault Implementation**: Built a new dedicated `/vault` page featuring a premium Apple-style grid layout, tabbed navigation (Unread/Consumed), and a sticky URL input bar. Added the VaultWidget to the dashboard with automatic YouTube title fetching.
 - **Light/Dark Mode Fixes**: Refactored hardcoded 'bg-white text-black' classes across VaultWidget and the `/vault` page into semantic `bg-blue-500` or `bg-primary` classes. This ensures all primary action buttons perfectly invert and remain high-contrast in Light Mode.

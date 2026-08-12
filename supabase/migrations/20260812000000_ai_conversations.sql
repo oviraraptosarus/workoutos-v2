@@ -7,6 +7,13 @@ CREATE TABLE IF NOT EXISTS public.ai_conversations (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- Forcefully add columns in case an old version of the table already existed
+ALTER TABLE public.ai_conversations ADD COLUMN IF NOT EXISTS title TEXT NOT NULL DEFAULT 'New Chat';
+ALTER TABLE public.ai_conversations ADD COLUMN IF NOT EXISTS messages JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+-- Force Supabase to reload its schema cache so it sees the columns immediately
+NOTIFY pgrst, 'reload schema';
+
 ALTER TABLE public.ai_conversations ENABLE ROW LEVEL SECURITY;
 
 DO $$ 
