@@ -18,6 +18,7 @@ export interface Task {
     due_date?: string;
     due_time?: string;
     reminder_time?: string;
+    recurrence_rule?: string;
     completed: boolean;
     subTasks?: SubTask[];
     goal_id?: string;
@@ -61,6 +62,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                     dueDate: d.due_date || '',
                     dueTime: d.due_time || '',
                     reminder_time: d.reminder_time || '',
+                    recurrence_rule: d.recurrence_rule || null,
                     subTasks: d.subtasks || [],
                     completed: d.completed || false,
                     priority: d.priority || 'none'
@@ -116,6 +118,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             due_date: (taskData as any).due_date,
             due_time: (taskData as any).due_time || null,
             reminder_time: (taskData as any).reminder_time || null,
+            recurrence_rule: (taskData as any).recurrenceRule || null,
             subtasks: taskData.subtasks?.map(st => ({ id: Date.now().toString() + Math.random().toString(), title: st.title, completed: false })) || [],
             completed: false,
             priority: taskData.priority || 'none'
@@ -136,6 +139,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                 due_date: data.due_date || '',
                 due_time: data.due_time || '',
                 reminder_time: data.reminder_time || '',
+                recurrence_rule: data.recurrence_rule || null,
                 subTasks: data.subtasks || [],
                 completed: data.completed,
                 priority: data.priority || 'none'
@@ -163,6 +167,30 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         } else if (!task.completed) {
             // Task just completed! Award XP
             const { data: { user } } = await supabase.auth.getUser();
+            
+            // Spawn next recurrence instance if applicable
+            if (task.recurrence_rule) {
+                const nextDate = new Date();
+                if (task.recurrence_rule === 'daily') nextDate.setDate(nextDate.getDate() + 1);
+                else if (task.recurrence_rule === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+                
+                const nextReminderTime = task.reminder_time ? new Date(task.reminder_time) : null;
+                if (nextReminderTime) {
+                    if (task.recurrence_rule === 'daily') nextReminderTime.setDate(nextReminderTime.getDate() + 1);
+                    else if (task.recurrence_rule === 'weekly') nextReminderTime.setDate(nextReminderTime.getDate() + 7);
+                }
+
+                await get().addTask({
+                    title: task.title,
+                    priority: task.priority,
+                    category: task.category,
+                    ...(nextReminderTime ? { reminder_time: nextReminderTime.toISOString() } as any : {}),
+                    ...(task.due_date ? { due_date: nextDate.toLocaleDateString('en-CA') } as any : {}),
+                    ...(task.due_time ? { due_time: task.due_time } as any : {}),
+                    ...(task.recurrence_rule ? { recurrenceRule: task.recurrence_rule } as any : {})
+                });
+            }
+
             if (user) {
                 const isHighPriority = task.priority === 'high';
                 await XPService.awardXP(

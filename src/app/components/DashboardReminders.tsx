@@ -6,11 +6,13 @@ import { useTaskStore } from '@/store/useTaskStore';
 import { useAuth } from '@/contexts/AuthContext';
 import clsx from 'clsx';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
+import { usePushNotifications } from '@/lib/hooks/usePushNotifications';
 
 export default function DashboardReminders() {
     const { upcomingReminders, fetchUpcomingReminders, toggleTask } = useTaskStore();
     const { user } = useAuth();
     const { triggerSuccess } = useRewardSystem();
+    const { isSupported, isSubscribed, subscribeToPush } = usePushNotifications();
     const [aiInput, setAiInput] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
 
@@ -41,7 +43,8 @@ export default function DashboardReminders() {
                     appState: { 
                         localTime: new Date().toISOString(),
                         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone 
-                    }
+                    },
+                    currentDateTime: new Date().toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
                 })
             });
 
@@ -62,6 +65,14 @@ export default function DashboardReminders() {
                 <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
                     <Bell size={20} className="text-secondary" /> Reminders
                 </h2>
+                {isSupported && !isSubscribed && (
+                    <button 
+                        onClick={subscribeToPush}
+                        className="text-[10px] font-bold bg-secondary/10 text-secondary hover:bg-secondary/20 px-2 py-1 rounded-md transition-colors"
+                    >
+                        Enable Push
+                    </button>
+                )}
             </div>
 
             <div className="relative glass-card-premium border border-white/10 p-6 space-y-4 flex-1 transition-all duration-500 hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex flex-col">

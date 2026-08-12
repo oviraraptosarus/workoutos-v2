@@ -486,7 +486,9 @@ export default function GlobalAICopilot() {
             // Expose the contextStatus for debugging UI
             setContextStatus(contextStatus);
 
-            const currentDateTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+            // Get local timezone dynamically instead of hardcoding
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const currentDateTime = new Date().toLocaleString('en-US', { timeZone });
             const res = await fetch('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
