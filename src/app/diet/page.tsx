@@ -12,7 +12,6 @@ import MicronutrientDrawer from './components/MicronutrientDrawer';
 import EditFoodModal from './components/EditFoodModal';
 import MealPlanDetailsModal from './components/MealPlanDetailsModal';
 import RecipeGroupBuilderModal from './components/RecipeGroupBuilderModal';
-import RawDataAITransformerModal from '@/app/components/RawDataAITransformerModal';
 import GeminiBarcodeScannerModal from '@/app/components/GeminiBarcodeScannerModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -46,7 +45,6 @@ export default function DietPage() {
     // Modals visibility state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPlanDetailsOpen, setIsPlanDetailsOpen] = useState(false);
-    const [isAIModalOpen, setIsAIModalOpen] = useState(false);
     const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
     const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false);
 
@@ -182,10 +180,6 @@ export default function DietPage() {
         navigator.clipboard.writeText(summaryText);
     };
 
-    const handleOpenAIModal = () => {
-        setIsAIModalOpen(true);
-    };
-
     const handleOpenPlanDetails = () => {
         setIsPlanDetailsOpen(true);
     };
@@ -313,7 +307,6 @@ export default function DietPage() {
                     onCopyYesterdayMeals={handleCopyYesterdayMeals}
                     onExportSummaryText={handleExportSummaryText}
                     onOpenRecipeModal={() => setIsRecipeModalOpen(true)}
-                    onOpenAIMealModal={handleOpenAIModal}
                 />
 
                 {/* Hydration / Water Tracker */}
@@ -337,14 +330,6 @@ export default function DietPage() {
                     isOpen={isPlanDetailsOpen}
                     onClose={() => setIsPlanDetailsOpen(false)}
                     onLogMeal={handleSaveMeal}
-                />
-
-                {/* Universal Raw Data AI Transformer Modal */}
-                <RawDataAITransformerModal
-                    isOpen={isAIModalOpen}
-                    onClose={() => setIsAIModalOpen(false)}
-                    onApplyDietMeals={handleAddBatchMeals}
-                    onApplyWater={handleApplyWaterIntake}
                 />
 
                 {/* Saved Recipe & Meal Combo Builder Modal */}

@@ -12,7 +12,6 @@ interface DietGaugeSummaryProps {
     calorieGoal: number;
     activityBurned?: number;
     weeklyRemaining?: number;
-    onOpenAIMealModal?: () => void;
     onOpenBarcodeScanner?: () => void;
 }
 
