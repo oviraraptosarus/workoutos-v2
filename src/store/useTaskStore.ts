@@ -25,8 +25,10 @@ export interface Task {
 
 interface TaskState {
     tasks: Task[];
+    upcomingReminders: Task[];
     isLoading: boolean;
     fetchTasks: (date: string) => Promise<void>;
+    fetchUpcomingReminders: () => Promise<void>;
     addTask: (task: Omit<Task, 'id' | 'completed' | 'subTasks'> & { subtasks?: { title: string }[] }) => Promise<void>;
     toggleTask: (id: string) => Promise<void>;
     toggleSubTask: (taskId: string, subTaskId: string) => Promise<void>;
@@ -37,6 +39,7 @@ interface TaskState {
 
 export const useTaskStore = create<TaskState>((set, get) => ({
     tasks: [],
+    upcomingReminders: [],
     isLoading: false,
 
     fetchTasks: async (date: string) => {
@@ -57,6 +60,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                     description: d.description || '',
                     dueDate: d.due_date || '',
                     dueTime: d.due_time || '',
+                    reminder_time: d.reminder_time || '',
                     subTasks: d.subtasks || [],
                     completed: d.completed || false,
                     priority: d.priority || 'none'
@@ -65,6 +69,38 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             });
         } else {
             set({ isLoading: false });
+        }
+    },
+
+    fetchUpcomingReminders: async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const now = new Date().toISOString();
+        const { data } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('completed', false)
+            .not('reminder_time', 'is', null)
+            .gte('reminder_time', now)
+            .order('reminder_time', { ascending: true });
+            
+        if (data) {
+            set({
+                upcomingReminders: data.map(d => ({
+                    id: d.id,
+                    title: d.title,
+                    fullTitle: d.full_title || d.title,
+                    description: d.description || '',
+                    dueDate: d.due_date || '',
+                    dueTime: d.due_time || '',
+                    reminder_time: d.reminder_time || '',
+                    subTasks: d.subtasks || [],
+                    completed: d.completed || false,
+                    priority: d.priority || 'none'
+                }))
+            });
         }
     },
 
@@ -79,6 +115,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             full_title: (taskData as any).full_title || taskData.title,
             due_date: (taskData as any).due_date,
             due_time: (taskData as any).due_time || null,
+            reminder_time: (taskData as any).reminder_time || null,
             subtasks: taskData.subtasks?.map(st => ({ id: Date.now().toString() + Math.random().toString(), title: st.title, completed: false })) || [],
             completed: false,
             priority: taskData.priority || 'none'
@@ -98,6 +135,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
                 full_title: data.full_title || data.title,
                 due_date: data.due_date || '',
                 due_time: data.due_time || '',
+                reminder_time: data.reminder_time || '',
                 subTasks: data.subtasks || [],
                 completed: data.completed,
                 priority: data.priority || 'none'

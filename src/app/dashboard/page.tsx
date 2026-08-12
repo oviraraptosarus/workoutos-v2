@@ -15,6 +15,7 @@ import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
 import DashboardCountdowns from '@/app/components/DashboardCountdowns';
 import VaultWidget from '@/app/components/VaultWidget';
+import DashboardReminders from '@/app/components/DashboardReminders';
 import DashboardEditModal, { DashboardWidgetConfig } from '@/app/components/modals/DashboardEditModal';
 import { Settings2 } from 'lucide-react';
 
@@ -25,7 +26,8 @@ const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
     'TimeProgressWidget': TimeProgressWidget,
     'DashboardTasks': DashboardTasks,
     'DashboardCountdowns': DashboardCountdowns,
-    'VaultWidget': VaultWidget
+    'VaultWidget': VaultWidget,
+    'DashboardReminders': DashboardReminders
 };
 
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
@@ -33,6 +35,7 @@ const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'TouchGrassNudge', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
+    { id: 'DashboardReminders', visible: true },
     { id: 'DashboardTasks', visible: true },
     { id: 'DashboardCountdowns', visible: true },
     { id: 'VaultWidget', visible: true }
