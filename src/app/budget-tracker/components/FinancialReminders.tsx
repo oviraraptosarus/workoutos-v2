@@ -61,14 +61,11 @@ export default function FinancialReminders() {
     };
 
     return (
-        <div className="bg-card-white  border border-surface-variant  p-4 sm:p-5 rounded-2xl shadow-sm transition-colors h-full flex flex-col">
-            <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-full bg-white/5 dark:bg-amber-900/30 text-white shadow-sm border border-surface-variant ">
-                        <Bell size={16} />
-                    </div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-on-surface tracking-tight">{t('budget.reminders.title')}</h3>
-                </div>
+        <div className="flex flex-col gap-2 h-full">
+            <div className="flex items-center justify-between px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Bell size={20} className="text-[#0a84ff]" /> {t('budget.reminders.title')}
+                </h2>
                 <button 
                     onClick={() => setIsAdding(!isAdding)}
                     className="p-1 rounded-full text-on-surface-variant hover:text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors"
@@ -76,6 +73,7 @@ export default function FinancialReminders() {
                     <Plus size={18} />
                 </button>
             </div>
+        <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col transition-colors">
 
             {isAdding && (
                 <form onSubmit={handleAdd} className="mb-4 bg-surface-container-low dark:bg-surface-container-high/50 p-3 rounded-xl border border-surface-variant  animate-in fade-in slide-in-from-top-2">
@@ -138,6 +136,7 @@ export default function FinancialReminders() {
                     ))
                 )}
             </div>
+        </div>
         </div>
     );
 }
