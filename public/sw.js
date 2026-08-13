@@ -8,24 +8,37 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', function(event) {
     if (event.data) {
+        let title = 'WorkoutOS';
+        let options = {
+            icon: '/logo.png',
+            badge: '/logo.png', // Note: Android prefers monochrome small icons for badge, but we'll try this
+            data: '/'
+        };
+        
         try {
             const data = event.data.json();
-            const options = {
-                body: data.body || data.description,
-                icon: '/logo.png',
-                badge: '/logo.png',
-                data: data.url || '/'
-            };
-            event.waitUntil(self.registration.showNotification(data.title, options));
+            title = data.title || title;
+            options.body = data.body || data.description || '';
+            if (data.url) options.data = data.url;
+            
+            // Add mobile-friendly options
+            options.vibrate = [200, 100, 200, 100, 200, 100, 200];
+            options.requireInteraction = false;
         } catch (e) {
-            const options = {
-                body: event.data.text(),
-                icon: '/logo.png',
-                badge: '/logo.png',
-                data: '/'
-            };
-            event.waitUntil(self.registration.showNotification('WorkoutOS', options));
+            options.body = event.data.text();
         }
+
+        const promiseChain = self.registration.showNotification(title, options)
+            .catch(err => {
+                console.error('Failed to show notification:', err);
+                // Fallback without badge/vibrate which sometimes crash android
+                return self.registration.showNotification('WorkoutOS', {
+                    body: 'You have a new update.',
+                    icon: '/logo.png'
+                });
+            });
+
+        event.waitUntil(promiseChain);
     }
 });
 

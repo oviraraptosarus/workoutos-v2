@@ -56,10 +56,18 @@ export function usePushNotifications() {
             if (!response.ok) throw new Error("Failed to fetch VAPID key");
             const { publicKey } = await response.json();
             
-            // Convert Base64URL string to Uint8Array for the subscribe call
+            // Convert Base64URL string to Uint8Array safely for Android browsers
             const padding = '='.repeat((4 - publicKey.length % 4) % 4);
-            const base64 = (publicKey + padding).replace(/-/g, '+').replace(/_/g, '/');
-            const rawData = window.atob(base64);
+            const base64 = (publicKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            
+            let rawData;
+            try {
+                rawData = window.atob(base64);
+            } catch (e) {
+                console.warn('First atob failed, trying without padding/replace', e);
+                rawData = window.atob(publicKey.replace(/\-/g, '+').replace(/_/g, '/'));
+            }
+
             const outputArray = new Uint8Array(rawData.length);
             for (let i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
