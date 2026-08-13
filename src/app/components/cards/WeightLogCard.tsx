@@ -350,14 +350,20 @@ export default function WeightLogCard() {
                   tick={{ fontSize: 10, fill: "#64748b", fontWeight: "bold" }}
                 />
                 <Tooltip
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    fontWeight: "bold",
-                    backgroundColor: "#ffffff",
+                  cursor={{ stroke: "rgba(255,255,255,0.1)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white dark:bg-surface-container-highest p-2.5 rounded-xl border border-surface-variant/50 shadow-lg">
+                          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">{label}</p>
+                          <p className="text-sm font-black text-[#4f46e5]">
+                            Weight : {payload[0].value} kg
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
-                  itemStyle={{ color: "#4f46e5" }}
                 />
                 <Line
                   type="monotone"
