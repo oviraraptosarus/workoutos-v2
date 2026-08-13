@@ -43,7 +43,7 @@ export default function TDEEDeficitCard({
     const weeklyPaceKg = ((absoluteDiff * 7) / 7700).toFixed(2);
 
     return (
-        <div className="bg-surface-container-lowest/80 backdrop-blur-2xl border border-surface-variant p-8 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all relative overflow-hidden">
+        <div className="glass-card-premium p-8 transition-all relative overflow-hidden">
             
             {/* Header */}
             <div className="flex items-center justify-between mb-8">

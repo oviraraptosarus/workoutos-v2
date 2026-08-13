@@ -55,7 +55,7 @@ export default function MacroRings({
     };
 
     return (
-        <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 p-6 rounded-[32px] shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.3)] transition-all relative overflow-hidden group/macro hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
+        <div className="glass-card-premium p-6 transition-all relative overflow-hidden group/macro">
             
             {/* Top Right Goal Customize Button */}
             {onUpdateGoals && (

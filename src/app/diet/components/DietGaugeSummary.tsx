@@ -31,7 +31,7 @@ export default function DietGaugeSummary({
     const progressPercent = calorieGoal > 0 ? Math.min(100, Math.max(0, (totalCalories / calorieGoal) * 100)) : (totalCalories > 0 ? 100 : 0);
 
     return (
-        <div className="bg-surface-container-lowest border border-surface-variant rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] transition-all">
+        <div className="glass-card-premium p-6 transition-all">
             
             {/* Top Toolbar */}
             <div className="flex items-center justify-between mb-8">

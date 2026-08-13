@@ -49,7 +49,7 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const percentage = Math.min(100, Math.round((waterMl / goal) * 100));
 
     return (
-        <div className="bg-surface-container/30 backdrop-blur-3xl border border-white/10 dark:border-white/5 rounded-[32px] p-6 shadow-[0_20px_40px_rgb(0,0,0,0.06)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.3)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] group/water">
+        <div className="glass-card-premium p-6 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 group/water">
             <div className="flex items-center gap-5">
                 <div className="w-16 h-16 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative overflow-hidden flex-shrink-0 shadow-inner group-hover/water:border-blue-400/40 transition-colors">
                     <div 

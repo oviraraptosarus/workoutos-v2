@@ -164,7 +164,7 @@ export default function MealLogger({
                                 <div className="w-2 h-2 rounded-full bg-on-surface/50" />
                             </div>
 
-                            <div className="bg-surface-container/30 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-3xl p-5 sm:p-6 shadow-[0_20px_40px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] transition-all overflow-hidden relative group/cat">
+                            <div className="glass-card-premium p-5 sm:p-6 transition-all overflow-hidden relative group/cat">
                                 
                                 {/* Section Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
