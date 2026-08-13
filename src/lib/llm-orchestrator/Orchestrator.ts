@@ -81,7 +81,7 @@ export class LLMOrchestrator {
                         this.health.recordSuccess(model.id, latencyMs);
                         
                         telemetryEngine.logEvent({
-                            user_id: 'anonymous', // Orchestrator doesn't know user_id here easily without changing signature
+                            user_id: '00000000-0000-0000-0000-000000000000', // Orchestrator doesn't know user_id here easily without changing signature
                             request_id: request.requestId || 'UNKNOWN',
                             event_type: 'TOOL_SUCCESS',
                             module: 'Orchestrator',
@@ -106,7 +106,7 @@ export class LLMOrchestrator {
                         console.warn(`[Orchestrator] Attempt ${retries + 1} failed for ${model.id}. Reason: ${reason}. Error: ${error?.message}`);
 
                         telemetryEngine.logEvent({
-                            user_id: 'anonymous',
+                            user_id: '00000000-0000-0000-0000-000000000000',
                             request_id: request.requestId || 'UNKNOWN',
                             event_type: 'TOOL_FAILED',
                             module: 'Orchestrator',

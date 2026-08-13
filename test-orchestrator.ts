@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { orchestrator } from './src/lib/llm-orchestrator/Orchestrator';
 
 (async () => {
     try {
+        const { orchestrator } = await import('./src/lib/llm-orchestrator/Orchestrator.ts');
+        
         const response = await orchestrator.generateContent({
             prompt: 'remind me to wash my face in 5 minutes',
             tools: [
