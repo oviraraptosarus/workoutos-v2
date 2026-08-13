@@ -162,6 +162,41 @@ export async function GET(request: Request) {
                     .update({ notification_settings: settings })
                     .eq('id', userId);
             }
+
+            // 7. Financial Reminders (Nag once on or after due date starting at 9:00 AM local)
+            if (hourInt >= 9) {
+                const { data: finReminders } = await supabaseAdmin
+                    .from('financial_reminders')
+                    .select('id, text, date, notification_sent')
+                    .eq('user_id', userId)
+                    .eq('completed', false)
+                    .eq('notification_sent', false)
+                    .not('date', 'is', null)
+                    .lte('date', todayStr);
+
+                if (finReminders && finReminders.length > 0) {
+                    const finTasksToMark: string[] = [];
+                    for (const fin of finReminders) {
+                        const res = await sendPushNotification(userId, {
+                            title: 'Financial Reminder',
+                            description: fin.text,
+                            url: '/budget-tracker'
+                        });
+                        
+                        if (res.success || res.reason === 'No subscriptions found') {
+                            finTasksToMark.push(fin.id);
+                            if (res.success) processedCount++;
+                        }
+                    }
+
+                    if (finTasksToMark.length > 0) {
+                        await supabaseAdmin
+                            .from('financial_reminders')
+                            .update({ notification_sent: true })
+                            .in('id', finTasksToMark);
+                    }
+                }
+            }
         }
 
         return NextResponse.json({ success: true, processed: processedCount });
