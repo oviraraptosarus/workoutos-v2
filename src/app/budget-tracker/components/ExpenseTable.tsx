@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Trash2 } from 'lucide-react';
+import { Search, Trash2, TrendingDown } from 'lucide-react';
 import { getExpenses, deleteTransaction, ExpenseItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBudget } from '../contexts/BudgetContext';
@@ -71,6 +71,19 @@ export default function ExpenseTable() {
     };
 
     return (
+        <div className="flex flex-col gap-2 h-full">
+            <div className="flex flex-col gap-1 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <TrendingDown size={20} className="text-[#0a84ff]" /> Expense log
+                </h2>
+                <span className="font-label-sm text-[11px] text-on-surface-variant/70 uppercase tracking-wider">
+                    {visible.length === 1 ? t('budget.expense.entry') : t('budget.expense.entries').replace('{count}', visible.length.toString())}
+                    {isFiltered ? ` of ${expenses.length}` : ''} • {t('budget.expense.total')}:{' '}
+                    <span className="font-bold text-on-surface tabular-nums">
+                        ₹{totalExpenses.toFixed(2)}
+                    </span>
+                </span>
+            </div>
         <div
             className={`glass-card-premium p-4 sm:p-5 transition-all duration-500 ${
                 highlight
@@ -78,18 +91,6 @@ export default function ExpenseTable() {
                     : ''
             }`}
         >
-            <div className="mb-5">
-                <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1">
-                    Expense log
-                </h3>
-                <p className="font-label-sm text-label-sm text-on-surface-variant">
-                    {visible.length === 1 ? t('budget.expense.entry') : t('budget.expense.entries').replace('{count}', visible.length.toString())}
-                    {isFiltered ? ` of ${expenses.length}` : ''} • {t('budget.expense.total')}:{' '}
-                    <span className="font-bold text-on-surface tabular-nums">
-                        ₹{totalExpenses.toFixed(2)}
-                    </span>
-                </p>
-            </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
                 <div className="relative flex-1">
@@ -208,6 +209,7 @@ export default function ExpenseTable() {
                     ))}
                 </ul>
             )}
+        </div>
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getExpenses } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -136,12 +137,17 @@ export default function SpendPaceChart() {
     const maxY = Math.max(weeklyTarget * 1.2, weeklyTotal * 1.2, 100);
 
     return (
-        <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-between transition-colors">
-            <div className="flex justify-between items-start mb-6">
-                <div>
-                    <h3 className="text-sm font-bold text-on-surface dark:text-on-surface tracking-tight mb-1">{t('budget.chart.title')}</h3>
-                    <p className="text-[11px] text-on-surface-variant dark:text-on-surface-variant font-medium">{t('budget.chart.subtitle')}</p>
-                </div>
+        <div className="flex flex-col gap-2 h-full">
+            <div className="flex items-center justify-between px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Activity size={20} className="text-[#0a84ff]" /> {t('budget.chart.title')}
+                </h2>
+                <span className="font-label-sm text-[11px] text-on-surface-variant/70 uppercase tracking-wider hidden sm:block">
+                    {t('budget.chart.subtitle')}
+                </span>
+            </div>
+            <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-between transition-colors">
+                <div className="flex justify-end items-start mb-6">
                 <div className="flex items-center gap-4 text-[11px] font-semibold text-on-surface-variant dark:text-on-surface-variant">
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-0.5 bg-[#8b5cf6] dark:bg-purple-400" />
@@ -225,6 +231,7 @@ export default function SpendPaceChart() {
                     </ComposedChart>
                 </ResponsiveContainer>
             </div>
+        </div>
         </div>
     );
 }

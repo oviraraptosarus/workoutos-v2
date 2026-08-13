@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { CheckCircle2, Bookmark, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap, Check, Bell } from 'lucide-react';
+import { CheckCircle2, Bookmark, Database, Play, Plus, Trash2, Edit3, X, ChevronDown, ChevronRight, Loader2, BrainCircuit, Target, Sparkles, Mic, MicOff, Trophy, Zap, Check, Bell } from 'lucide-react';
 import { getFallbackThumbnail } from '@/utils/thumbnailHelper';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
@@ -593,26 +593,23 @@ export default function ExecutionOSPage() {
                     {/* NOW HUB */}
                     {activeTab === 'now' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                
-                                <div className="flex items-center justify-between gap-3 relative z-10">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Zap className="w-5 h-5 sm:w-7 sm:h-7" />
-                                        </div>
-                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Daily Quests</h2>
-                                    </div>
+                            <div className="flex items-center justify-between mb-1 px-1">
+                                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                                    <Zap size={20} className="text-[#0a84ff]" /> Daily Quests
+                                </h2>
+                                {tasks.filter(t => !t.completed).length > 0 && (
+                                    <button 
+                                        onClick={handleClearAllTasks}
+                                        className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-error bg-error/10 hover:bg-error/20 px-3 py-1 sm:px-3 sm:py-1 rounded-lg transition-colors border border-error/20"
+                                    >
+                                        Clear All
+                                    </button>
+                                )}
+                            </div>
+                            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 mb-2">
                                     
-                                    {tasks.filter(t => !t.completed).length > 0 && (
-                                        <button 
-                                            onClick={handleClearAllTasks}
-                                            className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-error bg-error/10 hover:bg-error/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors border border-error/20"
-                                        >
-                                            Clear All
-                                        </button>
-                                    )}
-                                </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                                
                                     Your immediate action items for today. Add quick tasks, set priorities, link them to your macro goals, and check them off to build unstoppable momentum.
                                 </p>
                                 
@@ -703,23 +700,19 @@ export default function ExecutionOSPage() {
                     {/* GOALS HUB */}
                     {activeTab === 'goals' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                
-                                <div className="flex items-center justify-between relative z-10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-tertiary/20 flex items-center justify-center border border-tertiary/30 text-tertiary shadow-[0_0_20px_rgba(var(--c-tertiary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Target className="w-5 h-5 sm:w-7 sm:h-7" />
-                                        </div>
-                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Macro Goals</h2>
-                                    </div>
-                                    <button 
-                                        onClick={() => setIsAddingGoal(!isAddingGoal)}
-                                        className="bg-surface-container hover:bg-surface-container-high text-on-surface border border-surface-variant px-4 py-2 sm:px-5 sm:py-2.5 rounded-[1rem] font-bold text-xs sm:text-sm transition-all shadow-sm backdrop-blur-md hover:-translate-y-0.5 whitespace-nowrap"
-                                    >
-                                        {isAddingGoal ? 'Cancel' : 'Define Vector'}
-                                    </button>
-                                </div>
-                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
+                            <div className="flex items-center justify-between mb-1 px-1">
+                                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                                    <Target size={20} className="text-[#0a84ff]" /> Macro Goals
+                                </h2>
+                                <button 
+                                    onClick={() => setIsAddingGoal(!isAddingGoal)}
+                                    className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-on-surface-variant bg-surface-container hover:bg-surface-container-high px-3 py-1 sm:px-3 sm:py-1 rounded-lg transition-colors border border-surface-variant"
+                                >
+                                    {isAddingGoal ? 'Cancel' : 'Define Vector'}
+                                </button>
+                            </div>
+                            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
+                                <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 mb-2">
                                     Define your long-term, high-level execution vectors. Whether it's a fitness milestone or a career target, everything you do on a daily basis should map back to these North Star targets.
                                 </p>
 
@@ -825,15 +818,19 @@ export default function ExecutionOSPage() {
                     {/* VAULT HUB */}
                     {activeTab === 'vault' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-                            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                
+                            <div className="flex items-center justify-between mb-1 px-1">
+                                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                                    <Database size={20} className="text-[#0a84ff]" /> Content Vault
+                                </h2>
+                                <button 
+                                    onClick={() => setIsAddingVault(!isAddingVault)}
+                                    className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#0a84ff] bg-[#0a84ff]/10 hover:bg-[#0a84ff]/20 px-3 py-1 sm:px-3 sm:py-1 rounded-lg transition-colors border border-[#0a84ff]/20"
+                                >
+                                    Log Consume
+                                </button>
+                            </div>
+                            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
                                 <div className="flex flex-col gap-2 relative z-10">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
-                                            <Bookmark className="w-5 h-5 sm:w-7 sm:h-7" />
-                                        </div>
-                                        <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Content Vault</h2>
-                                    </div>
                                     <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed mt-2 sm:mt-4">
                                         Videos, articles, and posts to revisit.
                                     </p>

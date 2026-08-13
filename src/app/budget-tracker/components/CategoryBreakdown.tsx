@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, PieChart } from 'lucide-react';
 import { getExpenses, ExpenseItem } from '../services/budgetStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBudget } from '../contexts/BudgetContext';
@@ -65,12 +65,17 @@ export default function CategoryBreakdown() {
     const displayedCategories = showAll ? categories : categories.slice(0, 5);
 
     return (
+        <div className="flex flex-col gap-2 h-full">
+            <div className="flex items-center justify-between px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <PieChart size={20} className="text-[#0a84ff]" /> {t('budget.category.title')}
+                </h2>
+                <span className="font-label-sm text-[11px] text-on-surface-variant/70 uppercase tracking-wider hidden sm:block">
+                    {t('budget.category.subtitle')}
+                </span>
+            </div>
         <div className="glass-card-premium p-4 sm:p-5 h-full flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
-            <div className="flex justify-between items-start mb-6">
-                <div>
-                    <h3 className="text-lg font-black text-on-surface dark:text-on-surface tracking-tight mb-0.5 drop-shadow-sm">{t('budget.category.title')}</h3>
-                    <p className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{t('budget.category.subtitle')}</p>
-                </div>
+            <div className="flex justify-end items-start mb-6">
                 <span className="text-[11px] font-bold text-on-surface-variant dark:text-on-surface-variant bg-surface-container dark:bg-surface-container-high px-2 py-1 rounded-full">
                     {t('budget.category.count').replace('{count}', categories.length.toString())}
                 </span>
@@ -121,6 +126,7 @@ export default function CategoryBreakdown() {
                     <span className="font-bold text-on-surface-variant dark:text-on-surface-variant tracking-wide uppercase mr-1">{t('budget.category.summary')}</span> {summaryString}
                 </div>
             )}
+        </div>
         </div>
     );
 }

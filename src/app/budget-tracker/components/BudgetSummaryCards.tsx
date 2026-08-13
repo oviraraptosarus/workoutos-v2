@@ -58,40 +58,36 @@ export default function BudgetSummaryCards() {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Card 1: Total Income */}
-            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-inner">
-                            <TrendingDown size={16} className="rotate-180" />
-                        </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.totalIncome')}</span>
-                    </div>
+            <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between px-1 mb-2">
+                    <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                        <TrendingDown size={16} className="rotate-180 text-emerald-500" /> {t('budget.cards.totalIncome')}
+                    </h2>
                 </div>
+            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] h-full">
                 
                 <div>
                     <div className="text-4xl font-black text-on-surface tracking-tight leading-none mb-2">₹{totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{t('budget.cards.incomeStreams').replace('{count}', income.length.toString())}</div>
                 </div>
             </div>
+            </div>
 
             {/* Card 2: Total Expenses */}
-            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] relative overflow-hidden">
-                <div className="flex items-center justify-between mb-4 relative z-10">
-                    <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-900/40 dark:to-rose-800/20 flex items-center justify-center text-rose-600 dark:text-rose-400 shadow-inner">
-                            <TrendingDown size={16} />
-                        </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.totalExpenses')}</span>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${
+            <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between px-1 mb-2">
+                    <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                        <TrendingDown size={16} className="text-rose-500" /> {t('budget.cards.totalExpenses')}
+                    </h2>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border backdrop-blur-sm ${
                         onTrack
-                            ? 'bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50'
-                            : 'bg-rose-100/50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/50'
+                            ? 'bg-emerald-100/50 text-emerald-700 border-emerald-200'
+                            : 'bg-rose-100/50 text-rose-700 border-rose-200'
                     }`}>
                         {onTrack ? t('budget.cards.onTrack') : t('budget.cards.overPace')}
                     </span>
                 </div>
+            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] relative overflow-hidden h-full">
                 
                 <div className="relative z-10">
                     <div className="text-4xl font-black text-on-surface tracking-tight leading-none mb-4">₹{totalExpenses.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
@@ -117,19 +113,22 @@ export default function BudgetSummaryCards() {
                     </div>
                 </div>
             </div>
+            </div>
+
 
             {/* Card 3: Net Savings */}
-            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]">
+            <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between px-1 mb-2">
+                    <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                        <Calculator size={16} className="text-[#0a84ff]" /> {t('budget.cards.netSavings')}
+                    </h2>
+                </div>
+            <div className="glass-card-premium p-4 sm:p-5 flex flex-col justify-between transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] h-full">
                 <div>
-                    <div className="flex items-center gap-2 text-on-surface-variant dark:text-on-surface-variant mb-4">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
-                            <Calculator size={16} />
-                        </div>
-                        <span className="text-xs font-bold tracking-wider uppercase text-on-surface-variant dark:text-on-surface-variant">{t('budget.cards.netSavings')}</span>
-                    </div>
                     <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-200 tracking-tight leading-none mb-2">₹{netSavings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     <div className="text-xs text-on-surface-variant dark:text-on-surface-variant font-semibold">{savingsRate}{t('budget.cards.savingsRate')}</div>
                 </div>
+            </div>
             </div>
         </div>
     );

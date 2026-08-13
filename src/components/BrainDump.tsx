@@ -275,14 +275,13 @@ export default function BrainDump({ onTasksSaved }: { onTasksSaved?: () => void 
 
     return (
         <div className="flex flex-col gap-6 w-full">
-            <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group w-full">
-            
-            <div className="flex items-center gap-3 relative z-10">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-[1rem] bg-secondary/20 flex items-center justify-center border border-secondary/30 text-secondary shadow-[0_0_20px_rgba(var(--c-secondary)/0.3)] backdrop-blur-md shrink-0">
-                    <BrainCircuit className="w-5 h-5 sm:w-7 sm:h-7" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-display font-black text-on-surface tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface-variant">Brain Dump</h2>
+
+            <div className="flex items-center justify-between mb-1 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <BrainCircuit size={20} className="text-[#0a84ff]" /> Brain Dump
+                </h2>
             </div>
+            <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group w-full">
             <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">
                 Use the Brain Dump when your mind is cluttered. Instead of manually organizing, just dump all your thoughts, ideas, or to-dos here (type or speak). Ava will analyze the chaos, extract the actionable tasks, and put them straight into your execution pipeline.
             </p>
