@@ -143,6 +143,30 @@ export default function TaskItem({ task, goals, onComplete, onSetPriority, onUpd
                                     </span>
                                 )}
                                 
+                                {(() => {
+                                    let overdue = false;
+                                    const now = new Date();
+                                    if (task.reminder_time) {
+                                        overdue = new Date(task.reminder_time) < now;
+                                    } else if (task.due_date) {
+                                        const dueDate = new Date(task.due_date);
+                                        if (task.due_time) {
+                                            const [hours, minutes] = task.due_time.split(':');
+                                            dueDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+                                            overdue = dueDate < now;
+                                        } else {
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            overdue = dueDate < today;
+                                        }
+                                    }
+                                    return overdue && !task.completed;
+                                })() && (
+                                    <span className="shrink-0 text-[9px] font-black uppercase tracking-[0.15em] text-error bg-error/10 border border-error/30 px-2 py-0.5 rounded-md backdrop-blur-md shadow-sm flex items-center">
+                                        Overdue
+                                    </span>
+                                )}
+
                                 {task.due_date && (
                                     <div className="flex items-center gap-1 font-label-sm text-[10px] text-activity-green uppercase tracking-wider">
                                         <Calendar size={10} /> Due: {new Date(task.due_date).toLocaleDateString()}

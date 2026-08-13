@@ -82,8 +82,8 @@ export async function GET(request: Request) {
                 for (const task of pendingTasks) {
                     if (!task.notification_sent || shouldNag) {
                         const payload = {
-                            title: task.title,
-                            description: task.notification_sent ? `Still Due: ${task.full_title || task.title}` : `Task Due: ${task.full_title || task.title}`,
+                            title: task.notification_sent ? `⚠️ Overdue Task` : task.title,
+                            description: task.notification_sent ? `OVERDUE: ${task.full_title || task.title}` : `Task Due: ${task.full_title || task.title}`,
                             url: '/planner'
                         };
 

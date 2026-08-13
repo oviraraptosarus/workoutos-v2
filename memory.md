@@ -67,3 +67,6 @@
 - **Automated Financial Push Notifications**: Integrated financial reminders into the existing cron processor (`src/app/api/cron/process-reminders/route.ts`). Added a `notification_sent` tracker column. The system now automatically dispatches push notifications exactly once on or after the reminder's due date at 9:00 AM local time.
 - **Budget Log Pagination**: Implemented custom pagination state ("Show More" logic, starting at 5 items) for both `IncomeTable.tsx` and `ExpenseTable.tsx` to prevent long lists from stretching the UI vertically, keeping the tracker interface dense and Apple-like.
 - **iOS Modals Refinement**: Updated `EditFoodModal.tsx` to strictly adhere to the `premium-ios-design` rulebook. Removed generic blocky backgrounds and replaced them with `glass-card-premium`, standard `font-label-sm` typographic styling, and authentic iOS blue (`#0a84ff`) active states for toggles.
+
+ -   2 0 2 6 - 0 8 - 1 3   -   F i x e d   ' O n   p a c e '   a n d   ' O v e r   p a c e '   b a d g e   s t y l e s   i n   t h e   B u d g e t S u m m a r y C a r d s   t o   p r o p e r l y   d i s p l a y   i n   b o t h   l i g h t   a n d   d a r k   m o d e s .  
+ 
