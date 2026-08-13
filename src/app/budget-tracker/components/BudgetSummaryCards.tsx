@@ -81,8 +81,8 @@ export default function BudgetSummaryCards() {
                     </h2>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border backdrop-blur-sm ${
                         onTrack
-                            ? 'bg-emerald-100/50 text-emerald-700 border-emerald-200'
-                            : 'bg-rose-100/50 text-rose-700 border-rose-200'
+                            ? 'bg-emerald-100/50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
+                            : 'bg-rose-100/50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20'
                     }`}>
                         {onTrack ? t('budget.cards.onTrack') : t('budget.cards.overPace')}
                     </span>
