@@ -173,7 +173,7 @@ export default function EditFoodModal({
             onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <div
-                className="w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-2xl bg-surface-container border border-outline/10"
+                className="w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-2xl glass-card-premium"
                 style={{ maxHeight: '92vh' }}
             >
                 {/* Drag pill (mobile) */}
@@ -182,66 +182,66 @@ export default function EditFoodModal({
                 </div>
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-outline/10">
+                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-4">
                         <div
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg bg-surface border border-outline/10 text-on-surface"
+                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg bg-black/20 border border-white/10 text-white"
                         >
                             {initialData ? <Edit2 size={18} /> : <Plus size={20} />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold tracking-tight text-on-surface leading-tight">
+                            <h2 className="text-lg font-semibold tracking-tight text-white leading-tight">
                                 {initialData ? 'Edit Food Item' : 'Add Food Item'}
                             </h2>
-                            <p className="text-xs font-medium text-on-surface-variant mt-0.5">
+                            <p className="font-label-sm text-[11px] text-white/50 mt-0.5">
                                 {initialData ? 'Modify and save changes' : 'Log what you ate'}
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-surface hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface active:scale-95 border border-outline/10"
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-colors bg-black/20 hover:bg-black/40 text-white/70 hover:text-white active:scale-95 border border-white/10"
                     >
                         <X size={16} />
                     </button>
                 </div>
 
                 {/* Search Bar */}
-                <div className="px-6 pt-4 pb-3 relative border-b border-outline/10">
+                <div className="px-6 pt-4 pb-3 relative border-b border-white/10">
                     <div className="relative">
-                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
                         <input
                             type="text"
                             value={searchQuery}
                             onFocus={() => setShowPresets(true)}
                             onChange={(e) => { setSearchQuery(e.target.value); setShowPresets(true); }}
                             placeholder="Search food presets…"
-                            className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-outline/30"
+                            className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                         />
                     </div>
 
                     {showPresets && (
-                        <div className="absolute top-full left-6 right-6 mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-48 overflow-y-auto bg-surface-container-highest border border-outline/10 backdrop-blur-xl">
-                            <div className="flex justify-between items-center px-4 py-2.5 border-b border-outline/10 bg-surface-container-lowest">
-                                <span className="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Presets</span>
-                                <button type="button" onClick={() => setShowPresets(false)} className="text-[10px] font-bold text-on-surface hover:text-primary uppercase tracking-widest">Close</button>
+                        <div className="absolute top-full left-6 right-6 mt-2 rounded-2xl overflow-hidden shadow-2xl z-20 max-h-48 overflow-y-auto bg-black/60 backdrop-blur-xl border border-white/10">
+                            <div className="flex justify-between items-center px-4 py-2.5 border-b border-white/10 bg-black/40">
+                                <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/50">Presets</span>
+                                <button type="button" onClick={() => setShowPresets(false)} className="font-label-sm text-label-sm font-semibold text-white/70 hover:text-white uppercase tracking-wider">Close</button>
                             </div>
                             {filteredPresets.length > 0 ? filteredPresets.map((preset, idx) => (
                                 <div
                                     key={idx}
                                     onClick={() => applyPreset(preset)}
-                                    className="flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-outline/5 last:border-0 hover:bg-surface-container"
+                                    className="flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5 last:border-0 hover:bg-black/40"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-2xl bg-surface border border-outline/10 flex items-center justify-center text-lg">
+                                        <div className="w-10 h-10 rounded-2xl bg-black/20 border border-white/10 flex items-center justify-center text-lg">
                                             {preset.icon}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold tracking-tight text-on-surface leading-tight">{preset.name}</p>
-                                            <p className="text-[11px] font-medium text-on-surface-variant mt-0.5">{preset.portion}</p>
+                                            <p className="text-sm font-semibold tracking-tight text-white leading-tight">{preset.name}</p>
+                                            <p className="font-label-sm text-[11px] text-white/50 mt-0.5">{preset.portion}</p>
                                         </div>
                                     </div>
-                                    <div className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-surface text-on-surface border border-outline/10">
+                                    <div className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-black/40 text-white border border-white/10">
                                         {preset.calories} kcal
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@ export default function EditFoodModal({
 
                         {/* Category */}
                         <div>
-                            <label className="block text-[10px] font-bold tracking-widest uppercase mb-2.5 text-on-surface-variant">Category</label>
+                            <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70 block mb-2">Category</label>
                             <div className="grid grid-cols-4 gap-2">
                                 {(Object.entries(CATEGORY_CONFIG) as [MealCategory, { emoji: string; color: string }][]).map(([cat, cfg]) => (
                                     <button
@@ -269,8 +269,8 @@ export default function EditFoodModal({
                                         onClick={() => setCategory(cat)}
                                         className={`py-2.5 px-1 rounded-2xl text-xs font-semibold transition-all duration-300 flex flex-col items-center gap-1.5 border ${
                                             category === cat
-                                                ? 'bg-on-surface text-surface border-on-surface shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                                                : 'bg-surface text-on-surface-variant border-outline/10 hover:bg-surface-container-high hover:text-on-surface'
+                                                ? 'bg-[#0a84ff] text-white border-[#0a84ff] shadow-md shadow-[#0a84ff]/20'
+                                                : 'bg-black/20 text-white/50 border-white/10 hover:bg-black/40 hover:text-white'
                                         }`}
                                     >
                                         <span className="text-lg opacity-90">{cfg.emoji}</span>
@@ -283,25 +283,25 @@ export default function EditFoodModal({
                         {/* Name + Icon */}
                         <div className="grid grid-cols-4 gap-3">
                             <div className="col-span-3">
-                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Food Name *</label>
+                                <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70 block mb-2">Food Name *</label>
                                 <input
                                     type="text"
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="e.g. Dal Chawal or Oats"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Icon</label>
+                                <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70 block mb-2">Icon</label>
                                 <select
                                     value={icon}
                                     onChange={(e) => setIcon(e.target.value)}
-                                    className="w-full rounded-2xl px-2 py-3.5 text-xl text-center font-bold outline-none transition-all cursor-pointer bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50 appearance-none"
+                                    className="w-full rounded-2xl px-2 py-3.5 text-xl text-center font-bold outline-none transition-all cursor-pointer bg-black/20 border border-white/10 text-white focus:bg-black/40 focus:border-white/20 appearance-none"
                                 >
                                     {EMOJI_OPTIONS.map((emoji) => (
-                                        <option key={emoji} value={emoji} className="bg-surface-container text-xl">{emoji}</option>
+                                        <option key={emoji} value={emoji} className="bg-neutral-900 text-xl">{emoji}</option>
                                     ))}
                                 </select>
                             </div>
@@ -310,23 +310,23 @@ export default function EditFoodModal({
                         {/* Portion + Bites */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Portion / Serving</label>
+                                <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70 block mb-2">Portion / Serving</label>
                                 <input
                                     type="text"
                                     value={portion}
                                     onChange={(e) => setPortion(e.target.value)}
                                     placeholder="e.g. 1 cup"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-bold tracking-widest uppercase mb-2 text-on-surface-variant">Bites / Points</label>
+                                <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70 block mb-2">Bites / Points</label>
                                 <input
                                     type="number"
                                     value={bites}
                                     onChange={(e) => setBites(e.target.value === '' ? '' : Number(e.target.value))}
                                     placeholder="2"
-                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-surface border border-outline/10 text-on-surface placeholder:text-on-surface-variant focus:bg-surface-container-high focus:border-primary/50"
+                                    className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                                 />
                             </div>
                         </div>
@@ -334,24 +334,24 @@ export default function EditFoodModal({
                         {/* Macros */}
                         <div>
                             <div className="flex items-center justify-between mb-3">
-                                <label className="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Nutrient Breakdown</label>
-                                <span className="text-[10px] font-bold flex items-center gap-1 text-on-surface-variant uppercase tracking-widest">
-                                    <Sparkles size={12} className="text-on-surface opacity-70" /> Auto-calculates
+                                <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white/70">Nutrient Breakdown</label>
+                                <span className="font-label-sm text-label-sm font-semibold flex items-center gap-1 text-white/50 uppercase tracking-wider">
+                                    <Sparkles size={12} className="text-[#0a84ff]" /> Auto-calculates
                                 </span>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 {MACRO_FIELDS.slice(0, 2).map(({ key, label, unit, placeholder }) => (
                                     <div key={key}>
-                                        <label className="block text-[10px] font-bold tracking-widest uppercase mb-1.5 text-on-surface">
-                                            {label} <span className="text-on-surface-variant">({unit})</span>
+                                        <label className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-white block mb-1.5">
+                                            {label} <span className="text-white/50">({unit})</span>
                                         </label>
                                         <input
                                             type="number"
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-2xl px-4 py-3 text-sm font-bold outline-none transition-all bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50"
+                                            className="w-full rounded-2xl px-4 py-3.5 text-sm font-semibold outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                                         />
                                     </div>
                                 ))}
@@ -359,7 +359,7 @@ export default function EditFoodModal({
                             <div className="grid grid-cols-3 gap-3">
                                 {MACRO_FIELDS.slice(2).map(({ key, label, unit, placeholder }) => (
                                     <div key={key}>
-                                        <label className="block text-[10px] font-bold tracking-widest uppercase mb-1.5 text-on-surface">
+                                        <label className="font-label-sm text-[10px] font-semibold uppercase tracking-wider text-white block mb-1.5">
                                             {label}
                                         </label>
                                         <input
@@ -367,7 +367,7 @@ export default function EditFoodModal({
                                             value={macroValues[key]}
                                             onChange={(e) => macroSetters[key](e.target.value === '' ? '' : Number(e.target.value))}
                                             placeholder={placeholder}
-                                            className="w-full rounded-2xl px-3 py-3 text-sm font-bold outline-none transition-all bg-surface border border-outline/10 text-on-surface focus:bg-surface-container-high focus:border-primary/50"
+                                            className="w-full rounded-2xl px-3 py-3 text-sm font-semibold outline-none transition-all bg-black/20 border border-white/10 text-white placeholder:text-white/40 focus:bg-black/40 focus:border-white/20"
                                         />
                                     </div>
                                 ))}
@@ -375,15 +375,15 @@ export default function EditFoodModal({
                         </div>
                     </div>
 
-                    {/* Footer actions */}
-                    <div className="flex items-center justify-between gap-3 px-6 py-5 border-t border-outline/10 bg-surface-container-lowest mt-auto">
+                    {/* Footer / Submit */}
+                    <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between gap-3 bg-black/20 backdrop-blur-xl shrink-0">
                         {initialData && onDelete ? (
                             <button
                                 type="button"
                                 onClick={() => {
                                     if (confirm('Remove this item?')) { onDelete(initialData.id); onClose(); }
                                 }}
-                                className="flex items-center gap-1.5 px-4 py-3 rounded-2xl text-xs font-semibold transition-colors bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 active:scale-95"
+                                className="flex items-center gap-1.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-colors bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20 active:scale-95"
                             >
                                 <Trash2 size={14} /> Delete
                             </button>
@@ -393,14 +393,22 @@ export default function EditFoodModal({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-5 py-3 rounded-2xl text-xs font-semibold transition-colors bg-surface hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline/10 active:scale-95"
+                                className="px-5 py-3 rounded-2xl text-sm font-semibold text-white/70 hover:text-white bg-black/20 hover:bg-black/40 border border-white/10 transition-all active:scale-95"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="px-6 py-3 rounded-2xl text-xs font-bold bg-on-surface text-surface hover:bg-on-surface/90 shadow-lg transition-all active:scale-95"
+                                disabled={!name.trim() || isSubmitting}
+                                className="px-6 py-3 rounded-2xl text-sm font-semibold bg-[#0a84ff] hover:bg-[#0a84ff]/90 text-white shadow-lg shadow-[#0a84ff]/20 disabled:opacity-50 disabled:shadow-none transition-all flex items-center gap-2 active:scale-95"
                             >
+                                {isSubmitting ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : initialData ? (
+                                    <Check size={16} />
+                                ) : (
+                                    <Plus size={16} />
+                                )}
                                 {initialData ? 'Save Changes' : 'Add Food Item'}
                             </button>
                         </div>
