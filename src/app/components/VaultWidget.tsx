@@ -78,9 +78,6 @@ export default function VaultWidget() {
 
     return (
         <div className="glass-card-premium p-4 sm:p-5 transition-all relative overflow-hidden flex flex-col gap-4 group w-full">
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-            
             <Link href="/vault" className="flex items-center justify-between pb-2 relative z-10 group/link w-full">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-[10px] bg-blue-500 flex items-center justify-center shrink-0 shadow-sm group-hover/link:scale-105 transition-transform">

@@ -255,13 +255,35 @@ export default function RemindersSettingsPage() {
                                 <p className="text-xs text-on-surface-variant">Get notified even when the app is closed.</p>
                             </div>
                         </div>
-                        <button
-                            onClick={subscribeToPush}
-                            disabled={pushLoading}
-                            className="w-full bg-primary text-on-primary font-bold rounded-xl py-3 text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
-                        >
-                            {pushLoading ? 'Enabling...' : 'Allow Notifications'}
-                        </button>
+                        <div className="flex flex-col gap-2 w-full">
+                            <button
+                                onClick={subscribeToPush}
+                                disabled={pushLoading}
+                                className="w-full bg-primary text-on-primary font-bold rounded-xl py-3 text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                            >
+                                {pushLoading ? 'Enabling...' : 'Allow Notifications'}
+                            </button>
+                            {permission === 'granted' && (
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const { data: { session } } = await supabase.auth.getSession();
+                                            if (!session) return;
+                                            const res = await fetch('/api/notifications/test', {
+                                                method: 'POST',
+                                                headers: { 'Authorization': `Bearer ${session.access_token}` }
+                                            });
+                                            if (!res.ok) alert('Failed to send test push');
+                                        } catch(e) {
+                                            alert('Error sending test push');
+                                        }
+                                    }}
+                                    className="w-full bg-surface-variant text-on-surface-variant font-bold rounded-xl py-3 text-sm hover:bg-surface-variant/80 transition-colors"
+                                >
+                                    Send Test Notification
+                                </button>
+                            )}
+                        </div>
                         {permission === 'denied' && (
                             <p className="text-[10px] text-error text-center mt-1">
                                 You have denied permission. Please enable it in your browser settings.

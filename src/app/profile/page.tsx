@@ -138,7 +138,7 @@ export default function ProfileHub() {
         if (key === 'push_enabled') {
             if (value === true) {
                 if (!isSupported) {
-                    alert("Push notifications are not supported in your browser.");
+                    alert("Push notifications are not supported in this browser. If you are testing on a mobile device over a local IP (http://192.168...), you must use a secure HTTPS tunnel (like ngrok) or deploy the app, as mobile browsers block Push Notifications on unsecured HTTP connections.");
                     return;
                 }
                 const result = await subscribeToPush();

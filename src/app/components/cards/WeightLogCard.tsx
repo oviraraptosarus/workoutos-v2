@@ -220,8 +220,6 @@ export default function WeightLogCard() {
             </div>
 
             <div className="glass-card-premium p-6 relative overflow-hidden transition-all hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] border border-white/10 flex-1">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                 <div className="relative z-10 flex flex-col h-full">
 
                 <div className="flex items-center justify-between mb-2">

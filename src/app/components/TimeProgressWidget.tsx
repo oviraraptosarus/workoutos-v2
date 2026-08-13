@@ -66,8 +66,6 @@ export default function TimeProgressWidget() {
             </div>
             
             <div className="glass-card-premium p-4 sm:p-5 transition-all h-full relative overflow-hidden hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)] border border-white/10 flex-1">
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
             
             <div className="space-y-4 relative z-10">
                 {/* Year */}
