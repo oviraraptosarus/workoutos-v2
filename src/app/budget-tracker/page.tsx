@@ -28,14 +28,18 @@ export default function BudgetTrackerPage() {
                         </div>
                         <div className="lg:col-span-2 space-y-5">
                             <CategoryBreakdown />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+                        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                            <IncomeTable />
+                            <ExpenseTable />
+                        </div>
+                        <div className="lg:col-span-1">
                             {userProfile?.enableFinancialReminders !== false && (
                                 <FinancialReminders />
                             )}
                         </div>
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-                        <IncomeTable />
-                        <ExpenseTable />
                     </div>
                 </div>
             </BudgetProvider>
