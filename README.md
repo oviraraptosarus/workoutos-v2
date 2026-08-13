@@ -51,7 +51,8 @@ Workout OS isn't just a tracker—it's an intelligent assistant designed with ab
 ### ⚡ Execution & Productivity
 - **Content Vault:** A premium, tabbed hub to save and consume YouTube videos, articles, and links. Automatically scrapes metadata.
 - **Daily Quests & Macro Goals:** Gamified task execution with custom lightning and trophy icons.
-- **Budget Tracker:** Keep your finances and spending habits aligned with your life goals.
+- **Budget Tracker:** Keep your finances and spending habits aligned with your life goals. Features paginated income and expense logs for a perfectly clean UI.
+- **Financial Reminders:** Track upcoming bills and receive automated Push Notifications directly to your device on their due date so you never miss a payment.
 
 ---
 
