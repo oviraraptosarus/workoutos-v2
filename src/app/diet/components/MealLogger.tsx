@@ -275,10 +275,6 @@ export default function MealLogger({
                                                                 <Sparkles size={12} className="text-[#0a84ff]"/> Estimated Breakdown
                                                             </h5>
                                                             <div className="relative p-3 bg-black/5 dark:bg-black/30 rounded-2xl border border-black/5 dark:border-white/10 space-y-3 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
-                                                                {/* Apple Glass Gradients */}
-                                                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                                                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                                                                
                                                                 <div className="relative z-10 space-y-2.5">
                                                                     {item.ingredients.map((ing, idx) => (
                                                                         <div key={idx} className="flex justify-between items-center text-xs group/ing">

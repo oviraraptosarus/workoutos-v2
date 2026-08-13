@@ -594,8 +594,6 @@ export default function ExecutionOSPage() {
                     {activeTab === 'now' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
                             <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center justify-between gap-3 relative z-10">
                                     <div className="flex items-center gap-3">
@@ -706,8 +704,6 @@ export default function ExecutionOSPage() {
                     {activeTab === 'goals' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
                             <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex items-center justify-between relative z-10">
                                     <div className="flex items-center gap-4">
@@ -830,8 +826,6 @@ export default function ExecutionOSPage() {
                     {activeTab === 'vault' && (
                         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
                             <div className="bg-surface-container-lowest border border-surface-variant p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group">
-                                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
                                 
                                 <div className="flex flex-col gap-2 relative z-10">
                                     <div className="flex items-center gap-3">
