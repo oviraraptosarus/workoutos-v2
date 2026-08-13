@@ -14,6 +14,11 @@ export default function ExpenseTable() {
     const [query, setQuery] = useState('');
     const [category, setCategory] = useState('all');
     const [pendingId, setPendingId] = useState<string | null>(null);
+    const [displayLimit, setDisplayLimit] = useState(5);
+
+    useEffect(() => {
+        setDisplayLimit(5);
+    }, [query, category]);
 
     useEffect(() => {
         const load = async () => setExpenses(await getExpenses(selectedMonth));
@@ -142,8 +147,9 @@ export default function ExpenseTable() {
                     )}
                 </div>
             ) : (
+                <>
                 <ul className="divide-y divide-surface-variant">
-                    {visible.map((item) => (
+                    {visible.slice(0, displayLimit).map((item) => (
                         <li
                             key={item.id}
                             className="py-3.5 flex items-center gap-3 group transition-colors"
@@ -208,6 +214,17 @@ export default function ExpenseTable() {
                         </li>
                     ))}
                 </ul>
+                {visible.length > displayLimit && (
+                    <div className="pt-3 pb-1 flex justify-center">
+                        <button
+                            onClick={() => setDisplayLimit(l => l + 5)}
+                            className="text-[11px] font-semibold text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-wider bg-surface-container hover:bg-surface-container-high px-4 py-2 rounded-full"
+                        >
+                            Show More ({visible.length - displayLimit})
+                        </button>
+                    </div>
+                )}
+                </>
             )}
         </div>
         </div>

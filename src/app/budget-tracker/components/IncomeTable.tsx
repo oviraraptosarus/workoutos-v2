@@ -14,6 +14,11 @@ export default function IncomeTable() {
     const [query, setQuery] = useState('');
     const [source, setSource] = useState('all');
     const [pendingId, setPendingId] = useState<string | null>(null);
+    const [displayLimit, setDisplayLimit] = useState(5);
+
+    useEffect(() => {
+        setDisplayLimit(5);
+    }, [query, source]);
 
     useEffect(() => {
         const load = async () => setIncome(await getIncome(selectedMonth));
@@ -140,8 +145,9 @@ export default function IncomeTable() {
                     )}
                 </div>
             ) : (
+                <>
                 <ul className="divide-y divide-surface-variant">
-                    {visible.map((item) => (
+                    {visible.slice(0, displayLimit).map((item) => (
                         <li key={item.id} className="py-3.5 flex items-center gap-3">
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-baseline justify-between gap-3">
@@ -190,6 +196,17 @@ export default function IncomeTable() {
                         </li>
                     ))}
                 </ul>
+                {visible.length > displayLimit && (
+                    <div className="pt-3 pb-1 flex justify-center">
+                        <button
+                            onClick={() => setDisplayLimit(l => l + 5)}
+                            className="text-[11px] font-semibold text-on-surface-variant hover:text-on-surface transition-colors uppercase tracking-wider bg-surface-container hover:bg-surface-container-high px-4 py-2 rounded-full"
+                        >
+                            Show More ({visible.length - displayLimit})
+                        </button>
+                    </div>
+                )}
+                </>
             )}
         </div>
         </div>
