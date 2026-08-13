@@ -53,17 +53,16 @@ export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProp
 
     return (
         <div className="space-y-4">
-            <div className="flex items-end justify-between px-2">
-                <div>
-                    <h2 className="text-xl font-semibold tracking-tight text-on-surface">5-Day Nutrition Programs</h2>
-                    <span className="text-xs font-medium text-on-surface-variant uppercase tracking-widest">{t('diet.mealplan')}</span>
-                </div>
+            <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Apple size={20} className="text-[#0a84ff]" /> Nutrition Programs
+                </h2>
                 <button
                     id="tour-see-details"
                     onClick={onOpenDetails}
-                    className="text-xs font-semibold text-primary hover:text-primary-fixed-variant uppercase tracking-widest flex items-center gap-1 transition-colors group relative"
+                    className="font-label-sm text-[11px] text-[#0a84ff] hover:text-[#0a84ff]/80 uppercase tracking-wider flex items-center transition-colors btn-press"
                 >
-                    {t('diet.details')} <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    {t('diet.details')} <ChevronRight size={14} />
                 </button>
             </div>
 

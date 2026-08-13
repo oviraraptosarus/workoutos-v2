@@ -43,17 +43,29 @@ export default function TDEEDeficitCard({
     const weeklyPaceKg = ((absoluteDiff * 7) / 7700).toFixed(2);
 
     return (
+        <div className="w-full">
+            <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Zap size={20} className="text-[#0a84ff]" /> Metabolic Velocity
+                </h2>
+                <span className="font-label-sm text-[11px] text-on-surface-variant/70 uppercase tracking-wider">
+                    Daily Energy Balance
+                </span>
+            </div>
         <div className="glass-card-premium p-8 transition-all relative overflow-hidden">
             
-            {/* Header */}
+            {/* Header section with pills */}
             <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h3 className="text-2xl font-semibold text-on-surface tracking-tight mb-1">
-                        Metabolic Velocity
-                    </h3>
-                    <p className="text-sm font-medium text-on-surface-variant">
-                        Daily Energy Balance
-                    </p>
+                <div className="flex items-center gap-4">
+                    <div className="bg-surface-container/50 rounded-2xl p-4 border border-surface-variant/50 text-center relative group cursor-default"
+                        title="Your total energy expenditure (estimated BMR + activity)."
+                    >
+                        <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1 group-hover:text-primary transition-colors">Target TDEE</span>
+                        <span className="text-lg font-semibold text-on-surface tabular-nums group-hover:text-primary transition-colors">{tdeeGoal}</span>
+                        <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg scale-75">
+                            <Info size={14} />
+                        </div>
+                    </div>
                 </div>
 
                 <div className={`px-4 py-2 rounded-full text-xs font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm ${
@@ -123,6 +135,7 @@ export default function TDEEDeficitCard({
                     </span>
                 </div>
             </div>
+        </div>
         </div>
     );
 }

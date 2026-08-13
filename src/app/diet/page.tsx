@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { ScanLine } from 'lucide-react';
 import AppLayout from '@/components/AppLayout';
 import DietGaugeSummary from './components/DietGaugeSummary';
 import MealPlanCarousel from './components/MealPlanCarousel';
@@ -253,15 +254,13 @@ export default function DietPage() {
     return (
         <AppLayout>
             <div className="space-y-6 pb-12">
-                <div className="pb-4 border-b border-white/5 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-semibold tracking-tight text-on-surface flex items-center gap-2 drop-shadow-sm">
-                            Metabolic Core
-                        </h1>
-                        <p className="hidden sm:block text-sm text-on-surface-variant font-medium mt-1">
-                            Nutrition & Hydration Intelligence
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between mb-3 px-1 mt-6">
+                    <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                        <ScanLine size={20} className="text-[#0a84ff]" /> Metabolic Core
+                    </h2>
+                    <span className="font-label-sm text-[11px] text-on-surface-variant/70 uppercase tracking-wider hidden sm:block">
+                        Nutrition Intelligence
+                    </span>
                 </div>
 
                 {/* Top Gauge & Metrics Summary */}

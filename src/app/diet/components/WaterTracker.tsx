@@ -49,6 +49,12 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
     const percentage = Math.min(100, Math.round((waterMl / goal) * 100));
 
     return (
+        <div className="w-full">
+            <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Droplet size={20} className="text-[#0a84ff]" /> Hydration Matrix
+                </h2>
+            </div>
         <div className="glass-card-premium p-6 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 group/water">
             <div className="flex items-center gap-5">
                 <div className="w-16 h-16 rounded-3xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative overflow-hidden flex-shrink-0 shadow-inner group-hover/water:border-blue-400/40 transition-colors">
@@ -60,7 +66,6 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                 </div>
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-base font-semibold tracking-tight text-on-surface">Hydration Matrix</h3>
                         {percentage >= 100 && (
                             <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                                 <Check size={12} strokeWidth={3} /> Optimal
@@ -107,6 +112,7 @@ export default function WaterTracker({ currentDateKey }: WaterTrackerProps) {
                     </button>
                 </div>
             </div>
+        </div>
         </div>
     );
 }
