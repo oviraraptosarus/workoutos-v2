@@ -41,6 +41,7 @@ export interface UserProfile {
     targetConfig?: unknown;
     dashboard_config?: unknown;
     xp?: number;
+    level?: number;
     onboarding_completed?: boolean;
     createdAt?: string;
     updatedAt: string;
@@ -161,6 +162,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         foodBudgets: data.food_budgets || {},
                         enableFinancialReminders: data.enable_financial_reminders !== false,
                         dob: data.dob,
+                        xp: data.xp || 0,
+                        level: data.level || 1,
                         heightCm: Number(data.height_cm) || 170,
                         gender: data.gender || 'male',
                         units: data.units || 'metric',

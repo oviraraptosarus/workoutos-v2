@@ -132,11 +132,11 @@ export default function WelcomePage() {
             {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center z-30 pointer-events-none">
                 <div key={currentSlide} className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-lg">
-                    <h2 className={`font-display-md font-black tracking-tight leading-tight drop-shadow-2xl text-3xl sm:text-4xl md:text-5xl px-4 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70`}>
+                    <h2 className={`font-display-md font-black tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl px-4 text-transparent bg-clip-text bg-gradient-to-b from-on-background to-on-surface-variant drop-shadow-sm`}>
                         {slide.id === 0 ? `"${slide.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}"` : slide.text}
                     </h2>
                     {slide.subtext && (
-                        <p className={`mt-6 font-medium text-white/60 tracking-wide text-lg`}>
+                        <p className={`mt-6 font-medium text-on-surface-variant tracking-wide text-lg`}>
                             <span className="opacity-50">— </span>
                             {slide.subtext.replace(/^[—\-\s]+/, '')}
                         </p>
