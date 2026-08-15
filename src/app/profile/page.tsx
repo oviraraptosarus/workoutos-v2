@@ -752,6 +752,113 @@ export default function ProfileHub() {
         );
     }
 
+    if (activeSection === 'change_password') {
+        const [currentPassword, setCurrentPassword] = useState('');
+        const [newPassword, setNewPassword] = useState('');
+        const [confirmPassword, setConfirmPassword] = useState('');
+        const [error, setError] = useState('');
+        const [isLoading, setIsLoading] = useState(false);
+
+        const handleSubmit = async (e: any) => {
+            e.preventDefault();
+            setError('');
+            if (newPassword !== confirmPassword) {
+                setError('New passwords do not match');
+                return;
+            }
+            if (newPassword.length < 6) {
+                setError('Password must be at least 6 characters');
+                return;
+            }
+            setIsLoading(true);
+            
+            try {
+                // Verification: Re-authenticate to prove identity
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: currentPassword,
+                });
+                
+                if (signInError) {
+                    setError('Incorrect current password');
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Proceed with update
+                const { error: updateError } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (updateError) throw updateError;
+                
+                alert('Password changed successfully');
+                setActiveSection('account');
+            } catch (err: any) {
+                setError(err.message || 'Failed to update password');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        return (
+            <AppLayout>
+                <div className="pb-12 animate-in slide-in-from-right-4 duration-200">
+                    <button onClick={() => setActiveSection('account')} className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface mb-6 font-medium">
+                        <ArrowLeft size={18} /> Back to Account
+                    </button>
+                    <h2 className="text-2xl font-bold mb-6">Change Password</h2>
+                    
+                    <form onSubmit={handleSubmit} className="bg-card-white rounded-2xl shadow-sm border border-surface-variant/30 overflow-hidden p-6 space-y-4">
+                        {error && <div className="text-error text-sm font-medium p-3 bg-error/10 rounded-lg">{error}</div>}
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-on-surface mb-1">Current Password (Verification)</label>
+                            <input 
+                                type="password" 
+                                required
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="w-full bg-surface-container-low border border-surface-variant/30 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50" 
+                                placeholder="Enter current password"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-on-surface mb-1">New Password</label>
+                            <input 
+                                type="password" 
+                                required
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full bg-surface-container-low border border-surface-variant/30 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50" 
+                                placeholder="Min 6 characters"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-on-surface mb-1">Confirm New Password</label>
+                            <input 
+                                type="password" 
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="w-full bg-surface-container-low border border-surface-variant/30 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50" 
+                                placeholder="Confirm new password"
+                            />
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            disabled={isLoading}
+                            className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl mt-4 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Verifying & Updating...' : 'Change Password'}
+                        </button>
+                    </form>
+                </div>
+            </AppLayout>
+        );
+    }
+
     if (activeSection === 'account') {
         return (
             <AppLayout>
@@ -766,7 +873,7 @@ export default function ProfileHub() {
                             <label className="font-medium text-sm text-on-surface">{t('profile.emailAddress')}</label>
                             <span className="text-sm font-medium text-on-surface-variant">{formData.email}</span>
                         </div>
-                        <button className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
+                        <button onClick={() => setActiveSection('change_password')} className="w-full p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left">
                             <label className="font-medium text-sm text-on-surface cursor-pointer">{t('profile.changePassword')}</label>
                             <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
                         </button>
@@ -775,7 +882,7 @@ export default function ProfileHub() {
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3 px-2">{t('profile.dataManagement')}</h3>
                     <DataExportImport />
 
-                    <div className="bg-error/5 rounded-2xl overflow-hidden divide-y divide-error/10 border border-error/20">
+                    <div className="bg-error/5 rounded-2xl overflow-hidden divide-y divide-error/10 border border-error/20 mt-6">
                         <button onClick={handleSignOut} className="w-full p-4 flex items-center gap-3 hover:bg-error/10 transition-colors text-left text-error font-medium">
                             <LogOut size={18} /> Sign Out
                         </button>
