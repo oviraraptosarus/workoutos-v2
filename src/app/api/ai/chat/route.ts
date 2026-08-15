@@ -127,6 +127,7 @@ RULE 14 — TYPOGRAPHY & NO DASHES: NEVER use hyphens ("-") or em-dashes ("—")
 RULE 15 — WATER LOGGING RULE: If the user says "logged a glass of water" or provides an image of a water bottle, you MUST strictly use the \`log_water\` tool and NO OTHER TOOL. Output only a fun, quirky confirmation text after the tool is called.
 RULE 16 — TIME-TRAVEL LOGGING: You MUST support historical logging. By default, your tools log for "today". If the user mentions a specific past or future date (e.g. "yesterday", "last Friday", "July 4th"), you MUST calculate the exact YYYY-MM-DD for that date relative to the user's current local date/time (provided below), and pass it into the tool (e.g. \`date\`, \`logged_at\`, or \`dueDate\` fields). Do not tell them they can't log in the past. Just do it.
 RULE 17 — VISION LOGGING: When the user uploads an image of food or drink and asks to log it, you MUST visually analyze the image. If it is water, estimate the volume in ml (e.g. standard bottle = 500ml, glass = 250ml) and immediately call log_water. If it is a meal, identify all ingredients, estimate their quantities and caloric contributions, and immediately call log_nutrition with the complete ingredients array. Do not ask for permission; do it automatically.
+RULE 18 — PROGRESSIVE OVERLOAD (AI COACH): When the user asks for a workout or logs a workout, you MUST review their past workout logs in the LIVE APP STATE. If they are doing an exercise they've done before (e.g. Bench Press), explicitly tell them their previous sets/reps/weight, and suggest pushing for 1 more rep or 5 more lbs.
 
 === END RULES ===`;
 
@@ -651,39 +652,58 @@ RULE 17 — VISION LOGGING: When the user uploads an image of food or drink and 
                 {
                   name: "log_workout",
                   description:
-                    "Log a workout or cardio activity. Use when the user states they completed an exercise (e.g., 'I walked 10000 steps', 'I ran for 30 minutes'). If they don't provide the duration, ASK for it before logging. Do NOT guess or hallucinate the duration. For walking/running, assume 100 steps per minute if duration is missing and you must calculate it, but asking is better.",
+                    "Log a workout, including strength training (lifting) or cardio. Use when the user states they completed an exercise. If they list exercises with sets, reps, weight, parse them into the exercises array. If duration or calories are missing, ask for them or estimate reasonably.",
                   parameters: {
                     type: "OBJECT",
                     properties: {
-                      activityType: {
+                      sessionType: {
                         type: "STRING",
                         description:
-                          "Must be 'Stationary Bike', 'Running', 'Walking', 'Swimming', 'Rowing', 'Elliptical', or 'Other'.",
+                          "Must be 'Weightlifting', 'Cardio', 'Mixed', or 'Other'.",
                       },
                       customName: {
                         type: "STRING",
                         description:
-                          "If activityType is 'Other', the name of the activity (e.g., 'HIIT', 'Pickleball').",
+                          "Optional. A custom name for the workout (e.g., 'Push Day', 'Morning Run').",
                       },
                       durationMinutes: {
                         type: "NUMBER",
                         description:
-                          "Duration in minutes. If unknown, ask the user.",
+                          "Duration of the entire workout in minutes. Estimate based on volume if not provided.",
+                      },
+                      caloriesBurned: {
+                        type: "NUMBER",
+                        description:
+                          "Estimated calories burned during the workout.",
                       },
                       intensity: {
                         type: "STRING",
                         description:
                           "Must be 'Light', 'Moderate', or 'Vigorous'. Default to 'Moderate'.",
                       },
-                      metricValue: {
-                        type: "NUMBER",
-                        description:
-                          "Numeric metric value (e.g., 10000 for steps, 30 for laps).",
-                      },
-                      metricLabel: {
-                        type: "STRING",
-                        description:
-                          "Label for the metric (e.g., 'Steps', 'Laps', 'Avg Cadence (RPM)').",
+                      exercises: {
+                        type: "ARRAY",
+                        description: "List of exercises performed during the workout.",
+                        items: {
+                          type: "OBJECT",
+                          properties: {
+                            name: { type: "STRING", description: "Name of the exercise (e.g. 'Bench Press')" },
+                            sets: {
+                              type: "ARRAY",
+                              description: "List of sets performed for this exercise.",
+                              items: {
+                                type: "OBJECT",
+                                properties: {
+                                  reps: { type: "NUMBER", description: "Number of repetitions" },
+                                  weight: { type: "NUMBER", description: "Weight used (in lbs/kg). Leave 0 for bodyweight." },
+                                  rpe: { type: "NUMBER", description: "Rate of Perceived Exertion (1-10). If user mentions it was hard/easy, estimate RPE." },
+                                },
+                                required: ["reps"]
+                              }
+                            }
+                          },
+                          required: ["name", "sets"]
+                        }
                       },
                       logDate: {
                         type: "STRING",
@@ -691,7 +711,7 @@ RULE 17 — VISION LOGGING: When the user uploads an image of food or drink and 
                           "The date to log this for in YYYY-MM-DD format. ONLY provide this if the user mentions a past/future date.",
                       },
                     },
-                    required: ["activityType"],
+                    required: ["sessionType", "exercises"],
                   },
                 },
                 {

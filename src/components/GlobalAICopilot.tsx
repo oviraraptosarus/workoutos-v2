@@ -508,7 +508,7 @@ export default function GlobalAICopilot() {
               ),
             supabase
               .from("workout_logs")
-              .select("date, session_type, completed")
+              .select("date, session_type, completed, exercises")
               .eq("user_id", user.id)
               .gte("date", sinceKey)
               .order("date", { ascending: true })
@@ -1070,55 +1070,25 @@ export default function GlobalAICopilot() {
               window.dispatchEvent(new Event("workout_os_diet_updated"));
             } else if (fn === "log_workout") {
               const targetDate = args.logDate || dateKey;
-              const getMET = (activity: string, level: string) => {
-                const mets: any = {
-                  "Stationary Bike": {
-                    Light: 3.0,
-                    Moderate: 5.5,
-                    Vigorous: 7.0,
-                  },
-                  Running: { Light: 6.0, Moderate: 8.3, Vigorous: 11.0 },
-                  Walking: { Light: 2.8, Moderate: 3.5, Vigorous: 5.0 },
-                  Swimming: { Light: 5.0, Moderate: 7.0, Vigorous: 9.8 },
-                  Rowing: { Light: 3.5, Moderate: 7.0, Vigorous: 8.5 },
-                  Elliptical: { Light: 4.5, Moderate: 5.0, Vigorous: 7.0 },
-                  Other: { Light: 3.0, Moderate: 5.0, Vigorous: 7.0 },
-                };
-                return mets[activity]?.[level] || 5.0;
-              };
-              const activityType = args.activityType || "Walking";
-              const intensity = args.intensity || "Moderate";
-              const durationHrs = (Number(args.durationMinutes) || 30) / 60;
-              const weightKg = userProfile?.currentWeight || 75;
-              const estimatedCals = Math.round(
-                getMET(activityType, intensity) * weightKg * durationHrs,
-              );
+              const sessionType = args.sessionType || "Mixed";
+              const durationMins = Number(args.durationMinutes) || 45;
+              const cals = Number(args.caloriesBurned) || Math.round(durationMins * 6);
+              const exercises = args.exercises || [];
 
               try {
                 await WorkoutLogger.logWorkout({
                   userId: user.id,
                   date: targetDate,
-                  sessionType:
-                    activityType === "Other"
-                      ? args.customName || "Custom Cardio"
-                      : activityType,
-                  customName: activityType === "Other" ? args.customName : null,
-                  durationMinutes: Number(args.durationMinutes),
-                  caloriesBurned: estimatedCals,
-                  intensity: intensity,
-                  exercises: [
-                    {
-                      type: "metadata",
-                      metric_value: args.metricValue
-                        ? Number(args.metricValue)
-                        : null,
-                      metric_label: args.metricLabel ? args.metricLabel : null,
-                    },
-                  ],
-                  isOutdoor:
-                    activityType === "Running" || activityType === "Walking",
+                  sessionType: sessionType,
+                  customName: args.customName || null,
+                  durationMinutes: durationMins,
+                  caloriesBurned: cals,
+                  intensity: args.intensity || "Moderate",
+                  exercises: exercises,
+                  isOutdoor: false,
                 });
 
+                window.dispatchEvent(new Event("workout_os_workout_updated"));
                 window.dispatchEvent(
                   new Event("workout_os_recent_workouts_updated"),
                 );
