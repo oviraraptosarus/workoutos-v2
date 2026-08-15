@@ -128,6 +128,12 @@ export default function EndOfDayReflection() {
         let currentSessionId = 0;
 
         const spawnRecognition = () => {
+            sessionCounter++;
+            currentSessionId = sessionCounter;
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`[DICTATION START] session=${currentSessionId}`);
+            }
+            
             if (recognitionRef.current) {
                 recognitionRef.current.onresult = null;
                 recognitionRef.current.onerror = null;
@@ -138,20 +144,17 @@ export default function EndOfDayReflection() {
             const recognition = new SR();
             recognition.continuous = true;
             recognition.interimResults = true;
+            recognition.lang = 'en-US';
 
             recognition.onresult = (e: any) => {
-                let interim = '';
-                let newFull = finalRef.current;
+                let newFull = '';
                 
                 if (isAndroid) {
-                    const latestResult = e.results[e.results.length - 1];
-                    const chunk = latestResult[0].transcript;
-                    if (latestResult.isFinal) finalRef.current += chunk + ' ';
-                    else interim = chunk;
-                    newFull = (finalRef.current + interim).trim();
-                    currentSessionText = interim;
+                    currentSessionText = e.results[e.results.length - 1][0].transcript;
+                    newFull = (finalRef.current + ' ' + currentSessionText).trim();
                     setRawTranscript(newFull);
                 } else {
+                    let interim = '';
                     for (let i = e.resultIndex; i < e.results.length; i++) {
                         const chunk = e.results[i][0].transcript;
                         if (e.results[i].isFinal) finalRef.current += chunk + ' ';
@@ -160,24 +163,46 @@ export default function EndOfDayReflection() {
                     newFull = (finalRef.current + interim).trim();
                     setRawTranscript(newFull);
                 }
+                
+                if (process.env.NODE_ENV === 'development') {
+                    eventCounter++;
+                    console.log(`[DICTATION FORENSIC]
+session=${currentSessionId}
+event=${eventCounter}
+resultIndex=${e.resultIndex}
+resultsLength=${e.results.length}
+
+${Array.from(e.results).map((r: any, idx) => `result[${idx}]\nisFinal=${r.isFinal}\ntext="${r[0].transcript}"`).join('\n\n')}
+
+CURRENT FINAL:
+"${finalRef.current}"
+
+DISPLAY:
+"${newFull}"`);
+                }
             };
 
             recognition.onerror = (e: any) => {
-                if (e.error === 'no-speech' || e.error === 'aborted') return;
+                if (e.error === 'no-speech' || e.error === 'aborted') return; // handled by onend restart
                 alert('Microphone error: ' + e.error);
                 isRecordingRef.current = false;
                 stopRecording(false);
             };
 
+            // Platform-aware onend: Android needs to commit the last snapshot
             recognition.onend = () => {
                 if (isAndroid && currentSessionText.trim()) {
                     finalRef.current = (finalRef.current + ' ' + currentSessionText).trim();
                     currentSessionText = '';
                     setRawTranscript(finalRef.current);
                 }
+                
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`[DICTATION STOP] session=${currentSessionId}`);
+                }
                 if (isRecordingRef.current && !isAndroid) {
                     try {
-                        recognition.start();
+                        recognition.start(); // seamless restart
                     } catch {}
                 }
             };
@@ -663,17 +688,15 @@ export default function EndOfDayReflection() {
                             {/* Compact action row */}
                             <div className="flex flex-col gap-3 pt-1 w-full">
                                 {audioUrl && (
-                                    <div className="flex items-center gap-2 bg-surface-container-low rounded-xl px-3 py-2 border border-surface-variant/40">
-                                        <audio controls src={audioUrl} className="h-8 max-w-[200px]" />
-                                        <a 
-                                            href={audioUrl} 
-                                            download={`ava-journal-${selectedDate}.webm`}
-                                            className="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all ml-auto shrink-0"
-                                            title="Download original audio"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                        </a>
-                                    </div>
+                                    <a 
+                                        href={audioUrl} 
+                                        download={`journal-audio-${selectedDate}.webm`}
+                                        className="w-full flex items-center justify-center gap-2 py-3 bg-secondary/10 hover:bg-secondary/20 dark:bg-secondary/20 dark:hover:bg-secondary/30 border border-secondary/20 dark:border-secondary/30 rounded-xl text-xs font-bold text-secondary transition-all active:scale-[0.98]"
+                                        title="Download original audio"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download Audio Sample
+                                    </a>
                                 )}
                                 
                                 <div className="flex items-center gap-2 w-full">
