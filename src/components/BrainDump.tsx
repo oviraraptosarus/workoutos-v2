@@ -323,10 +323,15 @@ export default function BrainDump({
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex items-center justify-between mb-1 px-1">
-        <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-          <BrainCircuit size={20} className="text-[#0a84ff]" /> Brain Dump
-        </h2>
+      <div className="flex items-center justify-between mb-1 px-1 mt-2 sm:mt-0">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-[8px] bg-[#0a84ff] flex items-center justify-center shrink-0 shadow-sm">
+            <BrainCircuit size={14} className="text-white" />
+          </div>
+          <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+            Brain Dump
+          </h2>
+        </div>
       </div>
       <div className="glass-card-premium p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 min-h-[400px] relative overflow-hidden group w-full">
         <p className="text-on-surface-variant text-sm sm:text-base font-medium leading-relaxed relative z-10 -mt-2 sm:-mt-4 mb-2">

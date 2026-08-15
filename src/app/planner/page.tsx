@@ -745,15 +745,19 @@ export default function ExecutionOSPage() {
             ),
           )}
         </div>
-
         <div className="space-y-6">
           {/* NOW HUB */}
           {activeTab === "now" && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
-              <div className="flex items-center justify-between mb-1 px-1">
-                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                  <Zap size={20} className="text-[#0a84ff]" /> Daily Quests
-                </h2>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-[8px] bg-[#0a84ff] flex items-center justify-center shrink-0 shadow-sm">
+                    <Zap size={14} className="text-white fill-white/20" />
+                  </div>
+                  <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
+                    Daily Quests
+                  </h2>
+                </div>
                 {tasks.filter((t) => !t.completed).length > 0 && (
                   <button
                     onClick={handleClearAllTasks}
