@@ -144,7 +144,7 @@ export default function AuthScreen() {
 
     // Focused Sign In / Sign Up / Forgot Password views
     return (
-        <div className="relative min-h-screen flex flex-col px-6 overflow-hidden bg-background">
+        <div className="relative min-h-screen flex flex-col px-6 overflow-hidden bg-[#000000]">
             {/* Immersive animated background elements (Apple Intelligence style) */}
             <div className="pointer-events-none absolute -top-20 -right-20 w-[30rem] h-[30rem] rounded-full bg-gradient-to-br from-[#0a84ff]/35 to-[#bf5af2]/25 blur-[100px] animate-pulse" style={{ animationDuration: '5s' }} aria-hidden="true" />
             <div className="pointer-events-none absolute top-1/4 -left-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-tr from-[#bf5af2]/30 to-[#0a84ff]/20 blur-[100px] animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} aria-hidden="true" />
@@ -169,10 +169,10 @@ export default function AuthScreen() {
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-[1rem] bg-black overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.16)] mb-4">
                             <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover" />
                         </div>
-                        <h1 className="font-headline-md text-2xl font-bold text-on-surface tracking-tight">
+                        <h1 className="font-headline-md text-2xl font-bold text-white tracking-tight">
                             {view === 'login' ? (t('auth.welcomeBack') !== 'auth.welcomeBack' ? t('auth.welcomeBack') : 'Welcome back') : (t('auth.createAccount') !== 'auth.createAccount' ? t('auth.createAccount') : 'Create your account')}
                         </h1>
-                        <p className="font-body-sm text-on-surface-variant mt-1">
+                        <p className="font-body-sm text-white/60 mt-1">
                             {view === 'login' ? (t('auth.loginDesc') !== 'auth.loginDesc' ? t('auth.loginDesc') : 'Sign in to pick up where you left off.') : (t('auth.signupDesc') !== 'auth.signupDesc' ? t('auth.signupDesc') : 'Start tracking in under a minute.')}
                         </p>
                     </div>

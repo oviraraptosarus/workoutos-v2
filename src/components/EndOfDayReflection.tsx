@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, Square, CheckCircle2, Sparkles, Loader2, Edit3, RefreshCw, History, Copy, Share, Trash2, AlignLeft } from 'lucide-react';
+import { Mic, Square, CheckCircle2, Sparkles, Loader2, Edit3, RefreshCw, History, Copy, Share, Trash2, AlignLeft, Download, PlayCircle } from 'lucide-react';
 import { useDate } from '@/contexts/DateContext';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,6 +26,8 @@ export default function EndOfDayReflection() {
     const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
     const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
+    const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
     const handleCopyLog = () => {
         if (!selectedLog) return;
@@ -58,6 +60,8 @@ export default function EndOfDayReflection() {
     const analyserRef = useRef<AnalyserNode | null>(null);
     const animationFrameRef = useRef<number | null>(null);
     const micStreamRef = useRef<MediaStream | null>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
     const [waveformBars, setWaveformBars] = useState<number[]>(Array(40).fill(4));
 
     const fetchHistory = async () => {
@@ -109,7 +113,11 @@ export default function EndOfDayReflection() {
         setIsEditingTranscript(false);
         setIsEditingSummary(false);
         setShowSavePrompt(false);
-        setShowSavePrompt(false);
+        if (audioUrl) {
+            URL.revokeObjectURL(audioUrl);
+            setAudioUrl(null);
+            setAudioBlob(null);
+        }
 
         const isAndroid = /Android/i.test(navigator.userAgent);
         let currentSessionText = '';
@@ -197,22 +205,47 @@ DISPLAY:
 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        if (isMobile) {
-            let lastUpdate = 0;
-            const animateFakeWaveform = (timestamp: number) => {
-                if (!isRecordingRef.current) return;
-                if (timestamp - lastUpdate > 100) {
-                    setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
-                    lastUpdate = timestamp;
-                }
-                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            micStreamRef.current = stream;
+
+            // Setup MediaRecorder for download
+            let options = { mimeType: 'audio/webm;codecs=opus' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: 'audio/mp4' };
+            }
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: '' }; // fallback to browser default
+            }
+            
+            const recorder = new MediaRecorder(stream, options);
+            mediaRecorderRef.current = recorder;
+            audioChunksRef.current = [];
+            
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunksRef.current.push(e.data);
             };
-            animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
-        } else {
-            // Start real mic waveform via Web Audio API
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                micStreamRef.current = stream;
+            
+            recorder.onstop = () => {
+                const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+                setAudioBlob(blob);
+                setAudioUrl(URL.createObjectURL(blob));
+            };
+            
+            recorder.start(100);
+
+            if (isMobile) {
+                let lastUpdate = 0;
+                const animateFakeWaveform = (timestamp: number) => {
+                    if (!isRecordingRef.current) return;
+                    if (timestamp - lastUpdate > 100) {
+                        setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
+                        lastUpdate = timestamp;
+                    }
+                    animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+                };
+                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+            } else {
                 const audioCtx = new AudioContext();
                 audioContextRef.current = audioCtx;
                 const analyser = audioCtx.createAnalyser();
@@ -236,9 +269,10 @@ DISPLAY:
                     animationFrameRef.current = requestAnimationFrame(tick);
                 };
                 animationFrameRef.current = requestAnimationFrame(tick);
-            } catch {
-                // mic access failed — waveform will stay flat, speech recognition still works
             }
+        } catch (err) {
+            console.error('Mic access failed:', err);
+            // Speech recognition might still work if it has its own permission prompt handled by the browser natively
         }
 
         isRecordingRef.current = true;
@@ -249,13 +283,22 @@ DISPLAY:
         isRecordingRef.current = false;  // prevent auto-restart in onend
         recognitionRef.current?.stop();
 
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+        }
+
         // Tear down audio context and mic stream
         if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
         audioContextRef.current?.close();
-        micStreamRef.current?.getTracks().forEach(t => t.stop());
+        
+        // Wait a tiny bit for media recorder to finish before fully killing the tracks
+        setTimeout(() => {
+            micStreamRef.current?.getTracks().forEach(t => t.stop());
+            micStreamRef.current = null;
+        }, 500);
+
         audioContextRef.current = null;
         analyserRef.current = null;
-        micStreamRef.current = null;
         setWaveformBars(Array(40).fill(4));
 
         if (shouldProcess) {
@@ -294,7 +337,7 @@ DISPLAY:
         }
     };
 
-    const handleSave = async (format: 'ava' | 'raw') => {
+    const handleSave = async () => {
         if (!user || !rawTranscript.trim() || !avaSummary.trim()) return;
 
         try {
@@ -307,24 +350,23 @@ DISPLAY:
                 .single();
 
             const timeString = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-            const newReflection = format === 'ava' ? avaSummary : rawTranscript;
-            const newRaw = format === 'ava' ? rawTranscript : null;
-
-            let finalReflection = newReflection;
-            let finalRaw = newRaw;
+            
+            let finalReflection = avaSummary;
+            let finalRaw = rawTranscript;
 
             // If we just recorded a new entry ('done' state), append it to the existing log for the day
-            if (state === 'done' && existingLog?.reflection) {
-                finalReflection = `${existingLog.reflection}\n\n[${timeString}]\n${newReflection}`;
-                
-                if (newRaw && existingLog?.raw_transcript) {
-                    finalRaw = `${existingLog.raw_transcript}\n\n[${timeString}]\n${newRaw}`;
-                } else if (!newRaw && existingLog?.raw_transcript) {
-                    finalRaw = existingLog.raw_transcript;
+            if (state === 'done') {
+                if (existingLog?.reflection) {
+                    finalReflection = `${existingLog.reflection}\n\n[${timeString}]\n${avaSummary}`;
+                } else {
+                    finalReflection = `[${timeString}]\n${avaSummary}`;
                 }
-            } else if (state === 'done' && !existingLog?.reflection) {
-                finalReflection = `[${timeString}]\n${newReflection}`;
-                if (newRaw) finalRaw = `[${timeString}]\n${newRaw}`;
+
+                if (existingLog?.raw_transcript) {
+                    finalRaw = `${existingLog.raw_transcript}\n\n[${timeString}]\n${rawTranscript}`;
+                } else {
+                    finalRaw = `[${timeString}]\n${rawTranscript}`;
+                }
             }
 
             const { error } = await supabase.from('daily_logs').upsert({
@@ -340,6 +382,13 @@ DISPLAY:
 
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
             fetchHistory();
+            
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+                setAudioUrl(null);
+                setAudioBlob(null);
+            }
+
             setState('idle');
             setRawTranscript('');
             setAvaSummary('');
@@ -518,7 +567,14 @@ DISPLAY:
                                 <div className={`grid transition-all duration-400 ease-in-out ${isSummaryExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                     <div className="overflow-hidden">
                                         <div className="px-4 pb-4">
-                                            <div className="flex justify-end mb-2">
+                                            <div className="flex items-center justify-end gap-3 mb-2">
+                                                <button
+                                                    onClick={() => processWithAva(rawTranscript)}
+                                                    disabled={!rawTranscript.trim()}
+                                                    className="flex items-center gap-1 text-secondary text-[11px] font-bold hover:opacity-70 transition-opacity disabled:opacity-40"
+                                                >
+                                                    <RefreshCw className="w-3 h-3" /> Regenerate
+                                                </button>
                                                 <button
                                                     onClick={() => setIsEditingSummary(!isEditingSummary)}
                                                     className="text-secondary text-[11px] font-bold hover:opacity-70 transition-opacity"
@@ -556,81 +612,76 @@ DISPLAY:
                                         </div>
                                     </button>
                                     <div className={`grid transition-all duration-400 ease-in-out ${isTranscriptExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                                        <div className="overflow-hidden">
-                                            <p className="text-sm font-medium leading-relaxed text-on-surface/75 whitespace-pre-wrap px-4 pb-4">
-                                                {rawTranscript}
-                                            </p>
+                                        <div className="px-4 pb-4">
+                                            <div className="flex justify-end mb-2">
+                                                <button
+                                                    onClick={() => setIsEditingTranscript(!isEditingTranscript)}
+                                                    className="text-on-surface-variant text-[11px] font-bold hover:opacity-70 transition-opacity"
+                                                >
+                                                    {isEditingTranscript ? 'Done' : 'Edit'}
+                                                </button>
+                                            </div>
+                                            {isEditingTranscript ? (
+                                                <textarea
+                                                    value={rawTranscript}
+                                                    onChange={(e) => setRawTranscript(e.target.value)}
+                                                    className="w-full min-h-[100px] bg-white/5 border border-surface-variant/20 rounded-xl p-3 text-sm font-medium text-on-surface focus:outline-none focus:border-on-surface-variant transition-colors resize-none custom-scrollbar"
+                                                />
+                                            ) : (
+                                                <p className="text-sm font-medium leading-relaxed text-on-surface/75 whitespace-pre-wrap text-left">
+                                                    {rawTranscript}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             )}
 
                             {/* Compact action row */}
-                            <div className="flex items-center gap-2 pt-1">
-                                <button
-                                    onClick={startRecording}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-95"
-                                >
-                                    <RefreshCw className="w-3.5 h-3.5" /> Re-record
-                                </button>
-
-                                {state === 'done' ? (
-                                    <button
-                                        onClick={() => handleSave(avaSummary ? 'ava' : 'raw')}
-                                        className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95 ml-auto"
-                                    >
-                                        <CheckCircle2 className="w-3.5 h-3.5" /> Save Entry
-                                    </button>
-                                ) : (
-                                    <div className="flex items-center gap-2 ml-auto">
-                                        <button
-                                            onClick={() => processWithAva(rawTranscript)}
-                                            disabled={!rawTranscript.trim()}
-                                            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-secondary/15 text-secondary hover:bg-secondary/25 transition-all active:scale-95 disabled:opacity-40"
+                            <div className="flex flex-col gap-3 pt-1 w-full">
+                                {audioUrl && (
+                                    <div className="flex items-center gap-2 bg-surface-container-low rounded-xl px-3 py-2 border border-surface-variant/40">
+                                        <audio controls src={audioUrl} className="h-8 max-w-[200px]" />
+                                        <a 
+                                            href={audioUrl} 
+                                            download={`ava-journal-${selectedDate}.webm`}
+                                            className="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all ml-auto shrink-0"
+                                            title="Download original audio"
                                         >
-                                            <Sparkles className="w-3.5 h-3.5" /> Re-Analyze
-                                        </button>
-                                        {(isEditingSummary) && (
-                                            <button
-                                                onClick={() => setShowSavePrompt(true)}
-                                                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95"
-                                            >
-                                                Save Edits
-                                            </button>
-                                        )}
+                                            <Download className="w-4 h-4" />
+                                        </a>
                                     </div>
                                 )}
-                            </div>
+                                
+                                <div className="flex items-center gap-2 w-full">
+                                    <button
+                                        onClick={startRecording}
+                                        className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all active:scale-95"
+                                    >
+                                        <RefreshCw className="w-3.5 h-3.5" /> Re-record
+                                    </button>
 
-                            {/* Save Prompt Overlay */}
-                            {showSavePrompt && (
-                                <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
-                                    <h3 className="text-lg font-black text-on-surface mb-1 tracking-tight">Save Journal Entry</h3>
-                                    <p className="text-on-surface-variant text-xs font-medium mb-6 text-center max-w-[220px]">
-                                        Which version would you like to keep?
-                                    </p>
-                                    <div className="flex flex-col gap-2.5 w-full max-w-[220px]">
+                                    {state === 'done' ? (
                                         <button
-                                            onClick={() => handleSave('ava')}
-                                            className="w-full py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 bg-secondary text-on-secondary hover:bg-secondary-fixed transition-all active:scale-[0.98] shadow-md"
+                                            onClick={() => handleSave()}
+                                            className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95 ml-auto"
                                         >
-                                            <Sparkles className="w-3.5 h-3.5" /> Ava's Summary
+                                            <CheckCircle2 className="w-3.5 h-3.5" /> Save Entry
                                         </button>
-                                        <button
-                                            onClick={() => handleSave('raw')}
-                                            className="w-full py-3 rounded-full font-semibold text-sm flex items-center justify-center gap-2 bg-surface-container-high text-on-surface hover:bg-surface-variant transition-all active:scale-[0.98]"
-                                        >
-                                            My Words
-                                        </button>
-                                        <button
-                                            onClick={() => setShowSavePrompt(false)}
-                                            className="w-full py-2.5 mt-1 rounded-full font-bold text-xs text-on-surface-variant hover:text-on-surface transition-colors"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 ml-auto">
+                                            {(isEditingSummary || isEditingTranscript) && (
+                                                <button
+                                                    onClick={() => handleSave()}
+                                                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0a84ff] text-white hover:bg-[#007aff] transition-all shadow-md active:scale-95"
+                                                >
+                                                    <CheckCircle2 className="w-3.5 h-3.5" /> Save Edits
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
                         </div>
                     )}
                 </div>

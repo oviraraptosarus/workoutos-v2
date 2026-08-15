@@ -53,7 +53,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
 
     const inputWrap = 'relative';
     const inputCls =
-        'w-full bg-surface-container-low border border-surface-variant rounded-xl pl-11 pr-3 h-12 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
+        'w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-3 h-12 font-body-md text-white placeholder:text-white/40 focus:outline-none focus:border-[#0a84ff] focus:ring-2 focus:ring-[#0a84ff]/30 transition-shadow';
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -92,11 +92,11 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
             )}
 
             <div>
-                <label htmlFor="login-email" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">
+                <label htmlFor="login-email" className="block font-label-sm text-label-sm text-white/60 mb-1.5">
                     Email or Username
                 </label>
                 <div className={inputWrap}>
-                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" />
                     <input
                         id="login-email"
                         type="text"
@@ -112,11 +112,11 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
             </div>
 
             <div>
-                <label htmlFor="login-password" className="block font-label-sm text-label-sm text-on-surface-variant mb-1.5">
+                <label htmlFor="login-password" className="block font-label-sm text-label-sm text-white/60 mb-1.5">
                     Password
                 </label>
                 <div className={inputWrap}>
-                    <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
+                    <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" />
                     <input
                         id="login-password"
                         type="password"
@@ -139,7 +139,7 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="w-4 h-4 rounded border-surface-variant text-primary focus:ring-primary bg-surface-container-low cursor-pointer"
                     />
-                    <label htmlFor="remember-me" className="font-label-sm text-label-sm text-on-surface-variant cursor-pointer">
+                    <label htmlFor="remember-me" className="font-label-sm text-label-sm text-white/60 cursor-pointer">
                         Remember Me
                     </label>
                 </div>

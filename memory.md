@@ -101,3 +101,14 @@
 - **Critical Auth Fix**: Fixed an "infinite loading screen" bug on the Authentication page where client-side rendering would hang indefinitely. Implemented a robust 3-second safety fallback timeout in `AuthContext` to ensure the session loading state always resolves, preventing users from getting locked out if local storage or Supabase fetch intercepts hang.
 - **Welcome Slideshow Ambiance**: Overhauled the `/welcome` pre-login slideshow to adhere to the Apple Intelligence premium aesthetic. Injected rich, animated background blobs (`bg-[#0a84ff]` and `bg-[#bf5af2]`) with dynamic pulsing, updated the typography for maximum contrast, and modernized the "Get Started" CTA button.
 - **App Stability & Hydration**: Cleaned up a dead `Onboarding` component import in `AuthScreen.tsx` that could silently cause client-side hydration freezing in Next.js edge cases.
+
+### August 15, 2026 - AVA Overhaul & Voice Dictation Upgrade
+- **Complete Rebranding**: Overhauled the core AI persona from "AERIS" to "AVA" across the entire codebase per user instruction. The AI is now explicitly defined as "Ava, a warm personal AI writer".
+- **Retroactive XP System**: Built a server-side retroactive XP script (`/api/admin/retro-xp`) to scan the database and mathematically backfill any missing XP for the user's entire 13-day history based on past journal entries, sleep logs, workouts, tasks, and meals.
+- **Login Screen UI/UX & Dark Mode**: Applied strict Dark Mode preference and Apple-style ambient background blobs (`blur-3xl`) to `AuthScreen.tsx` and login forms. Replaced muddy inputs with high-contrast, premium styling to dramatically improve text legibility.
+- **Security Enhancements**: Implemented a secure password change flow in `profile/page.tsx` that strictly requires users to verify their current password and successfully re-authenticate before saving a new one, preventing unauthorized access.
+- **Journal Voice Dictation Upgrade**: Major overhaul to the Reflect Hub's voice dictation flow without breaking the existing Android duplication patch:
+    - **Simultaneous MediaRecorder**: Ava now captures a physical audio file (`audio/webm` fallback to `mp4`) simultaneously with the native Web Speech API transcript, allowing users to download their original raw audio.
+    - **Editable Truth**: Separated "Ava's Summary" and "Your Words" into two distinct truths. Both fields now have native inline `<textarea>` editing states.
+    - **Regenerate Architecture**: Added a ✨ Regenerate feature that allows the user to manually edit their raw transcript and feed it back to the AI for a fresh summary without re-recording.
+    - **Unified Persistence**: Deprecated the restrictive save modal. Clicking "Save Entry" now idempotently persists both the exact raw dictation and the finalized AI summary into Supabase concurrently.

@@ -1097,6 +1097,7 @@ export default function GlobalAICopilot() {
                 window.dispatchEvent(new Event("storage"));
               } catch (error: any) {
                 console.error("Ava Workout Logging Failed:", error);
+                throw new Error(`Tool Execution Failed (log_workout): ${error.message}`);
               }
             } else if (fn === "add_expense") {
               const txDate = args.logDate

@@ -109,7 +109,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
     };
 
     const inputCls =
-        'w-full bg-surface-container-low border border-surface-variant rounded-xl pl-11 pr-3 h-12 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30 transition-shadow';
+        'w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-3 h-12 font-body-md text-white placeholder:text-white/40 focus:outline-none focus:border-[#0a84ff] focus:ring-2 focus:ring-[#0a84ff]/30 transition-shadow';
 
     if (successMode !== 'none') {
         if (successMode === 'created') {
