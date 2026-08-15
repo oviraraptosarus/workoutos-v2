@@ -205,47 +205,36 @@ DISPLAY:
 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            micStreamRef.current = stream;
+        if (!isMobile) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micStreamRef.current = stream;
 
-            // Setup MediaRecorder for download
-            let options = { mimeType: 'audio/webm;codecs=opus' };
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                options = { mimeType: 'audio/mp4' };
-            }
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                options = { mimeType: '' }; // fallback to browser default
-            }
-            
-            const recorder = new MediaRecorder(stream, options);
-            mediaRecorderRef.current = recorder;
-            audioChunksRef.current = [];
-            
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) audioChunksRef.current.push(e.data);
-            };
-            
-            recorder.onstop = () => {
-                const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
-                setAudioBlob(blob);
-                setAudioUrl(URL.createObjectURL(blob));
-            };
-            
-            recorder.start(100);
-
-            if (isMobile) {
-                let lastUpdate = 0;
-                const animateFakeWaveform = (timestamp: number) => {
-                    if (!isRecordingRef.current) return;
-                    if (timestamp - lastUpdate > 100) {
-                        setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
-                        lastUpdate = timestamp;
-                    }
-                    animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+                // Setup MediaRecorder for download
+                let options = { mimeType: 'audio/webm;codecs=opus' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    options = { mimeType: 'audio/mp4' };
+                }
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    options = { mimeType: '' }; // fallback to browser default
+                }
+                
+                const recorder = new MediaRecorder(stream, options);
+                mediaRecorderRef.current = recorder;
+                audioChunksRef.current = [];
+                
+                recorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunksRef.current.push(e.data);
                 };
-                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
-            } else {
+                
+                recorder.onstop = () => {
+                    const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+                    setAudioBlob(blob);
+                    setAudioUrl(URL.createObjectURL(blob));
+                };
+                
+                recorder.start(100);
+
                 const audioCtx = new AudioContext();
                 audioContextRef.current = audioCtx;
                 const analyser = audioCtx.createAnalyser();
@@ -269,10 +258,21 @@ DISPLAY:
                     animationFrameRef.current = requestAnimationFrame(tick);
                 };
                 animationFrameRef.current = requestAnimationFrame(tick);
+            } catch (err) {
+                console.error('Mic access failed:', err);
+                // Speech recognition might still work if it has its own permission prompt handled by the browser natively
             }
-        } catch (err) {
-            console.error('Mic access failed:', err);
-            // Speech recognition might still work if it has its own permission prompt handled by the browser natively
+        } else {
+            let lastUpdate = 0;
+            const animateFakeWaveform = (timestamp: number) => {
+                if (!isRecordingRef.current) return;
+                if (timestamp - lastUpdate > 100) {
+                    setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
+                    lastUpdate = timestamp;
+                }
+                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+            };
+            animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
         }
 
         spawnRecognition();
