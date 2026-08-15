@@ -201,10 +201,6 @@ DISPLAY:
 
             recognitionRef.current = recognition;
             recognition.start();
-        };
-
-        spawnRecognition();
-
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         try {
@@ -276,6 +272,8 @@ DISPLAY:
             console.error('Mic access failed:', err);
             // Speech recognition might still work if it has its own permission prompt handled by the browser natively
         }
+
+        spawnRecognition();
 
         isRecordingRef.current = true;
         setState('recording');
@@ -371,29 +369,12 @@ DISPLAY:
                 }
             }
 
-            let finalAudioUrl = existingLog?.audio_url || null;
-
-            if (audioBlob) {
-                const fileName = `${user.id}/${Date.now()}.webm`;
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('journal_audio')
-                    .upload(fileName, audioBlob, { contentType: audioBlob.type || 'audio/webm' });
-                
-                if (!uploadError && uploadData) {
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('journal_audio')
-                        .getPublicUrl(fileName);
-                    finalAudioUrl = publicUrl;
-                }
-            }
-
             const { error } = await supabase.from('daily_logs').upsert({
                 id: existingLog?.id,
                 user_id: user.id,
                 date: dateKey,
                 raw_transcript: finalRaw,
                 reflection: finalReflection,
-                audio_url: finalAudioUrl,
                 sleep_hours: existingLog?.sleep_hours || 0,
             }, { onConflict: 'user_id,date' });
 
