@@ -1280,23 +1280,55 @@ export default function GlobalAICopilot() {
 
           triggerSuccess();
 
-          if (finalResponseText && finalResponseText.length < 200) {
-            if (isConversationModeRef.current) {
-              const utterance = new SpeechSynthesisUtterance(
-                finalResponseText.replace(/[#*•]/g, ""),
-              );
+          if (finalResponseText && isConversationModeRef.current) {
+            const cleanText = finalResponseText.replace(/[#*•_]/g, "");
+            
+            // Split text into readable sentences/chunks to prevent native TTS engine stalls
+            const chunks = cleanText.match(/[^.!?\n]+[.!?\n]+/g) || [cleanText];
+            let currentChunkIndex = 0;
+
+            const playNextChunk = () => {
+              if (!isOpen || !isConversationModeRef.current) return;
+              
+              if (currentChunkIndex >= chunks.length) {
+                if (isConversationModeRef.current && !isListeningRef.current) {
+                  toggleListening(true);
+                }
+                return;
+              }
+
+              const chunkText = chunks[currentChunkIndex].trim();
+              if (!chunkText) {
+                currentChunkIndex++;
+                playNextChunk();
+                return;
+              }
+
+              const utterance = new SpeechSynthesisUtterance(chunkText);
               utterance.lang = "en-IN";
               const voices = window.speechSynthesis.getVoices();
               const inVoice =
                 voices.find((v) => v.lang === "en-IN") ||
                 voices.find((v) => v.lang.startsWith("en"));
               if (inVoice) utterance.voice = inVoice;
+              
               utterance.onend = () => {
-                if (isConversationModeRef.current && !isListeningRef.current) {
-                  toggleListening(true);
-                }
+                currentChunkIndex++;
+                playNextChunk();
               };
+
+              utterance.onerror = (e) => {
+                console.warn("TTS Chunk Error:", e);
+                currentChunkIndex++;
+                playNextChunk();
+              };
+
               window.speechSynthesis.speak(utterance);
+            };
+
+            window.speechSynthesis.cancel();
+            if (chunks.length > 0) {
+              playNextChunk();
             }
           }
         } else {
@@ -1336,95 +1368,123 @@ export default function GlobalAICopilot() {
   const toggleListening = (forceStart?: boolean) => {
     window.speechSynthesis.cancel();
     if (isListening && !forceStart) {
-      if (recognitionRef.current) recognitionRef.current.stop();
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      if (recognitionRef.current) {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
       setIsListening(false);
+      if (promptRef.current.trim()) {
+        handleSend(promptRef.current.trim());
+      }
       return;
     }
     if (isListening && forceStart) return;
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
+    
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) {
       alert("Speech recognition is not supported in this browser.");
       return;
     }
 
-    if (recognitionRef.current) {
-      recognitionRef.current.onresult = null;
-      recognitionRef.current.onerror = null;
-      recognitionRef.current.onend = null;
-      recognitionRef.current.abort();
-    }
-
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = userProfile?.dictation_language || "en-US";
-    const existing = promptRef.current ? promptRef.current + " " : "";
-    let finalSessionText = "";
+    setIsListening(true);
+    let sessionTimer: NodeJS.Timeout;
     const isAndroid = /Android/i.test(navigator.userAgent);
     let currentSessionText = "";
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onresult = (event: any) => {
-      if (!isListeningRef.current) return;
-
-      let full = "";
-
-      if (isAndroid) {
-        currentSessionText =
-          event.results[event.results.length - 1][0].transcript;
-        full = (existing + currentSessionText).trim();
-      } else {
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const chunk = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalSessionText += chunk + " ";
-          }
-        }
-        let interim = "";
-        for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
-          if (!event.results[i].isFinal) {
-            interim = event.results[i][0].transcript;
-            break;
-          }
-        }
-        full = (existing + finalSessionText + interim).trim();
+    const spawnRecognition = () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        try { recognitionRef.current.abort(); } catch(e) {}
       }
 
-      setPrompt(full);
+      const recognition = new SR();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = userProfile?.dictation_language || "en-US";
+      
+      const existing = promptRef.current ? promptRef.current.trim() + " " : "";
 
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-      debounceTimerRef.current = setTimeout(() => {
+      if (!isAndroid) {
+        clearTimeout(sessionTimer);
+        sessionTimer = setTimeout(() => {
+          if (isListeningRef.current && recognitionRef.current === recognition) {
+            try { recognition.stop(); } catch(e) {}
+          }
+        }, 45000);
+      }
+
+      recognition.onstart = () => {};
+      
+      recognition.onresult = (event: any) => {
         if (!isListeningRef.current) return;
-        setIsListening(false);
-        if (recognitionRef.current) recognitionRef.current.stop();
-        const finalFull = isAndroid
-          ? full
-          : (existing + finalSessionText).trim() || full;
-        if (finalFull) handleSend(finalFull);
-      }, 3500);
-    };
-    recognition.onerror = (e: any) => {
-      // no-speech is expected on iOS — just let onend restart it
-      if (e.error === "no-speech" || e.error === "aborted") return;
-      setIsListening(false);
-    };
-    recognition.onend = () => {
-      // Auto-restart on iOS which doesn't honour continuous=true. NEVER auto-restart on Android due to buffer replay bug.
-      if (isListeningRef.current && !isAndroid) {
-        try {
-          recognition.start();
-        } catch {
-          /* already started */
+        let full = "";
+
+        if (isAndroid) {
+          currentSessionText = event.results[event.results.length - 1][0].transcript;
+          full = (existing + currentSessionText).trim();
+          setPrompt(full);
+        } else {
+          let finalSessionText = "";
+          let interim = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const chunk = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalSessionText += chunk + " ";
+            }
+          }
+          for (let i = event.results.length - 1; i >= event.resultIndex; i--) {
+            if (!event.results[i].isFinal) {
+              interim = event.results[i][0].transcript;
+              break;
+            }
+          }
+          full = (existing + finalSessionText + interim).trim();
+          setPrompt(full);
+          // If this session finalized chunks, we update `promptRef.current` directly so the next session prepends properly.
+          // Actually, `setPrompt` will update `prompt` and thus `promptRef.current` in the next render cycle,
+          // but just to be safe for rapid restarts:
+          if (finalSessionText) {
+             promptRef.current = full;
+          }
         }
-      } else {
+      };
+
+      recognition.onerror = (e: any) => {
+        if (e.error === "no-speech" || e.error === "aborted") return;
         setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        clearTimeout(sessionTimer);
+        if (isAndroid && currentSessionText.trim()) {
+           const finalFull = (existing + currentSessionText).trim();
+           setPrompt(finalFull);
+           promptRef.current = finalFull;
+           currentSessionText = "";
+        }
+        
+        if (isListeningRef.current) {
+          setTimeout(() => {
+            if (isListeningRef.current) {
+              try { spawnRecognition(); } catch {}
+            }
+          }, 50);
+        }
+      };
+
+      recognitionRef.current = recognition;
+      try {
+        recognition.start();
+      } catch (err) {
+        console.warn("Speech start failed", err);
       }
     };
-    recognition.start();
+
+    spawnRecognition();
   };
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
