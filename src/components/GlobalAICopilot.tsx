@@ -1361,7 +1361,7 @@ export default function GlobalAICopilot() {
     recognitionRef.current = recognition;
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = "en-IN";
+    recognition.lang = userProfile?.dictation_language || "en-US";
     const existing = promptRef.current ? promptRef.current + " " : "";
     let finalSessionText = "";
     const isAndroid = /Android/i.test(navigator.userAgent);

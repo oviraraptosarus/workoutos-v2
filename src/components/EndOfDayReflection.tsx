@@ -25,9 +25,11 @@ export default function EndOfDayReflection() {
     const [expandedLogDate, setExpandedLogDate] = useState<string | null>(null);
     const [modalTab, setModalTab] = useState<'summary' | 'raw'>('summary');
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
-    const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false);
+    const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(true);
     const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const [isEditingModal, setIsEditingModal] = useState(false);
+    const [modalEditText, setModalEditText] = useState('');
 
     const handleCopyLog = () => {
         if (!selectedLog) return;
@@ -134,7 +136,7 @@ export default function EndOfDayReflection() {
             const recognition = new SR();
             recognition.continuous = true;
             recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            recognition.lang = userProfile?.dictation_language || 'en-US';
 
             recognition.onresult = (e: any) => {
                 let newFull = '';
@@ -369,12 +371,29 @@ DISPLAY:
                 }
             }
 
+            let finalAudioUrl = existingLog?.audio_url || null;
+
+            if (audioBlob) {
+                const fileName = `${user.id}/${Date.now()}.webm`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('journal_audio')
+                    .upload(fileName, audioBlob, { contentType: audioBlob.type || 'audio/webm' });
+                
+                if (!uploadError && uploadData) {
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('journal_audio')
+                        .getPublicUrl(fileName);
+                    finalAudioUrl = publicUrl;
+                }
+            }
+
             const { error } = await supabase.from('daily_logs').upsert({
                 id: existingLog?.id,
                 user_id: user.id,
                 date: dateKey,
                 raw_transcript: finalRaw,
                 reflection: finalReflection,
+                audio_url: finalAudioUrl,
                 sleep_hours: existingLog?.sleep_hours || 0,
             }, { onConflict: 'user_id,date' });
 
@@ -426,6 +445,30 @@ DISPLAY:
             window.dispatchEvent(new Event('workout_os_reflection_saved'));
         } catch (e: any) {
             alert('Error deleting: ' + e.message);
+        }
+    };
+
+    const handleSavePastLog = async () => {
+        if (!selectedLog) return;
+        try {
+            const updatePayload: any = {};
+            if (modalTab === 'summary') {
+                updatePayload.reflection = modalEditText;
+            } else {
+                updatePayload.raw_transcript = modalEditText;
+            }
+
+            const { error } = await supabase.from('daily_logs').update(updatePayload)
+                .eq('id', selectedLog.id);
+
+            if (error) throw error;
+
+            setSelectedLog({ ...selectedLog, ...updatePayload });
+            setIsEditingModal(false);
+            fetchHistory();
+            window.dispatchEvent(new Event('workout_os_reflection_saved'));
+        } catch (e: any) {
+            alert('Error updating entry: ' + e.message);
         }
     };
 
@@ -826,38 +869,78 @@ DISPLAY:
                         )}
 
                         <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 pb-safe relative">
-                            <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
-                                {modalTab === 'summary' ? selectedLog.reflection : (selectedLog.raw_transcript || selectedLog.reflection)}
-                            </div>
+                            {isEditingModal ? (
+                                <textarea
+                                    value={modalEditText}
+                                    onChange={(e) => setModalEditText(e.target.value)}
+                                    className="w-full h-full min-h-[150px] bg-transparent text-[15px] font-medium leading-relaxed text-on-surface/90 focus:outline-none resize-none custom-scrollbar"
+                                    placeholder="Start typing..."
+                                />
+                            ) : (
+                                <div className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed text-on-surface/90">
+                                    {modalTab === 'summary' ? selectedLog.reflection : (selectedLog.raw_transcript || selectedLog.reflection)}
+                                </div>
+                            )}
                         </div>
 
                         {/* Action Bar */}
                         <div className="p-4 border-t border-surface-variant/50 flex items-center justify-between bg-surface-container-low pb-safe-offset-4">
                             <div className="flex gap-2">
-                                <button
-                                    onClick={handleCopyLog}
-                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
-                                    title="Copy Text"
-                                >
-                                    <Copy className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={handleShareLog}
-                                    className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
-                                    title="Share"
-                                >
-                                    <Share className="w-4 h-4" />
-                                </button>
+                                {isEditingModal ? (
+                                    <>
+                                        <button
+                                            onClick={handleSavePastLog}
+                                            className="px-5 py-2 rounded-full bg-[#0a84ff] text-white hover:bg-[#007aff] text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+                                        >
+                                            <CheckCircle2 className="w-3.5 h-3.5" /> Save Edits
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditingModal(false)}
+                                            className="px-4 py-2 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant text-xs font-bold transition-all active:scale-95"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                const currentText = modalTab === 'summary' ? selectedLog.reflection : (selectedLog.raw_transcript || selectedLog.reflection);
+                                                setModalEditText(currentText || '');
+                                                setIsEditingModal(true);
+                                            }}
+                                            className="px-4 py-2 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                                        >
+                                            <Edit3 className="w-3.5 h-3.5" /> Edit
+                                        </button>
+                                        <button
+                                            onClick={handleCopyLog}
+                                            className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                            title="Copy Text"
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={handleShareLog}
+                                            className="p-2.5 rounded-full bg-surface-variant/50 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all active:scale-95"
+                                            title="Share"
+                                        >
+                                            <Share className="w-4 h-4" />
+                                        </button>
+                                    </>
+                                )}
                             </div>
-                            <button
-                                onClick={() => {
-                                    handleDeleteLog(selectedLog.date);
-                                    setSelectedLog(null);
-                                }}
-                                className="px-4 py-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
-                            >
-                                <Trash2 className="w-3.5 h-3.5" /> Delete
-                            </button>
+                            {!isEditingModal && (
+                                <button
+                                    onClick={() => {
+                                        handleDeleteLog(selectedLog.date);
+                                        setSelectedLog(null);
+                                    }}
+                                    className="px-4 py-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

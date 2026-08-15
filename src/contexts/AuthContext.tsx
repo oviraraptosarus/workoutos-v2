@@ -36,6 +36,7 @@ export interface UserProfile {
     aiMemoryEnabled: boolean;
     preferredAiVoice?: string;
     preferredLanguage: string;
+    dictation_language?: string;
     notificationsEnabled: boolean;
     streamingResponsesEnabled: boolean;
     targetConfig?: unknown;
