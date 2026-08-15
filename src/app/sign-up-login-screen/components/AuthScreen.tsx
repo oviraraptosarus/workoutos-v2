@@ -145,7 +145,11 @@ export default function AuthScreen() {
     // Focused Sign In / Sign Up / Forgot Password views
     return (
         <div className="relative min-h-screen flex flex-col px-6 overflow-hidden bg-background">
-            <div className="pointer-events-none absolute -top-24 -right-16 w-64 h-64 rounded-full bg-secondary/10 blur-3xl" aria-hidden="true" />
+            {/* Immersive animated background elements (Apple Intelligence style) */}
+            <div className="pointer-events-none absolute -top-20 -right-20 w-[30rem] h-[30rem] rounded-full bg-gradient-to-br from-[#0a84ff]/35 to-[#bf5af2]/25 blur-[100px] animate-pulse" style={{ animationDuration: '5s' }} aria-hidden="true" />
+            <div className="pointer-events-none absolute top-1/4 -left-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-tr from-[#bf5af2]/30 to-[#0a84ff]/20 blur-[100px] animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 w-[150%] h-[30rem] bg-gradient-to-t from-[#0a84ff]/25 via-[#bf5af2]/15 to-transparent blur-[120px]" aria-hidden="true" />
+            <div className="pointer-events-none absolute inset-0 bg-white opacity-[0.015] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} aria-hidden="true" />
 
             <div className="relative pt-6 z-10">
                 {view !== 'forgot_password' && (
