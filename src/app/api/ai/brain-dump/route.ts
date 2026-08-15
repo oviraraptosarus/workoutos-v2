@@ -14,9 +14,9 @@ export async function POST(req: Request) {
 The user is doing a "Brain Dump" - pouring out their unstructured thoughts, ideas, and chaotic to-dos.
 Your goal is to parse this chaos and extract:
 1. "tasks": An array of distinct, actionable to-dos. If a task is extremely vague, clarify it slightly to make it actionable.
-2. "summary": A single, cohesive markdown string summarizing their brain dump. Use bullet points and paragraphs to create a beautiful, structured journal entry.
+2. "summary": A single, cohesive string summarizing their brain dump. Write naturally as a single paragraph. Do NOT use markdown (no asterisks, hashes, etc.). Do not use section headers.
 
-Output the result as a raw JSON object with two properties: "tasks" and "summary". Do not use markdown, do not write a preamble, just return the JSON object.`;
+Output the result as a raw JSON object with two properties: "tasks" and "summary". Do not write a preamble, just return the JSON object.`;
 
         const response = await orchestrator.generateContent({
             systemInstruction,
