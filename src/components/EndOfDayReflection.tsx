@@ -178,6 +178,10 @@ export default function EndOfDayReflection() {
         // 1. MUST start Web Speech API first on Android so it secures the microphone.
         spawnRecognition();
 
+        // Immediately update UI so it never freezes even if getUserMedia hangs
+        isRecordingRef.current = true;
+        setState('recording');
+
         // 2. Safely attempt to get the raw stream for waveform and downloads.
         // On Android, this will intentionally fail (caught) because the mic is locked by dictation.
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -256,9 +260,6 @@ export default function EndOfDayReflection() {
             };
             animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
         }
-
-        isRecordingRef.current = true;
-        setState('recording');
     };
 
     const stopRecording = (shouldProcess: boolean = true) => {
