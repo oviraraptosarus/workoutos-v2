@@ -7,7 +7,7 @@ import { useDate } from '@/contexts/DateContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCommandCenterEngine } from '@/hooks/useCommandCenterEngine';
 import { useReminderEngine } from '@/hooks/useReminderEngine';
-import QUOTES from '@/data/quotes.json';
+import { getQuoteForContext, Quote } from '@/services/quoteEngine';
 
 const GREETING_BY_HOUR = (h: number) => {
     if (h < 12) return 'Good morning';
@@ -22,7 +22,7 @@ export default function DashboardHeader() {
     const { t } = useLanguage();
     const [greeting, setGreeting] = useState('');
     const [dateStr, setDateStr] = useState('');
-    const [dailyQuote, setDailyQuote] = useState(QUOTES[0]);
+    const [dailyQuote, setDailyQuote] = useState<Quote | null>(null);
     
     // Initialize the engine to generate AI insights behind the scenes
     useCommandCenterEngine();
@@ -49,9 +49,9 @@ export default function DashboardHeader() {
         // Pick a quote: use the same one the splash showed, or fall back to random
         try {
             const stored = sessionStorage.getItem('workout_os_daily_quote');
-            setDailyQuote(stored ? JSON.parse(stored) : QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+            setDailyQuote(stored ? JSON.parse(stored) : getQuoteForContext());
         } catch {
-            setDailyQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+            setDailyQuote(getQuoteForContext());
         }
     }, [t]);
 
@@ -65,9 +65,11 @@ export default function DashboardHeader() {
                         <h1 className="text-3xl sm:text-4xl font-bold text-on-surface drop-shadow-sm leading-tight w-full py-1 break-words">
                             {greeting}, {displayName}
                         </h1>
-                        <p className="text-xs sm:text-sm font-medium text-on-surface-variant italic mt-1.5 opacity-80 line-clamp-2">
-                            "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.subtext.replace(/^["\-\s\u2014]+/, '')}
-                        </p>
+                        {dailyQuote && (
+                            <p className="text-xs sm:text-sm font-medium text-on-surface-variant italic mt-1.5 opacity-80 line-clamp-2">
+                                "{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}" — {dailyQuote.author.replace(/^["\-\s\u2014]+/, '')}
+                            </p>
+                        )}
                         <div className="flex items-center gap-3 mt-3 flex-wrap">
                             <label className="text-xs text-on-surface-variant dark:text-on-surface-variant font-bold whitespace-nowrap select-none cursor-pointer flex items-center gap-1.5 relative hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors bg-surface-container-low px-3 py-1.5 rounded-full border border-surface-variant/50 shadow-sm">
                                 <Calendar size={12} className="text-on-surface-variant" />

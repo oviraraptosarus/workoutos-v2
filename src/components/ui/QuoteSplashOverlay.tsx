@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { Quote } from 'lucide-react';
-import QUOTES from '@/data/quotes.json';
+import { getQuoteForContext, Quote as EngineQuote } from '@/services/quoteEngine';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function QuoteSplashOverlay() {
     const { user, isProfileLoaded } = useAuth();
     const [isVisible, setIsVisible] = useState(false);
-    const [quote, setQuote] = useState({ text: '', subtext: '' });
+    const [quote, setQuote] = useState<EngineQuote | null>(null);
     const [isFadingOut, setIsFadingOut] = useState(false);
 
     useEffect(() => {
@@ -19,7 +19,7 @@ export default function QuoteSplashOverlay() {
         }
         sessionStorage.setItem('workout_os_splash_seen', 'true');
 
-        const chosen = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+        const chosen = getQuoteForContext();
         setQuote(chosen);
         // Persist so DashboardHeader shows the same quote
         try { sessionStorage.setItem('workout_os_daily_quote', JSON.stringify(chosen)); } catch {}
@@ -34,7 +34,7 @@ export default function QuoteSplashOverlay() {
         return () => clearTimeout(timer);
     }, []);
 
-    if (!isVisible) return null;
+    if (!isVisible || !quote) return null;
 
     return (
         <div 
@@ -47,7 +47,7 @@ export default function QuoteSplashOverlay() {
                 </h2>
                 <p className="font-body-md text-sm text-on-surface-variant font-medium uppercase tracking-widest mt-6 flex items-center justify-center gap-2">
                     <span className="w-4 h-[1px] bg-on-surface-variant/50"></span>
-                    {quote.subtext.replace(/^[—\-\s]+/, '')}
+                    {quote.author.replace(/^[—\-\s]+/, '')}
                 </p>
             </div>
         </div>
