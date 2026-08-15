@@ -247,12 +247,40 @@ export default function GeminiFoodAssistant() {
                         window.dispatchEvent(new Event('storage'));
                     } else if (fn === 'log_sleep') {
                         const hours = Number(args.hours) || 0;
+                        
+                        const parseTimeStr = (t: any): string | null => {
+                            if (typeof t !== 'string' || !t) return null;
+                            const match = t.match(/(\d{1,2})[:.]?(\d{2})?(?::\d{2})?\s*(am|pm|a\.m\.|p\.m\.)?/i);
+                            if (!match) {
+                                const fullMatch = t.match(/(\d{1,2}):(\d{2}):(\d{2})/i);
+                                if (fullMatch) return `${String(fullMatch[1]).padStart(2, '0')}:${fullMatch[2]}:${fullMatch[3]}`;
+                                return null;
+                            }
+                            let h = parseInt(match[1], 10);
+                            const m = match[2] || '00';
+                            const ampm = match[3]?.toLowerCase();
+                            if (ampm) {
+                                if (ampm.startsWith('p') && h < 12) h += 12;
+                                if (ampm.startsWith('a') && h === 12) h = 0;
+                            } else {
+                                if (h >= 24) return null;
+                            }
+                            return `${String(h).padStart(2, '0')}:${m}:00`;
+                        };
+
+                        const parsedBed = parseTimeStr(args.bedtime);
+                        const parsedWake = parseTimeStr(args.waketime);
+                        
+                        const sleepPayload: any = { sleep_hours: hours };
+                        if (parsedBed) sleepPayload.sleep_bedtime = parsedBed;
+                        if (parsedWake) sleepPayload.sleep_waketime = parsedWake;
+
                         if (user) {
                             const { data: existing } = await supabase.from('daily_logs').select('id').eq('user_id', user.id).eq('date', dateKey).maybeSingle();
                             if (existing) {
-                                await supabase.from('daily_logs').update({ sleep_hours: hours }).eq('id', existing.id);
+                                await supabase.from('daily_logs').update(sleepPayload).eq('id', existing.id);
                             } else {
-                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, sleep_hours: hours });
+                                await supabase.from('daily_logs').insert({ user_id: user.id, date: dateKey, ...sleepPayload });
                             }
                         }
                         window.dispatchEvent(new Event('storage'));

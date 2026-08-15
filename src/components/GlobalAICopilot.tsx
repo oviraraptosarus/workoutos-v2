@@ -981,13 +981,21 @@ export default function GlobalAICopilot() {
 
               const parseTimeStr = (t: any): string | null => {
                 if (typeof t !== 'string' || !t) return null;
-                const match = t.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?$/i);
-                if (!match) return t;
+                const match = t.match(/(\d{1,2})[:.]?(\d{2})?(?::\d{2})?\s*(am|pm|a\.m\.|p\.m\.)?/i);
+                if (!match) {
+                  const fullMatch = t.match(/(\d{1,2}):(\d{2}):(\d{2})/i);
+                  if (fullMatch) return `${String(fullMatch[1]).padStart(2, '0')}:${fullMatch[2]}:${fullMatch[3]}`;
+                  return null;
+                }
                 let h = parseInt(match[1], 10);
                 const m = match[2] || '00';
                 const ampm = match[3]?.toLowerCase();
-                if (ampm && ampm.startsWith('p') && h < 12) h += 12;
-                if (ampm && ampm.startsWith('a') && h === 12) h = 0;
+                if (ampm) {
+                  if (ampm.startsWith('p') && h < 12) h += 12;
+                  if (ampm.startsWith('a') && h === 12) h = 0;
+                } else {
+                  if (h >= 24) return null;
+                }
                 return `${String(h).padStart(2, '0')}:${m}:00`;
               };
 
