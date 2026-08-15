@@ -119,3 +119,5 @@
 - **Quote Engine Overhaul**: Purged 3000 synthetic quotes and replaced them with 115 highly curated, verified quotes featuring specific insights and belief challenges. Refactored `quoteEngine.ts` to support the new schema.
 - **Ava Persona Enforcement (Out of Bounds)**: Updated the AI `systemContract.ts` to strictly forbid Ava from generating Python code or responding to requests outside of health, fitness, productivity, and life coaching, ensuring she stays strictly in character.
 - **Natural AI Summaries**: Rewrote the system instructions for the Daily Summary and Brain Dump endpoints to completely forbid Markdown formatting (e.g., asterisks, hashtags, bullet points, robotic section headers). Summaries now look like natural, human-written journal paragraphs.
+- **Execution OS Headers UI Polish**: Unified the section headers for Mission Countdowns, Daily Quests, and Brain Dump to match the Content Vault aesthetic. Wrapped the naked blue icons in a native Apple blue (`#0a84ff`) rounded container with a white icon (`text-white`) to ensure high contrast and visibility across both Light and Dark mode themes.
+
