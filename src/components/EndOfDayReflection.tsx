@@ -127,6 +127,8 @@ export default function EndOfDayReflection() {
         let eventCounter = 0;
         let currentSessionId = 0;
 
+        let sessionTimer: NodeJS.Timeout;
+
         const spawnRecognition = () => {
             sessionCounter++;
             currentSessionId = sessionCounter;
@@ -138,13 +140,23 @@ export default function EndOfDayReflection() {
                 recognitionRef.current.onresult = null;
                 recognitionRef.current.onerror = null;
                 recognitionRef.current.onend = null;
-                recognitionRef.current.abort();
+                try { recognitionRef.current.abort(); } catch(e) {}
             }
 
             const recognition = new SR();
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'en-US';
+
+            // Force a clean restart every 45 seconds to bypass browser memory/length limits on continuous dictation
+            if (!isAndroid) {
+                clearTimeout(sessionTimer);
+                sessionTimer = setTimeout(() => {
+                    if (isRecordingRef.current && recognitionRef.current === recognition) {
+                        try { recognition.stop(); } catch(e) {}
+                    }
+                }, 45000);
+            }
 
             recognition.onresult = (e: any) => {
                 let newFull = '';
@@ -163,23 +175,6 @@ export default function EndOfDayReflection() {
                     newFull = (finalRef.current + interim).trim();
                     setRawTranscript(newFull);
                 }
-                
-                if (process.env.NODE_ENV === 'development') {
-                    eventCounter++;
-                    console.log(`[DICTATION FORENSIC]
-session=${currentSessionId}
-event=${eventCounter}
-resultIndex=${e.resultIndex}
-resultsLength=${e.results.length}
-
-${Array.from(e.results).map((r: any, idx) => `result[${idx}]\nisFinal=${r.isFinal}\ntext="${r[0].transcript}"`).join('\n\n')}
-
-CURRENT FINAL:
-"${finalRef.current}"
-
-DISPLAY:
-"${newFull}"`);
-                }
             };
 
             recognition.onerror = (e: any) => {
@@ -191,6 +186,8 @@ DISPLAY:
 
             // Platform-aware onend: Android needs to commit the last snapshot
             recognition.onend = () => {
+                clearTimeout(sessionTimer);
+                
                 if (isAndroid && currentSessionText.trim()) {
                     finalRef.current = (finalRef.current + ' ' + currentSessionText).trim();
                     currentSessionText = '';
@@ -200,10 +197,16 @@ DISPLAY:
                 if (process.env.NODE_ENV === 'development') {
                     console.log(`[DICTATION STOP] session=${currentSessionId}`);
                 }
+                
+                // Respawn a totally fresh instance to avoid the "delay" timeout bugs and session memory limits
                 if (isRecordingRef.current && !isAndroid) {
-                    try {
-                        recognition.start(); // seamless restart
-                    } catch {}
+                    setTimeout(() => {
+                        if (isRecordingRef.current) {
+                            try {
+                                spawnRecognition();
+                            } catch {}
+                        }
+                    }, 50);
                 }
             };
 
