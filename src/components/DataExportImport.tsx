@@ -16,6 +16,10 @@ const EXPORT_TABLES = [
     { key: 'budget_entries',       label: 'Budget Entries' },
     { key: 'water_logs',           label: 'Water Logs' },
     { key: 'command_center_items', label: 'Command Center Items' },
+    { key: 'content_vault',        label: 'Content Vault' },
+    { key: 'ai_conversations',     label: 'Ava AI Chats' },
+    { key: 'financial_reminders',  label: 'Financial Reminders' },
+    { key: 'progress_photos',      label: 'Progress Photos' },
 ];
 
 type Status = 'idle' | 'loading' | 'success' | 'error';

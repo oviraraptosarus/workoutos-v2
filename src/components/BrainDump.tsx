@@ -658,8 +658,8 @@ export default function BrainDump({
                                             setSelectedLog(log);
                                             setEditLogContent(
                                               log.content ||
-                                                log.raw_content ||
-                                                "",
+                                              log.raw_content ||
+                                              "",
                                             );
                                             setIsEditingLog(false);
                                           }}

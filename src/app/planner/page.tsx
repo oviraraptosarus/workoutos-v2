@@ -1169,3 +1169,69 @@ export default function ExecutionOSPage() {
     </AppLayout>
   );
 }
+{ item.content_type }
+                              </span >
+{
+  item.category && (
+    <span className="text-[10px] uppercase tracking-wider text-[#0a84ff] font-bold bg-[#0a84ff]/10 border border-[#0a84ff]/20 px-2 py-1 rounded-md">
+      {item.category}
+    </span>
+  )
+}
+                            </div >
+  <button
+    onClick={(e) => {
+      e.preventDefault();
+      handleMarkVaultConsumed(item.id);
+    }}
+    className="text-on-surface-variant hover:text-green-400 transition-colors"
+    title="Mark Consumed"
+  >
+    <CheckCircle2 className="w-5 h-5" />
+  </button>
+                          </div >
+                        </div >
+                      </div >
+                    );
+                  })}
+{
+  vaultItems.length === 0 && (
+    <div className="col-span-full py-12 text-center text-on-surface-variant border-2 border-dashed border-surface-variant rounded-2xl">
+      <p className="font-bold">Vault is empty</p>
+      <p className="text-sm mt-1">
+        Paste a link above to save it for later.
+      </p>
+    </div>
+  )
+}
+                </div >
+              </div >
+            </div >
+          )}
+
+{/* REFLECT HUB */ }
+{
+  activeTab === "reflect" && (
+    <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
+      <EndOfDayReflection />
+    </div>
+  )
+}
+        </div >
+      </div >
+  {/* Modals */ }
+  < TaskReminderPopover
+isOpen = { isReminderPopoverOpen }
+onClose = {() => setIsReminderPopoverOpen(false)}
+onSave = {(data) => {
+  setQuickTaskDate(data.date);
+  setQuickTaskTime(data.time);
+  setQuickTaskRecurrence(data.recurrence);
+}}
+initialDate = { quickTaskDate }
+initialTime = { quickTaskTime }
+initialRecurrence = { quickTaskRecurrence }
+  />
+    </AppLayout >
+  );
+}

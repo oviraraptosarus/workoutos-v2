@@ -96,11 +96,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Initial session load
     useEffect(() => {
+        let isMounted = true;
+        
+        // Safety timeout to prevent infinite loading screen
+        const safetyTimer = setTimeout(() => {
+            if (isMounted) {
+                console.warn('Auth session load timed out, forcing loading to false');
+                setLoading(false);
+            }
+        }, 3000);
+
         supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!isMounted) return;
+            clearTimeout(safetyTimer);
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
         }).catch((err) => {
+            if (!isMounted) return;
+            clearTimeout(safetyTimer);
             console.error('Error fetching Supabase session:', err);
             setLoading(false);
         });
@@ -108,12 +122,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const {
             data: { subscription }
         } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+            if (!isMounted) return;
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
         });
 
-        return () => subscription?.unsubscribe();
+        return () => {
+            isMounted = false;
+            clearTimeout(safetyTimer);
+            subscription?.unsubscribe();
+        };
     }, []);
 
     const refreshProfile = async () => {
@@ -181,6 +200,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         refreshProfile();
+    }, [user]);
+
+    // Listen for realtime XP awards
+    useEffect(() => {
+        if (!user) return;
+        const handleXpAwarded = () => {
+            refreshProfile();
+        };
+        window.addEventListener('workout_os_xp_awarded', handleXpAwarded);
+        return () => window.removeEventListener('workout_os_xp_awarded', handleXpAwarded);
     }, [user]);
 
     const updateUserProfile = async (updates: Partial<UserProfile>): Promise<void> => {

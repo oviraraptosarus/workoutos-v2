@@ -3,13 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import { Quote } from 'lucide-react';
 import QUOTES from '@/data/quotes.json';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function QuoteSplashOverlay() {
+    const { user, isProfileLoaded } = useAuth();
     const [isVisible, setIsVisible] = useState(false);
     const [quote, setQuote] = useState({ text: '', subtext: '' });
     const [isFadingOut, setIsFadingOut] = useState(false);
 
     useEffect(() => {
+        if (!isProfileLoaded || !user) return;
         // Show only once per session
         if (sessionStorage.getItem('workout_os_splash_seen')) {
             return; // Already seen

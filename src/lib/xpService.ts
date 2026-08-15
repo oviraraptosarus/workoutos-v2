@@ -37,9 +37,12 @@ export const XPService = {
 
             const result = data as XPAwardResult;
 
-            // Dispatch global event for level up animation if applicable
-            if (result.awarded && result.leveledUp && typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('workout_os_leveled_up', { detail: result }));
+            // Dispatch global event for realtime updates
+            if (result.awarded && typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('workout_os_xp_awarded', { detail: result }));
+                if (result.leveledUp) {
+                    window.dispatchEvent(new CustomEvent('workout_os_leveled_up', { detail: result }));
+                }
             }
 
             return result;
@@ -104,16 +107,16 @@ export const XPService = {
     },
 
     getRankForLevel: (level: number): string => {
-        if (level <= 5) return 'IRON NOVICE';
-        if (level <= 10) return 'IRON TRAINEE';
-        if (level <= 15) return 'IRON FIGHTER';
-        if (level <= 20) return 'IRON WARRIOR';
-        if (level <= 25) return 'IRON ELITE';
-        if (level <= 30) return 'IRON VETERAN';
-        if (level <= 35) return 'IRON VANGUARD';
-        if (level <= 40) return 'IRON MASTER';
-        if (level <= 45) return 'IRON CHAMPION';
-        if (level < 50) return 'IRON ASCENDANT';
-        return 'IRON LEGEND';
+        if (level <= 4) return 'NOVICE';
+        if (level <= 9) return 'RECRUIT';
+        if (level <= 14) return 'APPRENTICE';
+        if (level <= 19) return 'CHALLENGER';
+        if (level <= 24) return 'WARRIOR';
+        if (level <= 29) return 'VETERAN';
+        if (level <= 34) return 'GLADIATOR';
+        if (level <= 39) return 'MASTER';
+        if (level <= 44) return 'GRANDMASTER';
+        if (level < 50) return 'TITAN';
+        return 'LEGEND';
     }
 };

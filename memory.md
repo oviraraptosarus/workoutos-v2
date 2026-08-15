@@ -70,3 +70,34 @@
 
  -   2 0 2 6 - 0 8 - 1 3   -   F i x e d   ' O n   p a c e '   a n d   ' O v e r   p a c e '   b a d g e   s t y l e s   i n   t h e   B u d g e t S u m m a r y C a r d s   t o   p r o p e r l y   d i s p l a y   i n   b o t h   l i g h t   a n d   d a r k   m o d e s .  
  
+- **UI Fix**: Fixed New Macro Goal form layout on the planner page to stack Life Area and Target Date vertically on mobile devices, preventing horizontal squishing of the dropdown.
+
+ -   2 0 2 6 - 0 8 - 1 3   -   F i x e d   ' O n   p a c e '   a n d   ' O v e r   p a c e '   b a d g e   s t y l e s   i n   t h e   B u d g e t S u m m a r y C a r d s   t o   p r o p e r l y   d i s p l a y   i n   b o t h   l i g h t   a n d   d a r k   m o d e s .  
+ 
+- **UI Fix**: Fixed New Macro Goal form layout on the planner page to stack Life Area and Target Date vertically on mobile devices, preventing horizontal squishing of the dropdown.
+
+- **UI Fix**: Fixed overflowing 'Save to Archive' buttons in the Brain Dump component by using flex-wrap, ensuring proper wrapping on mobile screens.
+
+- **UI Fix**: Fixed overflowing 'Discard All' and 'Save Selected' buttons in the Brain Dump component by using flex-col on mobile screens, and added bottom padding to ensure they are fully visible above the bottom navigation bar.
+
+- **UI Fix**: Redesigned Brain Dump bottom action buttons (Discard All & Save Selected) to be side-by-side, equal-width, pill-shaped buttons with whitespace-nowrap to prevent wrapping and adhere to the premium iOS design rules on mobile.
+
+- **Feature Addition**: Added ability to log context (description) and categorize items in the Content Vault. Modified content_vault schema, and implemented expandable UI forms in src/app/vault/page.tsx and src/app/planner/page.tsx following premium iOS guidelines.
+
+- **Bug Fix / Feature**: Enabled backdating of journal entries in `EndOfDayReflection.tsx` by replacing the `isToday` check with a check for `offsetDays > 0`, allowing users to navigate to past dates and log forgotten journal entries.
+
+- **Bug Fix**: Fixed a bug in `VaultWidget.tsx` where the "more saved in your vault" count was capped at +7 due to a `.limit(10)` query. Replaced it with a `{ count: 'exact' }` query to get the true total count of unread items. Also updated the Mark Consumed action to properly set `status: "consumed"` and refetch to keep the widget grid full.
+
+- **Bug Fix**: Fixed a silent database failure in `GlobalAICopilot.tsx` when the AI logged sleep times in conversational formats (like "10 PM"). The system previously used a naive string length check (`length === 5`), which incorrectly appended ":00" to "10 PM", creating invalid Postgres time strings (e.g., "10 PM:00"). This caused the database upsert to fail saving the bedtime/waketime (resulting in "—" dashes on the Sleep Card) despite saving the total hours. Implemented a robust Regex time parser to standardize all AI outputs into valid "HH:MM:00" 24-hour formats before saving.
+
+- **Crash Fix**: Fixed a fatal client-side React rendering crash in `EditFoodModal.tsx` that occurred whenever a user clicked on a logged food item to edit it. The component was trying to use undeclared variables (`isSubmitting` and `Loader2`) and a missing import (`Check`) for its submit button state, causing an instant `ReferenceError`. Removed the undefined variables and correctly imported `Check` from `lucide-react` to restore full editing functionality.
+
+- **Legal Compliance**: Completely rewrote `src/app/privacy/page.tsx` and `src/app/terms/page.tsx` for India-specific legal compliance. Privacy Policy now covers all features (AI Copilot, voice dictation, Content Vault, Budget Tracker, sleep/fitness/nutrition logging, push notifications, Data Export, Brain Dump) under the DPDP Act 2023, IT Act 2000, and SPDI Rules 2011, including a Grievance Officer, Data Principal rights, cross-border transfer disclosures, and retention policies. Terms of Service covers health/medical disclaimer, AI hallucination disclaimer, financial tracking disclaimer, voice dictation consent, child mode, acceptable use, and dispute resolution under Indian law. Both documents updated to version effective 15 August 2026.
+
+- **UI & Feature Polish**: Upgraded the Welcome Screen (`AuthScreen.tsx`) to a premium iOS bento-box layout with animated gradient blurs, floating logo, and elevated typography. Updated the Data Export/Import utility (`DataExportImport.tsx`) to include all recently added tables (`content_vault`, `ai_conversations`, `financial_reminders`, `progress_photos`), ensuring complete 100% data portability for user backups.
+
+- **Bug Fix**: Fixed a critical caching issue where XP gains (from logging workouts, meals, tasks) were successfully saving to the database but failing to update on the frontend UI until a hard browser refresh. Implemented a real-time event listener (`workout_os_xp_awarded`) in `AuthContext.tsx` that instantly triggers a profile refetch and updates the XP Progress Bar dynamically.
+- **UI Enhancement**: Completely overhauled the XP naming/ranking system in `xpService.ts`. Replaced the repetitive "IRON" titles (e.g., "IRON NOVICE", "IRON TRAINEE") with a cleaner, premium RPG progression system (NOVICE → RECRUIT → APPRENTICE → CHALLENGER → WARRIOR → VETERAN → GLADIATOR → MASTER → GRANDMASTER → TITAN → LEGEND).
+- **Critical Auth Fix**: Fixed an "infinite loading screen" bug on the Authentication page where client-side rendering would hang indefinitely. Implemented a robust 3-second safety fallback timeout in `AuthContext` to ensure the session loading state always resolves, preventing users from getting locked out if local storage or Supabase fetch intercepts hang.
+- **Welcome Slideshow Ambiance**: Overhauled the `/welcome` pre-login slideshow to adhere to the Apple Intelligence premium aesthetic. Injected rich, animated background blobs (`bg-[#0a84ff]` and `bg-[#bf5af2]`) with dynamic pulsing, updated the typography for maximum contrast, and modernized the "Get Started" CTA button.
+- **App Stability & Hydration**: Cleaned up a dead `Onboarding` component import in `AuthScreen.tsx` that could silently cause client-side hydration freezing in Next.js edge cases.

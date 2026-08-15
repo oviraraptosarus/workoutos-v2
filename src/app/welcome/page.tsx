@@ -98,16 +98,22 @@ export default function WelcomePage() {
     const slide = slides[currentSlide];
 
     return (
-        <div className={clsx("min-h-screen w-full flex flex-col transition-colors duration-1000", slide.bg)}>
+        <div className={clsx("min-h-screen w-full flex flex-col transition-colors duration-1000 overflow-hidden relative", slide.bg)}>
+            {/* Immersive animated background elements (Apple Intelligence style) */}
+            <div className="pointer-events-none absolute -top-20 -right-20 w-[30rem] h-[30rem] rounded-full bg-gradient-to-br from-[#0a84ff]/35 to-[#bf5af2]/25 blur-[100px] animate-pulse" style={{ animationDuration: '5s' }} aria-hidden="true" />
+            <div className="pointer-events-none absolute top-1/4 -left-32 w-[28rem] h-[28rem] rounded-full bg-gradient-to-tr from-[#bf5af2]/30 to-[#0a84ff]/20 blur-[100px] animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 w-[150%] h-[30rem] bg-gradient-to-t from-[#0a84ff]/25 via-[#bf5af2]/15 to-transparent blur-[120px]" aria-hidden="true" />
+            <div className="pointer-events-none absolute inset-0 bg-white opacity-[0.015] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} aria-hidden="true" />
+
             {/* Top Progress Bars */}
             <div className="absolute top-0 left-0 right-0 p-4 pt-12 z-50 flex gap-2 max-w-md mx-auto">
                 {slides.map((s, i) => (
-                    <div key={s.id} className="h-1 flex-1 bg-surface-variant/50 rounded-full overflow-hidden">
+                    <div key={s.id} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden backdrop-blur-md">
                         <div 
                             className={clsx(
                                 "h-full rounded-full transition-all ease-linear",
-                                i < currentSlide ? "bg-primary w-full duration-0" : 
-                                i === currentSlide ? "bg-primary w-full duration-[5000ms]" : "w-0 bg-primary duration-0"
+                                i < currentSlide ? "bg-white w-full duration-0" : 
+                                i === currentSlide ? "bg-white w-full duration-[5000ms]" : "w-0 bg-white duration-0"
                             )}
                             style={{
                                 width: i <= currentSlide ? '100%' : '0%'
@@ -126,12 +132,12 @@ export default function WelcomePage() {
             {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center z-30 pointer-events-none">
                 <div key={currentSlide} className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-lg">
-                    <h2 className={`font-display-md font-bold leading-tight ${slide.textColor} drop-shadow-xl text-3xl sm:text-4xl md:text-5xl px-4`}>
-                        "{slide.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}"
+                    <h2 className={`font-display-md font-black tracking-tight leading-tight drop-shadow-2xl text-3xl sm:text-4xl md:text-5xl px-4 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70`}>
+                        {slide.id === 0 ? `"${slide.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}"` : slide.text}
                     </h2>
                     {slide.subtext && (
-                        <p className={slide.subtextColor}>
-                            <span className="opacity-80">— </span>
+                        <p className={`mt-6 font-medium text-white/60 tracking-wide text-lg`}>
+                            <span className="opacity-50">— </span>
                             {slide.subtext.replace(/^[—\-\s]+/, '')}
                         </p>
                     )}
@@ -145,9 +151,9 @@ export default function WelcomePage() {
             )}>
                 <button 
                     onClick={() => router.push('/sign-up-login-screen')}
-                    className="bg-primary text-on-primary py-4 px-12 rounded-full font-bold text-lg shadow-lg hover:scale-105 transition-transform flex items-center gap-3 relative z-50"
+                    className="w-full max-w-sm bg-white text-black font-bold text-[16px] h-14 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] relative z-50"
                 >
-                    Get Started <Play className="w-5 h-5" />
+                    Get Started <Play className="w-5 h-5 fill-black" strokeWidth={2.5} />
                 </button>
             </div>
         </div>

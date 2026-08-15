@@ -24,7 +24,7 @@ export default function VaultPage() {
             .select('*')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false });
-        
+
         if (!error && data) {
             setItems(data);
         }
@@ -43,15 +43,15 @@ export default function VaultPage() {
         try {
             const metaRes = await fetch(`/api/metadata?url=${encodeURIComponent(newUrl)}`);
             const meta = await metaRes.json();
-            
+
             const { data, error } = await supabase.from('content_vault').insert({
                 user_id: user.id,
                 url: newUrl,
                 title: meta.title || newUrl,
                 thumbnail_url: meta.image || null,
-                content_type: meta.url?.includes('youtube.com') || meta.url?.includes('youtu.be') ? 'video' 
-                           : meta.url?.includes('reddit.com') ? 'post' 
-                           : 'article',
+                content_type: meta.url?.includes('youtube.com') || meta.url?.includes('youtu.be') ? 'video'
+                    : meta.url?.includes('reddit.com') ? 'post'
+                        : 'article',
                 status: 'unread'
             }).select().single();
 
@@ -94,7 +94,7 @@ export default function VaultPage() {
     return (
         <AppLayout>
             <div className="max-w-3xl mx-auto space-y-6 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-6">
-                
+
                 {/* Header */}
                 <div className="flex flex-col gap-2 px-2">
                     <div className="flex items-center gap-4">
@@ -122,8 +122,8 @@ export default function VaultPage() {
                             onChange={(e) => setNewUrl(e.target.value)}
                             required
                         />
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={isAdding}
                             className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center shrink-0"
                         >
@@ -134,13 +134,13 @@ export default function VaultPage() {
 
                 {/* Tabs */}
                 <div className="flex gap-2 px-2">
-                    <button 
+                    <button
                         onClick={() => setActiveTab('unread')}
                         className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'unread' ? 'bg-white text-black shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
                     >
                         Unread ({items.filter(i => i.status === 'unread').length})
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('consumed')}
                         className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'consumed' ? 'bg-white text-black shadow-md' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}
                     >
@@ -150,7 +150,7 @@ export default function VaultPage() {
 
                 {activeTab === 'consumed' && displayItems.length > 0 && (
                     <div className="flex justify-end px-2 pt-2 -mb-2">
-                        <button 
+                        <button
                             onClick={handleClearAllConsumed}
                             className="text-xs font-bold text-red-400 hover:text-red-300 flex items-center gap-1 bg-red-400/10 hover:bg-red-400/20 px-3 py-1.5 rounded-lg transition-colors"
                         >
@@ -173,8 +173,8 @@ export default function VaultPage() {
                         <div>
                             <h3 className="font-bold text-lg">No {activeTab} items</h3>
                             <p className="text-on-surface-variant text-sm mt-1 max-w-[250px] mx-auto">
-                                {activeTab === 'unread' 
-                                    ? "Paste a URL above to save it for later." 
+                                {activeTab === 'unread'
+                                    ? "Paste a URL above to save it for later."
                                     : "You haven't marked anything as consumed yet."}
                             </p>
                         </div>
@@ -184,74 +184,75 @@ export default function VaultPage() {
                         {displayItems.map(item => {
                             const thumb = getFallbackThumbnail(item.url, item.thumbnail_url);
                             return (
-                            <div key={item.id} className="glass-card-premium rounded-[24px] overflow-hidden group flex flex-col transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 border border-white/5">
-                                {thumb && (
-                                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="relative w-full aspect-video bg-black/20 overflow-hidden shrink-0 block">
-                                        <img src={thumb} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700 ease-out" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60"></div>
-                                        
-                                        {item.content_type === 'video' && (
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-blue-500/80 transition-colors duration-300">
-                                                    <Play className="w-5 h-5 text-white fill-white ml-1" />
+                                <div key={item.id} className="glass-card-premium rounded-[24px] overflow-hidden group flex flex-col transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 border border-white/5">
+                                    {thumb && (
+                                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="relative w-full aspect-video bg-black/20 overflow-hidden shrink-0 block">
+                                            <img src={thumb} alt={item.title || 'Thumbnail'} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-transform duration-700 ease-out" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60"></div>
+
+                                            {item.content_type === 'video' && (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-blue-500/80 transition-colors duration-300">
+                                                        <Play className="w-5 h-5 text-white fill-white ml-1" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="absolute bottom-3 left-3 flex gap-2">
-                                            <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] uppercase tracking-wider font-bold text-white border border-white/10">
-                                                {item.content_type}
-                                            </span>
-                                        </div>
-                                    </a>
-                                )}
-                                <div className="p-5 flex flex-col flex-1">
-                                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-bold text-base line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors mb-2">
-                                        {item.title || item.url}
-                                    </a>
-                                    {item.description && (
-                                        <p className="text-xs text-on-surface-variant line-clamp-2 mb-4 opacity-80 leading-relaxed">
-                                            {item.description}
-                                        </p>
-                                    )}
-                                    
-                                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold">
-                                            <ExternalLink className="w-3.5 h-3.5" />
-                                            Open
-                                        </a>
-                                        
-                                        <div className="flex items-center gap-3">
-                                            <button 
-                                                onClick={() => handleDelete(item.id)}
-                                                className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-red-400 hover:bg-red-400/10 transition-all"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                            
-                                            {activeTab === 'unread' ? (
-                                                <button 
-                                                    onClick={() => handleMarkStatus(item.id, 'consumed')}
-                                                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-green-400 hover:bg-green-400/10 transition-all"
-                                                    title="Mark Consumed"
-                                                >
-                                                    <CheckCircle2 className="w-4 h-4" />
-                                                </button>
-                                            ) : (
-                                                <button 
-                                                    onClick={() => handleMarkStatus(item.id, 'unread')}
-                                                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-blue-400 hover:bg-blue-400/10 transition-all"
-                                                    title="Mark Unread"
-                                                >
-                                                    <Bookmark className="w-4 h-4" />
-                                                </button>
                                             )}
+
+                                            <div className="absolute bottom-3 left-3 flex gap-2">
+                                                <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] uppercase tracking-wider font-bold text-white border border-white/10">
+                                                    {item.content_type}
+                                                </span>
+                                            </div>
+                                        </a>
+                                    )}
+                                    <div className="p-5 flex flex-col flex-1">
+                                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="font-bold text-base line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors mb-2">
+                                            {item.title || item.url}
+                                        </a>
+                                        {item.description && (
+                                            <p className="text-xs text-on-surface-variant line-clamp-2 mb-4 opacity-80 leading-relaxed">
+                                                {item.description}
+                                            </p>
+                                        )}
+
+                                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-white transition-colors flex items-center gap-1.5 text-xs font-semibold">
+                                                <ExternalLink className="w-3.5 h-3.5" />
+                                                Open
+                                            </a>
+
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => handleDelete(item.id)}
+                                                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-red-400 hover:bg-red-400/10 transition-all"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+
+                                                {activeTab === 'unread' ? (
+                                                    <button
+                                                        onClick={() => handleMarkStatus(item.id, 'consumed')}
+                                                        className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-green-400 hover:bg-green-400/10 transition-all"
+                                                        title="Mark Consumed"
+                                                    >
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleMarkStatus(item.id, 'unread')}
+                                                        className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-blue-400 hover:bg-blue-400/10 transition-all"
+                                                        title="Mark Unread"
+                                                    >
+                                                        <Bookmark className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )})}
+                            )
+                        })}
                     </div>
                 )}
             </div>

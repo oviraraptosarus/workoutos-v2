@@ -16,6 +16,7 @@ import Link from "next/link";
 export default function VaultWidget() {
   const { user } = useAuth();
   const [vaultItems, setVaultItems] = useState<any[]>([]);
+  const [totalUnread, setTotalUnread] = useState(0);
   const [newVaultUrl, setNewVaultUrl] = useState("");
   const [isAddingVault, setIsAddingVault] = useState(false);
 
@@ -23,14 +24,17 @@ export default function VaultWidget() {
 
   const fetchVault = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from("content_vault")
-      .select("*")
+      .select("*", { count: 'exact' })
       .eq("user_id", user.id)
       .eq("status", "unread")
       .order("created_at", { ascending: false })
-      .limit(10); // Fetch a bit more to calculate "+X more"
-    if (!error && data) setVaultItems(data);
+      .limit(3); 
+    if (!error && data) {
+      setVaultItems(data);
+      if (count !== null) setTotalUnread(count);
+    }
   };
 
   useEffect(() => {
@@ -85,10 +89,10 @@ export default function VaultWidget() {
   const handleMarkVaultConsumed = async (id: string) => {
     const { error } = await supabase
       .from("content_vault")
-      .update({ consumed: true })
+      .update({ consumed: true, status: "consumed" })
       .eq("id", id);
     if (!error) {
-      setVaultItems(vaultItems.filter((item) => item.id !== id));
+      fetchVault();
     }
   };
 
@@ -207,12 +211,12 @@ export default function VaultWidget() {
               );
             })}
           </div>
-          {vaultItems.length > 3 && (
+          {totalUnread > 3 && (
             <Link
               href="/vault"
               className="text-xs font-bold text-blue-400 hover:text-blue-300 w-fit pt-1"
             >
-              +{vaultItems.length - 3} more saved in your Vault &rarr;
+              +{totalUnread - 3} more saved in your Vault &rarr;
             </Link>
           )}
         </div>

@@ -10,7 +10,7 @@ import clsx from 'clsx';
 type JournalState = 'idle' | 'recording' | 'processing' | 'done' | 'viewing';
 
 export default function EndOfDayReflection() {
-    const { selectedDate, isToday } = useDate();
+    const { selectedDate, offsetDays, isToday } = useDate();
     const { user } = useAuth();
 
     const [state, setState] = useState<JournalState>('idle');
@@ -418,7 +418,7 @@ DISPLAY:
                         <div className="flex flex-col items-center justify-center gap-5 py-6 animate-in fade-in zoom-in duration-300">
                             <button
                                 onClick={startRecording}
-                                disabled={!isToday}
+                                disabled={offsetDays > 0}
                                 className="relative group disabled:opacity-50"
                             >
                                 <div className="absolute inset-0 bg-secondary/20 rounded-full blur-xl group-hover:bg-secondary/40 transition-all duration-500 group-hover:scale-125"></div>
@@ -428,7 +428,7 @@ DISPLAY:
                                 </div>
                             </button>
                             <span className="text-on-surface-variant font-bold text-xs tracking-wide">
-                                {isToday ? "Tap to start speaking" : "Cannot log past days"}
+                                {offsetDays > 0 ? "Cannot log future days" : "Tap to start speaking"}
                             </span>
                         </div>
                     )}

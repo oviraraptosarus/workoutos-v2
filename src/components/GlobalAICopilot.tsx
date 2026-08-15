@@ -979,6 +979,18 @@ export default function GlobalAICopilot() {
               const targetDate = args.logDate || dateKey;
               const sleepHours = Number(args.hours) || 0;
 
+              const parseTimeStr = (t: any): string | null => {
+                if (typeof t !== 'string' || !t) return null;
+                const match = t.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?$/i);
+                if (!match) return t;
+                let h = parseInt(match[1], 10);
+                const m = match[2] || '00';
+                const ampm = match[3]?.toLowerCase();
+                if (ampm && ampm.startsWith('p') && h < 12) h += 12;
+                if (ampm && ampm.startsWith('a') && h === 12) h = 0;
+                return `${String(h).padStart(2, '0')}:${m}:00`;
+              };
+
               const sleepLogEntry = {
                 id: Date.now(),
                 amount: sleepHours,
@@ -1013,16 +1025,10 @@ export default function GlobalAICopilot() {
                 sleep_hours: sleepHours,
                 sleep_logs: updatedSleepLogs,
               };
-              if (args.bedtime)
-                sleepRow.sleep_bedtime =
-                  args.bedtime.length === 5
-                    ? `${args.bedtime}:00`
-                    : args.bedtime;
-              if (args.waketime)
-                sleepRow.sleep_waketime =
-                  args.waketime.length === 5
-                    ? `${args.waketime}:00`
-                    : args.waketime;
+              const parsedBed = parseTimeStr(args.bedtime);
+              if (parsedBed) sleepRow.sleep_bedtime = parsedBed;
+              const parsedWake = parseTimeStr(args.waketime);
+              if (parsedWake) sleepRow.sleep_waketime = parsedWake;
 
               const { error } = await supabase
                 .from("daily_logs")

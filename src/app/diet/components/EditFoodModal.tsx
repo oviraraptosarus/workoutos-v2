@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Trash2, Plus, Edit2, Sparkles, Search } from 'lucide-react';
+import { X, Trash2, Plus, Edit2, Sparkles, Search, Check } from 'lucide-react';
 import { MealItem, MealCategory } from '../types';
 
 interface EditFoodModalProps {
@@ -399,12 +399,10 @@ export default function EditFoodModal({
                             </button>
                             <button
                                 type="submit"
-                                disabled={!name.trim() || isSubmitting}
+                                disabled={!name.trim()}
                                 className="px-6 py-3 rounded-2xl text-sm font-semibold bg-[#0a84ff] hover:bg-[#0a84ff]/90 text-white shadow-lg shadow-[#0a84ff]/20 disabled:opacity-50 disabled:shadow-none transition-all flex items-center gap-2 active:scale-95"
                             >
-                                {isSubmitting ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : initialData ? (
+                                {initialData ? (
                                     <Check size={16} />
                                 ) : (
                                     <Plus size={16} />
