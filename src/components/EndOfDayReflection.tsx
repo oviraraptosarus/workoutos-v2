@@ -128,6 +128,17 @@ export default function EndOfDayReflection() {
         let currentSessionId = 0;
 
         const spawnRecognition = () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.onresult = null;
+                recognitionRef.current.onerror = null;
+                recognitionRef.current.onend = null;
+                recognitionRef.current.abort();
+            }
+
+            const recognition = new SR();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
             recognition.onresult = (e: any) => {
                 let interim = '';
                 let newFull = finalRef.current;
