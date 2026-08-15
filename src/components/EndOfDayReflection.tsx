@@ -175,7 +175,7 @@ export default function EndOfDayReflection() {
                     currentSessionText = '';
                     setRawTranscript(finalRef.current);
                 }
-                if (isRecordingRef.current) {
+                if (isRecordingRef.current && !isAndroid) {
                     try {
                         recognition.start();
                     } catch {}
@@ -183,7 +183,11 @@ export default function EndOfDayReflection() {
             };
 
             recognitionRef.current = recognition;
-            recognition.start();
+            try {
+                recognition.start();
+            } catch (err) {
+                console.warn("Speech recognition start failed:", err);
+            }
         };
 
         // 1. MUST start Web Speech API first on Android so it secures the microphone.
@@ -197,42 +201,31 @@ export default function EndOfDayReflection() {
         // On Android, this will intentionally fail (caught) because the mic is locked by dictation.
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            micStreamRef.current = stream;
+        if (!isMobile) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micStreamRef.current = stream;
 
-            let options = { mimeType: 'audio/webm;codecs=opus' };
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'audio/mp4' };
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: '' };
-            
-            const recorder = new MediaRecorder(stream, options);
-            mediaRecorderRef.current = recorder;
-            audioChunksRef.current = [];
-            
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) audioChunksRef.current.push(e.data);
-            };
-            
-            recorder.onstop = () => {
-                const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
-                setAudioBlob(blob);
-                setAudioUrl(URL.createObjectURL(blob));
-            };
-            
-            recorder.start(100);
-
-            if (isMobile) {
-                let lastUpdate = 0;
-                const animateFakeWaveform = (timestamp: number) => {
-                    if (!isRecordingRef.current) return;
-                    if (timestamp - lastUpdate > 100) {
-                        setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
-                        lastUpdate = timestamp;
-                    }
-                    animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+                let options = { mimeType: 'audio/webm;codecs=opus' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'audio/mp4' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: '' };
+                
+                const recorder = new MediaRecorder(stream, options);
+                mediaRecorderRef.current = recorder;
+                audioChunksRef.current = [];
+                
+                recorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunksRef.current.push(e.data);
                 };
-                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
-            } else {
+                
+                recorder.onstop = () => {
+                    const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+                    setAudioBlob(blob);
+                    setAudioUrl(URL.createObjectURL(blob));
+                };
+                
+                recorder.start(100);
+
                 const audioCtx = new AudioContext();
                 audioContextRef.current = audioCtx;
                 const analyser = audioCtx.createAnalyser();
@@ -256,10 +249,22 @@ export default function EndOfDayReflection() {
                     animationFrameRef.current = requestAnimationFrame(tick);
                 };
                 animationFrameRef.current = requestAnimationFrame(tick);
+            } catch (err) {
+                console.warn('Raw stream access blocked:', err);
+                // Fallback to fake waveform so the UI still looks like it's recording
+                let lastUpdate = 0;
+                const animateFakeWaveform = (timestamp: number) => {
+                    if (!isRecordingRef.current) return;
+                    if (timestamp - lastUpdate > 100) {
+                        setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
+                        lastUpdate = timestamp;
+                    }
+                    animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+                };
+                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
             }
-        } catch (err) {
-            console.warn('Raw stream access blocked (expected on mobile):', err);
-            // Fallback to fake waveform so the UI still looks like it's recording
+        } else {
+            // Mobile device: bypass getUserMedia completely to prevent crashing SpeechRecognition
             let lastUpdate = 0;
             const animateFakeWaveform = (timestamp: number) => {
                 if (!isRecordingRef.current) return;
