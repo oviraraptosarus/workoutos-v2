@@ -27,7 +27,7 @@ export default function BrainDump({
 }: {
   onTasksSaved?: () => void;
 }) {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [state, setState] = useState<BrainState>("idle");
   const [transcript, setTranscript] = useState("");
   const [parsedTasks, setParsedTasks] = useState<string[]>([]);
@@ -133,7 +133,7 @@ export default function BrainDump({
     const recognition = new SR();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = "en-US";
+    recognition.lang = userProfile?.dictation_language || "en-US";
 
     const isAndroid = /Android/i.test(navigator.userAgent);
 

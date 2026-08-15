@@ -515,16 +515,22 @@ export default function ProfileHub() {
                         </div>
 
                         <div className="p-4 flex items-center justify-between">
-                            <label className="font-medium text-sm text-on-surface">Dictation Accent</label>
+                            <div className="flex flex-col">
+                                <label className="font-medium text-sm text-on-surface">Recognition Language</label>
+                                <span className="text-xs text-on-surface-variant">Voice & Dictation accent for all mic inputs</span>
+                            </div>
                             <select 
                                 value={formData.dictation_language || 'en-US'}
                                 onChange={e => handleInputSave('dictation_language', e.target.value)}
                                 className="bg-surface-container rounded-xl px-3 py-2 text-sm text-on-surface focus:outline-none"
                             >
-                                <option value="en-US">US English</option>
-                                <option value="en-IN">Indian English</option>
-                                <option value="en-GB">British English</option>
-                                <option value="en-AU">Australian English</option>
+                                <option value="en-US">English (United States)</option>
+                                <option value="en-IN">English (India)</option>
+                                <option value="en-GB">English (United Kingdom)</option>
+                                <option value="en-AU">English (Australia)</option>
+                                <option value="en-CA">English (Canada)</option>
+                                <option value="en-NZ">English (New Zealand)</option>
+                                <option value="en-ZA">English (South Africa)</option>
                             </select>
                         </div>
 

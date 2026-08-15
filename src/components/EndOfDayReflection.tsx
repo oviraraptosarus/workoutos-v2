@@ -11,7 +11,7 @@ type JournalState = 'idle' | 'recording' | 'processing' | 'done' | 'viewing';
 
 export default function EndOfDayReflection() {
     const { selectedDate, offsetDays, isToday } = useDate();
-    const { user } = useAuth();
+    const { user, userProfile } = useAuth();
 
     const [state, setState] = useState<JournalState>('idle');
     const [rawTranscript, setRawTranscript] = useState('');
@@ -146,7 +146,7 @@ export default function EndOfDayReflection() {
             const recognition = new SR();
             recognition.continuous = true;
             recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            recognition.lang = userProfile?.dictation_language || 'en-US';
 
             // Force a clean restart every 45 seconds to bypass browser memory/length limits on continuous dictation
             if (!isAndroid) {

@@ -67,7 +67,7 @@ export default function GeminiFoodAssistant() {
         const recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.lang = 'en-IN';
+        recognition.lang = userProfile?.dictation_language || 'en-US';
 
         let finalTranscript = '';
         const existing = typeof prompt === 'string' ? prompt + ' ' : '';
