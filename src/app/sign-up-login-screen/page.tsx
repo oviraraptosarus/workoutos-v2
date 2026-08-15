@@ -29,8 +29,10 @@ export default function SignUpLoginScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AuthScreen />
+    <div className="dark">
+      <div className="min-h-screen bg-background text-on-background">
+        <AuthScreen />
+      </div>
     </div>
   );
 }
