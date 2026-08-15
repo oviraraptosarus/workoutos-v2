@@ -51,14 +51,9 @@ export default function DashboardCountdowns() {
     return (
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 h-full flex flex-col mt-2 sm:mt-0">
             <div className="flex items-center justify-between mb-3 px-1">
-                <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-[8px] bg-[#0a84ff] flex items-center justify-center shrink-0 shadow-sm">
-                        <Hourglass size={14} className="text-white" />
-                    </div>
-                    <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-                        Mission Countdowns
-                    </h2>
-                </div>
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Hourglass size={20} className="text-white" /> Mission Countdowns
+                </h2>
                 <Link href="/countdowns" className="font-label-sm text-[11px] text-[#0a84ff] hover:text-[#0a84ff]/80 uppercase tracking-wider flex items-center transition-colors btn-press">
                     View All <ChevronRight size={14} />
                 </Link>
