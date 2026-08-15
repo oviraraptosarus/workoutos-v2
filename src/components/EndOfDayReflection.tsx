@@ -128,25 +128,19 @@ export default function EndOfDayReflection() {
         let currentSessionId = 0;
 
         const spawnRecognition = () => {
-            sessionCounter++;
-            currentSessionId = sessionCounter;
-            if (process.env.NODE_ENV === 'development') {
-                console.log(`[DICTATION START] session=${currentSessionId}`);
-            }
-            const recognition = new SR();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = userProfile?.dictation_language || 'en-US';
-
             recognition.onresult = (e: any) => {
-                let newFull = '';
+                let interim = '';
+                let newFull = finalRef.current;
                 
                 if (isAndroid) {
-                    currentSessionText = e.results[e.results.length - 1][0].transcript;
-                    newFull = (finalRef.current + ' ' + currentSessionText).trim();
+                    const latestResult = e.results[e.results.length - 1];
+                    const chunk = latestResult[0].transcript;
+                    if (latestResult.isFinal) finalRef.current += chunk + ' ';
+                    else interim = chunk;
+                    newFull = (finalRef.current + interim).trim();
+                    currentSessionText = interim;
                     setRawTranscript(newFull);
                 } else {
-                    let interim = '';
                     for (let i = e.resultIndex; i < e.results.length; i++) {
                         const chunk = e.results[i][0].transcript;
                         if (e.results[i].isFinal) finalRef.current += chunk + ' ';
@@ -155,46 +149,24 @@ export default function EndOfDayReflection() {
                     newFull = (finalRef.current + interim).trim();
                     setRawTranscript(newFull);
                 }
-                
-                if (process.env.NODE_ENV === 'development') {
-                    eventCounter++;
-                    console.log(`[DICTATION FORENSIC]
-session=${currentSessionId}
-event=${eventCounter}
-resultIndex=${e.resultIndex}
-resultsLength=${e.results.length}
-
-${Array.from(e.results).map((r: any, idx) => `result[${idx}]\nisFinal=${r.isFinal}\ntext="${r[0].transcript}"`).join('\n\n')}
-
-CURRENT FINAL:
-"${finalRef.current}"
-
-DISPLAY:
-"${newFull}"`);
-                }
             };
 
             recognition.onerror = (e: any) => {
-                if (e.error === 'no-speech' || e.error === 'aborted') return; // handled by onend restart
+                if (e.error === 'no-speech' || e.error === 'aborted') return;
                 alert('Microphone error: ' + e.error);
                 isRecordingRef.current = false;
                 stopRecording(false);
             };
 
-            // Platform-aware onend: Android needs to commit the last snapshot
             recognition.onend = () => {
                 if (isAndroid && currentSessionText.trim()) {
                     finalRef.current = (finalRef.current + ' ' + currentSessionText).trim();
                     currentSessionText = '';
                     setRawTranscript(finalRef.current);
                 }
-                
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(`[DICTATION STOP] session=${currentSessionId}`);
-                }
                 if (isRecordingRef.current) {
                     try {
-                        recognition.start(); // seamless restart
+                        recognition.start();
                     } catch {}
                 }
             };
@@ -203,38 +175,49 @@ DISPLAY:
             recognition.start();
         };
 
+        // 1. MUST start Web Speech API first on Android so it secures the microphone.
+        spawnRecognition();
+
+        // 2. Safely attempt to get the raw stream for waveform and downloads.
+        // On Android, this will intentionally fail (caught) because the mic is locked by dictation.
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        if (!isMobile) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                micStreamRef.current = stream;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            micStreamRef.current = stream;
 
-                // Setup MediaRecorder for download
-                let options = { mimeType: 'audio/webm;codecs=opus' };
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options = { mimeType: 'audio/mp4' };
-                }
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options = { mimeType: '' }; // fallback to browser default
-                }
-                
-                const recorder = new MediaRecorder(stream, options);
-                mediaRecorderRef.current = recorder;
-                audioChunksRef.current = [];
-                
-                recorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) audioChunksRef.current.push(e.data);
-                };
-                
-                recorder.onstop = () => {
-                    const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
-                    setAudioBlob(blob);
-                    setAudioUrl(URL.createObjectURL(blob));
-                };
-                
-                recorder.start(100);
+            let options = { mimeType: 'audio/webm;codecs=opus' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'audio/mp4' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: '' };
+            
+            const recorder = new MediaRecorder(stream, options);
+            mediaRecorderRef.current = recorder;
+            audioChunksRef.current = [];
+            
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunksRef.current.push(e.data);
+            };
+            
+            recorder.onstop = () => {
+                const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+                setAudioBlob(blob);
+                setAudioUrl(URL.createObjectURL(blob));
+            };
+            
+            recorder.start(100);
 
+            if (isMobile) {
+                let lastUpdate = 0;
+                const animateFakeWaveform = (timestamp: number) => {
+                    if (!isRecordingRef.current) return;
+                    if (timestamp - lastUpdate > 100) {
+                        setWaveformBars(Array.from({ length: 40 }, () => Math.max(4, Math.random() * 60)));
+                        lastUpdate = timestamp;
+                    }
+                    animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+                };
+                animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
+            } else {
                 const audioCtx = new AudioContext();
                 audioContextRef.current = audioCtx;
                 const analyser = audioCtx.createAnalyser();
@@ -258,11 +241,10 @@ DISPLAY:
                     animationFrameRef.current = requestAnimationFrame(tick);
                 };
                 animationFrameRef.current = requestAnimationFrame(tick);
-            } catch (err) {
-                console.error('Mic access failed:', err);
-                // Speech recognition might still work if it has its own permission prompt handled by the browser natively
             }
-        } else {
+        } catch (err) {
+            console.warn('Raw stream access blocked (expected on mobile):', err);
+            // Fallback to fake waveform so the UI still looks like it's recording
             let lastUpdate = 0;
             const animateFakeWaveform = (timestamp: number) => {
                 if (!isRecordingRef.current) return;
@@ -274,8 +256,6 @@ DISPLAY:
             };
             animationFrameRef.current = requestAnimationFrame(animateFakeWaveform);
         }
-
-        spawnRecognition();
 
         isRecordingRef.current = true;
         setState('recording');
