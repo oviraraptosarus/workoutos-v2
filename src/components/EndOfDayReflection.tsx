@@ -199,7 +199,7 @@ export default function EndOfDayReflection() {
                 }
                 
                 // Respawn a totally fresh instance to avoid the "delay" timeout bugs and session memory limits
-                if (isRecordingRef.current && !isAndroid) {
+                if (isRecordingRef.current) {
                     setTimeout(() => {
                         if (isRecordingRef.current) {
                             try {
