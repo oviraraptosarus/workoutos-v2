@@ -25,15 +25,12 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
             setIsVisible(true);
             setCurrentSlide(0);
         } else {
-            const timer = setTimeout(() => setIsVisible(false), 300);
+            const timer = setTimeout(() => setIsVisible(false), 400);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
 
     if (!isOpen && !isVisible) return null;
-
-    const isMorning = mode === 'morning';
-    const name = user?.user_metadata?.full_name?.split(' ')[0] || 'Coach';
 
     const handleNext = () => {
         if (currentSlide < 3) {
@@ -67,160 +64,177 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
 
     const cleanQuote = dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '');
 
-    // ─── SLIDE 0: Full-screen quote (matches screenshot) ───────────────────────
+    // ─── SLIDE 0: Full-screen minimal quote ────────────────────────────────────
     if (currentSlide === 0) {
         return (
             <div
                 className={clsx(
-                    'fixed inset-0 z-[99999] flex flex-col items-center justify-center',
-                    'bg-background transition-opacity duration-300',
+                    'fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-background',
+                    'transition-opacity duration-400',
                     isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                 )}
                 onClick={handleNext}
             >
-                {/* Close button */}
                 <button
                     onClick={(e) => { e.stopPropagation(); onClose(); }}
-                    className="absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
+                    className="absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors active:scale-95"
                 >
-                    <X size={18} />
+                    <X size={16} />
                 </button>
 
-                {/* Content */}
-                <div className="max-w-md px-10 text-center space-y-5 select-none">
-                    {/* Quotation mark icon — matches screenshot */}
-                    <div
-                        className="text-[56px] font-black leading-none mx-auto w-fit"
-                        style={{ color: 'rgba(128,128,128,0.5)', fontFamily: 'Georgia, serif', lineHeight: 1 }}
-                    >
+                <div className="max-w-md px-10 text-center space-y-5 select-none animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="text-[48px] font-black leading-none mx-auto w-fit" style={{ color: 'rgba(128,128,128,0.4)', fontFamily: 'Georgia, serif' }}>
                         &#8220;&#8221;
                     </div>
-
-                    <p className="font-black text-on-surface leading-snug tracking-tight"
-                        style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.75rem)' }}>
+                    <p className="font-black text-on-surface leading-snug tracking-tight" style={{ fontSize: 'clamp(1.2rem, 3.5vw, 1.65rem)' }}>
                         &ldquo;{cleanQuote}&rdquo;
                     </p>
-
-                    <p className="text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant">
+                    <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">
                         &mdash;&nbsp;{dailyQuote.author.replace(/^[—\-\s]+/, '')}
                     </p>
                 </div>
 
-                {/* Tap-to-continue hint */}
-                <p className="absolute bottom-10 text-[11px] font-semibold tracking-widest uppercase text-on-surface-variant opacity-40">
+                <p className="absolute bottom-10 text-[10px] font-semibold tracking-widest uppercase text-on-surface-variant opacity-30 animate-in fade-in duration-1000 delay-700">
                     Tap anywhere to continue
                 </p>
             </div>
         );
     }
 
-    // ─── SLIDES 1–3: Stats panel (compact modal) ────────────────────────────────
+    // ─── SLIDES 1–3: Premium glass stats modal ──────────────────────────────────
+    const SLIDE_META = [
+        { label: 'Review',    icon: CheckCircle2,   color: 'text-[#30d158]',  bg: 'bg-[#30d158]/10' },
+        { label: 'Gaps',      icon: AlertTriangle,  color: 'text-[#ff453a]',  bg: 'bg-[#ff453a]/10' },
+        { label: 'Targets',   icon: Target,         color: 'text-[#0a84ff]',  bg: 'bg-[#0a84ff]/10' },
+    ];
+    const meta = SLIDE_META[currentSlide - 1];
+    const SlideIcon = meta.icon;
+
+    const slideLabels = ['Execution Review', 'Bottlenecks', mode === 'morning' ? "Today's Battle Plan" : "Tomorrow's Targets"];
+
     return (
-        <div className={`fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-xl" onClick={onClose} />
+        <div className={clsx(
+            'fixed inset-0 z-[99999] flex items-end sm:items-center justify-center sm:p-6',
+            'transition-all duration-300',
+            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        )}>
+            {/* Scrim */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={onClose} />
 
-            <div className={`relative w-full max-w-lg bg-surface border border-white/10 rounded-[32px] overflow-hidden shadow-2xl transition-all duration-500 delay-100 ${isOpen ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-12 scale-95 opacity-0'}`}>
+            {/* Card — floats on top of scrim */}
+            <div className={clsx(
+                'relative w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] overflow-hidden',
+                'bg-card-white border border-white/10 dark:border-white/8',
+                'shadow-[0_-8px_60px_rgba(0,0,0,0.35)] sm:shadow-[0_24px_60px_rgba(0,0,0,0.4)]',
+                'transition-all duration-500',
+                isOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            )}>
+                {/* Glass inner-light layers per design rules */}
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
 
-                {/* Header tint */}
-                <div className={`absolute top-0 left-0 w-full h-48 ${isMorning ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/5' : 'bg-gradient-to-br from-indigo-500/20 to-purple-500/5'} blur-2xl pointer-events-none`} />
+                {/* Handle pill (mobile) */}
+                <div className="sm:hidden w-10 h-1 bg-on-surface/20 rounded-full mx-auto mt-3 mb-1" />
 
-                {/* Progress dots */}
-                <div className="absolute top-4 left-6 right-6 flex gap-2 z-50">
-                    {[0, 1, 2, 3].map((i) => (
-                        <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                            <div className={clsx('h-full rounded-full transition-all duration-300', i <= currentSlide ? (isMorning ? 'bg-amber-500' : 'bg-indigo-400') : 'bg-transparent')} />
+                {/* Progress bar strip — iOS blue */}
+                <div className="flex gap-1.5 px-5 pt-4 pb-0">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-[3px] flex-1 bg-on-surface/10 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{ width: i <= currentSlide ? '100%' : '0%', backgroundColor: '#0a84ff' }}
+                            />
                         </div>
                     ))}
                 </div>
 
-                <div className="relative p-6 sm:p-8 pt-12 min-h-[420px] flex flex-col">
-                    <button onClick={onClose} className="absolute top-10 right-6 w-8 h-8 rounded-full bg-surface-container-high/50 hover:bg-surface-container-high flex items-center justify-center text-on-surface transition-colors z-50">
-                        <X size={16} />
+                <div className="relative px-5 pt-5 pb-6">
+                    {/* Close */}
+                    <button onClick={onClose} className="absolute top-4 right-4 w-7 h-7 rounded-full bg-on-surface/8 hover:bg-on-surface/14 flex items-center justify-center text-on-surface-variant transition-colors active:scale-95">
+                        <X size={14} />
                     </button>
 
-                    <div className="flex-1 flex flex-col justify-center">
+                    {/* Floating header (outside card content, per iOS widget rules) */}
+                    <div className="flex items-center gap-2.5 mb-5">
+                        <div className={clsx('w-8 h-8 rounded-xl flex items-center justify-center shrink-0', meta.bg, meta.color)}>
+                            <SlideIcon size={16} />
+                        </div>
+                        <span className="font-black text-base text-on-surface tracking-tight">
+                            {slideLabels[currentSlide - 1]}
+                        </span>
+                    </div>
+
+                    {/* Slide content */}
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-400 min-h-[160px]">
                         {currentSlide === 1 && (
-                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-emerald-500/20 text-emerald-500 border border-emerald-500/20">
-                                    <CheckCircle2 size={24} />
+                            accomplishments.length > 0 ? (
+                                <div className="space-y-2">
+                                    {accomplishments.map((acc, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 bg-on-surface/4 rounded-2xl px-4 py-3">
+                                            <CheckCircle2 size={15} className="text-[#30d158] shrink-0" />
+                                            <span className="text-sm font-semibold text-on-surface">{acc}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <h2 className="text-2xl font-black text-on-surface tracking-tight mb-4">Execution Review</h2>
-                                {accomplishments.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {accomplishments.map((acc, idx) => (
-                                            <div key={idx} className="flex items-start gap-3 bg-surface-container-low p-3 rounded-xl border border-white/5">
-                                                <CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-                                                <span className="text-sm font-semibold text-on-surface">{acc}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-on-surface-variant font-medium">No major executions logged yet. Today is the day to change that.</p>
-                                )}
-                            </div>
+                            ) : (
+                                <p className="text-sm text-on-surface-variant font-medium leading-relaxed">No major executions logged yet. Today is the day to change that.</p>
+                            )
                         )}
 
                         {currentSlide === 2 && (
-                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-red-500/20 text-red-500 border border-red-500/20">
-                                    <AlertTriangle size={24} />
+                            bottlenecks.length > 0 ? (
+                                <div className="space-y-2">
+                                    {bottlenecks.map((btn, idx) => (
+                                        <div key={idx} className="flex items-start gap-3 bg-on-surface/4 rounded-2xl px-4 py-3">
+                                            <AlertTriangle size={15} className="text-[#ff453a] shrink-0 mt-0.5" />
+                                            <span className="text-sm font-semibold text-on-surface">{btn}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <h2 className="text-2xl font-black text-on-surface tracking-tight mb-4">Bottlenecks</h2>
-                                {bottlenecks.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {bottlenecks.map((btn, idx) => (
-                                            <div key={idx} className="flex items-start gap-3 bg-surface-container-low p-3 rounded-xl border border-white/5">
-                                                <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" />
-                                                <span className="text-sm font-semibold text-on-surface">{btn}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-on-surface-variant font-medium">You are operating at peak efficiency. No critical bottlenecks detected.</p>
-                                )}
-                            </div>
+                            ) : (
+                                <p className="text-sm text-on-surface-variant font-medium leading-relaxed">Operating at peak efficiency. No critical bottlenecks detected.</p>
+                            )
                         )}
 
                         {currentSlide === 3 && (
-                            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isMorning ? 'bg-amber-500/20 text-amber-500 border border-amber-500/20' : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/20'}`}>
-                                    <Target size={24} />
-                                </div>
-                                <h2 className="text-2xl font-black text-on-surface tracking-tight mb-4">{isMorning ? "Today's Battle Plan" : "Tomorrow's Targets"}</h2>
-                                <div className="space-y-3">
-                                    <div className="bg-surface-container-low border border-white/5 rounded-2xl p-3 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0"><Droplets size={16} /></div>
+                            <div className="space-y-2">
+                                {[
+                                    { icon: Droplets, label: 'Hydration', value: `${snapshot.waterProgress.target} ml`, color: 'text-[#0a84ff]', bg: 'bg-[#0a84ff]/10' },
+                                    { icon: Dumbbell, label: 'Workout',   value: snapshot.workoutName || 'Rest Day / TBD', color: 'text-[#ff9f0a]', bg: 'bg-[#ff9f0a]/10' },
+                                    { icon: Target,   label: 'Diet',      value: `${snapshot.caloriesProgress.target} kcal · ${snapshot.proteinProgress.target}g protein`, color: 'text-[#30d158]', bg: 'bg-[#30d158]/10' },
+                                ].map(({ icon: Icon, label, value, color, bg }) => (
+                                    <div key={label} className="flex items-center gap-3 bg-on-surface/4 rounded-2xl px-4 py-3">
+                                        <div className={clsx('w-7 h-7 rounded-xl flex items-center justify-center shrink-0', bg, color)}>
+                                            <Icon size={14} />
+                                        </div>
                                         <div>
-                                            <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Hydration</div>
-                                            <div className="text-sm font-bold text-on-surface">Drink {snapshot.waterProgress.target}ml</div>
+                                            <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-0.5">{label}</div>
+                                            <div className="text-sm font-bold text-on-surface">{value}</div>
                                         </div>
                                     </div>
-                                    <div className="bg-surface-container-low border border-white/5 rounded-2xl p-3 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0"><Dumbbell size={16} /></div>
-                                        <div>
-                                            <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Workout</div>
-                                            <div className="text-sm font-bold text-on-surface">{snapshot.workoutName || 'Rest Day / TBD'}</div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-surface-container-low border border-white/5 rounded-2xl p-3 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0"><Target size={16} /></div>
-                                        <div>
-                                            <div className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-0.5">Diet</div>
-                                            <div className="text-sm font-bold text-on-surface">{snapshot.caloriesProgress.target} kcal • {snapshot.proteinProgress.target}g Protein</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/5">
-                        <button onClick={handlePrev} className={clsx('text-sm font-bold text-on-surface-variant px-4 py-2 hover:text-white transition-colors', currentSlide <= 1 && 'invisible')}>
+                    {/* Footer nav */}
+                    <div className="flex items-center justify-between mt-6">
+                        <button
+                            onClick={handlePrev}
+                            className={clsx(
+                                'text-[13px] font-bold text-on-surface-variant px-3 py-1.5 rounded-xl transition-all active:scale-95 hover:bg-on-surface/6',
+                                currentSlide <= 1 && 'invisible'
+                            )}
+                        >
                             Back
                         </button>
-                        <button onClick={handleNext} className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all ${isMorning ? 'bg-amber-500 text-amber-950 shadow-amber-500/20' : 'bg-indigo-500 text-white shadow-indigo-500/20'}`}>
-                            {currentSlide === 3 ? "Let's Go!" : 'Next'}
-                            {currentSlide < 3 && <ArrowRight size={16} />}
+                        <button
+                            onClick={handleNext}
+                            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full font-bold text-[13px] text-white active:scale-95 transition-all shadow-[0_4px_20px_rgba(10,132,255,0.35)] hover:shadow-[0_4px_28px_rgba(10,132,255,0.5)]"
+                            style={{ backgroundColor: '#0a84ff' }}
+                        >
+                            {currentSlide === 3 ? "Let's Go" : 'Next'}
+                            {currentSlide < 3 && <ArrowRight size={14} />}
                         </button>
                     </div>
                 </div>
