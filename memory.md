@@ -4,6 +4,13 @@
 
 ## Recent Milestones & Changes
 
+### August 17, 2026 - AI Orchestrator Debugging & Token Limit Expansion
+- **Global Token Limit Bump**: Fixed an issue where complex AI generation requests (like generating a full dumbbell HIIT workout plan) were crashing or truncating. Root cause was the orchestrator's `maxOutputTokens` being artificially capped at 1500-2500 across `api/ai/chat`, `api/ai/report`, and the core fallback provider instances (`OpenAIProvider`, `AnthropicProvider`, `GeminiProvider`). Increased the ceiling to `8192` globally.
+- **OpenRouter & Gemini Key Debugging**: Diagnosed a multi-layered failure in the AI copilot that triggered the generic "high load / invalid keys" fallback error:
+    - **OpenRouter Pre-flight Check**: Bumping the token limit to 8192 caused OpenRouter to instantly throw an HTTP 402 (Payment Required) because the user account balance was at $0 and could only theoretically afford ~850 tokens.
+    - **Free Model Deprecation**: OpenRouter recently revoked the `:free` tier for `meta-llama/llama-3.3-70b-instruct` and `google/gemma-3-27b-it`, causing HTTP 404 errors when the orchestrator attempted to fall back to them.
+    - **Resolution**: Reconfigured the `.env` `MODEL_PRIORITY_LIST` to use active, confirmed free models (`meta-llama/llama-3.1-8b-instruct:free` and `google/gemini-2.0-flash-lite-preview-02-05:free`) and ensured the native Gemini key was formatted correctly.
+
 ### August 16, 2026 - Daily Briefing Modal Data Fix & Enhancements
 - **Briefing Data Bug Fix**: Fixed DailyBriefingModal showing stale/default values (2959ml, 1635 kcal, 150g protein) instead of actual user profile goals. Root cause: `useDailySnapshot.ts` read non-existent `userProfile.proteinGoal` (always fell back to 150) — protein target is stored in `targetConfig.protein`. Also, `daily_burn_goal` DB column existed but was never loaded into `UserProfile` in AuthContext. Fixed both field reads and added `daily_burn_goal` to the profile interface, fetch, and save logic.
 - **Slide 1 Progress Bars**: Replaced flat text chips with real progress bars showing actual numbers (e.g., `2400 / 3000 ml`) with color-coded fill states. Each metric (Hydration, Workout, Nutrition, Tasks) gets its own row with a thin iOS-style progress indicator.
