@@ -1,28 +1,27 @@
-import { redirect } from 'next/navigation';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+'use client';
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+
+// This page is the entry point. It waits for the client-side auth state
+// (which reads from localStorage) to resolve, then redirects accordingly.
+// A server-side check was previously used here, but it could never see the
+// session because auth is stored in localStorage (not cookies), causing the
+// welcome slideshow to always flash for logged-in users.
+export default function Home() {
+  const { session, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (session) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/welcome');
     }
-  );
+  }, [session, isLoading, router]);
 
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    redirect('/dashboard');
-  }
-
-  // Redirect root to welcome onboarding if not logged in
-  redirect('/welcome');
+  // Render nothing while auth resolves — blank screen, no flash.
+  return null;
 }
