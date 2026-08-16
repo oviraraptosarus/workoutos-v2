@@ -187,4 +187,6 @@ Conducted a comprehensive audit of all API routes, LLM orchestration, data stora
     - Built a robust learning backend to eliminate Ava's session-to-session amnesia. 
     - Created DB Migration `20260817000000_user_psychology.sql` with a new `psychological_profiles` table (storing `freudian_analysis` and `dopamine_triggers`).
     - Added background endpoint `/api/ai/analyze-psychology` which takes the user's latest chat chunks, extracts deep psychological insights, and upserts them to the database.
-    - Updated `/api/ai/chat/route.ts` to actively fetch this psychological profile before every prompt and secretly inject it into `systemContract.ts`, allowing Ava to continuously adapt and manipulate the user's dopamine reserves.
+- **Phase 8 (The God Mode Dashboard)**:
+    - **Readiness Score Widget**: Built an Oura/Whoop style predictive analytics circular gauge (`ReadinessScoreWidget.tsx`). Calculates a 0-100 real-time score from sleep, hydration, and protein data, glowing green for Peak recovery and red for Depleted.
+    - **Ghost Rival PvP**: Introduced an AI opponent named "Shadow" (`GhostRivalWidget.tsx`). The rival's XP and Streak are procedurally generated to always stay neck-and-neck with the user, creating eternal competitive urgency.
