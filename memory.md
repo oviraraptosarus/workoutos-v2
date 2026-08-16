@@ -191,5 +191,8 @@ Conducted a comprehensive audit of all API routes, LLM orchestration, data stora
     - **Readiness Score Widget**: Built an Oura/Whoop style predictive analytics circular gauge (`ReadinessScoreWidget.tsx`). Calculates a 0-100 real-time score from sleep, hydration, and protein data, glowing green for Peak recovery and red for Depleted.
     - **Ghost Rival PvP**: Introduced an AI opponent named "Shadow" (`GhostRivalWidget.tsx`). The rival's XP and Streak are procedurally generated to always stay neck-and-neck with the user, creating eternal competitive urgency.
 - **Phase 9 (The Apple Watch HUD)**:
-    - **Sensory Expansion**: Created a dedicated `HudView.tsx` designed specifically for active gym sessions. It uses a `fixed inset-0 bg-black` layout to simulate an OLED smartwatch face, hiding all complex UI elements.
+    - **Sensory Expansion**: Created a dedicated `HudView.tsx` designed specifically for active gym sessions. It uses a `fixed inset-0 bg-black z-[9999]` portal to simulate an OLED smartwatch face, hiding all complex UI elements.
     - **Audio-Haptic Rest Timer**: Built `HudRestTimer.tsx` which leverages the Web Audio API to play a physical "DING" (800Hz-300Hz sine wave) and triggers `navigator.vibrate` when the massive text rest timer hits zero.
+- **Phase 10 (The Shadow Enemy)**:
+    - **Psychological AI Nemesis**: Evolved the Ghost Rival into an active AI persona named "Shadow". Built `/api/ai/shadow` which cross-references the user's `psychological_profiles` to generate cutthroat, domain-specific taunts.
+    - **Pervasive UI Integration**: Built `ShadowTauntCard.tsx` (with typewriter effect and pulsing red aura) and injected it directly into the Dashboard (`GhostRivalWidget`), the Budget Tracker, and the Workout Page to trigger the user's competitive drive globally.
