@@ -2,7 +2,7 @@ export const AVA_TOOLS = [
   {
     name: "add_task",
     description:
-      "Add a new task to the user's planner. Extract tasks from text or images. ACTION GATE: Only call if user explicitly asks to 'add', 'remind', 'create task', or 'schedule'.",
+      "Add a new task to the user's planner. STRICT USAGE: ONLY call this when the user explicitly says 'add task', 'remind me', 'create a task', 'create a reminder', 'schedule', 'to-do', or 'put on my list'. NEVER use this for workout plans, meal plans, training programs, diet plans, exercise routines, or any coaching/fitness generation request. If the user says 'make me a plan' or 'design a workout', use save_workout_template instead. If they say 'give me a diet', use generate_meal_plan instead.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -41,7 +41,7 @@ export const AVA_TOOLS = [
   {
     name: "add_multiple_tasks",
     description:
-      "Add multiple new tasks to the user's planner at once. Use specifically when parsing a Brain Dump or explicit multi-task request.",
+      "Add multiple new tasks to the user's planner at once. Use specifically when parsing a Brain Dump or explicit multi-task request. Same strict rules as add_task: ONLY for explicit task/reminder/to-do creation, NEVER for workout or diet plan generation.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -153,7 +153,7 @@ export const AVA_TOOLS = [
   {
     name: "log_workout",
     description:
-      "Log a workout, including strength training or cardio. ACTION GATE: Only call if user states they completed an exercise.",
+      "Log a workout, including strength training or cardio. ACTION GATE: Only call if user states they completed an exercise. Do NOT use this when the user asks to CREATE or DESIGN a workout plan (use save_workout_template for that).",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -212,5 +212,139 @@ export const AVA_TOOLS = [
       },
       required: ["category", "memory_text"],
     },
-  }
+  },
+  {
+    name: "save_workout_template",
+    description:
+      "Generate and save a complete, structured workout plan as a reusable template in the user's workout library. ALWAYS use this when the user asks you to create, generate, design, build, or make any workout plan, training plan, training program, exercise routine, or fitness program. This includes requests like 'make me a HIIT plan', 'design a push day', 'give me a dumbbell workout', 'training plan for fat loss', 'create a 4 day split'. Do NOT just describe the workout in text. ALWAYS use this tool to structure the output. Ask for: target muscle groups, duration, equipment, experience level, and training goal if not already in the user profile.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        name: {
+          type: "STRING",
+          description:
+            "The workout template name (e.g. 'Push Hypertrophy A', 'Full Body Beginner', '30-min Dumbbell HIIT Circuit').",
+        },
+        description: {
+          type: "STRING",
+          description:
+            "A brief description of the workout including target muscles, training style, and goal (e.g. 'Chest, shoulders, triceps focused on volume hypertrophy with dumbbell-only exercises').",
+        },
+        exercises: {
+          type: "ARRAY",
+          description:
+            "The ordered list of exercises in this workout. Must include real, specific exercise names.",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: {
+                type: "STRING",
+                description:
+                  "Specific exercise name (e.g. 'Dumbbell Goblet Squat', 'Incline Dumbbell Press', 'Burpees'). Use precise, real exercise names.",
+              },
+              sets: {
+                type: "STRING",
+                description:
+                  "Sets and reps/duration string (e.g. '3 sets x 10 reps', '4 sets x 8-10 reps', '3 sets x 45s work / 15s rest').",
+              },
+              notes: {
+                type: "STRING",
+                description:
+                  "Coaching notes for this exercise (e.g. 'Slow eccentric, 2 sec down', 'Rest 90s between sets', 'Superset with next exercise').",
+              },
+              order: {
+                type: "NUMBER",
+                description: "Exercise order starting from 0.",
+              },
+            },
+            required: ["name", "sets", "order"],
+          },
+        },
+      },
+      required: ["name", "exercises"],
+    },
+  },
+  {
+    name: "generate_meal_plan",
+    description:
+      "Generate a structured meal plan or diet plan for the user. ALWAYS use this when the user asks for a diet plan, meal plan, nutrition plan, cutting diet, bulking diet, or asks 'what should I eat'. This includes requests like 'give me a 2000 calorie cutting diet', 'meal plan for fat loss', 'what should I eat today', 'create a diet for muscle gain', 'plan my meals'. Do NOT use add_task for these requests.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        planName: {
+          type: "STRING",
+          description:
+            "Name of the meal plan (e.g. '2000 kcal Cutting Plan', 'Lean Bulk Meal Plan', 'High Protein Indian Diet').",
+        },
+        goal: {
+          type: "STRING",
+          description: "'cutting', 'bulking', 'maintenance', or 'recomposition'.",
+        },
+        dailyCalories: {
+          type: "INTEGER",
+          description: "Target daily calories for this plan.",
+        },
+        dailyProtein: {
+          type: "NUMBER",
+          description: "Target daily protein in grams.",
+        },
+        dailyCarbs: {
+          type: "NUMBER",
+          description: "Target daily carbs in grams.",
+        },
+        dailyFat: {
+          type: "NUMBER",
+          description: "Target daily fat in grams.",
+        },
+        meals: {
+          type: "ARRAY",
+          description: "The structured meals for the day.",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: {
+                type: "STRING",
+                description: "Meal name (e.g. 'Breakfast', 'Pre-Workout Snack', 'Lunch', 'Dinner').",
+              },
+              time: {
+                type: "STRING",
+                description: "Suggested time (e.g. '7:00 AM', '12:30 PM').",
+              },
+              foods: {
+                type: "STRING",
+                description:
+                  "Detailed food items with portions (e.g. '4 egg whites + 1 whole egg scrambled, 2 slices whole wheat toast, 1 medium banana').",
+              },
+              calories: {
+                type: "INTEGER",
+                description: "Calories for this meal.",
+              },
+              protein: {
+                type: "NUMBER",
+                description: "Protein for this meal in grams.",
+              },
+              carbs: {
+                type: "NUMBER",
+                description: "Carbs for this meal in grams.",
+              },
+              fat: {
+                type: "NUMBER",
+                description: "Fat for this meal in grams.",
+              },
+            },
+            required: ["name", "foods", "calories", "protein"],
+          },
+        },
+        coachingNotes: {
+          type: "STRING",
+          description:
+            "Coaching notes explaining why this plan works for the user's goal, timing tips, hydration targets, and practical alternatives.",
+        },
+      },
+      required: ["planName", "goal", "dailyCalories", "dailyProtein", "meals"],
+    },
+  },
 ];
+
+
+

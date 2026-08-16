@@ -17,12 +17,13 @@ export async function classifyIntentAndContext(prompt: string, image?: string): 
 
   const sysPrompt = `Classify the user's request intent and required context domains.
 Available Domains: Tasks, Workout, Nutrition, Sleep, Budget, Habits, Dashboard.
-Intent types: 
-- ANALYSIS (e.g. 'is this healthy', 'how many calories')
-- LOGGING (e.g. 'log this meal', 'I ran 5 miles')
-- RETRIEVAL (e.g. 'did I sleep well')
-- CREATION (e.g. 'remind me', 'create task')
-- GENERAL (e.g. 'hi', 'what is diet')
+Intent types (in priority order): 
+- COACHING (e.g. 'make me a workout', 'give me a diet plan', 'design a training program', 'what exercises for chest', 'create a HIIT plan', 'meal plan for cutting', 'what should I eat', 'help me lose weight', 'build me a routine', 'training plan with dumbells'). This is for ANY request where the user wants expert fitness/nutrition guidance, a structured plan, or a program designed for them.
+- ANALYSIS (e.g. 'is this healthy', 'how many calories', 'rate this food', 'is this good for my goals')
+- LOGGING (e.g. 'log this meal', 'I ran 5 miles', 'I slept 7 hours', 'add this to lunch')
+- RETRIEVAL (e.g. 'did I sleep well', 'what did I eat yesterday', 'show my progress')
+- CREATION (e.g. 'remind me', 'create task', 'add to my to-do list', 'schedule', 'set a reminder'). IMPORTANT: This is ONLY for explicit task/reminder/to-do creation. Requests like 'make me a plan' or 'create a workout' are COACHING, not CREATION.
+- GENERAL (e.g. 'hi', 'what is progressive overload', 'motivate me')
 
 Output ONLY valid JSON matching this schema: ${JSON.stringify(schema)}`;
 

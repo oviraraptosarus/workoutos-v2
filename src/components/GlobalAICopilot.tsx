@@ -824,6 +824,8 @@ export default function GlobalAICopilot() {
                 finalResponseText = "Got it! I've logged that for you.";
               } else if (fn === "add_task" || fn === "add_multiple_tasks") {
                 finalResponseText = "I've added those to your tasks.";
+              } else if (fn === "generate_meal_plan") {
+                finalResponseText = "I've put together a personalized meal plan for you! Here are the details:";
               }
             }
             if (fn === "add_task" || fn === "add_multiple_tasks") {
@@ -1255,6 +1257,33 @@ export default function GlobalAICopilot() {
                 router.push("/workout");
                 setIsOpen(false);
               }, 1500);
+            } else if (fn === "generate_meal_plan") {
+              // Format the meal plan as rich coaching text in the chat
+              const planName = args.planName || "Your Meal Plan";
+              const goal = args.goal || "maintenance";
+              const dailyCals = args.dailyCalories || "N/A";
+              const dailyP = args.dailyProtein || "N/A";
+              const dailyC = args.dailyCarbs || "N/A";
+              const dailyF = args.dailyFat || "N/A";
+              const meals = Array.isArray(args.meals) ? args.meals : [];
+
+              let mealPlanText = `**${planName}**\n`;
+              mealPlanText += `Goal: ${goal.charAt(0).toUpperCase() + goal.slice(1)}\n`;
+              mealPlanText += `Daily Targets: ${dailyCals} kcal | ${dailyP}g protein | ${dailyC}g carbs | ${dailyF}g fat\n\n`;
+
+              meals.forEach((meal: any, idx: number) => {
+                mealPlanText += `**${idx + 1}. ${meal.name || "Meal"}**`;
+                if (meal.time) mealPlanText += ` (${meal.time})`;
+                mealPlanText += `\n`;
+                if (meal.foods) mealPlanText += `${meal.foods}\n`;
+                mealPlanText += `${meal.calories || 0} kcal | ${meal.protein || 0}g P | ${meal.carbs || 0}g C | ${meal.fat || 0}g F\n\n`;
+              });
+
+              if (args.coachingNotes) {
+                mealPlanText += `**Coach's Notes:**\n${args.coachingNotes}`;
+              }
+
+              finalResponseText = mealPlanText;
             }
           }
 

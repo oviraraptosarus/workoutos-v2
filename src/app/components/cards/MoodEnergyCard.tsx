@@ -123,7 +123,8 @@ export default function MoodEnergyCard() {
     // renderSegments is now RatingSlider
 
     return (
-        <section className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <section className="flex flex-col h-full">
+            <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-3 px-1">
                 <h3 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">How do you feel?</h3>
                 <span className="font-label-sm text-[11px] uppercase tracking-wider text-on-surface-variant">Optional</span>
@@ -191,6 +192,7 @@ export default function MoodEnergyCard() {
                 >
                     {saved ? '✓ Saved' : 'Save'}
                 </button>
+            </div>
             </div>
             </div>
         </section>
