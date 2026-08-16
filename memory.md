@@ -121,3 +121,12 @@
 - **Natural AI Summaries**: Rewrote the system instructions for the Daily Summary and Brain Dump endpoints to completely forbid Markdown formatting (e.g., asterisks, hashtags, bullet points, robotic section headers). Summaries now look like natural, human-written journal paragraphs.
 - **Execution OS Headers UI Polish**: Unified the section headers for Mission Countdowns, Daily Quests, and Brain Dump to use a naked white icon (`text-white`) without any wrapper container, ensuring a minimalist contrast against dark backgrounds per user request.
 
+### August 16, 2026 - Crash Prevention & TypeScript Fixes
+- **Client-Side Exception Fix**: Resolved a critical "app not opening" crash caused by a schema desync in `DailyBriefingModal.tsx`. The component attempted to read `.subtext` from `quotes.json`, which was recently overhauled to use `.author`. This threw an `undefined.replace` TypeError, breaking the entire React hydration tree on dashboard mount. Fixed by matching the new JSON schema.
+- **TypeScript Overhaul**: Ran full `type-check` and systematically fixed 6 hidden runtime bugs across the app:
+    - Fixed an undefined `setParsedReadings` function call in `BrainDump.tsx`.
+    - Added missing `Trash2` icon import in `profile/page.tsx` that caused ReferenceErrors.
+    - Added missing `minYear` and `maxYear` props to `IOSDatePickerProps` to restore type safety.
+    - Handled `undefined` emails in the `signInWithPassword` flow in `profile/page.tsx`.
+    - Fixed an unreachable code block in `usePushNotifications` inside `reminders/page.tsx`.
+    - Fixed an invalid `recurrenceRule` property (changed to `recurrence_rule`) in `DashboardTasks.tsx`.

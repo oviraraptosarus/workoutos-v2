@@ -291,7 +291,6 @@ export default function BrainDump({
         setState("idle");
         setTranscript("");
         setParsedTasks([]);
-        setParsedReadings([]);
         if (onTasksSaved) onTasksSaved();
       }, 2000);
     }

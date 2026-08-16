@@ -1,0 +1,54 @@
+
+> companionapp@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.18
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 13.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/26) ...
+   Generating static pages (6/26) 
+   Generating static pages (12/26) 
+   Generating static pages (19/26) 
+ ✓ Generating static pages (26/26)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      145 B         103 kB
+├ ○ /_not-found                             1 kB         103 kB
+├ ○ /admin/orchestrator                  2.68 kB         105 kB
+├ ƒ /api/ai/chat                           145 B         103 kB
+├ ƒ /api/ai/report                         145 B         103 kB
+├ ƒ /api/ai/vision                         145 B         103 kB
+├ ƒ /api/orchestrator/health               145 B         103 kB
+├ ○ /auth/callback                       2.71 kB         167 kB
+├ ○ /budget-tracker                        13 kB         311 kB
+├ ○ /cookies                             1.88 kB         190 kB
+├ ○ /dashboard                           18.8 kB         321 kB
+├ ○ /diet                                25.2 kB         215 kB
+├ ○ /disclaimer                          2.14 kB         190 kB
+├ ○ /icon.png                                0 B            0 B
+├ ○ /manifest.webmanifest                  145 B         103 kB
+├ ○ /planner                             6.88 kB         200 kB
+├ ○ /privacy                             2.27 kB         190 kB
+├ ○ /profile                             10.2 kB         208 kB
+├ ○ /progress                            4.14 kB         306 kB
+├ ○ /sign-up-login-screen                8.04 kB         196 kB
+├ ○ /sleep                               6.59 kB         304 kB
+├ ○ /terms                               2.14 kB         190 kB
+├ ○ /water                               3.03 kB         196 kB
+└ ○ /workout                             9.44 kB         199 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1255-eae4096fb21f1304.js        46 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          2.28 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,170 @@
+[    4975ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[    8410ms] [ERROR] ./src/styles/tailwind.css:7:9
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |  @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    8411ms] [ERROR] ./src/styles/index.css
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+-- inner error --
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\tailwind.css
+
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\index.css
+ 1 | __webpack_require__.r(__webpack_exports__);
+ 2 | /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+ 3 | /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+ 4 | /* harmony export */ });
+ 5 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\runtime\\api.js");
+ 6 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+ 7 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! -!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./tailwind.css */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\postcss-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\\Workout OS\\src\\styles\\tailwind.css");
+ 8 | // Imports
+ 9 | 
+10 | 
+11 | var ___CSS_LOADER_EXPORT___ = _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(true);
+12 | ___CSS_LOADER_EXPORT___.i(_node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
+13 | // Module
+14 | ___CSS_LOADER_EXPORT___.push([module.id, "@import url('https://fonts.cdnfonts.com/css/sf-pro-display');", "",{"version":3,"sources":["webpack://src/styles/index.css"],"names":[],"mappings":"AAAA,4DAA4D","sourcesContent":["@import url('https://fonts.cdnfonts.com/css/sf-pro-display');\n@import './tailwind.css';"],"sourceRoot":""}]);
+15 | // Exports
+16 | /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+17 | 
+
+Import trace for requested module:
+./src/styles/index.css @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[   14251ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4028/dashboard:0
+[   14949ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(pages-dir-browser)/./node_modules/react-dom/cjs/react-dom-client.development.js:24594
+[   15201ms] Error: Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+
+    at getCssError (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\parseCss.js:24:16)
+    at getModuleBuildError (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\webpackModuleError.js:115:43)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:29:49)
+    at async (file://D:\Workout OS\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:27:21)
+[   15758ms] [LOG] [HMR] connected @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/websocket.js:45
+[   15783ms] [ERROR] ./src/styles/tailwind.css:7:9
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |  @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.js:76
+[   15784ms] [ERROR] ./src/styles/index.css
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+-- inner error --
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\tailwind.css
+
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\index.css
+ 1 | __webpack_require__.r(__webpack_exports__);
+ 2 | /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+ 3 | /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+ 4 | /* harmony export */ });
+ 5 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\runtime\\api.js");
+ 6 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+ 7 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! -!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./tailwind.css */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\postcss-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\\Workout OS\\src\\styles\\tailwind.css");
+ 8 | // Imports
+ 9 | 
+10 | 
+11 | var ___CSS_LOADER_EXPORT___ = _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(true);
+12 | ___CSS_LOADER_EXPORT___.i(_node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
+13 | // Module
+14 | ___CSS_LOADER_EXPORT___.push([module.id, "@import url('https://fonts.cdnfonts.com/css/sf-pro-display');", "",{"version":3,"sources":["webpack://src/styles/index.css"],"names":[],"mappings":"AAAA,4DAA4D","sourcesContent":["@import url('https://fonts.cdnfonts.com/css/sf-pro-display');\n@import './tailwind.css';"],"sourceRoot":""}]);
+15 | // Exports
+16 | /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+17 | @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.js:76
+[   15906ms] [LOG] {file: Object} @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/compiled/next-devtools/index.js:1630
+[   16623ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/favicon.ico:0
+[   18159ms] [ERROR] ./src/styles/tailwind.css:7:9
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |  @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.js:76
+[   18159ms] [ERROR] ./src/styles/index.css
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+-- inner error --
+Syntax error: D:\Workout OS\src\styles\tailwind.css @apply should not be used with the 'group' utility (7:9)
+
+  5 | @layer components {
+  6 |     .glass-card-premium {
+> 7 |         @apply bg-white/5 dark:bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] relative overflow-hidden group rounded-[2rem];
+    |         ^
+  8 |     }
+  9 |     
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\tailwind.css
+
+Generated code for D:\Workout OS\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\Workout OS\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\Workout OS\src\styles\index.css
+ 1 | __webpack_require__.r(__webpack_exports__);
+ 2 | /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+ 3 | /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+ 4 | /* harmony export */ });
+ 5 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\runtime\\api.js");
+ 6 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+ 7 | /* harmony import */ var _node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! -!../../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[2]!../../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[10].use[3]!./tailwind.css */ "D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\css-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[2]!D:\\Workout OS\\node_modules\\next\\dist\\build\\webpack\\loaders\\postcss-loader\\src\\index.js??ruleSet[1].rules[14].oneOf[10].use[3]!D:\\Workout OS\\src\\styles\\tailwind.css");
+ 8 | // Imports
+ 9 | 
+10 | 
+11 | var ___CSS_LOADER_EXPORT___ = _node_modules_next_dist_build_webpack_loaders_css_loader_src_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(true);
+12 | ___CSS_LOADER_EXPORT___.i(_node_modules_next_dist_build_webpack_loaders_css_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_2_node_modules_next_dist_build_webpack_loaders_postcss_loader_src_index_js_ruleSet_1_rules_14_oneOf_10_use_3_tailwind_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
+13 | // Module
+14 | ___CSS_LOADER_EXPORT___.push([module.id, "@import url('https://fonts.cdnfonts.com/css/sf-pro-display');", "",{"version":3,"sources":["webpack://src/styles/index.css"],"names":[],"mappings":"AAAA,4DAA4D","sourcesContent":["@import url('https://fonts.cdnfonts.com/css/sf-pro-display');\n@import './tailwind.css';"],"sourceRoot":""}]);
+15 | // Exports
+16 | /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+17 | @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.js:76
+[   55036ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:206
+[   60994ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:206
+[   61053ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/webpack/030dca4b2df93db9.webpack.hot-update.json:0
+[   61053ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/dev/hot-reloader/pages/hot-reloader-pages.js:347
+[   63246ms] Invalid or unexpected token
+[   63966ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630

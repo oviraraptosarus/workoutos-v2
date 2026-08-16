@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Bell, Settings2, Droplets, Moon, Dumbbell, Utensils, Zap, Plus, ChevronRight, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getReminderPreferences, updateReminderPreference, ReminderPreference, ReminderConfig } from '@/services/reminderEngine';
+import { supabase } from '@/lib/supabase/client';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 const DEFAULT_REMINDERS = [
@@ -263,32 +264,44 @@ export default function RemindersSettingsPage() {
                             >
                                 {pushLoading ? 'Enabling...' : 'Allow Notifications'}
                             </button>
-                            {permission === 'granted' && (
-                                <button
-                                    onClick={async () => {
-                                        try {
-                                            const { data: { session } } = await supabase.auth.getSession();
-                                            if (!session) return;
-                                            const res = await fetch('/api/notifications/test', {
-                                                method: 'POST',
-                                                headers: { 'Authorization': `Bearer ${session.access_token}` }
-                                            });
-                                            if (!res.ok) alert('Failed to send test push');
-                                        } catch(e) {
-                                            alert('Error sending test push');
-                                        }
-                                    }}
-                                    className="w-full bg-surface-variant text-on-surface-variant font-bold rounded-xl py-3 text-sm hover:bg-surface-variant/80 transition-colors"
-                                >
-                                    Send Test Notification
-                                </button>
-                            )}
                         </div>
                         {permission === 'denied' && (
                             <p className="text-[10px] text-error text-center mt-1">
                                 You have denied permission. Please enable it in your browser settings.
                             </p>
                         )}
+                    </div>
+                )}
+
+                {isSupported && permission === 'granted' && (
+                    <div className="bg-surface-container-low rounded-3xl p-5 border border-primary/20 shadow-sm flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                <Bell size={20} />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-bold text-on-surface">Push Notifications Active</h2>
+                                <p className="text-xs text-on-surface-variant">You are receiving notifications.</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    const { data: { session } } = await supabase.auth.getSession();
+                                    if (!session) return;
+                                    const res = await fetch('/api/notifications/test', {
+                                        method: 'POST',
+                                        headers: { 'Authorization': `Bearer ${session.access_token}` }
+                                    });
+                                    if (!res.ok) alert('Failed to send test push');
+                                } catch(e) {
+                                    alert('Error sending test push');
+                                }
+                            }}
+                            className="w-full bg-surface-variant text-on-surface-variant font-bold rounded-xl py-3 text-sm hover:bg-surface-variant/80 transition-colors"
+                        >
+                            Send Test Notification
+                        </button>
                     </div>
                 )}
 

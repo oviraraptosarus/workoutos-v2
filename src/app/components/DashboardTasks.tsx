@@ -102,7 +102,7 @@ export default function DashboardTasks({ selectedDate }: DashboardTasksProps) {
               new Date().toLocaleDateString("en-CA"),
             due_time: args.dueTime || null,
             reminder_time: args.reminderTime || null,
-            recurrenceRule: args.recurrenceRule || null,
+            recurrence_rule: args.recurrenceRule || null,
             priority: args.priority || "none",
             category: args.category || "General",
           });

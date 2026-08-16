@@ -1,0 +1,21 @@
+[    2192ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[    2539ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_CLOSED @ https://ixqrijxdedtbxondzytn.supabase.co/auth/v1/user:0
+[    2634ms] [ERROR] Operation: AUTH CALL auth @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2634ms] [ERROR] Payload: null @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2634ms] [ERROR] Error: Failed to fetch @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2635ms] [ERROR] HTTP Status: 0 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2635ms] [ERROR] Supabase Error: TypeError: Failed to fetch
+    at customFetch (webpack-internal:///(app-pages-browser)/./src/lib/supabase/client.ts:57:32)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/lib/helpers.js:127:29)
+    at _handleRequest (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:128:24)
+    at _request (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:118:24)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:2711:82)
+    at SupabaseAuthClient._useSession (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:2501:26)
+    at async SupabaseAuthClient._getUser (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:2701:20)
+    at async SupabaseAuthClient.getUser (webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:2685:22)
+    at async getMacroGoals (webpack-internal:///(app-pages-browser)/./src/app/diet/services/dietStorage.ts:280:32)
+    at async DietPage.useEffect.loadGoals (webpack-internal:///(app-pages-browser)/./src/app/diet/page.tsx:73:40) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2636ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[    2767ms] [WARNING] GoTrueClient@sb-ixqrijxdedtbxondzytn-auth-token:1 (2.112.2) 2026-08-09T11:06:09.992Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:184
+[   67724ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[   69290ms] [LOG] [Fast Refresh] done in 1567ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13

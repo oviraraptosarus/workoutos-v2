@@ -1,0 +1,27 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e58]:
+    - button "Back" [ref=f1e60] [cursor=pointer]
+    - generic [ref=f1e63]:
+      - generic [ref=f1e64]:
+        - img "Workout OS Logo" [ref=f1e66]
+        - heading "Create your account" [level=1] [ref=f1e141]
+        - paragraph [ref=f1e68]: Start tracking in under a minute.
+      - generic [ref=f1e199]:
+        - heading "Check your email" [level=2] [ref=f1e204]
+        - paragraph [ref=f1e205]: We sent a confirmation link to test.auditor@gmail.com. Please click the link to activate your account.
+        - paragraph [ref=f1e206]: (If you are the developer testing locally, check your Inbucket or disable Email Confirmations in Supabase settings).
+      - paragraph [ref=f1e112]:
+        - text: Already have an account?
+        - button "Sign in" [ref=f1e185] [cursor=pointer]
+  - generic [ref=f1e52] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f1e53]
+    - generic [ref=f1e189]:
+      - button "Open issues overlay" [ref=f1e190]:
+        - generic [ref=f1e191]:
+          - generic [ref=f1e192]: "5"
+          - generic [ref=f1e193]: "6"
+        - generic [ref=f1e194]:
+          - text: Issue
+          - generic [ref=f1e195]: s
+      - button "Collapse issues badge" [ref=f1e196]
+  - alert [ref=f1e57]

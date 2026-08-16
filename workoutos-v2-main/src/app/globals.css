@@ -1,0 +1,8 @@
+
+@keyframes waveform {
+    0%, 100% { height: 10%; }
+    50% { height: 100%; }
+}
+.animate-waveform {
+    animation: waveform 1s ease-in-out infinite;
+}

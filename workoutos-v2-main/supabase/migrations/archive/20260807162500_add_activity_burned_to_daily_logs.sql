@@ -1,0 +1,1 @@
+ALTER TABLE public.daily_logs ADD COLUMN IF NOT EXISTS activity_burned INTEGER DEFAULT 0;

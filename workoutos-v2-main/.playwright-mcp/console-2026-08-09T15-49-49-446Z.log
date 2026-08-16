@@ -1,0 +1,3 @@
+[   18951ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/chunks/main-app.js?v=1786290607770:0
+[   18952ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/chunks/app-pages-internals.js:0
+[   18952ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4028/_next/static/chunks/app/welcome/page.js:0

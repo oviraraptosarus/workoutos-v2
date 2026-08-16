@@ -1,0 +1,103 @@
+# Workout OS: Development Memory
+
+> **Note:** This file serves strictly as a chronological changelog for major structural, UI, and backend changes. For core rules and architecture patterns, refer to `.agents/AGENTS.md` and `.agents/architecture.md`.
+
+## Recent Milestones & Changes
+
+### August 12, 2026 - AI Copilot Persistence & Time-Travel Logging
+- **Ava Vision AI Migration**: Completely removed the mock-AI "Green Sparkle" feature (`RawDataAITransformerModal`) to strictly enforce the Apple design philosophy and avoid clunky, hardcoded offline text parsing. Upgraded Ava's central intelligence in `route.ts` with Rule 15: whenever a user uploads an image of food and asks to log it, the LLM-Orchestrator's native vision models (Gemini/Claude/GPT-4o) are forced to visually analyze the dish, extract ingredients, estimate calories, and automatically execute the `log_nutrition` tool, populating the new Ingredients Cascade seamlessly.
+- **Meal Cascade Data Loss Fix**: Discovered that `dietStorage.ts` was silently stripping `ingredients` and `icon` properties during `saveMealsForDate` because the `meal_entries` table wasn't configured for them. Created a SQL migration to add `ingredients` (JSONB) and `icon` (TEXT) columns, ensuring the AI's generated UI data (and emoji icons) persist perfectly. Also updated the `RawDataAITransformerModal` mock AI to inject ingredients arrays into its offline parsing results so the cascade works globally.
+- **Meal Cascade iOS UI Polish**: Fixed a mobile layout bug where `flex-col` pushed the MealLogger action buttons (Edit, Delete, Cascade Chevron) to a new line on small screens. Refactored to a strict `flex-row` with proper truncations. Realigned the Ingredients Cascade to perfectly match the `premium-ios-design` rulebook: pulled the "Estimated Breakdown" header outside the glass container, added top/inner light-catching gradients to the nested card, and replaced generic green accents with the native Apple `#0a84ff` blue.
+- **Persistent AI Conversations**: Built a backend infrastructure (`ai_conversations` table) with Row Level Security to persistently save all Ava AI chat logs. Added a sleek, iOS frosted glass History sidebar to the Global AI Copilot, allowing users to seamlessly view, resume, or clear past chats, resolving the issue of AI amnesia. Added strict idempotent protections to the SQL migration and a forced PostgREST cache refresh (`NOTIFY pgrst, 'reload schema'`) to prevent dashboard relation/column desync errors.
+- **Ava UI Polish**: Removed redundant UI elements (like duplicate close/delete buttons) from the Ava chat header. Implemented strict Apple Design philosophy by using authentic `#0a84ff` native blue buttons, subtle `backdrop-blur-3xl` deep glassmorphism effects, and highly refined typographic spacing for the History Sidebar. Added native UI `alert()` pop-ups to immediately catch any silent Supabase failures during chat saving/loading per debugging rules.
+- **Time-Travel Logging**: Discovered and fixed a critical limitation where Ava would blindly log activities to the *current day* even when the user specified "yesterday" or a past date. Injected a dynamic `logDate` parameter into the AI's core tool schemas (`log_workout`, `log_sleep`, `log_nutrition`, `log_water`, `add_expense`, `add_income`). Updated the `GlobalAICopilot.tsx` tool execution engine to intercept this date and properly override the global `dateKey`, enabling perfect historical tracking directly through chat.
+
+### August 11, 2026 - Hub Restructuring & AI Enhancements
+- **Content Vault Implementation**: Built a new dedicated `/vault` page featuring a premium Apple-style grid layout, tabbed navigation (Unread/Consumed), and a sticky URL input bar. Added the VaultWidget to the dashboard with automatic YouTube title fetching.
+- **Light/Dark Mode Fixes**: Refactored hardcoded 'bg-white text-black' classes across VaultWidget and the `/vault` page into semantic `bg-blue-500` or `bg-primary` classes. This ensures all primary action buttons perfectly invert and remain high-contrast in Light Mode.
+- **Voice-to-Text Robustness**: Fixed the root cause of the "hellohellohello" repetition bug in Voice Input. The bug was iterating `event.results` from index 0 on every callback, which re-read all previous results. Fixed by using a `finalRef` approach.
+- **Brain Dump & Reflect Hub Integration**: 
+    - Moved the `EndOfDayReflection.tsx` off the sleep page and centralized it on the planner page's 'Reflect' tab.
+    - Merged the robust voice-recording system into a new `BrainDump.tsx` component that uses an LLM to extract tasks to a checklist for user approval before saving to the `tasks` DB.
+    - Updated the `daily_logs` Supabase schema to explicitly support `raw_transcript` (Text) and `reflection` (Text) for the Reflect Hub.
+- **Persistent Nag Reminders**: Redesigned the `/api/cron/process-reminders` cron job to feature a "nagging" engine. 
+    - If a task passes its deadline, the system reminds the user every 4 hours until it's completed.
+    - Starting at 6:00 PM, the system reminds the user to log sleep and journal entries every 2 hours until fulfilled.
+- **Architecture Overhaul**: Cleaned up scattered `.md` files in the root directory into a unified `.agents/AGENTS.md` master rulebook and a `.agents/architecture.md` blueprint.
+- **View Past Reflections**: Upgraded the EndOfDayReflection component to fetch and display the user's saved reflection from Supabase when they navigate to past dates using the global Date Picker, introducing a read-only 'viewing' state.
+- **Daily Journal UI Restoration**: Completely redesigned the Reflect Hub (EndOfDayReflection.tsx) to restore the preferred premium UI. Re-introduced the "DAILY JOURNAL" card layout with an editable "YOUR WORDS" inset box, distinct Re-record/Save buttons, a word counter, and a "Recent Logs" list fetching the last 5 entries directly from the database.
+- **iOS Voice Message Re-design**: Replaced the Daily Journal text-area form with a sleek, audio-only iOS-style Voice Message bubble widget in EndOfDayReflection.tsx. Features native Apple blue coloring, a CSS-animated waveform, and automatic background processing to strictly adhere to the premium-ios-design philosophy.
+- **Restored Voice-First Daily Journal**: Fully restored the EXACT Voice-First Daily Journal design and architecture built by Claude, per user request. Restored the 4 distinct states:
+    - **Idle**: Big glowing microphone button.
+    - **Recording**: Real-time dancing CSS waveform with live transcript overlay underneath, and a red stop button.
+    - **Processing**: Ava's sparkles pulse while summarizing the raw voice input.
+    - **Done**: Side-by-side cards (Ava's Summary vs Your Words) with Edit capabilities.
+    All colors completely rely on semantic tokens (secondary, surface-container, on-surface) for flawless Dark/Light mode integration.
+- **Daily Journal UI Enhancements**: Upgraded the action buttons to use iOS native pill shapes, added the ability to edit Ava's Summary, added an explicit "Save Edits" feature in viewing mode, and added a delete button to Recent Journals.
+- **Unified UI Theme**: Applied the premium 'Brain Dump' header and container styling (gradient borders, squircle icons, large typography) across the Content Vault and Daily Journal components for a completely unified, Apple-like dashboard experience.
+- **Execution OS Icons & Quests Styling**: Changed the generic Target icon to specialized ones for Daily Quests (Zap / lightning) and Macro Goals (Trophy). Fully applied the premium 'Brain Dump' container styling (frosted glass, gradients) to the Daily Quests tab to match the rest of the interface perfectly.
+- **Unified Spacing & Icon Colors**: Tightened the gap spacing between the header icons and titles across all Execution OS tabs (from gap-4 to gap-3) to match Apple's native spacing conventions. Standardized all icon colors in the Execution OS headers to use the exact same Apple Blue (\secondary\) for perfect visual consistency.
+- **Journal Archive Redesign**: Replaced the standard 5-item list with a Notion-style grouped accordion UI. Journal logs are now grouped by Month/Year (e.g., "August 2026") and the header floats outside the widget glass container per Apple guidelines.
+- **Multiple Journals per Day**: Upgraded the Reflect Hub's save mechanism to support multiple entries on the same day by appending new entries with a timestamp instead of overwriting existing ones.
+- **AI Context Integration**: Added `reflection` and `raw_transcript` fields to the Global AI Copilot's `daily_logs` fetch, granting the AI access to read past journal entries.
+- **Data Export & Import**: Built a comprehensive `DataExportImport` component in the Profile settings that seamlessly exports all major Supabase tables (journals, sleep, workouts, tasks, meals, AI memories) to a JSON backup file and supports upserting data from a backup.
+- **Mobile Voice & Auto-Save Fixes**: 
+    - Resolved a critical bug where `SpeechRecognition` failed to transcribe on mobile devices (iOS/Android). The issue was caused by `getUserMedia` locking the microphone to render the real-time CSS waveform. Implemented a user-agent check to bypass Web Audio API on mobile and simulate the waveform, allowing native dictation to take exclusive mic access.
+    - Simplified the "Save Entry" flow by removing the prompt popup and auto-accepting Ava's summary directly to reduce friction.
+    - Fixed a bug in the global AI Copilot's voice handler where the `onresult` listener double-accumulated previously confirmed voice chunks on mobile.
+- **FOUC & Splash Quote Fixes**: 
+    - Fixed a Light Mode Flash of Unstyled Content (FOUC) on initial load by injecting a synchronous, blocking `<script>` tag in `layout.tsx` to read the theme from `localStorage` before React hydrates.
+    - Fixed the Daily Quote mismatch between the Splash Screen and the Dashboard Header by syncing the randomly chosen quote to `sessionStorage`.
+    - Prevented the Splash Screen from triggering on every page load by persisting a `workout_os_splash_seen` flag in `sessionStorage`.
+- **Reflect Hub Enhancements**:
+    - Converted the Live Transcript view into an interactive `<textarea>`. Users can now tap the text at any point while recording to pause the microphone and seamlessly switch to manual typing, mimicking the native iOS dictation keyboard experience.
+- **Dictation Platform-Aware Architecture**:
+    - Discovered and neutralized a fatal event flaw in Android Chrome where `continuous=true` fails to advance `resultIndex`, falsely marks historical interim snapshots as `isFinal=true`, and appends them to `e.results` recursively. 
+    - Completely replaced the standard Web Speech loop with a Platform-Aware State Machine across all 5 dictation interfaces. On Desktop, it preserves standard behavior. On Android, it exclusively reads the final index and disables `auto-restart` to prevent Android's background speech service from compounding the audio buffer upon reconnection.
+
+### August 12, 2026 - Brain Dump UI Refactor & Smart Task Routing
+- **Brain Dump UI Refactor**: Completely redesigned the Brain Dump UI and AI extraction logic. Instead of breaking unstructured dumps into a fragmented array of "readings," the AI now generates a single, cohesive journal summary block (formatted with paragraphs and bullets). Any actionable tasks extracted are displayed below the summary as an unchecked checklist, preventing them from polluting the user's task list by default. Users must explicitly check tasks to save them, alongside saving the summary directly to their journal via a toggle.
+- **Smart Task Routing (NLP Time Extraction)**: Upgraded the 'Daily Quests' quick-add input (`DashboardTasks.tsx`) and Global AI Copilot to utilize Smart AI parsing. If a user types a time (e.g., "make my bed at 7am") in any task input, the AI flawlessly extracts the ISO timestamp and sets it as `reminder_time`. The tasks are now correctly routed to the Reminders widget instead of falling back to generic daily quests.
+- **Push Notification Stability**: Fixed a silent hanging issue in `usePushNotifications.ts` by explicitly registering the Service Worker before awaiting `.ready`. Added explicit VAPID key validation to throw clear native UI alerts if keys are missing from the Vercel environment, drastically improving debugging visibility.
+- **Store Fallback Resilience**: Hardened `useTaskStore.ts` insertion logic to gracefully degrade and retry if the Supabase `recurrence_rule` column isn't migrated yet, preventing silent failures when users add tasks on an out-of-sync production database.
+
+### August 13, 2026 - Budget Tracker Overhaul & iOS Styling Refinements
+- **Budget Tracker Layout Fix**: Moved the `FinancialReminders` widget to the bottom row next to the Income and Expense logs to fix a vertical layout overlap bug where it squeezed underneath the Category Breakdown chart.
+- **Financial Reminders Backend**: Migrated the `FinancialReminders.tsx` widget from generic `localStorage` to a fully synchronized cloud backend using the Supabase `financial_reminders` table, implementing RLS policies and optimistic UI rendering.
+- **Automated Financial Push Notifications**: Integrated financial reminders into the existing cron processor (`src/app/api/cron/process-reminders/route.ts`). Added a `notification_sent` tracker column. The system now automatically dispatches push notifications exactly once on or after the reminder's due date at 9:00 AM local time.
+- **Budget Log Pagination**: Implemented custom pagination state ("Show More" logic, starting at 5 items) for both `IncomeTable.tsx` and `ExpenseTable.tsx` to prevent long lists from stretching the UI vertically, keeping the tracker interface dense and Apple-like.
+- **iOS Modals Refinement**: Updated `EditFoodModal.tsx` to strictly adhere to the `premium-ios-design` rulebook. Removed generic blocky backgrounds and replaced them with `glass-card-premium`, standard `font-label-sm` typographic styling, and authentic iOS blue (`#0a84ff`) active states for toggles.
+
+ -   2 0 2 6 - 0 8 - 1 3   -   F i x e d   ' O n   p a c e '   a n d   ' O v e r   p a c e '   b a d g e   s t y l e s   i n   t h e   B u d g e t S u m m a r y C a r d s   t o   p r o p e r l y   d i s p l a y   i n   b o t h   l i g h t   a n d   d a r k   m o d e s .  
+ 
+- **UI Fix**: Fixed New Macro Goal form layout on the planner page to stack Life Area and Target Date vertically on mobile devices, preventing horizontal squishing of the dropdown.
+
+ -   2 0 2 6 - 0 8 - 1 3   -   F i x e d   ' O n   p a c e '   a n d   ' O v e r   p a c e '   b a d g e   s t y l e s   i n   t h e   B u d g e t S u m m a r y C a r d s   t o   p r o p e r l y   d i s p l a y   i n   b o t h   l i g h t   a n d   d a r k   m o d e s .  
+ 
+- **UI Fix**: Fixed New Macro Goal form layout on the planner page to stack Life Area and Target Date vertically on mobile devices, preventing horizontal squishing of the dropdown.
+
+- **UI Fix**: Fixed overflowing 'Save to Archive' buttons in the Brain Dump component by using flex-wrap, ensuring proper wrapping on mobile screens.
+
+- **UI Fix**: Fixed overflowing 'Discard All' and 'Save Selected' buttons in the Brain Dump component by using flex-col on mobile screens, and added bottom padding to ensure they are fully visible above the bottom navigation bar.
+
+- **UI Fix**: Redesigned Brain Dump bottom action buttons (Discard All & Save Selected) to be side-by-side, equal-width, pill-shaped buttons with whitespace-nowrap to prevent wrapping and adhere to the premium iOS design rules on mobile.
+
+- **Feature Addition**: Added ability to log context (description) and categorize items in the Content Vault. Modified content_vault schema, and implemented expandable UI forms in src/app/vault/page.tsx and src/app/planner/page.tsx following premium iOS guidelines.
+
+- **Bug Fix / Feature**: Enabled backdating of journal entries in `EndOfDayReflection.tsx` by replacing the `isToday` check with a check for `offsetDays > 0`, allowing users to navigate to past dates and log forgotten journal entries.
+
+- **Bug Fix**: Fixed a bug in `VaultWidget.tsx` where the "more saved in your vault" count was capped at +7 due to a `.limit(10)` query. Replaced it with a `{ count: 'exact' }` query to get the true total count of unread items. Also updated the Mark Consumed action to properly set `status: "consumed"` and refetch to keep the widget grid full.
+
+- **Bug Fix**: Fixed a silent database failure in `GlobalAICopilot.tsx` when the AI logged sleep times in conversational formats (like "10 PM"). The system previously used a naive string length check (`length === 5`), which incorrectly appended ":00" to "10 PM", creating invalid Postgres time strings (e.g., "10 PM:00"). This caused the database upsert to fail saving the bedtime/waketime (resulting in "—" dashes on the Sleep Card) despite saving the total hours. Implemented a robust Regex time parser to standardize all AI outputs into valid "HH:MM:00" 24-hour formats before saving.
+
+- **Crash Fix**: Fixed a fatal client-side React rendering crash in `EditFoodModal.tsx` that occurred whenever a user clicked on a logged food item to edit it. The component was trying to use undeclared variables (`isSubmitting` and `Loader2`) and a missing import (`Check`) for its submit button state, causing an instant `ReferenceError`. Removed the undefined variables and correctly imported `Check` from `lucide-react` to restore full editing functionality.
+
+- **Legal Compliance**: Completely rewrote `src/app/privacy/page.tsx` and `src/app/terms/page.tsx` for India-specific legal compliance. Privacy Policy now covers all features (AI Copilot, voice dictation, Content Vault, Budget Tracker, sleep/fitness/nutrition logging, push notifications, Data Export, Brain Dump) under the DPDP Act 2023, IT Act 2000, and SPDI Rules 2011, including a Grievance Officer, Data Principal rights, cross-border transfer disclosures, and retention policies. Terms of Service covers health/medical disclaimer, AI hallucination disclaimer, financial tracking disclaimer, voice dictation consent, child mode, acceptable use, and dispute resolution under Indian law. Both documents updated to version effective 15 August 2026.
+
+- **UI & Feature Polish**: Upgraded the Welcome Screen (`AuthScreen.tsx`) to a premium iOS bento-box layout with animated gradient blurs, floating logo, and elevated typography. Updated the Data Export/Import utility (`DataExportImport.tsx`) to include all recently added tables (`content_vault`, `ai_conversations`, `financial_reminders`, `progress_photos`), ensuring complete 100% data portability for user backups.
+
+- **Bug Fix**: Fixed a critical caching issue where XP gains (from logging workouts, meals, tasks) were successfully saving to the database but failing to update on the frontend UI until a hard browser refresh. Implemented a real-time event listener (`workout_os_xp_awarded`) in `AuthContext.tsx` that instantly triggers a profile refetch and updates the XP Progress Bar dynamically.
+- **UI Enhancement**: Completely overhauled the XP naming/ranking system in `xpService.ts`. Replaced the repetitive "IRON" titles (e.g., "IRON NOVICE", "IRON TRAINEE") with a cleaner, premium RPG progression system (NOVICE → RECRUIT → APPRENTICE → CHALLENGER → WARRIOR → VETERAN → GLADIATOR → MASTER → GRANDMASTER → TITAN → LEGEND).
+- **Critical Auth Fix**: Fixed an "infinite loading screen" bug on the Authentication page where client-side rendering would hang indefinitely. Implemented a robust 3-second safety fallback timeout in `AuthContext` to ensure the session loading state always resolves, preventing users from getting locked out if local storage or Supabase fetch intercepts hang.
+- **Welcome Slideshow Ambiance**: Overhauled the `/welcome` pre-login slideshow to adhere to the Apple Intelligence premium aesthetic. Injected rich, animated background blobs (`bg-[#0a84ff]` and `bg-[#bf5af2]`) with dynamic pulsing, updated the typography for maximum contrast, and modernized the "Get Started" CTA button.
+- **App Stability & Hydration**: Cleaned up a dead `Onboarding` component import in `AuthScreen.tsx` that could silently cause client-side hydration freezing in Next.js edge cases.

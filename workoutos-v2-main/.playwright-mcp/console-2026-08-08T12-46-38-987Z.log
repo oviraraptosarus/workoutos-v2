@@ -1,0 +1,13 @@
+[    1193ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[   12121ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:4028/sign-up-login-screen:0
+[   12121ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:4028/sign-up-login-screen:0
+[   28254ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:4028/sign-up-login-screen:0
+[  115173ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:4028/sign-up-login-screen:0
+[  115173ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:4028/sign-up-login-screen:0
+[  988068ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ixqrijxdedtbxondzytn.supabase.co/auth/v1/signup:0
+[  988071ms] [ERROR] Operation: AUTH CALL auth @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  988071ms] [ERROR] Payload: {email: test.auditor@workoutos.local, password: TestPassword123!, data: Object, gotrue_meta_security: Object, code_challenge: null} @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  988071ms] [ERROR] Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  988071ms] [ERROR] HTTP Status: 400 @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  988071ms] [ERROR] Supabase Error: <HTTP 400> @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[  988071ms] [ERROR] Suggested Root Cause: Check payload structure, RLS policies, or authentication session state. @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56

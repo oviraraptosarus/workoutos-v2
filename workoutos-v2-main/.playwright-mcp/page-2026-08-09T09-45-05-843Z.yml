@@ -1,0 +1,47 @@
+- generic:
+  - generic [active]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - navigation [ref=e6]:
+          - button [disabled] [ref=e7]:
+            - img "previous" [ref=e8]
+          - generic [ref=e10]:
+            - generic [ref=e11]: 1/
+            - text: "1"
+          - button [disabled] [ref=e12]:
+            - img "next" [ref=e13]
+        - link "Next.js 15.5.18 (outdated) Webpack" [ref=e16] [cursor=pointer]:
+          - /url: https://nextjs.org/docs/messages/version-staleness
+          - generic "An outdated version detected (latest is 16.3.0), upgrade is highly recommended!" [ref=e19]: Next.js 15.5.18 (outdated)
+          - generic [ref=e20]: Webpack
+      - dialog "Build Error" [ref=e22]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e28]: Build Error
+              - generic [ref=e30]:
+                - button "Copy Error Info" [ref=e31] [cursor=pointer]
+                - link "Go to related documentation" [ref=e34] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/messages/module-not-found
+                - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e37] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+            - paragraph [ref=e47]: "Module not found: Can't resolve '@supabase/ssr'"
+          - generic [ref=e49]:
+            - generic [ref=e51]:
+              - generic [ref=e56]: ./src/app/page.tsx (2:1)
+              - button "Open in editor" [ref=e57] [cursor=pointer]
+            - generic [ref=e63]:
+              - text: "Module not found: Can't resolve '@supabase/ssr' 1 | import { redirect } from 'next/navigation'; > 2 | import { createServerClient, type CookieOptions } from '@supabase/ssr'; | ^ 3 | import { cookies } from 'next/headers'; 4 | 5 | export default async function Home() {"
+              - link "https://nextjs.org/docs/messages/module-not-found" [ref=e64] [cursor=pointer]:
+                - /url: https://nextjs.org/docs/messages/module-not-found
+        - generic [ref=e65]:
+          - generic [ref=e66]: "1"
+          - generic [ref=e67]: "2"
+    - generic [ref=e72] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e73]
+      - button "Open issues overlay" [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]: "0"
+          - generic [ref=e81]: "1"
+        - generic [ref=e82]: Issue
+  - alert [ref=e83]

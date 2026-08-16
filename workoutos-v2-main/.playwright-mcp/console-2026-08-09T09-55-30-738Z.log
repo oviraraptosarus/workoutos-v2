@@ -1,0 +1,163 @@
+[    1633ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[    2556ms] [WARNING] GoTrueClient@sb-ixqrijxdedtbxondzytn-auth-token:1 (2.112.2) 2026-08-09T09:55:33.286Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:184
+[  172010ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  174622ms] [LOG] [Fast Refresh] done in 2612ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  235331ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[  490253ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  491558ms] [LOG] [Fast Refresh] done in 1306ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  524142ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  525231ms] [LOG] [Fast Refresh] done in 1089ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  551514ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  553058ms] [LOG] [Fast Refresh] done in 1544ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  616909ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  620066ms] [LOG] [Fast Refresh] done in 3156ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  840801ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  842852ms] [LOG] [Fast Refresh] done in 2051ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  849775ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[  849775ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[  849776ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T10:09:40.511Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "light"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[  849776ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[  849777ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[  849777ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T10:09:40.514Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "light"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[  850032ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[  850033ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[  850033ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[  850033ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[  850034ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[  850034ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[  850034ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[  850034ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[  910717ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  913430ms] [LOG] [Fast Refresh] done in 2713ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  914116ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  916836ms] [LOG] [Fast Refresh] done in 2720ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[  923656ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[  925788ms] [LOG] [Fast Refresh] done in 2132ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1295827ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1296925ms] [LOG] [Fast Refresh] done in 1097ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1380348ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1381246ms] [LOG] [Fast Refresh] done in 898ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1394613ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1395321ms] [LOG] [Fast Refresh] done in 709ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1406732ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1407743ms] [LOG] [Fast Refresh] done in 1011ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1417518ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1418468ms] [LOG] [Fast Refresh] done in 950ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1437344ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1438136ms] [LOG] [Fast Refresh] done in 792ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1894169ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1895476ms] ReferenceError: onClose is not defined
+    at ActiveSplitCard (webpack-internal:///(app-pages-browser)/./src/app/workout/components/ActiveSplitCard.tsx:334:30)
+    at Object.react_stack_bottom_frame (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:23584:20)
+    at renderWithHooks (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:6793:22)
+    at updateFunctionComponent (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:9247:19)
+    at beginWork (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:10858:18)
+    at runWithFiberInDEV (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:872:30)
+    at performUnitOfWork (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15727:22)
+    at workLoopSync (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15547:41)
+    at renderRootSync (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15527:11)
+    at performWorkOnRoot (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15034:44)
+    at performSyncWorkOnRoot (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16831:7)
+    at flushSyncWorkAcrossRoots_impl (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16677:21)
+    at flushSyncWork$1 (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15297:12)
+    at Object.scheduleRefresh (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:114:9)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-refresh/cjs/react-refresh-runtime.development.js:265:17)
+    at Set.forEach (<anonymous>)
+    at Object.performReactRefresh (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-refresh/cjs/react-refresh-runtime.development.js:254:26)
+    at applyUpdate (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/@next/react-refresh-utils/dist/internal/helpers.js:139:31)
+    at statusHandler (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/@next/react-refresh-utils/dist/internal/helpers.js:156:13)
+    at setStatus (http://localhost:4028/_next/static/chunks/webpack.js?v=1786269330834:498:55)
+    at http://localhost:4028/_next/static/chunks/webpack.js?v=1786269330834:667:21
+[ 1895477ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:113
+[ 1898105ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[ 1898245ms] [WARNING] GoTrueClient@sb-ixqrijxdedtbxondzytn-auth-token:1 (2.112.2) 2026-08-09T10:27:08.969Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:184
+[ 1908177ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1910530ms] [LOG] [Fast Refresh] done in 2353ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1926408ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1927005ms] [LOG] [Fast Refresh] done in 597ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1937520ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1938689ms] [LOG] [Fast Refresh] done in 1168ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 1954850ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 1955644ms] [LOG] [Fast Refresh] done in 794ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2003452ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2004219ms] [LOG] [Fast Refresh] done in 767ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2022838ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2023476ms] [LOG] [Fast Refresh] done in 638ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2040943ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2041604ms] [LOG] [Fast Refresh] done in 661ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2051521ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2052076ms] [LOG] [Fast Refresh] done in 555ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2060949ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2061537ms] [LOG] [Fast Refresh] done in 589ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2075624ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2076437ms] [LOG] [Fast Refresh] done in 813ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2141356ms] ReferenceError: onClose is not defined
+    at ActiveSplitCard (webpack-internal:///(app-pages-browser)/./src/app/workout/components/ActiveSplitCard.tsx:334:30)
+    at Object.react_stack_bottom_frame (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:23584:20)
+    at renderWithHooks (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:6793:22)
+    at updateFunctionComponent (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:9247:19)
+    at beginWork (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:10858:18)
+    at runWithFiberInDEV (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:872:30)
+    at performUnitOfWork (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15727:22)
+    at workLoopSync (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15547:41)
+    at renderRootSync (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15527:11)
+    at performWorkOnRoot (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:15034:44)
+    at performSyncWorkOnRoot (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16831:7)
+    at flushSyncWorkAcrossRoots_impl (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16677:21)
+    at processRootScheduleInMicrotask (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16715:9)
+    at eval (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:16850:13)
+[ 2213458ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2214877ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:113
+[ 2218046ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.development.js:25630
+[ 2218172ms] [WARNING] GoTrueClient@sb-ixqrijxdedtbxondzytn-auth-token:1 (2.112.2) 2026-08-09T10:32:28.896Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ webpack-internal:///(app-pages-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:184
+[ 2223420ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2225293ms] [LOG] [Fast Refresh] done in 1873ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2381260ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2382893ms] [LOG] [Fast Refresh] done in 1632ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2501369ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. In a future version, Next.js will no longer automatically disable smooth scrolling during route transitions. To prepare for this change, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/shared/lib/utils/warn-once.js:15
+[ 2549062ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[ 2549062ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[ 2549062ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T10:37:59.797Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "dark"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[ 2549062ms] [LOG] ================ DATABASE OPERATION LOG ================ @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:174
+[ 2549062ms] [LOG] 1. SQL being executed: UPSERT profiles (via supabase.from('profiles').upsert) @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:175
+[ 2549063ms] [LOG] 2. Payload: {
+  "id": "5e1d3715-4f0c-4473-99e6-1a00220be6d9",
+  "updated_at": "2026-08-09T10:37:59.800Z",
+  "email": "googletestor@gmail.com",
+  "full_name": "Test Auditor",
+  "username": "googletestor_6071",
+  "theme": "dark"
+} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:176
+[ 2549289ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[ 2549289ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[ 2549289ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[ 2549289ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[ 2549290ms] [LOG] 3. Returned data: {id: 5e1d3715-4f0c-4473-99e6-1a00220be6d9, email: googletestor@gmail.com, full_name: Test Auditor, username: googletestor_6071, dob: 2001-08-08} @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:180
+[ 2549290ms] [LOG] 4. Returned error: null @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:181
+[ 2549290ms] [LOG] 5. HTTP status: 200 @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:182
+[ 2549290ms] [LOG] ======================================================== @ webpack-internal:///(app-pages-browser)/./src/contexts/AuthContext.tsx:186
+[ 2594495ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2596232ms] [LOG] [Fast Refresh] done in 1736ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13
+[ 2727236ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/hot-reloader/app/hot-reloader-app.js:196
+[ 2728933ms] [LOG] [Fast Refresh] done in 1696ms @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/dev/report-hmr-latency.js:13

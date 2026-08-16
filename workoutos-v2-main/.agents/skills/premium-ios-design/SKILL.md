@@ -1,0 +1,43 @@
+---
+name: premium-ios-design
+description: Design principles and architecture guidelines for creating premium, native-feeling iOS style applications. Applies to styling, micro-animations, layouts, and UX patterns.
+---
+
+# Premium iOS Design & Architecture Guidelines
+
+When building or modifying applications to achieve a "Premium iOS / Apple-like" aesthetic, adhere strictly to the following architectural and design rules. These rules ensure the web app feels like a high-end native mobile app rather than a clunky web wrapper.
+
+## 1. Spatial Architecture & Layout
+- **No Floating Action Buttons (FABs):** FABs are an Android Material Design pattern. On mobile web, they often clip into content, obscure bottoms of cards, and conflict with keyboards. 
+- **Action Placement:** Place global utility actions (like AI Copilots or Settings) in the Top Navigation Bar (e.g., as a right-aligned icon) or seamlessly integrated into a Bottom Tab Bar.
+- **Compactness over Padding:** Do not use excessively large paddings (`p-8` or `p-10`) or huge headings (`text-3xl` or `text-4xl`) on mobile screens. True native apps value information density while maintaining breathing room. Scale down to `p-4` or `p-5` on mobile, and use `text-xl` or `text-lg` for section headers.
+- **Widget-Style Layouts:** For dashboards and cards, mimic iOS Home Screen widgets. Use `rounded-[2rem]` (approx 32px), align text to the top-left or bottom-left (avoid centering everything). **Crucial Widget Theme Rule:** A widget's Header (e.g. icon + Title + "View All" link) must **float OUTSIDE** the glass card container, sitting directly on the surface background. Do not wrap headers inside the glass container.
+- **Scrolling Behavior:** Avoid horizontally scrolling segmented controls or tabs on mobile unless absolutely necessary. Compress them into a single row (`flex-1` evenly distributed) or use a native-style `<select>` if there are too many.
+
+## 2. Aesthetic Layering (Glassmorphism & Depth)
+- **Glassmorphism:** Use semi-transparent backgrounds with backdrop blur to create depth (e.g., `glass-card-premium`).
+- **Inner Gradients:** Every premium glass card must have these internal layers to simulate light reflection:
+  ```html
+  <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+  <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+  ```
+- **Borders as Light Catchers:** Always pair glass elements with a subtle, low-opacity border to act as a "light catcher" (`border border-white/20 dark:border-white/10`).
+- **Shadows:** Avoid flat, hard shadows. Use deep, colored, or highly diffused drop shadows (`shadow-[0_8px_32px_rgba(0,0,0,0.25)]` or `hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]`).
+
+## 3. Micro-Animations & State Feedback
+- **Active States:** Every interactive element MUST have an active state that provides immediate physical feedback. The standard iOS behavior is a slight scale down: `active:scale-95 transition-transform`.
+- **Hover States:** For desktop usage, include subtle hover states (`hover:-translate-y-0.5`, `group-hover:opacity-100`).
+- **Enter/Exit Animations:** Use `animate-in fade-in slide-in-from-bottom-8 duration-700` for cards entering the viewport. Nothing should just "appear" instantly.
+
+## 4. Typography & Iconography
+- **Typography:** Use modern, geometric sans-serif fonts (e.g., Inter, SF Pro, Outfit). Avoid humongous font sizes; native iOS typography is legible but extremely restrained. Use small, tightly tracked uppercase labels (`font-label-sm text-[11px] uppercase tracking-wider`) for widget headers and metadata. 
+- **Colors & Buttons:** Use the native iOS Blue (`#0a84ff` or `#007aff`) for primary action buttons, links, toggles, and circular "+" icons to instantly communicate interactivity. Primary buttons MUST use this iOS blue rule rather than generic white/gray. Ensure high contrast against the background (e.g. white text/icons on the blue button). Use a specific light mode and dark mode version if needed.
+- **Icons:** Avoid cliché icons (e.g., generic Sparkles for AI). Use thoughtful, unique iconography (e.g., Orbit, Aperture, BrainCircuit) from libraries like Lucide.
+- **Icon Sizing:** Keep icons proportionate. On mobile, `w-5 h-5` or `w-6 h-6` inside a `w-10 h-10` rounded wrapper is the sweet spot.
+
+## 5. Execution Workflow for Agents
+When prompted to "make it look good" or "use Apple design":
+1. Check the DOM for overlapping elements (especially `fixed bottom-*`). Move them to the TopNav.
+2. Check for overly large text or padding on mobile breakpoints (`sm:p-8` instead of raw `p-8`).
+3. Apply glassmorphism and `active:scale-95` to all buttons.
+4. Ensure dark mode and light mode contrast is handled via opacity layers (e.g., `bg-black/20` in light mode, `bg-white/10` in dark mode) rather than hardcoded hex colors.

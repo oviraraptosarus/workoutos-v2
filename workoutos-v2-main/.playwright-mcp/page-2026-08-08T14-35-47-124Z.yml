@@ -1,0 +1,10 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e9]:
+    - generic [ref=f10e10] [cursor=pointer]
+    - generic [ref=f10e11] [cursor=pointer]
+  - generic:
+    - generic:
+      - heading "\"Tell me, what is it you plan to do with your one wild and precious life?\"" [level=1]
+      - paragraph: — Mary Oliver
+  - generic:
+    - button "Get Started"

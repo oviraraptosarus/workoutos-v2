@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useProfileStats } from '@/lib/hooks/useProfileStats';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
-import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone, Activity, Camera, ExternalLink, Moon, Settings, Zap, ArrowLeft, LogOut, FileText, User as UserIcon, Bell } from 'lucide-react';
+import { ChevronRight, Download, Upload, Check, AlertTriangle, MonitorSmartphone, Activity, Camera, ExternalLink, Moon, Settings, Zap, ArrowLeft, LogOut, FileText, User as UserIcon, Bell, Trash2 } from 'lucide-react';
 import ProgressPhotosRow, { ProgressPhotoItem } from '@/components/progress/ProgressPhotosRow';
 import ProgressPhotoGalleryModal from '@/components/progress/ProgressPhotoGalleryModal';
 import WeightWeighInPromptModal from '@/components/progress/WeightWeighInPromptModal';
@@ -795,7 +795,7 @@ export default function ProfileHub() {
             try {
                 // Verification: Re-authenticate to prove identity
                 const { error: signInError } = await supabase.auth.signInWithPassword({
-                    email: formData.email,
+                    email: formData.email || '',
                     password: currentPassword,
                 });
                 

@@ -1,0 +1,252 @@
+This is the prompt I'd use myself. It forces the AI to behave like an examiner, analyst, and study-material author all at once.
+
+---
+
+# EXAM MASTER BLUEPRINT PROMPT
+
+I have uploaded a ZIP file containing:
+
+* Lecture modules/PPTs
+* Previous year papers
+* Sessional papers
+* Mid papers
+* End-sem papers
+* Assignments
+* Lab manuals
+* Sample papers
+* Any other study material
+
+Your job is **NOT** to summarize these files.
+
+Your job is to reverse-engineer the examiner's thinking and build the **ultimate revision book ("Baby Bullet Book")** for every subject in this ZIP.
+
+## Phase 1 — Crawl Everything
+
+* Crawl every folder and subfolder.
+* Open every PDF, PPT, DOC, DOCX, image, and text file.
+* Do not skip files because they seem duplicated.
+* Merge duplicates only after verifying they are identical.
+* Identify all subjects automatically.
+* Separate the analysis subject-wise.
+
+---
+
+## Phase 2 — Reverse Engineer Every Subject
+
+For every subject:
+
+* Determine the exact syllabus.
+* Determine Units.
+* Identify the programming language (if applicable).
+* Ignore unrelated languages unless the concept is identical.
+* Extract every question from every paper.
+
+Create one master database.
+
+For every question record:
+
+* Unit
+* Topic
+* Subtopic
+* Marks
+* Question type
+* Previous paper
+* Year
+* Concept tested
+
+---
+
+## Phase 3 — Find the Hidden Blueprint
+
+Do NOT treat different wording as different questions.
+
+Merge them into **Question Models**.
+
+Example:
+
+Insert into linked list
+
+Insert node at position
+
+Insertion in SLL
+
+↓
+
+Question Model:
+**SLL Insertion**
+
+Do this for every subject.
+
+---
+
+## Phase 4 — Frequency Analysis
+
+For every Question Model calculate:
+
+* Number of occurrences
+* Previous papers
+* Marks asked
+* Variations
+* Difficulty
+* Units covered
+
+Rank:
+
+* Extremely High
+* High
+* Medium
+* Low
+
+using actual evidence.
+
+---
+
+## Phase 5 — Examiner Pattern
+
+Identify:
+
+* Favorite topics
+* Favorite diagrams
+* Favorite derivations
+* Favorite proofs
+* Favorite numerical problems
+* Favorite algorithms
+* Favorite programs
+* Favorite theory questions
+* Questions that always repeat
+* Questions that alternate every year
+* Questions that replace each other
+
+Find hidden patterns instead of obvious ones.
+
+---
+
+## Phase 6 — Sure-Shot Question Bank
+
+Create the **minimum** number of question models required to maximize marks.
+
+Separate into:
+
+### 2 Marks
+
+Include every high-probability definition, difference, syntax, property, formula, short note, diagram, and concept.
+
+---
+
+### 5 Marks
+
+Include every important algorithm, derivation, numerical problem, explanation, trace table, proof, program, or conceptual model.
+
+---
+
+### 8/10/15 Marks (depending on subject)
+
+Include every complete question model:
+
+* Long answers
+* Derivations
+* Programs
+* Case studies
+* Diagrams
+* Numerical problems
+
+Include every important variation.
+
+---
+
+## Phase 7 — Baby Bullet Book
+
+Create a complete revision guide.
+
+For every question include:
+
+* Exact exam-style wording
+* Marks
+* Unit
+* Frequency
+* Confidence
+* Previous appearances
+* Similar variations
+* Diagrams wherever needed
+* Tables wherever needed
+* Flowcharts wherever needed
+
+Do NOT provide full answers unless required.
+
+---
+
+## Phase 8 — Killer Revision Pack
+
+At the end of every subject produce:
+
+### 1. 20 Most Important Questions
+
+Exactly in university exam style.
+
+---
+
+### 2. 10 Must-Draw Diagrams
+
+Exactly as expected in exams.
+
+---
+
+### 3. 20 One-Liners
+
+Definitions, formulas, properties.
+
+---
+
+### 4. Common Examiner Traps
+
+Mistakes students make.
+
+---
+
+### 5. Last Night Revision
+
+A 5-page ultra-condensed revision containing only the highest-yield concepts.
+
+---
+
+### 6. 90% Marks Roadmap
+
+If I only have:
+
+* 6 hours
+* 3 hours
+* 1 hour
+
+tell me exactly what to study in order.
+
+---
+
+## Phase 9 — Evidence-Based Prediction
+
+Predict the most likely question models for the next exam using:
+
+* Historical frequency
+* Recent trends
+* Syllabus coverage
+* Examiner rotation
+
+Do **not** claim certainty. Clearly state these are evidence-based probability estimates, not guarantees.
+
+---
+
+## Output Format
+
+For **every subject**, generate:
+
+* Exam Blueprint
+* Frequency Analysis
+* Question Models
+* Sure-Shot Question Bank
+* Baby Bullet Book
+* 20 Most Important Questions
+* Diagrams
+* Last Night Revision Notes
+* 90% Marks Roadmap
+* Evidence-Based Prediction
+
+Make it look like a premium exam-preparation book rather than a simple summary. Focus on maximizing expected marks with the least study time. Never invent questions or patterns that are not supported by the uploaded materials.

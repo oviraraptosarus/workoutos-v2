@@ -1,0 +1,65 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e7]:
+    - button "Back" [ref=f3e42] [cursor=pointer]
+    - generic [ref=f3e8]:
+      - generic [ref=f3e9]:
+        - img "Workout OS Logo" [ref=f3e46]
+        - heading "Create your account" [level=1] [ref=f3e87]
+        - paragraph [ref=f3e48]: Start tracking in under a minute.
+      - generic [ref=f3e88]:
+        - button "Continue with Google" [ref=f3e89] [cursor=pointer]
+        - generic [ref=f3e95]: or with email
+        - generic [ref=f3e99]: Your profile stays private and synced to your account.
+        - generic [ref=f3e132]: This username is already taken. Please choose another.
+        - generic [ref=f3e104]:
+          - generic [ref=f3e105]: Full Name
+          - textbox "Full Name" [ref=f3e107]:
+            - /placeholder: Alex Johnson
+            - text: Risky Websites Protech
+        - generic [ref=f3e108]:
+          - generic [ref=f3e109]: Username
+          - textbox "Username" [ref=f3e111]:
+            - /placeholder: workout_warrior
+            - text: forriskywebsitesprotech
+        - generic [ref=f3e112]:
+          - generic [ref=f3e113]: Email Address
+          - textbox "Email Address" [ref=f3e115]:
+            - /placeholder: alex@workoutos.com
+            - text: forriskywebsitesprotech@gmail.com
+        - generic [ref=f3e116]:
+          - generic [ref=f3e117]:
+            - generic [ref=f3e118]: Password
+            - textbox "Password" [ref=f3e120]:
+              - /placeholder: ••••••••
+              - text: vstar@2k8
+          - generic [ref=f3e121]:
+            - generic [ref=f3e122]: Confirm
+            - textbox "Confirm" [ref=f3e124]:
+              - /placeholder: ••••••••
+              - text: vstar@2k8
+        - generic [ref=f3e125]:
+          - checkbox "I agree to the Terms of Service and Privacy Policy." [checked] [ref=f3e126] [cursor=pointer]
+          - generic [ref=f3e127] [cursor=pointer]:
+            - text: I agree to the
+            - link "Terms of Service" [ref=f3e128]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=f3e129]:
+              - /url: /privacy
+            - text: .
+        - button "Create Account" [ref=f3e130] [cursor=pointer]
+      - paragraph [ref=f3e74]:
+        - text: Already have an account?
+        - button "Sign in" [ref=f3e131] [cursor=pointer]
+  - generic [ref=f3e35] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f3e36]
+    - generic [ref=f3e77]:
+      - button "Open issues overlay" [ref=f3e78]:
+        - generic [ref=f3e79]:
+          - generic [ref=f3e80]: "5"
+          - generic [ref=f3e81]: "6"
+        - generic [ref=f3e82]:
+          - text: Issue
+          - generic [ref=f3e83]: s
+      - button "Collapse issues badge" [ref=f3e84]
+  - alert [ref=f3e40]

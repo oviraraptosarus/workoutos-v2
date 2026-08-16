@@ -1,0 +1,66 @@
+
+> companionapp@0.1.0 lint
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./src/app/diet/components/MealPlanCarousel.tsx
+83:30  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element').
+
+./src/app/diet/components/MealPlanDetailsModal.tsx
+416:42  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element').
+
+./src/app/layout.tsx
+50:9  Warning: A font-display parameter is missing (adding `&display=optional` is recommended). See: https://nextjs.org/docs/messages/google-font-display  @next/next/google-font-display
+50:9  Warning: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+./src/components/GlobalAICopilot.tsx
+355:5  Warning: Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps').
+
+./src/components/progress/ProgressPhotoGalleryModal.tsx
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element').
+3:1  Warning: Unused eslint-disable directive (no problems were reported from 'react/no-unescaped-entities').
+
+./src/components/progress/ProgressPhotosRow.tsx
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element').
+
+./src/components/TopNav.tsx
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element').
+
+./src/contexts/AuthContext.tsx
+173:9  Warning: Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps').
+
+./src/lib/llm-orchestrator/Orchestrator.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/llm-orchestrator/providers/AnthropicProvider.ts
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/llm-orchestrator/providers/GeminiProvider.ts
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/llm-orchestrator/providers/OpenAIProvider.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/llm-orchestrator/types.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/storage.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/lib/supabase/client.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars').
+
+./src/store/useDebugStore.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+
+./src/store/useTaskStore.ts
+1:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+2:1  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars').
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

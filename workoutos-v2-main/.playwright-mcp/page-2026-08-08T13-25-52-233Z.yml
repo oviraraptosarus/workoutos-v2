@@ -1,0 +1,32 @@
+- generic [active] [ref=f9e1]:
+  - button "Open Next.js Dev Tools" [ref=f9e7] [cursor=pointer]
+  - alert [ref=f9e11]
+  - generic [ref=f9e13]:
+    - button "Back" [ref=f9e38] [cursor=pointer]
+    - generic [ref=f9e14]:
+      - generic [ref=f9e15]:
+        - img "Workout OS Logo" [ref=f9e42]
+        - heading "Welcome back" [level=1] [ref=f9e43]
+        - paragraph [ref=f9e44]: Sign in to pick up where you left off.
+      - generic [ref=f9e45]:
+        - button "Continue with Google" [ref=f9e46] [cursor=pointer]
+        - generic [ref=f9e52]: or with email
+        - generic [ref=f9e56]:
+          - generic [ref=f9e57]: Email or Username
+          - textbox "Email or Username" [ref=f9e59]:
+            - /placeholder: you@email.com or username
+            - text: test_auditor_2026
+        - generic [ref=f9e60]:
+          - generic [ref=f9e61]: Password
+          - textbox "Password" [ref=f9e63]:
+            - /placeholder: ••••••••
+            - text: "123456"
+        - generic [ref=f9e64]:
+          - generic [ref=f9e65]:
+            - checkbox "Remember Me" [checked] [ref=f9e66] [cursor=pointer]
+            - generic [ref=f9e67] [cursor=pointer]: Remember Me
+          - button "Forgot Password?" [ref=f9e68] [cursor=pointer]
+        - button "Sign In" [ref=f9e69] [cursor=pointer]
+      - paragraph [ref=f9e70]:
+        - text: New here?
+        - button "Create an account" [ref=f9e71] [cursor=pointer]

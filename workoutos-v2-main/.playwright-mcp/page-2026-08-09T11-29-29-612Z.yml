@@ -1,0 +1,95 @@
+- main [ref=f30e3]:
+  - generic [ref=f30e4]:
+    - generic [ref=f30e5]:
+      - generic [ref=f30e6]:
+        - heading "Budget Tracker" [level=1] [ref=f30e7]
+        - paragraph [ref=f30e8]: August 2026 • 9 of 31 days elapsed
+      - generic [ref=f30e9]:
+        - combobox [ref=f30e11] [cursor=pointer]:
+          - option "August 2026" [selected]
+          - option "July 2026"
+          - option "June 2026"
+          - option "May 2026"
+          - option "April 2026"
+          - option "March 2026"
+          - option "February 2026"
+          - option "January 2026"
+          - option "December 2025"
+          - option "November 2025"
+          - option "October 2025"
+          - option "September 2025"
+        - button [ref=f30e12] [cursor=pointer]
+        - generic [ref=f30e16]:
+          - button "Add income" [ref=f30e17] [cursor=pointer]
+          - button "Add expense" [ref=f30e19] [cursor=pointer]
+    - generic [ref=f30e21]:
+      - generic [ref=f30e22]:
+        - generic [ref=f30e23]: Total Income
+        - generic [ref=f30e30]:
+          - generic [ref=f30e31]: ₹0.00
+          - generic [ref=f30e32]: From 0 income streams
+      - generic [ref=f30e33]:
+        - generic [ref=f30e34]:
+          - generic [ref=f30e35]: Total Expenses
+          - generic [ref=f30e41]: On track
+        - generic [ref=f30e42]:
+          - generic [ref=f30e43]: ₹0.00
+          - generic [ref=f30e44]:
+            - generic [ref=f30e45]: 0% of income
+            - generic [ref=f30e46]: 29% of month
+          - generic [ref=f30e48]:
+            - text: "Projected total:"
+            - generic [ref=f30e49]: ₹0
+      - generic [ref=f30e51]:
+        - generic [ref=f30e52]: Net Savings
+        - generic [ref=f30e57]: ₹0.00
+        - generic [ref=f30e58]: 0% savings rate
+    - generic [ref=f30e59]:
+      - generic [ref=f30e62]:
+        - generic [ref=f30e63]:
+          - heading "Weekly spend pace" [level=3] [ref=f30e64]
+          - paragraph [ref=f30e65]: Cumulative spend vs. budget pace
+        - generic [ref=f30e66]:
+          - generic [ref=f30e67]: Actual
+          - generic [ref=f30e70]: Budget pace
+          - generic [ref=f30e73]: Projected
+      - generic [ref=f30e78]:
+        - generic [ref=f30e79]:
+          - generic [ref=f30e80]:
+            - generic [ref=f30e81]:
+              - heading "By category" [level=3] [ref=f30e82]
+              - paragraph [ref=f30e83]: Budget vs. actual
+            - generic [ref=f30e84]: 0 categories
+          - generic [ref=f30e86]:
+            - generic [ref=f30e87]: No expenses yet
+            - generic [ref=f30e88]: Log an expense using the + button to see your category breakdown.
+        - generic [ref=f30e89]:
+          - generic [ref=f30e90]:
+            - heading "Financial Reminders" [level=3] [ref=f30e96]
+            - button [ref=f30e97] [cursor=pointer]
+          - paragraph [ref=f30e104]: No reminders yet
+    - generic [ref=f30e105]:
+      - generic [ref=f30e106]:
+        - generic [ref=f30e107]:
+          - heading "Income log" [level=3] [ref=f30e108]
+          - paragraph [ref=f30e109]:
+            - text: "0 entries • Total:"
+            - generic [ref=f30e110]: ₹0.00
+        - generic [ref=f30e111]:
+          - textbox "Search income" [ref=f30e113]:
+            - /placeholder: Search income...
+          - combobox "Filter by source" [ref=f30e114] [cursor=pointer]:
+            - option "All sources" [selected]
+        - paragraph [ref=f30e116]: No income logged yet.
+      - generic [ref=f30e117]:
+        - generic [ref=f30e118]:
+          - heading "Expense log" [level=3] [ref=f30e119]
+          - paragraph [ref=f30e120]:
+            - text: "0 entries • Total:"
+            - generic [ref=f30e121]: ₹0.00
+        - generic [ref=f30e122]:
+          - textbox "Search expenses" [ref=f30e124]:
+            - /placeholder: Search expenses...
+          - combobox "Filter by category" [ref=f30e125] [cursor=pointer]:
+            - option "All categories" [selected]
+        - paragraph [ref=f30e127]: No expenses logged yet.

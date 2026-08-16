@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS daily_burn_goal INTEGER DEFAULT 0;

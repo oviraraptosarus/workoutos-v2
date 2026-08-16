@@ -120,7 +120,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                         &ldquo;{dailyQuote.text.replace(/^"+|"+$/g, '').replace(/^'|'$/g, '')}&rdquo;
                                     </p>
                                     <p className="text-on-surface-variant text-xs font-bold text-right mt-2">
-                                        — {dailyQuote.subtext.replace(/^[—\-\s]+/, '')}
+                                        — {dailyQuote.author.replace(/^[—\-\s]+/, '')}
                                     </p>
                                 </div>
                             </div>

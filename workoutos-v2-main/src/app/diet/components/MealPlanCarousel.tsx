@@ -1,0 +1,124 @@
+'use client';
+
+import React from 'react';
+import { Sun, SunDim, Moon, Apple, Check, ChevronRight, Plus } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+interface MealPlanCarouselProps {
+    onOpenDetails?: () => void;
+}
+
+interface PlanItem {
+    id: string;
+    type: 'Morning' | 'Lunch' | 'Dinner' | 'Snack';
+    title: string;
+    imageUrl: string;
+    icon: React.ReactNode;
+    completed?: boolean;
+}
+
+export default function MealPlanCarousel({ onOpenDetails }: MealPlanCarouselProps) {
+    const { t } = useLanguage();
+    const plans: PlanItem[] = [
+        {
+            id: '1',
+            type: 'Morning',
+            title: 'Eggs & Toast',
+            imageUrl: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=300&auto=format&fit=crop&q=80',
+            icon: <Sun className="w-5 h-5 text-white" />,
+            completed: true,
+        },
+        {
+            id: '2',
+            type: 'Lunch',
+            title: 'Quinoa & Edamame Bowl',
+            imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&auto=format&fit=crop&q=80',
+            icon: <SunDim className="w-5 h-5 text-white" />,
+        },
+        {
+            id: '3',
+            type: 'Dinner',
+            title: 'Broccoli & Curry Dish',
+            imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&auto=format&fit=crop&q=80',
+            icon: <Moon className="w-5 h-5 text-white" />,
+        },
+        {
+            id: '4',
+            type: 'Snack',
+            title: 'Protein Oat Bites',
+            imageUrl: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=300&auto=format&fit=crop&q=80',
+            icon: <Apple className="w-5 h-5 text-white" />,
+        },
+    ];
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                    <Apple size={20} className="text-[#0a84ff]" /> Nutrition Programs
+                </h2>
+                <button
+                    id="tour-see-details"
+                    onClick={onOpenDetails}
+                    className="font-label-sm text-[11px] text-[#0a84ff] hover:text-[#0a84ff]/80 uppercase tracking-wider flex items-center transition-colors btn-press"
+                >
+                    {t('diet.details')} <ChevronRight size={14} />
+                </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {plans.map((item) => (
+                    <div
+                        key={item.id}
+                        onClick={onOpenDetails}
+                        className="group cursor-pointer relative w-full aspect-[4/5] rounded-[32px] overflow-hidden bg-surface-container shadow-[0_12px_24px_rgba(0,0,0,0.1)] hover:shadow-[0_24px_48px_rgba(0,0,0,0.2)] transition-all duration-500 transform hover:-translate-y-1"
+                        title="Click to view complete 5-day recipe plan"
+                    >
+                        {/* Background Image with Zoom on Hover */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                        />
+                        
+                        {/* Dark Gradient Overlay for Text Legibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                        {/* Top Icon Area */}
+                        <div className="absolute top-4 left-4 p-2 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
+                            {item.icon}
+                        </div>
+
+                        {item.completed && (
+                            <div className="absolute top-4 right-4 p-1.5 rounded-full bg-emerald-500 text-white shadow-lg">
+                                <Check size={14} strokeWidth={3} />
+                            </div>
+                        )}
+
+                        {/* Quick Log Button (Hover visible) */}
+                        {!item.completed && onOpenDetails && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); window.dispatchEvent(new CustomEvent('workout_os_quick_log_meal_plan', { detail: item.id })); }}
+                                className="absolute top-4 right-4 p-1.5 rounded-full bg-secondary text-on-secondary shadow-lg opacity-0 group-hover:opacity-100 hover:scale-110 transition-all btn-press z-20"
+                                title="Quick Log Today"
+                            >
+                                <Plus size={14} strokeWidth={3} />
+                            </button>
+                        )}
+
+                        {/* Bottom Text Area */}
+                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                            <h3 className="text-white font-semibold text-base leading-tight mb-1 drop-shadow-md">
+                                {item.title}
+                            </h3>
+                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest drop-shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                {item.type}
+                            </span>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}

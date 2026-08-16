@@ -1,0 +1,13 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e9]:
+      - generic [ref=e10] [cursor=pointer]
+      - generic [ref=e11] [cursor=pointer]
+    - generic:
+      - generic:
+        - heading "\"Tell me, what is it you plan to do with your one wild and precious life?\"" [level=1]
+        - paragraph: — Mary Oliver
+    - generic:
+      - button "Get Started"
+  - button "Open Next.js Dev Tools" [ref=e17] [cursor=pointer]
+  - alert [ref=e21]

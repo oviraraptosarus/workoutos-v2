@@ -7,6 +7,8 @@ const ITEM_HEIGHT = 44;
 interface IOSDatePickerProps {
     value: Date;
     onChange: (date: Date) => void;
+    minYear?: number;
+    maxYear?: number;
 }
 
 const months = [
@@ -65,13 +67,15 @@ const WheelPicker = ({ items, selectedIndex, onChange }: { items: (string | numb
     );
 };
 
-export default function IOSDatePicker({ value, onChange }: IOSDatePickerProps) {
+export default function IOSDatePicker({ value, onChange, minYear, maxYear }: IOSDatePickerProps) {
     const [month, setMonth] = useState(value.getMonth());
     const [day, setDay] = useState(value.getDate());
     const [year, setYear] = useState(value.getFullYear());
 
     const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 100 }, (_, i) => currentYear - i); // 100 years back
+    const resolvedMaxYear = maxYear ?? currentYear;
+    const resolvedMinYear = minYear ?? currentYear - 100;
+    const years = Array.from({ length: resolvedMaxYear - resolvedMinYear + 1 }, (_, i) => resolvedMaxYear - i);
     
     const daysInMonth = getDaysInMonth(month, year);
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);

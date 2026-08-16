@@ -1,0 +1,2 @@
+-- Seed data for Workout OS
+-- Add initial data here for local development
