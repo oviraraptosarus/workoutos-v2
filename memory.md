@@ -5,6 +5,7 @@
 ## Recent Milestones & Changes
 
 ### August 17, 2026 - AI Orchestrator Debugging & Token Limit Expansion
+- **Route.ts Reversion**: Per user request, completely replaced `src/app/api/ai/chat/route.ts` with the exact backup version from `D:\Workout OS\workoutos-v2-main`. This effectively reverted the 8192 token limit bump back to the original 800-token cap in that file, restoring the original backup logic exactly as requested.
 - **Global Token Limit Bump**: Fixed an issue where complex AI generation requests (like generating a full dumbbell HIIT workout plan) were crashing or truncating. Root cause was the orchestrator's `maxOutputTokens` being artificially capped at 1500-2500 across `api/ai/chat`, `api/ai/report`, and the core fallback provider instances (`OpenAIProvider`, `AnthropicProvider`, `GeminiProvider`). Increased the ceiling to `8192` globally.
 - **OpenRouter & Gemini Key Debugging**: Diagnosed a multi-layered failure in the AI copilot that triggered the generic "high load / invalid keys" fallback error:
     - **OpenRouter Pre-flight Check**: Bumping the token limit to 8192 caused OpenRouter to instantly throw an HTTP 402 (Payment Required) because the user account balance was at $0 and could only theoretically afford ~850 tokens.
