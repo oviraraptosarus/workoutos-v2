@@ -56,20 +56,7 @@ export default function Dashboard() {
 
   const handleSplashDone = useCallback(() => setShowSplash(false), []);
 
-  // Briefing modal: morning/evening check, shown after splash
-  const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>(() => {
-    const hour = new Date().getHours();
-    return hour >= 20 ? 'evening' : 'morning';
-  });
-  const [showBriefing, setShowBriefing] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    const todayDate = new Date().toISOString().split('T')[0];
-    if (localStorage.getItem(`briefing_shown_${todayDate}`)) return false;
-    const hour = new Date().getHours();
-    const shouldShow = (hour >= 5 && hour < 12) || hour >= 20;
-    if (shouldShow) localStorage.setItem(`briefing_shown_${todayDate}`, 'true');
-    return shouldShow;
-  });
+
   const [showDOBModal, setShowDOBModal] = useState(false);
   const [dob, setDob] = useState(new Date(2000, 0, 1));
   const [savingDob, setSavingDob] = useState(false);
@@ -158,11 +145,7 @@ export default function Dashboard() {
         onSave={handleSaveLayout}
       />
 
-      <DailyBriefingModal 
-        isOpen={showBriefing && !showDOBModal} 
-        onClose={() => setShowBriefing(false)} 
-        mode={briefingMode} 
-      />
+
 
       {showDOBModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
