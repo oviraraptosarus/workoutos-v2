@@ -10,6 +10,7 @@ import TouchGrassNudge from '@/app/components/TouchGrassNudge';
 import WeightLogCard from '@/app/components/cards/WeightLogCard';
 import DashboardTasks from '@/app/components/DashboardTasks';
 import TimeProgressWidget from '@/app/components/TimeProgressWidget';
+import StreakOrbWidget from '@/app/components/StreakOrbWidget';
 import DailyBriefingModal from '@/app/components/modals/DailyBriefingModal';
 import IOSDatePicker from '@/app/components/IOSDatePicker';
 import DashboardCountdowns from '@/app/components/DashboardCountdowns';
@@ -20,6 +21,7 @@ import { Settings2 } from 'lucide-react';
 const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
     'BentoGrid': BentoGrid,
     'TouchGrassNudge': TouchGrassNudge,
+    'StreakOrbWidget': StreakOrbWidget,
     'WeightLogCard': WeightLogCard,
     'TimeProgressWidget': TimeProgressWidget,
     'DashboardTasks': DashboardTasks,
@@ -30,6 +32,7 @@ const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'BentoGrid', visible: true },
     { id: 'TouchGrassNudge', visible: true },
+    { id: 'StreakOrbWidget', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
     { id: 'DashboardTasks', visible: true },
