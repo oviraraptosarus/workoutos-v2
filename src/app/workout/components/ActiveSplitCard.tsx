@@ -9,12 +9,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
 import ForgeImpactOverlay from '@/app/components/ForgeImpactOverlay';
+import HudView from './HudView';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, onCloseSession }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void, onCloseSession?: () => void }) {
     const { t } = useLanguage();
     const { userProfile } = useAuth();
     const [isFinished, setIsFinished] = useState(false);
     const [showImpactOverlay, setShowImpactOverlay] = useState(false);
+    const [showHud, setShowHud] = useState(false);
     const [addingLinkForIdx, setAddingLinkForIdx] = useState<number | null>(null);
     const [linkInput, setLinkInput] = useState('');
     
@@ -300,12 +302,25 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
     if (exercises.length === 0 && !isBuilderMode) return null;
 
     return (
+        <>
+        {showHud && (
+            <HudView 
+                exercises={exercises} 
+                onClose={() => setShowHud(false)} 
+                onToggleExercise={toggleExercise} 
+            />
+        )}
         <div className="bg-white dark:bg-[#0a0a0c] rounded-[2.5rem] p-6 shadow-2xl border border-black/5 dark:border-white/5 transition-all relative overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
             {/* Ambient Background Glow based on timer */}
             <div className="absolute top-0 left-0 w-full h-[150px] bg-gradient-to-b from-blue-500/10 to-transparent pointer-events-none" />
 
             <div className="flex flex-col items-center justify-center mb-6 relative z-10 pt-4">
                 <h3 className="text-xs font-black text-on-surface-variant uppercase tracking-widest mb-2 opacity-80">{preset ? preset.title : customTitle}</h3>
+                
+                <button onClick={() => setShowHud(true)} className="absolute top-0 right-0 p-2 text-primary bg-primary/10 hover:bg-primary/20 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l3-9 5 18 3-9h5"/></svg>
+                </button>
+
                 <div className="tabular-nums text-7xl font-black tracking-tighter text-on-surface drop-shadow-sm flex items-center justify-center">
                     {formatTime(elapsedSeconds)}
                 </div>
@@ -404,5 +419,6 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
                 </button>
             </div>
         </div>
+        </>
     );
 }
