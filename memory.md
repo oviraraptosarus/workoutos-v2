@@ -172,3 +172,19 @@ Conducted a comprehensive audit of all API routes, LLM orchestration, data stora
 - **Remaining Known Issues (not yet fixed)**: Race condition in `saveMealsForDate` (delete+reinsert is not atomic), hardcoded placeholder user ID in orchestrator telemetry, AI memories not auto-refreshed in session after `save_ai_memory` tool call.
 
 - **Workout Generation Chat Display (Aug 17)**: Overrode the original rulebook directive that forced the chat to close and navigate to /workout when a workout was generated. Modified GlobalAICopilot.tsx to automatically run WorkoutTemplateService.create in the background and format the validatedExercises into a rich markdown string directly injected into the conversation. Also updated AGENTS.md to reflect this new UX paradigm.
+
+### August 16-17, 2026 - Phase 1-7 Gamification & Psychological Architecture
+- **Phase 1-4 (Foundational UI)**: Established the core Apple-style visual language. Implemented Cinematic Dark Mode, Haptic Feedback hooks, deep `backdrop-blur-3xl` glassmorphism on modals and sidebars, and particle effects for high-level UI feedback.
+- **Phase 5 (Gamification Roadmap)**: 
+    - **Fluid Macro Rings**: Replaced static diet progress bars with massive, pill-shaped fluid capsules in `MacroRings.tsx` featuring an inner "sloshing liquid wave" effect.
+    - **Forge Impact Logs**: Added `ForgeImpactOverlay.tsx` to the workout completion flow. Triggering "Finish" now dims the screen, flashes an anvil strike, and explodes physics-driven glass shards outwards.
+    - **Ghost Mode PVP**: Added dual tracking bars (Current Pace vs Ghost Pace) in `ActiveSplitCard.tsx` to visualize workout speed.
+    - **Ava Audio Waveform**: Integrated a dynamic, multi-colored Siri-style visualizer into `GlobalAICopilot.tsx` that bounces to the rhythm of Ava's text-to-speech output.
+- **Phase 6 (Iron Man 3D Parallax HUD)**: 
+    - Transformed `DailyBriefingModal.tsx` into a 3D hologram using `framer-motion` (`rotateX`, `rotateY`, `translateZ`). The modal now tracks pointer/touch movement to create a high-depth parallax effect (`perspective: 1200`).
+    - Added Auto-Voice Initialization (TTS). Ava now reads the daily briefing aloud immediately on mount, parsing snapshot data (sleep, diet, workouts) and synthesizing a contextual Freudian greeting.
+- **Phase 7 (Continuous Psychological Profiling Engine Backend)**:
+    - Built a robust learning backend to eliminate Ava's session-to-session amnesia. 
+    - Created DB Migration `20260817000000_user_psychology.sql` with a new `psychological_profiles` table (storing `freudian_analysis` and `dopamine_triggers`).
+    - Added background endpoint `/api/ai/analyze-psychology` which takes the user's latest chat chunks, extracts deep psychological insights, and upserts them to the database.
+    - Updated `/api/ai/chat/route.ts` to actively fetch this psychological profile before every prompt and secretly inject it into `systemContract.ts`, allowing Ava to continuously adapt and manipulate the user's dopamine reserves.
