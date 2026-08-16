@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { X, Droplets, Dumbbell, Target, CheckCircle2, AlertTriangle, ArrowRight, Moon, Flame, Apple, Zap } from 'lucide-react';
+import { X, Droplets, Dumbbell, Target, CheckCircle2, AlertTriangle, ArrowRight, Moon, Flame, Apple, Zap, Mic } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDailySnapshot } from '@/hooks/useDailySnapshot';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import QUOTES from '@/data/quotes.json';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 interface DailyBriefingModalProps {
     isOpen: boolean;
@@ -46,20 +47,75 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     const [currentSlide, setCurrentSlide] = useState(0);
     const [dailyQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     const { snapshot } = useDailySnapshot();
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     // Swipe gesture refs
     const touchStartX = useRef(0);
     const touchStartY = useRef(0);
+    
+    // 3D Parallax Refs
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const rotateX = useTransform(y, [-100, 100], [10, -10]);
+    const rotateY = useTransform(x, [-100, 100], [-10, 10]);
 
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
             setCurrentSlide(0);
+            
+            // Phase 6: Ava Voice Initialization
+            setTimeout(() => {
+                const hour = new Date().getHours();
+                const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                const name = userProfile?.fullName?.split(' ')[0] || userProfile?.username || '';
+                
+                let text = `${greeting} ${name}. `;
+                
+                if (mode === 'morning') {
+                    if (snapshot.sleepProgress.current >= snapshot.sleepProgress.target) {
+                        text += `Your sleep was optimal. `;
+                    } else if (snapshot.sleepProgress.current > 0) {
+                        text += `Your sleep was suboptimal, but we adapt. `;
+                    }
+                    
+                    if (snapshot.workoutName) {
+                        text += `Today's protocol is ${snapshot.workoutName}. Let's dominate.`;
+                    } else {
+                        text += `I see no workout logged for today yet. Make it count.`;
+                    }
+                } else {
+                    text += `Time for the execution review. `;
+                    if (snapshot.waterProgress.current >= snapshot.waterProgress.target) {
+                        text += `Hydration targets met. `;
+                    }
+                    if (snapshot.plannerState.completed >= snapshot.plannerState.total && snapshot.plannerState.total > 0) {
+                        text += `Flawless execution on your tasks today. `;
+                    }
+                    text += `Let's review the data.`;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "en-IN";
+                const voices = window.speechSynthesis.getVoices();
+                const inVoice = voices.find((v) => v.lang === "en-IN") || voices.find((v) => v.lang.startsWith("en"));
+                if (inVoice) utterance.voice = inVoice;
+                
+                utterance.onstart = () => setIsSpeaking(true);
+                utterance.onend = () => setIsSpeaking(false);
+                utterance.onerror = () => setIsSpeaking(false);
+                
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }, 500);
+
         } else {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
             const timer = setTimeout(() => setIsVisible(false), 400);
             return () => clearTimeout(timer);
         }
-    }, [isOpen]);
+    }, [isOpen, mode, snapshot, userProfile]);
 
     if (!isOpen && !isVisible) return null;
 
@@ -298,6 +354,23 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     // currentSlide is 2, 3, or 4 → index into meta is currentSlide - 2
     const metaIdx = currentSlide - 2;
     const meta = SLIDE_META[metaIdx];
+    const handlePointerMove = (e: React.PointerEvent) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = (mouseX / width) * 200 - 100;
+        const yPct = (mouseY / height) * 200 - 100;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handlePointerLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
+
     const SlideIcon = meta.icon;
 
     return (
@@ -309,12 +382,29 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
             )}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+            style={{ perspective: 1200 }}
         >
             {/* Scrim */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={onClose} />
 
+            {/* Siri Voice Visualizer (Top of screen) */}
+            {isSpeaking && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 px-6 py-3 rounded-full bg-black/30 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+                    <Mic size={14} className="text-purple-400 animate-pulse mr-2" />
+                    <span className="w-1 bg-purple-400 rounded-full animate-[bounce_0.8s_infinite] h-2" />
+                    <span className="w-1 bg-purple-500 rounded-full animate-[bounce_0.8s_infinite_0.2s] h-4" />
+                    <span className="w-1 bg-indigo-400 rounded-full animate-[bounce_0.8s_infinite_0.4s] h-3" />
+                    <span className="w-1 bg-indigo-500 rounded-full animate-[bounce_0.8s_infinite_0.1s] h-5" />
+                    <span className="w-1 bg-pink-400 rounded-full animate-[bounce_0.8s_infinite_0.3s] h-2" />
+                </div>
+            )}
+
             {/* Card */}
-            <div className={clsx(
+            <motion.div 
+                style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+                className={clsx(
                 'relative w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] overflow-hidden',
                 'bg-card-white border border-white/10 dark:border-white/8',
                 'shadow-[0_-8px_60px_rgba(0,0,0,0.35)] sm:shadow-[0_24px_60px_rgba(0,0,0,0.4)]',
@@ -329,7 +419,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                 <div className="sm:hidden w-10 h-1 bg-on-surface/20 rounded-full mx-auto mt-3 mb-1" />
 
                 {/* 3-segment progress bar (tracks slides 2-4) */}
-                <div className="flex gap-1.5 px-5 pt-4 pb-0">
+                <div className="flex gap-1.5 px-5 pt-4 pb-0" style={{ transform: "translateZ(30px)" }}>
                     {[2, 3, 4].map((i) => (
                         <div key={i} className="h-[3px] flex-1 bg-on-surface/10 rounded-full overflow-hidden">
                             <div
@@ -340,24 +430,32 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                     ))}
                 </div>
 
-                <div className="relative px-5 pt-5 pb-6">
+                <div className="relative px-5 pt-5 pb-6" style={{ transform: "translateZ(40px)" }}>
                     {/* Close */}
                     <button onClick={onClose} className="absolute top-4 right-4 w-7 h-7 rounded-full bg-on-surface/8 hover:bg-on-surface/14 flex items-center justify-center text-on-surface-variant transition-colors active:scale-95">
                         <X size={14} />
                     </button>
 
                     {/* Floating header */}
-                    <div className="flex items-center gap-2.5 mb-5">
-                        <div className={clsx('w-8 h-8 rounded-xl flex items-center justify-center shrink-0', meta.bg, meta.color)}>
+                    <div className="flex items-center gap-2.5 mb-5" style={{ transform: "translateZ(50px)" }}>
+                        <div className={clsx('w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-lg', meta.bg, meta.color)}>
                             <SlideIcon size={16} />
                         </div>
-                        <span className="font-black text-base text-on-surface tracking-tight">
+                        <span className="font-black text-base text-on-surface tracking-tight drop-shadow-md">
                             {slideLabels[metaIdx]}
                         </span>
                     </div>
 
                     {/* Slide content */}
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-400 min-h-[160px]" key={currentSlide}>
+                    <motion.div 
+                        key={currentSlide}
+                        initial={{ opacity: 0, x: 20, rotateY: 15 }}
+                        animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                        exit={{ opacity: 0, x: -20, rotateY: -15 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="min-h-[160px]" 
+                        style={{ transform: "translateZ(60px)" }}
+                    >
 
                         {/* ── SLIDE 2: Execution Review ── */}
                         {currentSlide === 2 && (
@@ -450,7 +548,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </motion.div>
 
                     {/* Footer nav */}
                     <div className="flex items-center justify-between mt-6">
@@ -473,7 +571,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
                         </button>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }
