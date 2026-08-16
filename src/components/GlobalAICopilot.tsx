@@ -140,6 +140,7 @@ export default function GlobalAICopilot() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
   const [showDebugDashboard, setShowDebugDashboard] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -1328,9 +1329,13 @@ export default function GlobalAICopilot() {
             let currentChunkIndex = 0;
 
             const playNextChunk = () => {
-              if (!isOpen || !isConversationModeRef.current) return;
+              if (!isOpen || !isConversationModeRef.current) {
+                  setIsSpeaking(false);
+                  return;
+              }
               
               if (currentChunkIndex >= chunks.length) {
+                setIsSpeaking(false);
                 if (isConversationModeRef.current && !isListeningRef.current) {
                   toggleListening(true);
                 }
@@ -1351,6 +1356,8 @@ export default function GlobalAICopilot() {
                 voices.find((v) => v.lang === "en-IN") ||
                 voices.find((v) => v.lang.startsWith("en"));
               if (inVoice) utterance.voice = inVoice;
+              
+              utterance.onstart = () => setIsSpeaking(true);
               
               utterance.onend = () => {
                 currentChunkIndex++;
@@ -1994,20 +2001,28 @@ export default function GlobalAICopilot() {
                 aria-label={
                   isListening ? "Stop listening" : "Start voice input"
                 }
-                className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isListening ? "bg-[#0a84ff] shadow-lg" : "bg-surface-container-high border border-white/5"}`}
+                className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 active:scale-95 ${isListening ? "bg-[#0a84ff] shadow-lg" : isSpeaking ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.5)] border border-purple-500/30" : "bg-surface-container-high border border-white/5"}`}
               >
-                <div className="relative z-10">
+                <div className="relative z-10 flex items-center justify-center">
                   {isListening ? (
                     <Mic size={20} className="text-white" />
+                  ) : isSpeaking ? (
+                    <div className="flex gap-1 items-center justify-center h-4">
+                       <span className="w-1 bg-purple-400 rounded-full animate-[bounce_0.8s_infinite] h-2" />
+                       <span className="w-1 bg-purple-500 rounded-full animate-[bounce_0.8s_infinite_0.2s] h-4" />
+                       <span className="w-1 bg-indigo-400 rounded-full animate-[bounce_0.8s_infinite_0.4s] h-3" />
+                       <span className="w-1 bg-indigo-500 rounded-full animate-[bounce_0.8s_infinite_0.1s] h-5" />
+                       <span className="w-1 bg-pink-400 rounded-full animate-[bounce_0.8s_infinite_0.3s] h-2" />
+                    </div>
                   ) : (
                     <AvaLogo size={24} className="opacity-80" />
                   )}
                 </div>
-                {/* Pulse rings when listening */}
-                {isListening && (
+                {/* Pulse rings when listening or speaking */}
+                {(isListening || isSpeaking) && (
                   <>
-                    <span className="absolute inset-0 rounded-full border border-[#0a84ff]/40 animate-ping" />
-                    <span className="absolute inset-[-4px] rounded-full border border-[#0a84ff]/20 animate-ping [animation-delay:0.5s]" />
+                    <span className={`absolute inset-0 rounded-full border ${isSpeaking ? 'border-purple-500/40' : 'border-[#0a84ff]/40'} animate-ping`} />
+                    <span className={`absolute inset-[-4px] rounded-full border ${isSpeaking ? 'border-purple-500/20' : 'border-[#0a84ff]/20'} animate-ping [animation-delay:0.5s]`} />
                   </>
                 )}
               </button>

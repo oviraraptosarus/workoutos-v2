@@ -109,24 +109,34 @@ export default function MacroRings({
                     </div>
                 </div>
 
-                {/* Macro Segmented Bars */}
-                <div className="flex-1 w-full space-y-5">
-                    <h3 className="text-sm font-semibold tracking-tight text-on-surface mb-2">Macro Distribution</h3>
+                {/* Fluid Liquid Macro Capsules */}
+                <div className="flex-1 w-full space-y-4">
+                    <h3 className="text-sm font-semibold tracking-tight text-on-surface mb-3">Macro Distribution</h3>
                     {macros.map(m => {
                         const percent = m.goal > 0 ? Math.min(100, Math.round((m.eaten / m.goal) * 100)) : (m.eaten > 0 ? 100 : 0);
                         return (
-                            <div key={m.name} className="space-y-2">
-                                <div className="flex justify-between items-end">
+                            <div key={m.name} className="space-y-1.5">
+                                <div className="flex justify-between items-end px-1">
                                     <span className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">{m.name}</span>
                                     <span className="text-sm font-semibold text-on-surface tabular-nums">
                                         {m.eaten}<span className="text-on-surface-variant font-medium text-xs"> / {m.goal}{m.unit}</span>
                                     </span>
                                 </div>
-                                <div className="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden border border-white/5 relative">
+                                <div className="w-full bg-surface-container-high h-6 rounded-full overflow-hidden border border-black/5 dark:border-white/5 relative shadow-inner">
+                                    {/* Liquid Fill */}
                                     <div 
-                                        className={`absolute top-0 left-0 bg-gradient-to-r ${m.color} h-full rounded-full transition-all duration-1000 ease-out`} 
-                                        style={{ width: `${percent}%` }} 
-                                    />
+                                        className={`absolute top-0 bottom-0 left-0 bg-gradient-to-r ${m.color} transition-all duration-[1500ms] ease-out rounded-full`} 
+                                        style={{ width: `${percent}%` }}
+                                    >
+                                        {/* CSS Wave Effect inside liquid */}
+                                        <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
+                                            <div className="absolute top-0 right-[-10px] w-8 h-[200%] bg-white/20 blur-sm rounded-[100%] animate-spin-slow opacity-50" />
+                                            <div className="absolute top-[-100%] right-[-5px] w-6 h-[300%] bg-black/10 blur-sm rounded-[100%] animate-spin-reverse-slow opacity-30" />
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Glass Highlight over capsule */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                                 </div>
                             </div>
                         );
