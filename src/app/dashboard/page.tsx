@@ -2,8 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
-import nextDynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import DashboardHeader from '@/app/components/DashboardHeader';
 import BentoGrid from '@/app/components/BentoGrid';
@@ -16,7 +15,6 @@ import IOSDatePicker from '@/app/components/IOSDatePicker';
 import DashboardCountdowns from '@/app/components/DashboardCountdowns';
 import VaultWidget from '@/app/components/VaultWidget';
 import DashboardEditModal, { DashboardWidgetConfig } from '@/app/components/modals/DashboardEditModal';
-import QuoteSplash from '@/app/components/QuoteSplash';
 import { Settings2 } from 'lucide-react';
 
 const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
@@ -44,18 +42,18 @@ export default function Dashboard() {
   const { user, userProfile, updateUserProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
-  // Quote splash: show once per browser SESSION (sessionStorage clears on tab close)
-  // This means the user sees it every time they open/refresh the app.
-  const [showSplash, setShowSplash] = useState(() => {
+  // Show briefing (with full-screen quote as slide 0) once per session
+  const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>(() => {
+    const hour = new Date().getHours();
+    return hour >= 20 ? 'evening' : 'morning';
+  });
+  const [showBriefing, setShowBriefing] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const key = 'splash_shown_session';
+    const key = 'briefing_shown_session';
     if (sessionStorage.getItem(key)) return false;
     sessionStorage.setItem(key, 'true');
     return true;
   });
-
-  const handleSplashDone = useCallback(() => setShowSplash(false), []);
-
 
   const [showDOBModal, setShowDOBModal] = useState(false);
   const [dob, setDob] = useState(new Date(2000, 0, 1));
@@ -67,10 +65,6 @@ export default function Dashboard() {
       router.push('/sign-up-login-screen');
       return;
     }
-
-
-
-    // Briefing is now initialised synchronously in useState — nothing needed here
 
     if (user && isProfileLoaded && !userProfile?.dob) {
         setShowDOBModal(true);
@@ -92,10 +86,8 @@ export default function Dashboard() {
   };
 
   const layoutConfig = (userProfile?.dashboard_config as DashboardWidgetConfig[]) || DEFAULT_LAYOUT;
-  
-  // Sort layout into 2 columns for smaller widgets, full width for big ones
   const activeWidgets = layoutConfig.filter(w => w.visible);
-  
+
   const handleSaveLayout = async (newLayout: DashboardWidgetConfig[]) => {
       await updateUserProfile({ dashboard_config: newLayout });
   };
@@ -103,21 +95,15 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <>
-      {/* Full-screen quote splash — fixed overlay, outside AppLayout so nothing bleeds through */}
-      {showSplash && <QuoteSplash onDone={handleSplashDone} />}
-      <AppLayout>
+    <AppLayout>
       <div className="flex flex-col w-full gap-4 sm:gap-6 pb-12 animate-fade-in relative">
         <DashboardHeader />
 
-        {/* Dynamic Layout Rendering */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-0">
             {activeWidgets.map(w => {
                 const Component = WIDGET_COMPONENTS[w.id];
                 if (!Component) return null;
-                
                 const isFullWidth = ['BentoGrid', 'TouchGrassNudge', 'WeightLogCard', 'VaultWidget'].includes(w.id);
-                
                 return (
                     <div key={w.id} className={`${isFullWidth ? 'md:col-span-2' : ''} ${w.id === 'TouchGrassNudge' ? 'pt-2' : ''}`}>
                         <Component />
@@ -126,9 +112,8 @@ export default function Dashboard() {
             })}
         </div>
 
-        {/* Customize Dashboard Button */}
         <div className="mt-4 flex justify-center">
-            <button 
+            <button
                 onClick={() => setShowEditModal(true)}
                 className="px-6 py-3 rounded-full bg-surface-container-low hover:bg-surface-container border border-surface-variant text-on-surface-variant hover:text-on-surface transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider"
                 title="Customize Dashboard"
@@ -139,13 +124,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <DashboardEditModal 
-        isOpen={showEditModal} 
+      <DashboardEditModal
+        isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSave={handleSaveLayout}
       />
 
-
+      {/* Full-screen quote on slide 0, then stats modal — once per session */}
+      <DailyBriefingModal
+        isOpen={showBriefing && !showDOBModal}
+        onClose={() => setShowBriefing(false)}
+        mode={briefingMode}
+      />
 
       {showDOBModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
@@ -155,11 +145,11 @@ export default function Dashboard() {
                     We need your date of birth to personalize your calorie targets, milestones, and provide age-appropriate features.
                 </p>
                 <div className="w-full mb-6">
-                    <IOSDatePicker 
-                        value={dob} 
-                        onChange={(d) => setDob(d)} 
-                        minYear={1920} 
-                        maxYear={new Date().getFullYear()} 
+                    <IOSDatePicker
+                        value={dob}
+                        onChange={(d) => setDob(d)}
+                        minYear={1920}
+                        maxYear={new Date().getFullYear()}
                     />
                 </div>
                 <button
@@ -173,6 +163,5 @@ export default function Dashboard() {
         </div>
       )}
     </AppLayout>
-    </>
   );
 }
