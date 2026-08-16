@@ -1853,23 +1853,17 @@ export default function GlobalAICopilot() {
 
             {loading && (
               <div className="flex items-start gap-3 animate-in slide-in-from-bottom-2 duration-200">
-                <AvaLogo
-                  size={28}
-                  className="rounded-full overflow-hidden shrink-0 mt-0.5"
-                />
-                <div className="bg-surface-container-low border border-white/5 backdrop-blur-xl rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5 h-11">
-                  <span
-                    className="ava-typing-dot"
-                    style={{ animationDelay: "0ms" }}
-                  />
-                  <span
-                    className="ava-typing-dot"
-                    style={{ animationDelay: "180ms" }}
-                  />
-                  <span
-                    className="ava-typing-dot"
-                    style={{ animationDelay: "360ms" }}
-                  />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/5 relative overflow-hidden backdrop-blur-xl">
+                  {/* Siri-style animated mesh orb */}
+                  <div className="absolute inset-0 flex items-center justify-center" style={{ animation: "siri-rotate 4s linear infinite" }}>
+                    <div className="absolute w-8 h-8 rounded-full bg-blue-500/60 blur-[6px]" style={{ animation: "siri-pulse 2s ease-in-out infinite" }}></div>
+                    <div className="absolute w-8 h-8 rounded-full bg-purple-500/60 blur-[8px] translate-x-2 -translate-y-1" style={{ animation: "siri-pulse 2s ease-in-out infinite 0.5s" }}></div>
+                    <div className="absolute w-8 h-8 rounded-full bg-pink-500/60 blur-[6px] -translate-x-2 translate-y-1" style={{ animation: "siri-pulse 2s ease-in-out infinite 1s" }}></div>
+                  </div>
+                  <AvaLogo size={20} className="relative z-10 text-white drop-shadow-md" />
+                </div>
+                <div className="bg-surface-container-low border border-white/5 backdrop-blur-xl rounded-2xl rounded-tl-sm px-4 py-3 flex items-center h-10 mt-0.5">
+                  <span className="text-sm text-on-surface-variant font-medium tracking-wide">Ava is processing...</span>
                 </div>
               </div>
             )}

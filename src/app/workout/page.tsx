@@ -10,6 +10,7 @@ import CardioActivityModal from './components/modals/CardioActivityModal';
 import ActivityTrendsChart from './components/ActivityTrendsChart';
 import CustomWorkouts from './components/CustomWorkouts';
 import RecentWorkouts from './components/RecentWorkouts';
+import MuscleHeatmap from './components/MuscleHeatmap';
 import AvaWorkoutPreview, { AvaGeneratedWorkout } from './components/modals/AvaWorkoutPreview';
 import { WorkoutTemplate, WorkoutTemplateService } from '@/lib/workoutTemplates';
 
@@ -172,6 +173,8 @@ export default function WorkoutPage() {
                     onStartEmpty={() => { setActivePreset(null); setIsBuilderMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
                     onLogActivity={() => setIsCardioModalOpen(true)}
                 />
+                
+                <MuscleHeatmap />
                 
                 <BurnGoalTracker />
                 

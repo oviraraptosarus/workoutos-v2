@@ -507,3 +507,14 @@
         backdrop-filter: blur(8px);
     }
 }
+@keyframes siri-pulse {
+  0% { transform: scale(0.95); opacity: 0.5; filter: blur(8px); }
+  50% { transform: scale(1.1); opacity: 1; filter: blur(12px); }
+  100% { transform: scale(0.95); opacity: 0.5; filter: blur(8px); }
+}
+
+@keyframes siri-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
