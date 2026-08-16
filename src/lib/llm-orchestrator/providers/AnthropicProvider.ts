@@ -64,7 +64,7 @@ export class AnthropicProvider extends BaseProvider {
             model: model,
             system: system,
             messages: messages,
-            max_tokens: request.maxOutputTokens ?? 1024,
+            max_tokens: request.maxOutputTokens ?? 8192,
             temperature: request.temperature ?? 0.7,
         };
 

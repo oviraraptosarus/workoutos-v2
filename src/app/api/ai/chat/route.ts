@@ -184,7 +184,7 @@ export async function POST(req: Request) {
             },
           ],
           temperature: 0.7,
-          maxOutputTokens: 2500,
+          maxOutputTokens: 8192,
         });
 
         if (response.text || response.functionCall) {

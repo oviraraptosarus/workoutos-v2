@@ -40,7 +40,7 @@ Use emojis tastefully. Do NOT output any generic AI filler (like "Here is your r
                 systemInstruction: systemInstruction,
                 prompt: `Here is my data for the last 14 days:\n\n${JSON.stringify(historicalData, null, 2)}`,
                 temperature: 0.7,
-                maxOutputTokens: 1500
+                maxOutputTokens: 8192
             });
 
             if (response.text) {
