@@ -1318,6 +1318,15 @@ export default function GlobalAICopilot() {
 
           // Save conversation to backend
           await saveConversation(updatedMessages, userMsg.text);
+          
+          // Phase 7: Trigger Continuous Psychological Profiling in background
+          if (user) {
+             fetch('/api/ai/analyze-psychology', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ userId: user.id, recentMessages: updatedMessages.slice(-6) })
+             }).catch(err => console.error("Psychology profiling failed:", err));
+          }
 
           triggerSuccess();
 
