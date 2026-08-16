@@ -12,8 +12,10 @@ export interface DashboardWidgetConfig {
 
 const WIDGET_NAMES: Record<string, string> = {
     'BentoGrid': 'Daily Activity Stats',
+    'ReadinessScoreWidget': 'Readiness Score',
     'TouchGrassNudge': 'Health Nudge',
     'WeightLogCard': 'Weight Tracker',
+    'GhostRivalWidget': 'Ghost Rival PvP',
     'TimeProgressWidget': 'Time Progress',
     'DashboardTasks': 'Daily Tasks',
     'DashboardCountdowns': 'Countdowns',
@@ -22,7 +24,9 @@ const WIDGET_NAMES: Record<string, string> = {
 
 export const WIDGET_OPTIONS = [
     { id: 'BentoGrid', label: 'Primary Stats Grid' },
+    { id: 'ReadinessScoreWidget', label: 'Readiness & Recovery Score' },
     { id: 'TouchGrassNudge', label: 'Anti-Rot Nudge' },
+    { id: 'GhostRivalWidget', label: 'Ghost Rival PvP' },
     { id: 'WeightLogCard', label: 'Weight & Body Metrics' },
     { id: 'TimeProgressWidget', label: 'Temporal Matrix' },
     { id: 'DashboardTasks', label: 'Daily Tasks' },
@@ -32,7 +36,9 @@ export const WIDGET_OPTIONS = [
 
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'BentoGrid', visible: true },
+    { id: 'ReadinessScoreWidget', visible: true },
     { id: 'TouchGrassNudge', visible: true },
+    { id: 'GhostRivalWidget', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
     { id: 'DashboardTasks', visible: true },

@@ -17,12 +17,16 @@ import DashboardCountdowns from '@/app/components/DashboardCountdowns';
 import VaultWidget from '@/app/components/VaultWidget';
 import DashboardEditModal, { DashboardWidgetConfig } from '@/app/components/modals/DashboardEditModal';
 import { Settings2 } from 'lucide-react';
+import ReadinessScoreWidget from '@/app/components/ReadinessScoreWidget';
+import GhostRivalWidget from '@/app/components/GhostRivalWidget';
 
 const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
     'BentoGrid': BentoGrid,
+    'ReadinessScoreWidget': ReadinessScoreWidget,
     'TouchGrassNudge': TouchGrassNudge,
     'StreakOrbWidget': StreakOrbWidget,
     'WeightLogCard': WeightLogCard,
+    'GhostRivalWidget': GhostRivalWidget,
     'TimeProgressWidget': TimeProgressWidget,
     'DashboardTasks': DashboardTasks,
     'DashboardCountdowns': DashboardCountdowns,
@@ -31,7 +35,9 @@ const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
 
 const DEFAULT_LAYOUT: DashboardWidgetConfig[] = [
     { id: 'BentoGrid', visible: true },
+    { id: 'ReadinessScoreWidget', visible: true },
     { id: 'TouchGrassNudge', visible: true },
+    { id: 'GhostRivalWidget', visible: true },
     { id: 'StreakOrbWidget', visible: true },
     { id: 'WeightLogCard', visible: true },
     { id: 'TimeProgressWidget', visible: true },
