@@ -190,3 +190,6 @@ Conducted a comprehensive audit of all API routes, LLM orchestration, data stora
 - **Phase 8 (The God Mode Dashboard)**:
     - **Readiness Score Widget**: Built an Oura/Whoop style predictive analytics circular gauge (`ReadinessScoreWidget.tsx`). Calculates a 0-100 real-time score from sleep, hydration, and protein data, glowing green for Peak recovery and red for Depleted.
     - **Ghost Rival PvP**: Introduced an AI opponent named "Shadow" (`GhostRivalWidget.tsx`). The rival's XP and Streak are procedurally generated to always stay neck-and-neck with the user, creating eternal competitive urgency.
+- **Phase 9 (The Apple Watch HUD)**:
+    - **Sensory Expansion**: Created a dedicated `HudView.tsx` designed specifically for active gym sessions. It uses a `fixed inset-0 bg-black` layout to simulate an OLED smartwatch face, hiding all complex UI elements.
+    - **Audio-Haptic Rest Timer**: Built `HudRestTimer.tsx` which leverages the Web Audio API to play a physical "DING" (800Hz-300Hz sine wave) and triggers `navigator.vibrate` when the massive text rest timer hits zero.
