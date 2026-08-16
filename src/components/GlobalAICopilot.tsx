@@ -1242,21 +1242,32 @@ export default function GlobalAICopilot() {
                 },
               );
 
-              // Dispatch event to show the AvaWorkoutPreview modal in the workout page
-              window.dispatchEvent(
-                new CustomEvent("workout_os_ava_workout_generated", {
-                  detail: {
+              // Automatically save to the workout library as requested
+              import('@/lib/workoutTemplates').then(({ WorkoutTemplateService }) => {
+                if (user) {
+                  WorkoutTemplateService.create(user.id, {
                     name: templateName,
                     description: (args.description || "").trim() || undefined,
                     exercises: validatedExercises,
-                  },
-                }),
-              );
+                  }).catch(err => console.error("Auto-save workout failed:", err));
+                }
+              });
 
-              setTimeout(() => {
-                router.push("/workout");
-                setIsOpen(false);
-              }, 1500);
+              // Format the workout plan as rich coaching text in the chat
+              let workoutPlanText = `I've generated that workout plan for you! It has been automatically saved to your Workout Library so you can review and use it later.\n\n`;
+              workoutPlanText += `**${templateName}**\n`;
+              if (args.description) {
+                workoutPlanText += `_${args.description}_\n\n`;
+              }
+              
+              validatedExercises.forEach((ex: any, idx: number) => {
+                workoutPlanText += `**${idx + 1}. ${ex.name}**\n`;
+                workoutPlanText += `Sets: ${ex.sets}\n`;
+                if (ex.notes) workoutPlanText += `Notes: ${ex.notes}\n`;
+                workoutPlanText += `\n`;
+              });
+
+              finalResponseText = workoutPlanText;
             } else if (fn === "generate_meal_plan") {
               // Format the meal plan as rich coaching text in the chat
               const planName = args.planName || "Your Meal Plan";
