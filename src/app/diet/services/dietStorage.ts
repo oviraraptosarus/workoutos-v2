@@ -376,14 +376,13 @@ export const getWeeklyDeficitAggregation = async () => {
 
     let totalDeficit = 0;
     Object.values(dailyStats).forEach(stat => {
-        const netCaloriesConsumed = Math.max(0, stat.caloriesConsumed - stat.burned);
-        const dailyDeficit = tdeeGoal - netCaloriesConsumed; // Positive = deficit (ate less than TDEE), Negative = surplus
-        totalDeficit += dailyDeficit;
+        const net = Math.max(0, stat.caloriesConsumed - stat.burned);
+        totalDeficit += (net - tdeeGoal);
     });
 
     return {
         cumulativeDeficit: totalDeficit,
-        estimatedWeightLossKg: totalDeficit / 7700,  // Positive = weight loss, Negative = weight gain
+        estimatedWeightLossKg: -(totalDeficit / 7700), 
         daysTracked: dates.size
     };
 };
