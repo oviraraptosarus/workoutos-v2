@@ -11,6 +11,7 @@ import { usePathname } from 'next/navigation';
 
 // Dynamic imports with ssr:false to prevent prerender crashes
 const BottomNav = nextDynamic(() => import('@/components/BottomNav'), { ssr: false });
+const QuickActionPill = nextDynamic(() => import('@/components/QuickActionPill'), { ssr: false });
 const TopNav = nextDynamic(() => import('@/components/TopNav').then(m => m.TopNav), { ssr: false });
 const OnboardingTourModal = nextDynamic(() => import('@/app/components/OnboardingTourModal'), { ssr: false });
 const CommandPaletteModal = nextDynamic(() => import('@/app/components/CommandPaletteModal'), { ssr: false });
@@ -60,7 +61,12 @@ export default function AppLayout({ children, hideBottomNav = false }: AppLayout
             <main className={`${hideBottomNav ? 'h-screen w-screen p-0 m-0 overflow-hidden' : 'max-w-5xl mx-auto p-4 sm:px-8 pt-20 sm:pt-24'}`}>
                 {children}
             </main>
-            {!hideBottomNav && <BottomNav />}
+            {!hideBottomNav && (
+                <>
+                    <QuickActionPill />
+                    <BottomNav />
+                </>
+            )}
             <OnboardingTourModal />
             <CommandPaletteModal />
             <GlobalAICopilot />
