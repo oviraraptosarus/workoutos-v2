@@ -50,7 +50,7 @@ export class GeminiProvider extends BaseProvider {
 
         const generationConfig: any = {
             temperature: request.temperature ?? 0.7,
-            maxOutputTokens: request.maxOutputTokens ?? 800
+            maxOutputTokens: request.maxOutputTokens ?? 1500
         };
 
         if (request.responseFormat === 'json') {

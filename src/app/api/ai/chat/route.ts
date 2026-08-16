@@ -163,6 +163,12 @@ export async function POST(req: Request) {
         const mappedHistory = contents.map((c) => ({
           role: c.role as "user" | "model",
           text: c.parts.map((p: any) => p.text).join("\n") || "",
+          imageUrl: (() => {
+            const imgPart = c.parts.find((p: any) => p.inlineData);
+            return imgPart
+              ? `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`
+              : undefined;
+          })(),
         }));
         const currentPromptObj = mappedHistory.pop();
 
@@ -269,6 +275,7 @@ export async function POST(req: Request) {
     }
 
     const fallbackResponse = `### ${verdict}\n\n**పోషకాల వివరాలు:**\n• ${macros}\n\n**సలహాదారు గమనిక:**\n${advice}`;
+    return NextResponse.json({ result: fallbackResponse, requestId });
   } catch (error: any) {
     const errorId = `ORCH-${Math.floor(1000 + Math.random() * 9000)}`;
     let requestId = "UNKNOWN";

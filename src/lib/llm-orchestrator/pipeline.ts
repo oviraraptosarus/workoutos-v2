@@ -5,7 +5,7 @@ export async function classifyIntentAndContext(prompt: string, image?: string): 
   const schema = {
     type: "object",
     properties: {
-      intent: { type: "string", description: "ANALYSIS, LOGGING, RETRIEVAL, CREATION, or GENERAL" },
+      intent: { type: "string", description: "COACHING, ANALYSIS, LOGGING, RETRIEVAL, CREATION, or GENERAL" },
       domains: {
         type: "array",
         items: { type: "string" },
