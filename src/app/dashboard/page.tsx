@@ -44,12 +44,13 @@ export default function Dashboard() {
   const { user, userProfile, updateUserProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
-  // Quote splash: show once per day as the entry transition
+  // Quote splash: show once per browser SESSION (sessionStorage clears on tab close)
+  // This means the user sees it every time they open/refresh the app.
   const [showSplash, setShowSplash] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const key = `splash_shown_${new Date().toISOString().split('T')[0]}`;
-    if (localStorage.getItem(key)) return false;
-    localStorage.setItem(key, 'true');
+    const key = 'splash_shown_session';
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, 'true');
     return true;
   });
 
@@ -115,9 +116,10 @@ export default function Dashboard() {
   if (!user) return null;
 
   return (
-    <AppLayout>
-      {/* Full-screen quote splash — fades out to reveal dashboard */}
+    <>
+      {/* Full-screen quote splash — fixed overlay, outside AppLayout so nothing bleeds through */}
       {showSplash && <QuoteSplash onDone={handleSplashDone} />}
+      <AppLayout>
       <div className="flex flex-col w-full gap-4 sm:gap-6 pb-12 animate-fade-in relative">
         <DashboardHeader />
 
@@ -188,5 +190,6 @@ export default function Dashboard() {
         </div>
       )}
     </AppLayout>
+    </>
   );
 }
