@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import nextDynamic from 'next/dynamic';
 import AppLayout from '@/components/AppLayout';
 import DashboardHeader from '@/app/components/DashboardHeader';
@@ -16,6 +16,7 @@ import IOSDatePicker from '@/app/components/IOSDatePicker';
 import DashboardCountdowns from '@/app/components/DashboardCountdowns';
 import VaultWidget from '@/app/components/VaultWidget';
 import DashboardEditModal, { DashboardWidgetConfig } from '@/app/components/modals/DashboardEditModal';
+import QuoteSplash from '@/app/components/QuoteSplash';
 import { Settings2 } from 'lucide-react';
 
 const WIDGET_COMPONENTS: Record<string, React.FC<any>> = {
@@ -43,8 +44,18 @@ export default function Dashboard() {
   const { user, userProfile, updateUserProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
-  // Compute briefing state synchronously before first paint to avoid the flash
-  // where the dashboard renders and then the quote/briefing snaps in after.
+  // Quote splash: show once per day as the entry transition
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const key = `splash_shown_${new Date().toISOString().split('T')[0]}`;
+    if (localStorage.getItem(key)) return false;
+    localStorage.setItem(key, 'true');
+    return true;
+  });
+
+  const handleSplashDone = useCallback(() => setShowSplash(false), []);
+
+  // Briefing modal: morning/evening check, shown after splash
   const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>(() => {
     const hour = new Date().getHours();
     return hour >= 20 ? 'evening' : 'morning';
@@ -105,6 +116,8 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
+      {/* Full-screen quote splash — fades out to reveal dashboard */}
+      {showSplash && <QuoteSplash onDone={handleSplashDone} />}
       <div className="flex flex-col w-full gap-4 sm:gap-6 pb-12 animate-fade-in relative">
         <DashboardHeader />
 
