@@ -3,6 +3,12 @@ import { supabaseAdmin, sendPushNotification } from '@/lib/notifications';
 
 // This would typically be protected by a secret token in production (e.g. VERCEL_CRON_SECRET)
 export async function GET(request: Request) {
+    // Hard fail if service role key is missing — falling back to anon key causes RLS to block all queries
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        console.error('[Cron] SUPABASE_SERVICE_ROLE_KEY is not configured. Cannot bypass RLS for reminder processing.');
+        return NextResponse.json({ error: 'Server misconfiguration: SUPABASE_SERVICE_ROLE_KEY missing' }, { status: 500 });
+    }
+
     try {
         // 1. Fetch profiles that have push subscriptions
         const { data: profiles, error: profileErr } = await supabaseAdmin
