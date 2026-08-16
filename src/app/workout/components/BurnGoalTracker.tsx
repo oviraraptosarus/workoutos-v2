@@ -40,7 +40,7 @@ export default function BurnGoalTracker() {
         <div className="glass-card-premium p-5  animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-black text-on-surface flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/10 dark:bg-orange-500/20 text-orange-500 dark:text-orange-400 flex items-center justify-center">
                         <Flame size={16} />
                     </div>
                     Daily Burn Goal

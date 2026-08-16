@@ -22,7 +22,7 @@ export function TopNav() {
         <div className="mx-auto max-w-5xl w-full bg-white/10 dark:bg-black/30 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.25)] rounded-2xl pointer-events-auto flex items-center justify-between px-4 py-3 relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
           <Link href="/dashboard" className="flex items-center gap-3 active:scale-95 transition-transform group">
-            <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow flex items-center justify-center bg-black/20 border border-white/10">
+            <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow flex items-center justify-center bg-black/5 dark:bg-black/20 border border-black/10 dark:border-white/10">
               <img src="/logo.png" alt="Workout OS Logo" className="w-full h-full object-cover scale-110" />
             </div>
             <span className="font-bold text-lg text-on-surface tracking-tight group-hover:text-secondary transition-colors">Workout OS</span>

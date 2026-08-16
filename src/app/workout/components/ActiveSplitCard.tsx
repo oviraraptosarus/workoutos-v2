@@ -410,10 +410,25 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
                 })}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-black/10 dark:border-white/10 relative z-10">
+            <div className="mt-8 pt-6 border-t border-black/10 dark:border-white/10 relative z-10 flex flex-col sm:flex-row gap-3">
+                <button 
+                    onClick={() => {
+                        if (confirm("Are you sure you want to stop and discard this workout?")) {
+                            localStorage.removeItem('workout_os_active_session_state');
+                            releaseWakeLock();
+                            setIsTimerRunning(false);
+                            if (onCloseSession) onCloseSession();
+                            else if (onExitBuilder) onExitBuilder();
+                            else window.location.reload();
+                        }
+                    }}
+                    className="w-full sm:w-1/3 bg-red-500/10 hover:bg-red-500/20 text-red-500 dark:text-red-400 font-bold uppercase tracking-wider py-4 rounded-[1.5rem] transition-all text-xs border border-red-500/20 flex items-center justify-center gap-2"
+                >
+                    Stop & Discard
+                </button>
                 <button 
                     onClick={handleFinish}
-                    className="w-full bg-black dark:bg-white hover:scale-[0.98] text-white dark:text-black font-black uppercase tracking-widest py-5 rounded-[1.5rem] transition-all text-sm shadow-xl flex items-center justify-center gap-2"
+                    className="w-full sm:w-2/3 bg-black dark:bg-white hover:scale-[0.98] text-white dark:text-black font-black uppercase tracking-widest py-4 rounded-[1.5rem] transition-all text-sm shadow-xl flex items-center justify-center gap-2"
                 >
                     Finish Workout
                 </button>

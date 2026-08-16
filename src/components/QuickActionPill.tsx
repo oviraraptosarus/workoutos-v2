@@ -21,7 +21,7 @@ export default function QuickActionPill() {
     };
 
     return (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
+        <div className="fixed bottom-24 right-6 z-50 pointer-events-auto">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div 
@@ -29,7 +29,7 @@ export default function QuickActionPill() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col gap-2"
+                        className="absolute bottom-full mb-3 right-0 flex flex-col items-end gap-2"
                     >
                         <ActionButton 
                             icon={<Sparkles size={16} />} 

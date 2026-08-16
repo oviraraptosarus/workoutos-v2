@@ -92,29 +92,31 @@ export default function ReadinessScoreWidget() {
 
         {/* Circular Gauge */}
         <div className="relative w-[90px] h-[90px] flex items-center justify-center shrink-0 z-10">
-          <svg className="w-full h-full transform -rotate-90">
-            <circle
-              cx="45"
-              cy="45"
-              r={radius}
-              className="stroke-surface-variant/20"
-              strokeWidth="8"
-              fill="transparent"
-            />
-            <motion.circle
-              cx="45"
-              cy="45"
-              r={radius}
-              stroke={color}
-              strokeWidth="8"
-              fill="transparent"
-              strokeLinecap="round"
-              initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset }}
-              transition={{ duration: 1.5, ease: "easeOut", type: "spring", bounce: 0.2 }}
-              style={{ strokeDasharray: circumference }}
-              className="drop-shadow-lg"
-            />
+          <svg viewBox="0 0 90 90" className="w-full h-full overflow-visible">
+            <g transform="rotate(-90 45 45)">
+              <circle
+                cx="45"
+                cy="45"
+                r={radius}
+                className="stroke-surface-variant/20"
+                strokeWidth="8"
+                fill="transparent"
+              />
+              <motion.circle
+                cx="45"
+                cy="45"
+                r={radius}
+                stroke={color}
+                strokeWidth="8"
+                fill="transparent"
+                strokeLinecap="round"
+                initial={{ strokeDashoffset: circumference }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 1.5, ease: "easeOut", type: "spring", bounce: 0.2 }}
+                style={{ strokeDasharray: circumference }}
+                className="drop-shadow-lg"
+              />
+            </g>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
              <StatusIcon size={24} style={{ color }} className="drop-shadow-sm" />
