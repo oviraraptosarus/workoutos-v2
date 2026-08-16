@@ -43,8 +43,21 @@ export default function Dashboard() {
   const { user, userProfile, updateUserProfile, isProfileLoaded, isLoading } = useAuth();
   const router = useRouter();
 
-  const [showBriefing, setShowBriefing] = useState(false);
-  const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>('morning');
+  // Compute briefing state synchronously before first paint to avoid the flash
+  // where the dashboard renders and then the quote/briefing snaps in after.
+  const [briefingMode, setBriefingMode] = useState<'morning'|'evening'>(() => {
+    const hour = new Date().getHours();
+    return hour >= 20 ? 'evening' : 'morning';
+  });
+  const [showBriefing, setShowBriefing] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const todayDate = new Date().toISOString().split('T')[0];
+    if (localStorage.getItem(`briefing_shown_${todayDate}`)) return false;
+    const hour = new Date().getHours();
+    const shouldShow = (hour >= 5 && hour < 12) || hour >= 20;
+    if (shouldShow) localStorage.setItem(`briefing_shown_${todayDate}`, 'true');
+    return shouldShow;
+  });
   const [showDOBModal, setShowDOBModal] = useState(false);
   const [dob, setDob] = useState(new Date(2000, 0, 1));
   const [savingDob, setSavingDob] = useState(false);
@@ -58,24 +71,7 @@ export default function Dashboard() {
 
 
 
-    if (user && isProfileLoaded) {
-      // Trigger briefing on first load of the session based on time
-      const todayDate = new Date().toISOString().split('T')[0];
-      const hasShownBriefing = localStorage.getItem(`briefing_shown_${todayDate}`);
-      
-      if (!hasShownBriefing) {
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) {
-            setBriefingMode('morning');
-            setShowBriefing(true);
-            localStorage.setItem(`briefing_shown_${todayDate}`, 'true');
-        } else if (hour >= 20) {
-            setBriefingMode('evening');
-            setShowBriefing(true);
-            localStorage.setItem(`briefing_shown_${todayDate}`, 'true');
-        }
-      }
-    }
+    // Briefing is now initialised synchronously in useState — nothing needed here
 
     if (user && isProfileLoaded && !userProfile?.dob) {
         setShowDOBModal(true);

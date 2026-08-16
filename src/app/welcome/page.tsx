@@ -95,6 +95,10 @@ export default function WelcomePage() {
 
     const slide = slides[currentSlide];
 
+    // While auth is resolving, render nothing — prevents the welcome slideshow
+    // from flashing briefly for users who are already logged in.
+    if (isLoading) return null;
+
     return (
         <div className="dark">
             <div className={clsx("min-h-screen w-full flex flex-col transition-colors duration-1000 overflow-hidden relative bg-background text-on-background")}>
