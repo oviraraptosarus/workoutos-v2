@@ -15,3 +15,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+// Trigger reload
