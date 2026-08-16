@@ -64,7 +64,7 @@ export default function HudRestTimer() {
     <div className="flex flex-col items-center justify-center w-full mt-10">
       {/* Huge Timer */}
       <div 
-        className={`text-8xl font-black tabular-nums tracking-tighter transition-colors duration-300 ${timeLeft === 0 ? 'text-[#ff453a] animate-pulse' : 'text-[#0a84ff]'}`}
+        className={`text-[5.5rem] sm:text-8xl font-black tabular-nums tracking-tighter transition-colors duration-300 ${timeLeft === 0 ? 'text-[#ff453a] animate-pulse' : 'text-[#0a84ff]'}`}
         onClick={toggle}
       >
         {timeStr}

@@ -4,6 +4,7 @@ import React from 'react';
 import AppLayout from '@/components/AppLayout';
 import BudgetHeader from './components/BudgetHeader';
 import BudgetSummaryCards from './components/BudgetSummaryCards';
+import BudgetShadowTaunt from './components/BudgetShadowTaunt';
 import CategoryBreakdown from './components/CategoryBreakdown';
 import SpendPaceChart from './components/SpendPaceChart';
 import IncomeTable from './components/IncomeTable';
@@ -21,6 +22,7 @@ export default function BudgetTrackerPage() {
             <BudgetProvider>
                 <div className="space-y-5">
                     <BudgetHeader />
+                    <BudgetShadowTaunt />
                     <BudgetSummaryCards />
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
                         <div className="lg:col-span-3">

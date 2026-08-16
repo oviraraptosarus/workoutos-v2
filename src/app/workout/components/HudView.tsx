@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HudRestTimer from './HudRestTimer';
@@ -12,6 +13,9 @@ interface HudViewProps {
 }
 
 export default function HudView({ exercises, onClose, onToggleExercise }: HudViewProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Start on the first uncompleted exercise
   const initialIdx = useMemo(() => {
       const idx = exercises.findIndex(e => !e.completed);
@@ -27,14 +31,14 @@ export default function HudView({ exercises, onClose, onToggleExercise }: HudVie
   const nextEx = () => { if (!isLast) setCurrentIdx(c => c + 1); };
   const prevEx = () => { if (!isFirst) setCurrentIdx(c => c - 1); };
 
-  if (!currentEx) return null;
+  if (!currentEx || !mounted) return null;
 
-  return (
+  return createPortal(
     <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        className="fixed inset-0 z-[100] bg-black text-white flex flex-col pt-12 pb-8 px-6 overflow-hidden"
+        className="fixed inset-0 z-[9999] bg-black text-white flex flex-col pt-12 pb-8 px-6 overflow-hidden"
     >
         {/* Top Nav */}
         <div className="flex items-center justify-between mb-8 z-10">
@@ -77,7 +81,7 @@ export default function HudView({ exercises, onClose, onToggleExercise }: HudVie
                                 setTimeout(() => nextEx(), 600);
                             }
                         }}
-                        className={`w-full py-6 rounded-[2rem] font-black uppercase tracking-widest text-lg transition-all flex items-center justify-center gap-3 ${
+                        className={`w-full py-5 sm:py-6 rounded-[2rem] font-black uppercase tracking-widest text-base sm:text-lg transition-all flex items-center justify-center gap-3 ${
                             currentEx.completed 
                             ? 'bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30' 
                             : 'bg-white text-black hover:scale-[0.98]'
@@ -112,6 +116,7 @@ export default function HudView({ exercises, onClose, onToggleExercise }: HudVie
                 Next <ChevronRight size={24} />
             </button>
         </div>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 }

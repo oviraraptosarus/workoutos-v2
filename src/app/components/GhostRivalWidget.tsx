@@ -4,9 +4,14 @@ import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Flame, Skull, Trophy, Swords } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useShadowTaunt } from '@/hooks/useShadowTaunt';
+import ShadowTauntCard from './ShadowTauntCard';
 
 export default function GhostRivalWidget() {
-  const { userProfile, isLoading } = useAuth();
+  const { userProfile, isLoading: isAuthLoading } = useAuth();
+  const { taunt, isLoading: isTauntLoading } = useShadowTaunt("General Dashboard", {
+    recentActivity: "Logging into dashboard"
+  });
 
   const { rivalName, rivalXp, userXp, rivalStreak, userStreak } = useMemo(() => {
     if (!userProfile) return { rivalName: 'Shadow', rivalXp: 0, userXp: 0, rivalStreak: 0, userStreak: 0 };
@@ -39,7 +44,7 @@ export default function GhostRivalWidget() {
   const userPercent = (userXp / maxTotal) * 100;
   const rivalPercent = (rivalXp / maxTotal) * 100;
 
-  if (isLoading) {
+  if (isAuthLoading) {
     return (
       <div className="bg-surface-container-low border border-surface-variant/30 rounded-3xl p-5 w-full flex items-center justify-center min-h-[140px] animate-pulse">
           <div className="w-16 h-16 rounded-full bg-surface-variant/20" />
@@ -48,7 +53,9 @@ export default function GhostRivalWidget() {
   }
 
   return (
-    <div className="glass-card-premium w-full p-5 relative overflow-hidden group">
+    <div className="flex flex-col gap-4">
+      {/* Ghost Rival Progress Bar Card */}
+      <div className="glass-card-premium w-full p-5 relative overflow-hidden group">
       
       {/* Background slash pattern for PvP feel */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
@@ -64,12 +71,12 @@ export default function GhostRivalWidget() {
                 <h3 className="font-display-sm font-bold text-on-surface tracking-tight uppercase text-sm">Ghost Rival</h3>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-3">
                 <div className="flex items-center gap-1 text-[11px] font-bold text-on-surface-variant">
                     <Trophy size={12} className="text-[#0a84ff]" />
                     {userXp.toLocaleString()} XP
                 </div>
-                <span className="text-on-surface-variant/30 font-bold">vs</span>
+                <span className="text-on-surface-variant/30 font-bold hidden sm:inline">vs</span>
                 <div className="flex items-center gap-1 text-[11px] font-bold text-on-surface-variant">
                     <Skull size={12} className="text-[#ff453a]" />
                     {rivalXp.toLocaleString()} XP
@@ -118,6 +125,9 @@ export default function GhostRivalWidget() {
 
         </div>
       </div>
+      
+      {/* Dynamic AI Taunt */}
+      <ShadowTauntCard taunt={taunt} domain="General Readiness" isLoading={isTauntLoading} />
     </div>
   );
 }
