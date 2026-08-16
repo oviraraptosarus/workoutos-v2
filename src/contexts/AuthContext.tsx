@@ -29,6 +29,7 @@ export interface UserProfile {
     heightCm: number;
     gender: 'male' | 'female' | 'other';
     sleepGoal?: number;
+    daily_burn_goal?: number;
     units: 'metric' | 'imperial';
     theme: 'light' | 'dark' | 'system';
     avatarPath?: string;
@@ -158,6 +159,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         waterGoalMl: data.water_goal_ml || 3000,
                         calorieGoal: data.calorie_goal || 2200,
                         sleepGoal: data.sleep_goal || 8,
+                        daily_burn_goal: data.daily_burn_goal || 500,
                         monthlyBudget: data.monthly_budget || 1000,
                         monthlyIncome: data.monthly_income || 2000,
                         foodBudgets: data.food_budgets || {},
@@ -259,6 +261,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (updates.preferredAiVoice !== undefined) payload.preferred_ai_voice = updates.preferredAiVoice;
             if (updates.preferredLanguage !== undefined) payload.preferred_language = updates.preferredLanguage;
             if (updates.notificationsEnabled !== undefined) payload.notifications_enabled = updates.notificationsEnabled;
+            if ((updates as any).daily_burn_goal !== undefined) payload.daily_burn_goal = (updates as any).daily_burn_goal;
             
             if (updates.targetConfig !== undefined || updates.streamingResponsesEnabled !== undefined) {
                 payload.target_config = {

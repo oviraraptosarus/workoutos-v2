@@ -87,10 +87,11 @@ export function useDailySnapshot() {
             const caloriesCurrent = meals?.reduce((acc: number, m: any) => acc + (m.calories || 0), 0) || 0;
             const proteinCurrent = meals?.reduce((acc: number, m: any) => acc + (m.protein || 0), 0) || 0;
             const caloriesTarget = userProfile?.calorieGoal || 2000;
-            const proteinTarget = (userProfile as any)?.proteinGoal || 150;
+            const tc = (typeof userProfile?.targetConfig === 'object' && userProfile.targetConfig) ? userProfile.targetConfig as Record<string, any> : {};
+            const proteinTarget = tc.protein || 150;
 
             const burnCurrent = logs?.activity_burned || 0;
-            const burnTarget = (userProfile as any)?.daily_burn_goal || 500;
+            const burnTarget = userProfile?.daily_burn_goal || 500;
 
             const totalTasks = tasks?.length || 0;
             const completedTasks = tasks?.filter(t => t.completed).length || 0;

@@ -4,6 +4,17 @@
 
 ## Recent Milestones & Changes
 
+### August 16, 2026 - Daily Briefing Modal Data Fix & Enhancements
+- **Briefing Data Bug Fix**: Fixed DailyBriefingModal showing stale/default values (2959ml, 1635 kcal, 150g protein) instead of actual user profile goals. Root cause: `useDailySnapshot.ts` read non-existent `userProfile.proteinGoal` (always fell back to 150) — protein target is stored in `targetConfig.protein`. Also, `daily_burn_goal` DB column existed but was never loaded into `UserProfile` in AuthContext. Fixed both field reads and added `daily_burn_goal` to the profile interface, fetch, and save logic.
+- **Slide 1 Progress Bars**: Replaced flat text chips with real progress bars showing actual numbers (e.g., `2400 / 3000 ml`) with color-coded fill states. Each metric (Hydration, Workout, Nutrition, Tasks) gets its own row with a thin iOS-style progress indicator.
+- **Streak & Momentum Pills**: Surfaced `snapshot.streak` and `snapshot.momentumScore` as compact pills at the top of the Execution Review slide (previously fetched but never rendered).
+- **Sleep Target on Slide 3**: Added missing Sleep target row with Moon icon and purple accent to the Tomorrow's Targets / Today's Battle Plan slide.
+- **Bottleneck Severity**: Color-coded bottlenecks — critical items (missed workout, zero tasks) show red `#ff453a`, warnings (low hydration, partial tasks) show amber `#ff9f0a`. Empty state now shows a centered "Peak Efficiency" illustration instead of plain text.
+- **Mode-Aware Labels**: Morning mode slide 1 now reads "Yesterday's Recap" instead of the generic "Execution Review" label.
+- **Quote Screen Greeting**: Added time display and personalized greeting (`Good Evening, Srivats`) above the motivational quote on the fullscreen intro slide.
+- **Swipe Gesture Support**: Added `onTouchStart`/`onTouchEnd` handlers with 50px horizontal threshold for native-feeling swipe navigation between slides.
+- **"Let's Go" Deep-Link**: Final slide button now navigates to `/workout` (morning) or `/sleep` (evening) instead of just closing the modal.
+
 ### August 12, 2026 - AI Copilot Persistence & Time-Travel Logging
 - **Ava Vision AI Migration**: Completely removed the mock-AI "Green Sparkle" feature (`RawDataAITransformerModal`) to strictly enforce the Apple design philosophy and avoid clunky, hardcoded offline text parsing. Upgraded Ava's central intelligence in `route.ts` with Rule 15: whenever a user uploads an image of food and asks to log it, the LLM-Orchestrator's native vision models (Gemini/Claude/GPT-4o) are forced to visually analyze the dish, extract ingredients, estimate calories, and automatically execute the `log_nutrition` tool, populating the new Ingredients Cascade seamlessly.
 - **Meal Cascade Data Loss Fix**: Discovered that `dietStorage.ts` was silently stripping `ingredients` and `icon` properties during `saveMealsForDate` because the `meal_entries` table wasn't configured for them. Created a SQL migration to add `ingredients` (JSONB) and `icon` (TEXT) columns, ensuring the AI's generated UI data (and emoji icons) persist perfectly. Also updated the `RawDataAITransformerModal` mock AI to inject ingredients arrays into its offline parsing results so the cascade works globally.
@@ -141,3 +152,13 @@
 - **Token Limit Fix**: Increased `maxOutputTokens` from 800 to 2500 in `route.ts`. The 800-token cap was physically preventing the LLM from producing proper coaching output (a 6-exercise workout template needs ~1500 tokens), biasing it toward short tool calls like `add_task`.
 - **Meal Plan Client Handler**: Added `generate_meal_plan` function call handler in `GlobalAICopilot.tsx` that formats the structured meal plan as rich text with macro breakdowns per meal, daily targets, and coaching notes.
 
+### August 16, 2026 — Full Backend Audit & Bug Fixes
+Conducted a comprehensive audit of all API routes, LLM orchestration, data storage services, and providers. Found and fixed 7 bugs:
+- **BUG FIX — Wrong Model Name**: `llm.ts` primary model was `gemini-3.1-flash-lite` (non-existent) → fixed to `gemini-2.5-flash-lite`. This was causing EVERY request to fail on the first provider and silently fall through to the more expensive Gemini 2.5 Flash.
+- **BUG FIX — Token Defaults in Providers**: `GeminiProvider.ts` and `OpenAIProvider.ts` both had `maxOutputTokens: 800` as hardcoded defaults. These were being used when fallback models (OpenRouter/Llama) handled requests, causing truncated coaching responses on the fallback path. Fixed both to 1500.
+- **BUG FIX — COACHING Missing From Schema**: `pipeline.ts` intent classifier schema description listed all intents EXCEPT `COACHING`. Some strict LLMs refuse to return values not in the schema description, meaning they'd never classify a request as COACHING. Fixed by adding `COACHING` to the description string.
+- **BUG FIX — Inverted Deficit Math**: `dietStorage.ts` `getWeeklyDeficitAggregation()` had `totalDeficit += (net - tdeeGoal)` which gives negative numbers for people eating in deficit, then double-negated to get weight loss. Fixed formula to `dailyDeficit = tdeeGoal - net` (positive = losing weight) with no negation at the end.
+- **BUG FIX — Image Data Stripped From History**: `route.ts` `mappedHistory` mapping only preserved `text`, dropping `imageUrl`. Multi-turn conversations referencing a previously uploaded image were completely broken. Fixed by including `imageUrl` via an IIFE that extracts `inlineData` from parts.
+- **BUG FIX — Dead Code Fallback**: `route.ts` lines 241–271 built a Telugu fallback string but never returned it (missing `return NextResponse.json(...)`). Added the missing return statement.
+- **BUG FIX — Cron RLS Bypass Broken**: `notifications.ts` `supabaseAdmin` falls back to the anon key if `SUPABASE_SERVICE_ROLE_KEY` is missing. Added a hard guard at the top of the cron route that returns 500 immediately instead of silently failing.
+- **Remaining Known Issues (not yet fixed)**: Race condition in `saveMealsForDate` (delete+reinsert is not atomic), hardcoded placeholder user ID in orchestrator telemetry, AI memories not auto-refreshed in session after `save_ai_memory` tool call.
