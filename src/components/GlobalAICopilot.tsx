@@ -1961,7 +1961,7 @@ export default function GlobalAICopilot() {
                 placeholder={
                   selectedImage ? t("copilot.imageReady") : "Type a message..."
                 }
-                className="flex-1 max-h-[250px] bg-transparent py-2.5 text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant overflow-y-auto"
+                className="flex-1 max-h-[250px] bg-transparent py-2.5 px-2 text-sm text-on-surface font-medium focus:outline-none resize-none placeholder:text-on-surface-variant overflow-y-auto"
               />
 
               {selectedImage && (

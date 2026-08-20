@@ -1,0 +1,8 @@
+src
+bench
+node_modules
+*.log
+.env
+.gitignore
+tsconfig.json
+.npmignore

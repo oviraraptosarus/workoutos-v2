@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus, Hourglass, Calendar, Trash2 } from 'lucide-react';
+import { Plus, Hourglass, Calendar, Trash2, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRewardSystem } from '@/lib/hooks/useRewardSystem';
+import MissionCompleteModal from '@/app/countdowns/components/MissionCompleteModal';
 
 interface Countdown {
     id: string;
@@ -20,6 +21,7 @@ export default function CountdownsPage() {
     const [countdowns, setCountdowns] = useState<Countdown[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
+    const [activeMission, setActiveMission] = useState<Countdown | null>(null);
     
     const [newTitle, setNewTitle] = useState('');
     const [newDate, setNewDate] = useState('');
@@ -89,6 +91,13 @@ export default function CountdownsPage() {
 
     return (
         <AppLayout>
+            <MissionCompleteModal 
+                countdown={activeMission} 
+                isOpen={!!activeMission} 
+                onClose={() => setActiveMission(null)} 
+                onMissionArchived={(id) => setCountdowns(prev => prev.filter(c => c.id !== id))}
+            />
+            
             <div className="space-y-6 pb-12 animate-in fade-in duration-700">
                 <div className="pb-4 flex items-center justify-between">
                     <div>
@@ -206,9 +215,12 @@ export default function CountdownsPage() {
                                     {/* Bottom Section: Days */}
                                     <div className="flex flex-col items-start mt-auto">
                                         {isPast ? (
-                                            <div className="text-xl font-bold uppercase tracking-wide text-white/50">
-                                                DONE
-                                            </div>
+                                            <button 
+                                                onClick={() => setActiveMission(countdown)}
+                                                className="w-full mt-2 bg-[#0a84ff] hover:bg-[#0051a8] text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(10,132,255,0.4)] flex items-center justify-center gap-1.5"
+                                            >
+                                                <CheckCircle2 size={14} /> CLAIM REWARD
+                                            </button>
                                         ) : isToday ? (
                                             <div className="text-3xl font-black tracking-tight uppercase">
                                                 TODAY

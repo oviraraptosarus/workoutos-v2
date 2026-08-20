@@ -214,3 +214,10 @@ Conducted a comprehensive audit of all API routes, LLM orchestration, data stora
 ### August 21, 2026 - Countdowns Date Logic Fix
 - **Timezone and Fractional Dates Bug**: Fixed an issue where the `getDaysRemaining` logic in `CountdownsPage` and `DashboardCountdowns` was incorrectly parsing standard `"YYYY-MM-DD"` dates as UTC, then converting them to local time. This caused the day to shift backwards or forwards depending on the user's timezone. Combined with `Math.ceil()`, it caused inconsistent countdowns based on the exact time of day. 
 - **Solution**: Refactored the calculation to safely split the date string (`YYYY`, `MM`, `DD`) and instantiate the target date explicitly at local midnight. The `today` reference was also explicitly set to local midnight, and the fractional ms difference is now correctly reduced to exact integer calendar days using `Math.round()`.
+
+### August 21, 2026 - UI Bug Fixes
+- **Chat Input Scrollbar Overlap**: Fixed a UI bug in the `GlobalAICopilot` chat input where multiline text would overlap with the native browser scrollbar on mobile devices. Added `px-2` to the textarea to provide necessary horizontal padding inside the scrolling container, preventing the text from spilling over the scrollbar thumb.
+
+- **Fever Mode & Gacha (2026-08-20):** Removed Shadow War Room and replaced it with a Gen Z / ADHD curated gamification system. Created global FeverContext, FeverModeWidget on dashboard, and GachaPullModal. Completing exercises increases fever level (up to 5x multiplier, adding glow/shake UI effects). Finishing a workout grants 1 Gacha Pull to roll for themes/stickers. Added migration for user_gacha_inventory.
+
+- **Countdown After-Action System (2026-08-20):** Changed static 'DONE' text on countdowns to an interactive 'CLAIM REWARD' button. Clicking it opens a MissionCompleteModal that allows rating the event, grants +100 Fever Points and 1 Gacha Pull, and gives the option to either Archive (delete from DB) or Roll Over (add 7 days to target date). Implemented in DashboardCountdowns and Countdowns page.

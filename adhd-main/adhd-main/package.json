@@ -1,0 +1,68 @@
+{
+  "name": "adhd-agent",
+  "version": "0.1.4",
+  "description": "ADHD — a skill for coding agents. Fans out many divergent thoughts in parallel under different cognitive frames, scores them, prunes traps, and deepens the survivors. Tree-of-thought with pruning, built on the Claude Agent SDK. The no-brainer skill for creative and interdisciplinary work.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "adhd": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "SOURCE-SPEC.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.bench.json",
+    "prepublishOnly": "npm run build",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "evals": "tsx bench/run-evals.ts",
+    "evals:quick": "tsx bench/run-evals.ts --quick"
+  },
+  "keywords": [
+    "adhd",
+    "ideation",
+    "tree-of-thought",
+    "chain-of-thought",
+    "divergent-thinking",
+    "brainstorm",
+    "claude",
+    "claude-agent-sdk",
+    "agent",
+    "agents",
+    "creative",
+    "interdisciplinary",
+    "ai",
+    "llm",
+    "skill"
+  ],
+  "license": "MIT",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UditAkhourii/adhd.git"
+  },
+  "homepage": "https://github.com/UditAkhourii/adhd#readme",
+  "bugs": {
+    "url": "https://github.com/UditAkhourii/adhd/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.0",
+    "p-limit": "^5.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

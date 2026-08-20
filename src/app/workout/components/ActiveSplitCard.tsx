@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useWakeLock } from '@/lib/hooks/useWakeLock';
 import ForgeImpactOverlay from '@/app/components/ForgeImpactOverlay';
 import HudView from './HudView';
+import { useFever } from '@/contexts/FeverContext';
 
 export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, onCloseSession }: { preset?: any, isBuilderMode?: boolean, onExitBuilder?: () => void, onCloseSession?: () => void }) {
     const { t } = useLanguage();
@@ -26,6 +27,7 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
     const submitLock = useRef(false);
     
     const { requestWakeLock, releaseWakeLock } = useWakeLock();
+    const { addFever, addGachaPull } = useFever();
 
     // Builder State
     const [customTitle, setCustomTitle] = useState('My Custom Workout');
@@ -117,9 +119,13 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
 
     const toggleExercise = (idx: number) => {
         const newEx = [...exercises];
-        newEx[idx].completed = !newEx[idx].completed;
+        const wasCompleted = newEx[idx].completed;
+        newEx[idx].completed = !wasCompleted;
         setExercises(newEx);
         
+        if (!wasCompleted) {
+            addFever(25); // Fever for finishing a set/exercise
+        }
     };
 
     const handleStartCustom = () => {
@@ -144,6 +150,8 @@ export default function ActiveSplitCard({ preset, isBuilderMode, onExitBuilder, 
         submitLock.current = true;
         
         setShowImpactOverlay(true); // Trigger the Forge animation!
+        addFever(100);
+        addGachaPull(1);
         
         const weightKg = userProfile?.targetWeight || 75;
         const durationHrs = Math.max(elapsedSeconds / 3600, 0.05);

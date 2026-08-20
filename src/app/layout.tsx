@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import LevelUpOverlay from '@/components/LevelUpOverlay';
+import { FeverProvider } from '@/contexts/FeverContext';
 import '@/styles/tailwind.css';
 import '@/styles/index.css';
 
@@ -67,9 +68,11 @@ export default function RootLayout({
           <ThemeProvider>
             <LanguageProvider>
               <DateProvider>
-                <ServiceWorkerRegister />
-                <LevelUpOverlay />
-                {children}
+                <FeverProvider>
+                  <ServiceWorkerRegister />
+                  <LevelUpOverlay />
+                  {children}
+                </FeverProvider>
               </DateProvider>
             </LanguageProvider>
           </ThemeProvider>

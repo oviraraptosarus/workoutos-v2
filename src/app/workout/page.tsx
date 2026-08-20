@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import WorkoutHeader from './components/WorkoutHeader';
 import ActiveSplitCard from './components/ActiveSplitCard';
-import WorkoutShadowTaunt from './components/WorkoutShadowTaunt';
 import { WorkoutPreset, WorkoutSession } from '@/types/workout';
 import ActivityTracker from './components/ActivityTracker';
 import BurnGoalTracker from './components/BurnGoalTracker';
@@ -175,8 +174,6 @@ export default function WorkoutPage() {
                     onStartEmpty={() => { setActivePreset(null); setIsBuilderMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
                     onLogActivity={() => setIsCardioModalOpen(true)}
                 />
-
-                <WorkoutShadowTaunt />
                 
                 <MuscleHeatmap />
                 
