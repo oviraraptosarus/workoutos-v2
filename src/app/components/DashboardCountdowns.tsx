@@ -39,11 +39,12 @@ export default function DashboardCountdowns() {
     };
 
     const getDaysRemaining = (targetDate: string) => {
-        const target = new Date(targetDate);
-        target.setHours(23, 59, 59, 999);
+        const [year, month, day] = targetDate.split('-').map(Number);
+        const target = new Date(year, month - 1, day, 0, 0, 0, 0);
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const diffTime = target.getTime() - today.getTime();
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return Math.round(diffTime / (1000 * 60 * 60 * 24));
     };
 
     if (countdowns.length === 0) return null;
