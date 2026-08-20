@@ -60,13 +60,13 @@ export default function FeverModeWidget() {
                         <div className="h-4 w-full bg-surface-container-highest dark:bg-black/40 rounded-full overflow-hidden shadow-inner border border-black/5 dark:border-white/5">
                             <div 
                                 className="h-full bg-gradient-to-r from-[#ff9f0a] to-[#ff453a] rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,69,58,0.5)]"
-                                style={{ width: \`\${feverLevel === 5 ? 100 : progressPercent}%\` }}
+                                style={{ width: `${feverLevel === 5 ? 100 : progressPercent}%` }}
                             />
                         </div>
                         
                         <div className="mt-3 flex justify-between items-center">
                             <div className="text-[10px] text-on-surface-variant font-medium">
-                                {feverLevel === 5 ? 'MAX FEVER!' : \`\${200 - Math.floor(progressInLevel)} pts to Level \${feverLevel + 1}\`}
+                                {feverLevel === 5 ? 'MAX FEVER!' : `${200 - Math.floor(progressInLevel)} pts to Level ${feverLevel + 1}`}
                             </div>
                             {feverLevel > 0 && (
                                 <div className="text-[10px] text-[#ff453a]/70 font-bold animate-pulse">
