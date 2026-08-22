@@ -272,7 +272,7 @@ export default function BrainDump({
       const { error } = await supabase.from("brain_readings").insert([
         {
           user_id: user.id,
-          content: saveSummary ? summary : null,
+          content: saveSummary ? summary : "",
           raw_content: saveRaw ? transcript : null,
         },
       ]);
