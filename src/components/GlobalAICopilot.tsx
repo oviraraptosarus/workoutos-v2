@@ -11,6 +11,7 @@ import {
   BookmarkPlus,
   Settings2,
   Trash2,
+  Pin,
   MessageSquare,
   VolumeX,
   Image as ImageIcon,
@@ -159,6 +160,7 @@ export default function GlobalAICopilot() {
     string | null
   >(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [pinnedChats, setPinnedChats] = useState<string[]>([]);
 
   const [isConversationMode, setIsConversationMode] = useState(false);
   const isConversationModeRef = useRef(false);
@@ -171,7 +173,22 @@ export default function GlobalAICopilot() {
 
   useEffect(() => {
     setIsDevMode(localStorage.getItem("workoutos_dev_mode") === "true");
+    const savedPinned = localStorage.getItem("workoutos_pinned_chats");
+    if (savedPinned) {
+      try {
+        setPinnedChats(JSON.parse(savedPinned));
+      } catch (e) {}
+    }
   }, []);
+
+  const togglePin = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPinnedChats(prev => {
+      const next = prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id];
+      localStorage.setItem("workoutos_pinned_chats", JSON.stringify(next));
+      return next;
+    });
+  };
 
   const recognitionRef = useRef<any>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -204,12 +221,6 @@ export default function GlobalAICopilot() {
   }, [isOpen]);
 
   const clearChat = () => {
-    if (!currentConversationId && conversations.length >= 10) {
-      alert(
-        "Maximum of 10 conversations reached. Please delete an existing conversation from History to start a new one.",
-      );
-      return;
-    }
     setMessages([]);
     setApiHistory([]);
     setChips([]);
@@ -344,13 +355,6 @@ export default function GlobalAICopilot() {
 
       const q = (overrideText ?? promptRef.current).trim();
       if (!q && !selectedImage) return;
-
-      if (!currentConversationId && conversations.length >= 10) {
-        alert(
-          "Maximum of 10 past conversations reached. Please delete an existing conversation from History to start a new one.",
-        );
-        return;
-      }
 
       isSendingRef.current = true;
       const currentImage = selectedImage;
@@ -1185,6 +1189,11 @@ export default function GlobalAICopilot() {
               });
               if (error)
                 throw new Error(`Tool Execution Failed: ${error.message}`);
+              
+              window.dispatchEvent(new Event("workout_os_refresh"));
+              if (finalResponseText === "Done.") {
+                finalResponseText = `I've committed this to long-term memory so I won't forget:\n\n**${args.category}**\n${args.memory_text}`;
+              }
             } else if (fn === "log_behavior_pattern") {
               const { error } = await supabase
                 .from("behavior_patterns")
@@ -1196,6 +1205,11 @@ export default function GlobalAICopilot() {
                 });
               if (error)
                 console.warn("Failed to log behavior pattern:", error.message);
+              
+              window.dispatchEvent(new Event("workout_os_refresh"));
+              if (finalResponseText === "Done.") {
+                finalResponseText = `I've noted this behavioral pattern for future coaching:\n\n*${args.pattern_description}*`;
+              }
             } else if (fn === "save_workout_template") {
               // Validate AI output before saving
               const templateName = (args.name || "").trim();
@@ -1634,23 +1648,43 @@ export default function GlobalAICopilot() {
                       No past conversations.
                     </div>
                   )}
-                  {conversations.map((c) => (
-                    <div
-                      key={c.id}
-                      onClick={() => loadConversation(c)}
-                      className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${currentConversationId === c.id ? "bg-[#0a84ff]/10 text-[#0a84ff]" : "hover:bg-white/5 text-on-surface-variant hover:text-on-surface"}`}
-                    >
-                      <div className="truncate text-sm font-medium flex-1 pr-2 tracking-tight">
-                        {c.title}
-                      </div>
-                      <button
-                        onClick={(e) => deleteConversation(c.id, e)}
-                        className="opacity-0 group-hover:opacity-100 text-red-500/70 hover:text-red-500 transition-all p-1.5 rounded-full hover:bg-white/10"
+                  {[...conversations].sort((a, b) => {
+                    const aPinned = pinnedChats.includes(a.id);
+                    const bPinned = pinnedChats.includes(b.id);
+                    if (aPinned && !bPinned) return -1;
+                    if (!aPinned && bPinned) return 1;
+                    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+                  }).map((c) => {
+                    const isPinned = pinnedChats.includes(c.id);
+                    return (
+                      <div
+                        key={c.id}
+                        onClick={() => loadConversation(c)}
+                        className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${currentConversationId === c.id ? "bg-[#0a84ff]/10 text-[#0a84ff]" : "hover:bg-white/5 text-on-surface-variant hover:text-on-surface"}`}
                       >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))}
+                        <div className="truncate text-sm font-medium flex-1 pr-2 tracking-tight flex items-center gap-2">
+                          {isPinned && <Pin size={12} className="text-[#0a84ff] shrink-0" style={{ fill: '#0a84ff' }} />}
+                          <span className="truncate">{c.title}</span>
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                          <button
+                            onClick={(e) => togglePin(c.id, e)}
+                            title={isPinned ? "Unpin" : "Pin"}
+                            className={`${isPinned ? 'text-[#0a84ff]' : 'text-on-surface-variant hover:text-on-surface'} p-1.5 rounded-full hover:bg-white/10`}
+                          >
+                            <Pin size={14} style={{ fill: isPinned ? '#0a84ff' : 'none' }} />
+                          </button>
+                          <button
+                            onClick={(e) => deleteConversation(c.id, e)}
+                            title="Delete"
+                            className="text-red-500/70 hover:text-red-500 p-1.5 rounded-full hover:bg-white/10"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

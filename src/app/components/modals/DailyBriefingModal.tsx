@@ -44,10 +44,11 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     const { userProfile } = useAuth();
     const router = useRouter();
     const [isVisible, setIsVisible] = useState(false);
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const [currentSlide, setCurrentSlide] = useState(1);
     const [dailyQuote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
     const { snapshot } = useDailySnapshot();
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const hasPlayedAudioRef = useRef(false);
 
     // Swipe gesture refs
     const touchStartX = useRef(0);
@@ -62,52 +63,88 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
-            setCurrentSlide(0);
+            setCurrentSlide(1);
             
             // Phase 6: Ava Voice Initialization
-            setTimeout(() => {
-                const hour = new Date().getHours();
-                const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-                const name = userProfile?.fullName?.split(' ')[0] || userProfile?.username || '';
-                
-                let text = `${greeting} ${name}. `;
-                
-                if (mode === 'morning') {
-                    if (snapshot.sleepProgress.current >= snapshot.sleepProgress.target) {
-                        text += `Your sleep was optimal. `;
-                    } else if (snapshot.sleepProgress.current > 0) {
-                        text += `Your sleep was suboptimal, but we adapt. `;
-                    }
+            if (!hasPlayedAudioRef.current) {
+                hasPlayedAudioRef.current = true;
+                setTimeout(() => {
+                    const hour = new Date().getHours();
+                    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                    const name = userProfile?.fullName?.split(' ')[0] || userProfile?.username || '';
                     
-                    if (snapshot.workoutName) {
-                        text += `Today's protocol is ${snapshot.workoutName}. Let's dominate.`;
+                    const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+                    let text = `${greeting} ${name}. `;
+                    
+                    if (mode === 'morning') {
+                        if (snapshot.sleepProgress.current >= snapshot.sleepProgress.target) {
+                            text += pickRandom([
+                                'Sleep targets met. You should be fully recovered. ',
+                                'Optimal sleep detected. Ready to crush today. ',
+                                'You hit your sleep goals. Body and mind are primed. '
+                            ]);
+                        } else if (snapshot.sleepProgress.current > 0) {
+                            text += pickRandom([
+                                'Sleep was a bit short, but we adapt and push forward. ',
+                                'Suboptimal recovery last night. Conserve energy where needed. ',
+                                'You didn\'t get enough sleep, but the mission doesn\'t change. '
+                            ]);
+                        }
+                        
+                        if (snapshot.workoutName) {
+                            text += pickRandom([
+                                `Today's protocol is ${snapshot.workoutName}. Let's dominate.`,
+                                `You have ${snapshot.workoutName} on the schedule today. Execute it perfectly.`,
+                                `Focus up. We have ${snapshot.workoutName} planned for today.`
+                            ]);
+                        } else {
+                            text += pickRandom([
+                                `No workout on the calendar yet. Ensure you move today.`,
+                                `I don't see a workout logged. Make it an active recovery day if needed.`,
+                                `Rest day or you haven't planned yet? Let's make it count regardless.`
+                            ]);
+                        }
                     } else {
-                        text += `I see no workout logged for today yet. Make it count.`;
+                        text += pickRandom([
+                            `Time for the daily execution review. `,
+                            `Let's analyze today's performance. `,
+                            `End of day protocol initiated. Let's see how you did. `
+                        ]);
+                        if (snapshot.waterProgress.current >= snapshot.waterProgress.target) {
+                            text += pickRandom([
+                                `Hydration targets met. `,
+                                `Good job on your water intake today. `,
+                                `Hydration is fully optimized. `
+                            ]);
+                        }
+                        if (snapshot.plannerState.completed >= snapshot.plannerState.total && snapshot.plannerState.total > 0) {
+                            text += pickRandom([
+                                `Flawless execution on your tasks. `,
+                                `You cleared your task list completely. Excellent focus. `,
+                                `100% completion rate today. Elite execution. `
+                            ]);
+                        }
+                        text += pickRandom([
+                            `Let's review the data.`,
+                            `Analyzing your numbers now.`,
+                            `Let's look at the metrics.`
+                        ]);
                     }
-                } else {
-                    text += `Time for the execution review. `;
-                    if (snapshot.waterProgress.current >= snapshot.waterProgress.target) {
-                        text += `Hydration targets met. `;
-                    }
-                    if (snapshot.plannerState.completed >= snapshot.plannerState.total && snapshot.plannerState.total > 0) {
-                        text += `Flawless execution on your tasks today. `;
-                    }
-                    text += `Let's review the data.`;
-                }
 
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = "en-IN";
-                const voices = window.speechSynthesis.getVoices();
-                const inVoice = voices.find((v) => v.lang === "en-IN") || voices.find((v) => v.lang.startsWith("en"));
-                if (inVoice) utterance.voice = inVoice;
-                
-                utterance.onstart = () => setIsSpeaking(true);
-                utterance.onend = () => setIsSpeaking(false);
-                utterance.onerror = () => setIsSpeaking(false);
-                
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utterance);
-            }, 500);
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = "en-IN";
+                    const voices = window.speechSynthesis.getVoices();
+                    const inVoice = voices.find((v) => v.lang === "en-IN") || voices.find((v) => v.lang.startsWith("en"));
+                    if (inVoice) utterance.voice = inVoice;
+                    
+                    utterance.onstart = () => setIsSpeaking(true);
+                    utterance.onend = () => setIsSpeaking(false);
+                    utterance.onerror = () => setIsSpeaking(false);
+                    
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                }, 500);
+            }
 
         } else {
             window.speechSynthesis.cancel();
@@ -129,7 +166,7 @@ export default function DailyBriefingModal({ isOpen, onClose, mode }: DailyBrief
     };
 
     const handlePrev = () => {
-        if (currentSlide > 0) setCurrentSlide(prev => prev - 1);
+        if (currentSlide > 1) setCurrentSlide(prev => prev - 1);
     };
 
     const onTouchStart = (e: React.TouchEvent) => {

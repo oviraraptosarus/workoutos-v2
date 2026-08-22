@@ -646,10 +646,10 @@ export default function BrainDump({
                                 className={`grid transition-all duration-300 ease-in-out ${isLogExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
                               >
                                 <div className="overflow-hidden">
-                                  {log.content && (
+                                  {(log.content || log.raw_content) && (
                                     <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-1">
                                       <p className="text-sm text-on-surface/70 ml-3.5 leading-relaxed font-medium line-clamp-3 text-left">
-                                        {log.content}
+                                        {log.content || log.raw_content}
                                       </p>
                                       <div className="flex justify-start ml-3.5 mt-3">
                                         <button
